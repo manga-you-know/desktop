@@ -1,5 +1,15 @@
+<script setup lang="ts">
+  const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
+</script>
+
+
 <template>
-  <div>
-    <h1>APP</h1>
+  <div class="flex" :class="{ 'hidden': isDivMainHidden }" >
+    <Sidebar />
+    <NuxtPage />
+  </div>
+  <div :class="isDivMainHidden ? 'visible' : 'hidden'" >
+    <Reader />
   </div>
 </template>
+ 
