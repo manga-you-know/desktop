@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/image": "^1.8.0",
     "@nuxt/ui": "^2.18.4",
     "@prisma/nuxt": "^0.0.35",
     "@types/node": "^22.5.1",

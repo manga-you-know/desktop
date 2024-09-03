@@ -17,7 +17,7 @@ const links = [
   }, {
     label: 'Configs',
     icon: 'i-heroicons-command-line',
-    to: '/configs'
+    to: 'configs'
   }], [{
       label: 'Example',
       icon: 'i-heroicons-light-bulb'
