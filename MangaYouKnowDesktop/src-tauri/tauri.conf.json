@@ -17,7 +17,7 @@
         "resizable": true,
         "maximizable": true,
         "minHeight": 400,
-        "minWidth": 600
+        "minWidth": 640
       } 
     ],
     "security": {

@@ -1,33 +1,42 @@
 
 <script setup lang="ts">
-  const q = ref('')
+  const mangaSources = [
+    'MangaSee', 'MangaDex'
+  ]
+  async function search() {
+    isOpen.value = true
+  }
+  defineShortcuts({
+    meta_k: {
+    usingInput: true,
+    handler: () => {
+      isOpen.value = !isOpen.value
+    }
+  }
+  })
+  const source = ref(mangaSources[0])
+  const isOpen = ref(false)
+  const diff = ref('nada')
 </script>
 
-<template class="grid w-full h-full items-center">
-  <div class="p-3">
+<template>
+  <div class="flex m-5 gap-1 justify-end h-full w-full ">
+    <SearchModal v-model="isOpen"/>
     <div>
-      <UInput
-        v-model="q"
-        name="q"
-        placeholder="Search..."
+      <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
+        <UButton
+        color="gray"
+        variant="ghost"
         icon="i-heroicons-magnifying-glass-20-solid"
-        autocomplete="off"
-        :ui="{ icon: { trailing: { pointer: '' } } }"
-      >
-        <template #trailing>
-          <UButton
-            v-show="q !== ''"
-            color="gray"
-            variant="link"
-            icon="i-heroicons-x-mark-20-solid"
-            :padded="false"
-            @click="q = ''"
-          />
-        </template>
-      </UInput>
+        @click="isOpen = true"
+        />
+      </UTooltip>
     </div>
-    <div class="flex w-full items-center">
-      <h1>coisas</h1>
+    <div>
+      <USelectMenu 
+      v-model="source"
+      :options="mangaSources"
+      />
     </div>
   </div>
 </template>
