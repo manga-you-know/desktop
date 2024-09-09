@@ -1,13 +1,17 @@
 <script setup lang="ts">
-  const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
-    function enableSidebar() {
-        isDivMainHidden.value = false
-    }
+    const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
+    defineShortcuts({
+        f4: {
+            usingInput: true,
+            handler: () => {
+                isDivMainHidden.value = false
+            }
+        }
+    })
 </script>
 
 <template>
-    <div class="h-full w-full items-center grid justify-items-center" >
-        <!-- <UButton @click="enableSidebar">Enable Sidebar</UButton> -->
-        <NuxtImg src="https://scans-hot.leanbox.us/manga/Dandadan/0164-001.png" placeholder  class="max-h-screen w-max-screen" />
+    <div class="flex h-screen w-screen justify-center items-center" >
+        <NuxtImg src="https://scans-hot.leanbox.us/manga/Undead-Unluck/0221-001.png" placeholder class="object-contain w-screen h-screen max-w-screen  max-h-screen" />
     </div>
 </template>

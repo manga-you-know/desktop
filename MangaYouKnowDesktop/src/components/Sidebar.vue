@@ -1,6 +1,7 @@
 <script setup>
+
 const route = useRoute()
-const links = [
+const links = ref([
   [{
     label: 'Profile',
     avatar: {
@@ -25,7 +26,8 @@ const links = [
       label: 'Help',
       icon: 'i-heroicons-question-mark-circle'
   }]
-]
+])
+
 </script>
 
 <template>

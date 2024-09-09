@@ -1,47 +1,85 @@
 <script setup lang="ts">
   import type { Favorite } from '~/models/favorite';
   import { DownloadManager } from '~/managers/downloadManager';
+  function resetResults() {
+    query.value = ''
+    results.value = []
+  }
+
   async function search() {
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve(true)
+      }, 10)
+    })
+    if (query.value === '') {
+      results.value = []
+      return
+    }
     isLoading.value = true
     try {
-      
-      results.value = await dlManager.search('naruto', 'MangaSee');
+      results.value = (await dlManager.search(query.value, 'MangaSee')).slice(0, 10);
     } catch (error) {
-      console.error('Search failed:', error);
       finished.value = error
     } finally {
       isLoading.value = false;
     }
-    finished.value = 'Finished'
   }
-  const finished = ref()
+  const query = ref('')
   const dlManager = new DownloadManager()
   const isLoading = ref(false)
   const results = ref<Favorite[]>([]);
+  const finished = ref()
 </script>
 
 <template>
-  <UModal class="rounded-xl" :overlay="false">
-    <div class="w-full  ">
+  <UModal class="rounded" :overlay="false">
+    <div class="w-full h-11 flex justify-center items-center">
       <UInput
-        class="w-full "
-        color="gray"
+        v-on:update:model-value="search"
+        v-model="query"
+        name="query"
         :loading="isLoading"
-        @change="search"
+        variant="none"
+        :padded="false"
+        class="w-[97%]"
         placeholder="Search..."
         icon="i-heroicons-magnifying-glass-20-solid"
-        
+        autocomplete="off"
+        :ui="{ icon: { trailing: { pointer: '' } } }"
+      >
+    <template #trailing>
+      <UButton
+        v-show="query !== ''"
+        color="gray"
+        variant="link"
+        icon="i-heroicons-x-mark-20-solid"
+        :padded="false"
+        @click="resetResults"
       />
+    </template>
+  </UInput>
     </div>
-    <UDivider class="w-full h-6"/>
-    <div>
-      {{ finished }}
-    </div>
-    <div class="w-full h-96 overflow-y-auto">
-      <div v-for="result in results">
-        {{ result.name }}
+    <UDivider class="w-full h-1"/>
+    <div class="w-full h-48 flex flex-col overflow-y-auto">
+      <div v-for="result in results" :key="result.name">
+          <UButton 
+            @click="console.log('nada')" 
+            color="gray"
+            variant="ghost"
+            class="w-[99%] h-10 m-0.5 flex justify-between">
+             {{ result.name.substring(0, 60) + (result.name.length > 60? "..." : "") }} 
+             <template #trailing>
+              <UButton 
+                icon="i-heroicons-bookmark" 
+                color="gray" 
+                variant="link"
+                class="h-7"
+              />
+            </template>
+          </UButton>
+
       </div>
-    </div>
-    
-  </UModal>
+    </div> 
+  </UModal >
 </template>

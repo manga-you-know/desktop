@@ -1,27 +1,30 @@
 
 <script setup lang="ts">
+  import { getCurrentWindow } from "@tauri-apps/api/window";
   const mangaSources = [
     'MangaSee', 'MangaDex'
   ]
   async function search() {
     isOpen.value = true
   }
+
   defineShortcuts({
     meta_k: {
-    usingInput: true,
-    handler: () => {
-      isOpen.value = !isOpen.value
-    }
-  }
-  })
+      usingInput: true,
+      handler: () => {
+        isOpen.value = !isOpen.value
+      }
+  }})
+
+  const currentWindow = getCurrentWindow()
   const source = ref(mangaSources[0])
   const isOpen = ref(false)
-  const diff = ref('nada')
+  const diff = ref(true)
 </script>
 
 <template>
   <div class="flex m-5 gap-1 justify-end h-full w-full ">
-    <SearchModal v-model="isOpen"/>
+    <SearchModal v-model="isOpen" />
     <div>
       <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
         <UButton
