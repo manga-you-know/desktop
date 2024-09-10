@@ -1,6 +1,13 @@
 <script setup lang="ts">
   import type { Favorite } from '~/models/favorite';
   import { DownloadManager } from '~/managers/downloadManager';
+
+  const query = ref('')
+  const dlManager = new DownloadManager()
+  const isLoading = ref(false)
+  const results = ref<Favorite[]>([]);
+  const finished = ref()
+
   function resetResults() {
     query.value = ''
     results.value = []
@@ -25,11 +32,14 @@
       isLoading.value = false;
     }
   }
-  const query = ref('')
-  const dlManager = new DownloadManager()
-  const isLoading = ref(false)
-  const results = ref<Favorite[]>([]);
-  const finished = ref()
+  async function verifyFavorites() {
+    const favorites = await $fetch('/api/favorites')
+    
+  }
+
+  async function favorite(favorite: Favorite) {
+    console.log(favorite.name)
+  }
 </script>
 
 <template>
@@ -48,37 +58,37 @@
         autocomplete="off"
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-    <template #trailing>
-      <UButton
-        v-show="query !== ''"
-        color="gray"
-        variant="link"
-        icon="i-heroicons-x-mark-20-solid"
-        :padded="false"
-        @click="resetResults"
-      />
-    </template>
-  </UInput>
+        <template #trailing>
+          <UButton
+            v-show="query !== ''"
+            color="gray"
+            variant="link"
+            icon="i-heroicons-x-mark-20-solid"
+            :padded="false"
+            @click="resetResults"
+          />
+        </template>
+      </UInput>
     </div>
     <UDivider class="w-full h-1"/>
-    <div class="w-full h-48 flex flex-col overflow-y-auto">
+    <div class="w-full h-48 flex flex-col overflow-y-scroll">
       <div v-for="result in results" :key="result.name">
+        <UButtonGroup orientation="horizontal" class="w-full">
           <UButton 
             @click="console.log('nada')" 
             color="gray"
             variant="ghost"
-            class="w-[99%] h-10 m-0.5 flex justify-between">
+            class="w-[93%] h-10 m-0.5 flex justify-between">
              {{ result.name.substring(0, 60) + (result.name.length > 60? "..." : "") }} 
-             <template #trailing>
-              <UButton 
-                icon="i-heroicons-bookmark" 
-                color="gray" 
-                variant="link"
-                class="h-7"
-              />
-            </template>
           </UButton>
-
+          <UButton 
+            icon="i-heroicons-star" 
+            color="gray" 
+            variant="link"
+            class="h-10 m-0.5"
+            @click="() => favorite(result)"
+          />
+        </UButtonGroup>
       </div>
     </div> 
   </UModal >

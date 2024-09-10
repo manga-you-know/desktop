@@ -7,9 +7,9 @@ export default defineNuxtConfig({
   ssr: false,
   spaLoadingTemplate: false,
   prisma: {
-    generateClient: false,
+    generateClient: true,
     installStudio: false,
-    autoSetupPrisma: false,
-    runMigration: false,
+    autoSetupPrisma: true,
+    runMigration: true,
   }
 })

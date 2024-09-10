@@ -5,7 +5,8 @@
     'MangaSee', 'MangaDex'
   ]
   async function search() {
-    isOpen.value = true
+    // const response = await $fetch('/api/test', {method: 'POST'})
+    // console.log(response.body)
   }
 
   defineShortcuts({
@@ -23,22 +24,22 @@
 </script>
 
 <template>
-  <div class="flex m-5 gap-1 justify-end h-full w-full ">
+  <div class="flex m-5 gap-1 justify-end h-full w-full">
     <SearchModal v-model="isOpen" />
     <div>
       <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
         <UButton
-        color="gray"
-        variant="ghost"
-        icon="i-heroicons-magnifying-glass-20-solid"
-        @click="isOpen = true"
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-magnifying-glass-20-solid"
+          @click="isOpen = true"
         />
       </UTooltip>
     </div>
     <div>
       <USelectMenu 
-      v-model="source"
-      :options="mangaSources"
+    v-model="source"
+    :options="mangaSources"
       />
     </div>
   </div>

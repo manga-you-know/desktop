@@ -1,7 +1,11 @@
 <script setup lang="ts">
+  import type { User } from "@prisma/client";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
+  const isLogged = useState<Boolean>('isLogged', () => false)
   const currentWindow = getCurrentWindow()
+
+  const user = useState<User>('user')
   defineShortcuts({
     f11: {
       usingInput: true,
@@ -15,12 +19,19 @@
 
 
 <template class="w-full h-full">
-  <div class="flex" :class="{ 'hidden': isDivMainHidden }" >
-    <Sidebar />
-    <NuxtPage />
+  <!-- main app -->
+  <div v-if="isLogged">
+    <div v-if="!isDivMainHidden" class="flex" >
+      <Sidebar />
+      <NuxtPage />
+    </div>
+    <div v-if="isDivMainHidden">
+      <Reader />
+    </div>
   </div>
-  <div :class="isDivMainHidden ? 'visible' : 'hidden'" >
-    <Reader />
+  <!-- login -->
+  <div v-if="!isLogged">
+    <Login />
   </div>
 </template>
  

@@ -22,25 +22,25 @@ model User {
 }
 
 model Favorite {
-  id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  name        String
-  folderName  String
-  cover       String
-  source      String
-  sourceId    String
-  type        String    @default("manga")
-  extraName   String    @default("")
-  titleColor  String    @default("")
-  cardColor   String    @default("")
-  grade       Float     @default(0.0)
-  author      String    @default("Unknow")
-  isNotify    Boolean   @default(false)
-  description String    @default("")
+  id              Int       @id @default(autoincrement())
+  user            User      @relation(fields: [userId], references: [id])
+  userId          Int
+  name            String
+  folderName      String
+  cover           String
+  source          String
+  sourceId        String
+  type            String    @default("manga")
+  extraName       String    @default("")
+  titleColor      String    @default("")
+  cardColor       String    @default("")
+  grade           Float     @default(0.0)
+  author          String    @default("Unknow")
+  isUltraFavorite Boolean   @default(false)
+  description     String    @default("")
 
-  marks       Mark[]
-  readeds     Readed[]
+  marks           Mark[]
+  readeds         Readed[]
 }
 
 model Mark {
