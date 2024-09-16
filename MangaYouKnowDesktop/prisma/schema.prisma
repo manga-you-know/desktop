@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -14,6 +15,7 @@ model User {
   id              Int       @id @default(autoincrement())
   email           String?   @unique
   username        String
+  icon            String    @default("https://cdn.discordapp.com/embed/avatars/0.png")
   password        String    @default("")
   isAuthenticated Boolean   @default(false)
 

@@ -21,8 +21,6 @@ export class MangaSeeDl implements MangaDl {
         'Sec-Fetch-Site': 'none',
         'Sec-Fetch-User': '?1',
     };
-  searchRegex = /vm\.Directory\s*=\s*(\[\{.*?\}\]);/s;
-  chaptersRegex = /vm\.Chapters = (\[.*?\])/s;
   chapterImagesRegex = /vm\.Images\s*=\s*(\[\{.*?\}\]);/s;
 
   constructor() {
@@ -40,16 +38,17 @@ export class MangaSeeDl implements MangaDl {
     const text = await response.text();
     var mangaList = JSON.parse(text.split('vm.Directory = ')[1].split(';\r\n')[0])
     return mangaList.map((manga: any) => {
-      var mangaOrdered = new Favorite(
-        null,
-        manga.s,
-        manga.i,
-        manga.al[0] || '',
-        `https://temp.compsci88.com/cover/${manga.i}.jpg`,
-        manga.a[0] || '',
-        'MangaSee',
-        manga.i,
-      )
+      var mangaOrdered = new Favorite({
+        name: manga.s,
+        folderName: manga.i,
+        cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,
+        source: 'MangaSee',
+        sourceId: manga.i,
+        extraName: manga.al[0] || '',
+        grade: 0,
+        author: manga.a[0] || '',
+        description: '',
+      })
       return mangaOrdered
     });
   }
@@ -89,7 +88,7 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
-    const response = await useFetch(`${this.baseUrl}/manga/${mangaId}`, {
+    const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers
     });
     //@ts-ignore
@@ -97,9 +96,9 @@ export class MangaSeeDl implements MangaDl {
       return [];
     }
     const chapters: Chapter[] = [];
-    //@ts-ignore
-    const chaptersList = JSON.parse(response.data.match(this.chaptersRegex)[1]);
-    chaptersList.forEach((chpt: any) => {
+    const text = await response.text();
+    var chapterList = JSON.parse(text.split('vm.Chapters = ')[1].split(';\r\n')[0])
+    chapterList.forEach((chpt: any) => {
       const lastIndex = chpt.Chapter.length - 1;
       let index = ''
       if (chpt.Chapter.charAt(0) != '1') {
@@ -109,10 +108,10 @@ export class MangaSeeDl implements MangaDl {
         `${parseInt(chpt.Chapter.substring(1, lastIndex))}`: `${parseInt(chpt.Chapter.substring(1, lastIndex))}.${chpt.Chapter.charAt(lastIndex)}`;
       chapters.push(
         new Chapter(
-          null,
-          `${mangaId}-chapter-${number}${index}-page-1.html`, 
           number, 
-          chpt.ChapterName
+          chpt.ChapterName,
+          `${mangaId}-chapter-${number}${index}-page-1.html`, 
+          'MangaSee',
         )
       );
     });
@@ -120,10 +119,29 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
-    const response = await useFetch(`${this.baseUrl}/read-online/${chapterId}`, {
+    const response = await fetch(`${this.baseUrl}/read-online/${chapterId}`, {
       headers: this.headers
     });
-    const images: string[] = [];
-    return images;
+    const text = await response.text();
+    const dominy = text.split('vm.CurPathName = "')[1].split('"')[0];
+    const manga_id = text.split('vm.IndexName = "')[1].split('"')[0];
+    const manga_info = JSON.parse(text.split('vm.CurChapter = ')[1].split('\n')[0].slice(0, -2));
+
+    const directory = manga_info.Directory;
+    const num_pages = parseInt(manga_info.Page.toString(), 10); // Ensure number type
+    const chapter = manga_info.Chapter.slice(1, -1) + 
+                    (manga_info.Chapter.slice(-1) === '0' 
+                      ? '' 
+                      : `.${manga_info.Chapter.slice(-1)}`);
+
+    const chapter_imgs: string[] = [];
+
+    for (let page = 1; page <= num_pages; page++) {
+      const num = page.toString().padStart(3, '0');
+      chapter_imgs.push(`https://${dominy}/manga/${manga_id}/${directory}/${chapter}-${num}.png`);
+    }
+
+    return chapter_imgs;
+
   }
 }

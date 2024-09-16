@@ -1,11 +1,31 @@
 <script setup lang="ts">
   import type { User } from "@prisma/client";
   import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { DownloadManager } from "./managers/downloadManager";
+  import { Favorite } from "./models/favorite";
   const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
   const isLogged = useState<Boolean>('isLogged', () => false)
+  const isSearchOpen = useState<Boolean>('isSearchOpen', () => false)
+  const isFavoriteOpen = useState<Boolean>('isFavoriteOpen', () => false)
   const currentWindow = getCurrentWindow()
-
   const user = useState<User>('user')
+  const favorite = useState<Favorite>('favorite', () => new Favorite({
+    id: -1,
+    name: 'test',
+    folderName: 'test',
+    cover: 'https://cdn.discordapp.com/embed/avatars/0.png',
+    source: 'MangaSee',
+    sourceId: '1',
+    type: 'manga',
+  }))
+  const dlManager = useState<DownloadManager>('dlManager', () => new DownloadManager())
+  defineShortcuts({
+    meta_k: {
+      usingInput: true,
+      handler: () => {
+        isSearchOpen.value = !isSearchOpen.value
+      }
+  }})
   defineShortcuts({
     f11: {
       usingInput: true,
@@ -19,10 +39,14 @@
 
 
 <template class="w-full h-full">
+  <!-- overlay's -->
+  <SearchModal v-model="isSearchOpen" />
+  <FavoriteModal v-model="isFavoriteOpen" :key="favorite.id" />
   <!-- main app -->
   <div v-if="isLogged">
     <div v-if="!isDivMainHidden" class="flex" >
       <Sidebar />
+      <div class=" md:w-[240px] w-[60px] mr-5" />
       <NuxtPage />
     </div>
     <div v-if="isDivMainHidden">

@@ -1,16 +1,19 @@
 export class Chapter {
-  id: number | null = null;
+  chNumber: number | string;
+  title: string;
   chapterId: string;
   source: string;
   language: string;
 
   constructor(
-    id: number | null = null,
+    chNumber: number | string,
+    title: string,
     chapterId: string,
     source: string,
     language: string = "default",
   ) {
-    this.id = id;
+    this.chNumber = chNumber;
+    this.title = title;
     this.chapterId = chapterId;
     this.source = source;
     this.language = language;

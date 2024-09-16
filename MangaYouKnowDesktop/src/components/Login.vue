@@ -31,8 +31,9 @@ async function onSubmit (event: FormSubmitEvent<Schema>) {
 }
 
 async function onSubmitDefault () {
-  const defaultUser = await $fetch('/api/users/default')
-  // user.value = defaultUser.body
+  const defaultUser = await $fetch('/api/user-default')
+  user.value = defaultUser
+  console.log(defaultUser)
   isLogged.value = true
 }
 </script>
@@ -47,7 +48,7 @@ async function onSubmitDefault () {
       <UButton type="submit">
         Submit
       </UButton>
-      <UButton @click="onSubmitDefault"> 
+      <UButton variant="link" @click="onSubmitDefault"> 
         Use default local account
       </UButton>
     </UForm>

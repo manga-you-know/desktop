@@ -1,11 +1,15 @@
 <script setup lang="ts">
   import type { Favorite } from '~/models/favorite';
+  import type { User } from '@prisma/client';
   import { DownloadManager } from '~/managers/downloadManager';
 
+  const user = useState<User>('user')
   const query = ref('')
-  const dlManager = new DownloadManager()
+  const dlManager = useState<DownloadManager>('dlManager')
   const isLoading = ref(false)
   const results = ref<Favorite[]>([]);
+  const favorites = useState<Favorite[]>('favorites')
+
   const finished = ref()
 
   function resetResults() {
@@ -25,7 +29,7 @@
     }
     isLoading.value = true
     try {
-      results.value = (await dlManager.search(query.value, 'MangaSee')).slice(0, 10);
+      results.value = (await dlManager.value.search(query.value, 'MangaSee')).slice(0, 10);
     } catch (error) {
       finished.value = error
     } finally {
@@ -39,6 +43,26 @@
 
   async function favorite(favorite: Favorite) {
     console.log(favorite.name)
+    await $fetch('/api/favorites', {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: user.value.id,
+        name: favorite.name,
+        folderName: favorite.folderName,
+        cover: favorite.cover,
+        source: favorite.source,
+        sourceId: favorite.sourceId,
+        type: favorite.type,
+        extraName: favorite.extraName,
+        titleColor: favorite.titleColor,
+        cardColor: favorite.cardColor,
+        grade: favorite.grade,
+        author: favorite.author,
+        description: favorite.description,
+      })
+    })
+    //@ts-ignore
+    favorites.value = await $fetch('/api/favorites')
   }
 </script>
 

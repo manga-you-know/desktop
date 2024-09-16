@@ -31,5 +31,8 @@ const links = ref([
 </script>
 
 <template>
-    <UVerticalNavigation class="md:w-[110px] w-[40px] mt-[30px] mr-5" :links="links" />
+    <UVerticalNavigation 
+      class="fixed md:w-[110px] w-[40px] mt-[30px] mr-5" 
+      :links="links" 
+    />
 </template>

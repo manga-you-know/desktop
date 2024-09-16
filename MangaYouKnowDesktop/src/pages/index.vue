@@ -9,23 +9,16 @@
     // console.log(response.body)
   }
 
-  defineShortcuts({
-    meta_k: {
-      usingInput: true,
-      handler: () => {
-        isOpen.value = !isOpen.value
-      }
-  }})
+
 
   const currentWindow = getCurrentWindow()
   const source = ref(mangaSources[0])
-  const isOpen = ref(false)
+  const isOpen = useState<Boolean>('isSearchOpen', () => false)
   const diff = ref(true)
 </script>
 
 <template>
   <div class="flex m-5 gap-1 justify-end h-full w-full">
-    <SearchModal v-model="isOpen" />
     <div>
       <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
         <UButton
@@ -38,8 +31,8 @@
     </div>
     <div>
       <USelectMenu 
-    v-model="source"
-    :options="mangaSources"
+        v-model="source"
+        :options="mangaSources"
       />
     </div>
   </div>
