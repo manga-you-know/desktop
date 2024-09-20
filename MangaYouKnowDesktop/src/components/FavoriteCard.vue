@@ -27,7 +27,7 @@
 </script>
 
 <template>
-  <div class="bg-gray-900 rounded-xl h-[280px] w-40 m-1 flex flex-col !p-0 items-center">
+  <div class="bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center">
     <UTooltip :text=favorite.name placement="bottom">
       <UBadge class="w-36 m-1 flex justify-center" color="white" variant="solid" >
         {{ favorite.name.substring(0, 16) + (favorite.name.length > 16? "..." : "") }}

@@ -1,7 +1,32 @@
 <script setup>
-
+import { useRoute } from '#vue-router'
 const route = useRoute()
-const links = ref([
+const path = computed(() => route.path);
+watch(() => route, () => {
+  links[0].forEach(link => {
+    if (link.to === '/') {
+      if (route.path === '/') {
+        link.icon = 'i-heroicons-home-solid'
+      } else {
+        link.icon = 'i-heroicons-home'
+      }
+    }
+    else if (link.to === '/favorites') {
+      if (route.path === '/favorites') {
+        link.icon = 'i-heroicons-star-solid'
+      } else {
+        link.icon = 'i-heroicons-star'
+      }
+    } else if (link.to === '/configs') {
+      if (route.path === '/configs') {
+        link.icon = 'i-heroicons-cog-6-tooth-solid'
+      } else {
+        link.icon = 'i-heroicons-cog-6-tooth'
+      }
+    }
+  })
+}, { deep: true })
+const links = [
   [{
     label: 'Profile',
     avatar: {
@@ -9,16 +34,16 @@ const links = ref([
     },
   }, {
     label: 'Home',
-    icon: 'i-heroicons-home',
+    icon: path === '/' ? 'i-heroicons-home-solid' : 'i-heroicons-home',
     to: '/'
   }, {
     label: 'Favorites',
-    icon: 'i-heroicons-star',
-    to: 'favorites'
+    icon: path === '/favorites' ? 'i-heroicons-star-solid' : 'i-heroicons-star',
+    to: '/favorites'
   }, {
     label: 'Configs',
-    icon: 'i-heroicons-command-line',
-    to: 'configs'
+    icon: route === '/configs' ? 'i-heroicons-cog-6-tooth-solid' : 'i-heroicons-cog-6-tooth',
+    to: '/configs'
   }], [{
       label: 'Example',
       icon: 'i-heroicons-light-bulb'
@@ -26,13 +51,14 @@ const links = ref([
       label: 'Help',
       icon: 'i-heroicons-question-mark-circle'
   }]
-])
+]
 
 </script>
 
 <template>
     <UVerticalNavigation 
       class="fixed md:w-[110px] w-[40px] mt-[30px] mr-5" 
-      :links="links" 
+      :links="links"
+      :active-color="route === '/favorites' ? '#f5f5f5' : '#1a1a1a'"
     />
 </template>

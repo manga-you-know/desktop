@@ -29,7 +29,7 @@
     }
     isLoading.value = true
     try {
-      results.value = (await dlManager.value.search(query.value, 'MangaSee')).slice(0, 10);
+      results.value = (await dlManager.value.search(query.value, 'MangaSee')).slice(0, 20);
     } catch (error) {
       finished.value = error
     } finally {
@@ -70,8 +70,8 @@
   <UModal class="rounded" :overlay="false">
     <div class="w-full h-11 flex justify-center items-center">
       <UInput
-        v-on:update:model-value="search"
         v-model="query"
+        v-on:update:model-value="search"
         name="query"
         :loading="isLoading"
         variant="none"
@@ -80,7 +80,9 @@
         placeholder="Search..."
         icon="i-heroicons-magnifying-glass-20-solid"
         autocomplete="off"
-        :ui="{ icon: { trailing: { pointer: '' } } }"
+        :ui="{ 
+          icon: { trailing: { pointer: '' } },
+        }"
       >
         <template #trailing>
           <UButton

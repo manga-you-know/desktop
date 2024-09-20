@@ -42,10 +42,10 @@ async function onSubmitDefault () {
   <UContainer class="h-full flex flex-col items-center justify-center">
     <br><br>
     <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UInput v-model="state.username" />
-      <UInput v-model="state.email" />
-      <UInput v-model="state.password" type="password" />
-      <UButton type="submit">
+      <UInput disabled v-model="state.username" />
+      <UInput disabled v-model="state.email" />
+      <UInput disabled v-model="state.password" type="password" />
+      <UButton disabled type="submit">
         Submit
       </UButton>
       <UButton variant="link" @click="onSubmitDefault"> 

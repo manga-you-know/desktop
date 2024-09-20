@@ -65,7 +65,7 @@ export class MangaSeeDl implements MangaDl {
       manga.name.toLowerCase()
         .includes(query.toLowerCase())? grade++ : grade;
       manga.name.toLowerCase() === query
-        .toLowerCase()? grade++ : grade;
+        .toLowerCase()? grade+=3 : grade;
       manga.extraName?.toLowerCase()
         .includes(query.toLowerCase())? grade+=0.5 : grade;
       manga.author?.toLowerCase()

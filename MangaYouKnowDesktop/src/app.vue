@@ -46,7 +46,7 @@
   <div v-if="isLogged">
     <div v-if="!isDivMainHidden" class="flex" >
       <Sidebar />
-      <div class=" md:w-[240px] w-[60px] mr-5" />
+      <div class="w-[40px] min-w-[40px] md:w-[110px] md:min-w-[110px] mr-5" />
       <NuxtPage />
     </div>
     <div v-if="isDivMainHidden">
