@@ -2,8 +2,9 @@
 import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
 import type { MangaDl } from '~/interfaces/mangaDl';
-import { Favorite } from '~/models/favorite';
 import { Chapter } from '~/models/chapter';
+import type { Favorite } from '@prisma/client';
+import { Favorite as FavoriteModel } from '~/models/favorite';
 
 
 export class MangaSeeDl implements MangaDl {
@@ -38,7 +39,7 @@ export class MangaSeeDl implements MangaDl {
     const text = await response.text();
     var mangaList = JSON.parse(text.split('vm.Directory = ')[1].split(';\r\n')[0])
     return mangaList.map((manga: any) => {
-      var mangaOrdered = new Favorite({
+      var mangaOrdered = new FavoriteModel({
         name: manga.s,
         folderName: manga.i,
         cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,

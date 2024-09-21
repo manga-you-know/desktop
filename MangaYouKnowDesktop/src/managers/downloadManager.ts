@@ -2,10 +2,10 @@ import { conditionalMemoize } from '~/utils/conditionalMemoize';
 import { memoizeWithExpiration } from '~/utils/memoizedWithTime';
 import type { MangaDl } from '~/interfaces/mangaDl';
 import type { AnimeDl } from '~/interfaces/animeDl';
-import { Favorite } from '~/models/favorite';
 import { Chapter } from '~/models/chapter';
 import { Episode } from '../models/episode';
 import { MangaSeeDl } from '~/downloaders/manga/mangasee';
+import type { Favorite } from '@prisma/client';
 
 
 export class DownloadManager {
@@ -36,9 +36,9 @@ export class DownloadManager {
     return await sourceDl.search(query);
   }
 
-  async getChapters(manga_id: string, source: string): Promise<Chapter[]> {
-    let sourceDl = this.getMangaSource(source);
-    return await sourceDl.getChapters(manga_id);
+  async getChapters(favorite: Favorite): Promise<Chapter[]> {
+    let sourceDl = this.getMangaSource(favorite.source);
+    return await sourceDl.getChapters(favorite.sourceId);
   }
 
   async getEpisodes(anime_id: string, source: string): Promise<Chapter[]> {

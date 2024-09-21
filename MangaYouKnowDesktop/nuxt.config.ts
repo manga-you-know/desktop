@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-08-24",
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@prisma/nuxt', '@nuxt/image'],
+  modules: [
+    '@nuxt/ui',
+    '@prisma/nuxt',
+    '@nuxt/image',
+  ],
   srcDir: 'src',
   ssr: false,
   spaLoadingTemplate: false,
@@ -11,5 +15,5 @@ export default defineNuxtConfig({
     installStudio: false,
     autoSetupPrisma: true,
     runMigration: true,
-  }
+  },
 })

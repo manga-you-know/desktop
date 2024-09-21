@@ -3,10 +3,11 @@
 import type { Favorite, User } from '@prisma/client';
 
   const mangaSources = [
-    'MangaSee', 'MangaDex'
+    'MangaSee', 'MangaDex', 'TCB'
   ]
   const user = useState<User>('user')
   const source = ref(mangaSources[0])
+  const rerender = useState<number>('rerenderIndex', () => 0)
   const isOpen = useState<Boolean>('isSearchOpen', () => false)
   const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => [])
   onMounted(async () => {
@@ -21,7 +22,7 @@ import type { Favorite, User } from '@prisma/client';
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full">
+  <div :key="rerender" class="flex flex-col h-full w-full">
     <div class="flex m-5 gap-1 justify-end">
       <div>
         <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
@@ -37,6 +38,7 @@ import type { Favorite, User } from '@prisma/client';
         <USelectMenu 
           v-model="source"
           :options="mangaSources"
+          color="cyan"
         />
       </div>
     </div>

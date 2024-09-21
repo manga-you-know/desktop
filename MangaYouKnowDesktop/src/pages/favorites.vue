@@ -33,8 +33,8 @@
 </script>
 
 
-<template class="w-full h-full ">
-    <div>
+<template>
+    <div class="w-full h-full ">
         <div class="w-full h-12 mt-2 flex justify-center ">
             <div >
                 <UInput 

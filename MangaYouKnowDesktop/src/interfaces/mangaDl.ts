@@ -1,5 +1,6 @@
-import { Favorite } from '~/models/favorite';
-import { Chapter } from '~/models/chapter'
+import type { Favorite } from "@prisma/client";
+import type { Chapter } from "~/models/chapter";
+
 
 
 export interface MangaDl {

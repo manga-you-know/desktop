@@ -1,6 +1,5 @@
 <script setup lang="ts">
-  import type { Favorite } from '~/models/favorite';
-  import type { User } from '@prisma/client';
+  import type { Favorite, Readed, User } from '@prisma/client';
   import { DownloadManager } from '~/managers/downloadManager';
 
   const user = useState<User>('user')
@@ -18,6 +17,7 @@
   }
 
   async function search() {
+    isLoading.value = true
     await new Promise(resolve => {
       setTimeout(() => {
         resolve(true)
@@ -25,10 +25,16 @@
     })
     if (query.value === '') {
       results.value = []
+      isLoading.value = false
       return
     }
-    isLoading.value = true
     try {
+      favorites.value = await $fetch('/api/favorites', { 
+        method: 'GET', 
+        params: { 
+          userId: user.value.id 
+        } 
+      })
       results.value = (await dlManager.value.search(query.value, 'MangaSee')).slice(0, 20);
     } catch (error) {
       finished.value = error
@@ -38,11 +44,29 @@
   }
   async function verifyFavorites() {
     const favorites = await $fetch('/api/favorites')
-    
+  }
+  function isFavorite(favorite: Favorite) {
+    return favorites.value.find(f => f.name === favorite.name && f.source === favorite.source && f.sourceId === favorite.sourceId)
   }
 
   async function favorite(favorite: Favorite) {
-    console.log(favorite.name)
+    const isFavoriteh = isFavorite(favorite)
+    if (isFavoriteh) {
+      await $fetch('/api/favorites', {
+        method: 'DELETE',
+        body: JSON.stringify({
+          id: isFavoriteh?.id,
+          userId: user.value.id,
+        })
+      })
+      favorites.value = await $fetch('/api/favorites', { 
+        method: 'GET', 
+        params: { 
+          userId: user.value.id 
+        } 
+      })
+      return
+    }
     await $fetch('/api/favorites', {
       method: 'POST',
       body: JSON.stringify({
@@ -61,8 +85,10 @@
         description: favorite.description,
       })
     })
-    //@ts-ignore
-    favorites.value = await $fetch('/api/favorites')
+    favorites.value = await $fetch('/api/favorites', { 
+      method: 'GET', 
+      params: { userId: user.value.id } 
+    })
   }
 </script>
 
@@ -79,10 +105,9 @@
         class="w-[97%]"
         placeholder="Search..."
         icon="i-heroicons-magnifying-glass-20-solid"
+        leading
         autocomplete="off"
-        :ui="{ 
-          icon: { trailing: { pointer: '' } },
-        }"
+        :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template #trailing>
           <UButton
@@ -108,7 +133,7 @@
              {{ result.name.substring(0, 60) + (result.name.length > 60? "..." : "") }} 
           </UButton>
           <UButton 
-            icon="i-heroicons-star" 
+            :icon="isFavorite(result)? 'i-heroicons-star-solid' : 'i-heroicons-star'"
             color="gray" 
             variant="link"
             class="h-10 m-0.5"

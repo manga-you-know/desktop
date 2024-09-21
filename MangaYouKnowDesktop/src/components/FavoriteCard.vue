@@ -22,7 +22,12 @@
       })
     })
     //@ts-ignore
-    favorites.value = await $fetch('/api/favorites')
+    favorites.value = await $fetch('/api/favorites', {
+      method: 'GET',
+      params: {
+        userId: user.value.id,
+      }
+    })
   }
 </script>
 

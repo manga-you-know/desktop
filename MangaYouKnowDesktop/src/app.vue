@@ -9,15 +9,7 @@
   const isFavoriteOpen = useState<Boolean>('isFavoriteOpen', () => false)
   const currentWindow = getCurrentWindow()
   const user = useState<User>('user')
-  const favorite = useState<Favorite>('favorite', () => new Favorite({
-    id: -1,
-    name: 'test',
-    folderName: 'test',
-    cover: 'https://cdn.discordapp.com/embed/avatars/0.png',
-    source: 'MangaSee',
-    sourceId: '1',
-    type: 'manga',
-  }))
+  const favorite = useState<Favorite>('favorite')
   const dlManager = useState<DownloadManager>('dlManager', () => new DownloadManager())
   defineShortcuts({
     meta_k: {
@@ -41,12 +33,12 @@
 <template class="w-full h-full">
   <!-- overlay's -->
   <SearchModal v-model="isSearchOpen" />
-  <FavoriteModal v-model="isFavoriteOpen" :key="favorite.id" />
+  <FavoriteModal v-if="favorite" v-model="isFavoriteOpen" :key="favorite.id" />
   <!-- main app -->
   <div v-if="isLogged">
     <div v-if="!isDivMainHidden" class="flex" >
       <Sidebar />
-      <div class="w-[40px] min-w-[40px] md:w-[110px] md:min-w-[110px] mr-5" />
+      <div class="w-[30px] min-w-[30px] md:w-[100px] md:min-w-[100px] mr-5" />
       <NuxtPage />
     </div>
     <div v-if="isDivMainHidden">

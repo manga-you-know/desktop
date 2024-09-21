@@ -12,7 +12,7 @@
   const chaptersReaded = ref()
   onMounted(async () => {
     isLoading.value = true
-    const chapters = await dlManager.value.getChapters(favorite.sourceId, favorite.source)
+    const chapters = await dlManager.value.getChapters(favorite)
     isLoading.value = false
     const readeds = await $fetch('/api/readeds', {
       method: 'GET',
@@ -20,7 +20,7 @@
         favoriteId: favorite.id,
       }
     })
-    chaptersToRead.value = '+' + (chapters.length - readeds.length)
+    chaptersToRead.value = (chapters.length - readeds.length) > 0 ? ('+' + (chapters.length - readeds.length)) : 'All readed'
     chaptersReaded.value = `${readeds.length}/${chapters.length}`
   })
   function openFavorite() {
@@ -46,7 +46,7 @@
         variant="solid"
         icon="i-heroicons-book-open-solid"
       />
-      <UTooltip :text="chaptersReaded">
+      <UTooltip :text="chaptersReaded" :popper="{ placement: 'top' }" >
         <UButton
           :loading="isLoading"
           color="white"
