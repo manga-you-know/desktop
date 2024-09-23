@@ -32,7 +32,7 @@
 <template>
   <div>
     <div class="bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center">
-    <UTooltip :text=favorite.name placement="bottom">
+    <UTooltip :text=favorite.name :popper="{ placement: 'bottom', arrow: true }" >
       <UBadge class="w-36 m-1 flex justify-center" color="white" variant="solid" >
         {{ favorite.name.substring(0, 16) + (favorite.name.length > 16? "..." : "") }}
       </UBadge>
@@ -46,7 +46,7 @@
         variant="solid"
         icon="i-heroicons-book-open-solid"
       />
-      <UTooltip :text="chaptersReaded" :popper="{ placement: 'top' }" >
+      <UTooltip :text="chaptersReaded" :popper="{ placement: 'top', arrow: true }" >
         <UButton
           :loading="isLoading"
           color="white"
