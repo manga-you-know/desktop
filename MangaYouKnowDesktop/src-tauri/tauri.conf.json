@@ -1,12 +1,13 @@
 {
-  "productName": "MangaYouKnowDesktop",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "MangaYouKnow",
   "version": "0.1.0",
-  "identifier": "com.reiloko.dev",
+  "identifier": "com.mangayouknow.dev",
   "build": {
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:1420",
     "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build"
+    "beforeBuildCommand": "yarn build",
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [

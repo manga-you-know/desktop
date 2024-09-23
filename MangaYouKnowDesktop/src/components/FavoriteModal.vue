@@ -15,16 +15,12 @@
   const readeds = useState<Readed[]>('readeds')
   const chapterQuery = ref('')
   const isSearching = ref(false)
-  const currentChapter = ref<Chapter>()
 
   async function readChapter(chapter: Chapter) {
     images.value = await dlManager.value.getChapterImages(chapter.chapterId, favorite.value.source)
     isFavoriteOpen.value = false
     isDivMainHidden.value = true
     currentWindow.setFullscreen(true)
-    if (!isReaded(chapter)) {
-      addReadedBelow(chapter)
-    }
   }
   async function searchChapters() {
     isSearching.value = true
@@ -106,13 +102,6 @@
         favoriteId: favorite.value.id,
       }
     })
-    currentChapter.value = getNextForRead()
-  }
-  function getLastReaded() {
-    return chapters.value.filter(chapter => isReaded(chapter))[0]
-  }
-  function getNextForRead() {
-    return chapters.value.filter(chapter => !isReaded(chapter)).reverse()[0]
   }
   async function deleteReadedAbove(readed: Readed) {
     var toDelete = []
@@ -138,16 +127,13 @@
         favoriteId: favorite.value.id,
       }
     })
-    currentChapter.value = getNextForRead()
   }
+  //called when the modal is closed
   function onClose() {
     rerenderIndex.value++
   }
-  var isChapterFetched = false
   onBeforeMount(async () => {
     chaptersDisplayed.value = []
-    chapters.value = await dlManager.value.getChapters(favorite.value)
-    isChapterFetched = true
   })
   onMounted(async () => {
     if (!favorite.value) {
@@ -160,15 +146,8 @@
       }
     })
     chaptersDisplayed.value = []
-    while (!isChapterFetched) {
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve(true)
-        }, 10)
-      })
-    }
+    chapters.value = await dlManager.value.getChapters(favorite.value)
     chaptersDisplayed.value = chapters.value
-    currentChapter.value = getNextForRead()
   })
 </script>
 
@@ -192,28 +171,6 @@
         </div>
         <UDivider orientation="vertical" size="sm"/>
         <div class="w-[50%] flex flex-col h-80 m-6">
-          <div class="w-[200px] bg-gray-800 rounded-xl m-1 p-1 flex justify-center">
-            <div class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm">
-                <button 
-                  :class="['w-[115px]', 'p-0.5', 'flex', 'justify-start', 'bg-slate-800', 'font-medium', 'text-white', currentChapter ? 'hover:bg-transparent' : '']"
-                  @click="() => currentChapter? readChapter(currentChapter) : console.log('nada')"
-                >
-                  {{ currentChapter?.chNumber || 'all readed!' }}
-                </button>
-                <button 
-                  class="w-[40px] bg-slate-800 font-medium text-white hover:bg-transparent"
-                  @click="console.log('nada')"
-                >
-                  <i class="fa fa-download"></i>
-                </button> 
-                <button 
-                  class="w-[33px] bg-slate-800 font-medium text-white hover:bg-transparent"
-                  @click="() => currentChapter? addReadedBelow(currentChapter) : console.log('nada')"
-                >
-                  <i class="fa fa-angle-right" />
-                </button>
-              </div>
-          </div>
           <UInput 
             v-model="chapterQuery"
             v-on:update:model-value="searchChapters"

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
   ],
   srcDir: 'src',
+  buildDir: 'dist',
   ssr: false,
   spaLoadingTemplate: false,
   prisma: {
