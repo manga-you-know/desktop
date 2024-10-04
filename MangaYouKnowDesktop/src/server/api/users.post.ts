@@ -1,22 +1,14 @@
-import prisma from "~/lib/prisma";
+import Database from "@tauri-apps/plugin-sql";
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   const body = await readBody(event)
   if (body.username) {
-    const user = await prisma.user.create({
-      data: {
-        email: body?.email,
-        username: body.username,
-        password: body?.password
-
-      }
-    })
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        user
-      })
-    };
+    const user = await db.execute(
+      'INSERT INTO User (username, email, icon, password) VALUES (?, ?, ?, ?)',
+      [body.username, body.email, body.icon, body.password]
+    );
+    return user
   }
   return {
     statusCode: 400,

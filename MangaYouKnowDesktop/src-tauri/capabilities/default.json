@@ -9,6 +9,11 @@
     "core:app:default",
     "core:window:allow-is-fullscreen",
     "core:window:allow-set-fullscreen",
+    "sql:default",
+    "sql:allow-close",
+    "sql:allow-execute",
+    "sql:allow-load",
+    "sql:allow-select",
     "http:allow-fetch",
     "http:allow-fetch-cancel",
     "http:allow-fetch-read-body",
@@ -24,6 +29,8 @@
           "url": "https://mangasee123.com/*"
         }
       ]
-    }
+    },
+    "log:default",
+    "log:default"
   ]
 }

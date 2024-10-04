@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import type { User } from "@prisma/client";
+  import Database from "@tauri-apps/plugin-sql";
+  import type { User, Favorite } from "~/models";
+  import { migrationQuery } from "~/database";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { DownloadManager } from "./managers/downloadManager";
-  import { Favorite } from "./models/favorite";
   const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
   const isLogged = useState<Boolean>('isLogged', () => false)
   const isSearchOpen = useState<Boolean>('isSearchOpen', () => false)
@@ -26,7 +27,10 @@
       }
     }
   })
-
+  onBeforeMount(async () => {
+    const db = await Database.load('sqlite:mykdata.db');
+    await db.execute(migrationQuery);
+  })
 </script>
 
 
@@ -46,7 +50,7 @@
     </div>
   </div>
   <!-- login -->
-  <div v-if="!isLogged">
+  <div class="w-full" v-if="!isLogged">
     <Login />
   </div>
 </template>

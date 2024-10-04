@@ -4,29 +4,31 @@ import { Chapter } from './chapter';
 
 export class Favorite {
   id?: number;
+  userID?: number;
   name: string;
   folderName: string;
   cover: string;
   source: string;
-  sourceId: string;
+  sourceID: string;
   type: string;
   extraName?: string;
   titleColor?: string;
   cardColor?: string;
   grade: number;
   author?: string;
-  isNotify: boolean;
+  isUltraFavorite: boolean;
   description?: string;
   marks: Mark[];
   readeds: Chapter[];
 
   constructor({
     id = -1,
+    userID = -1,
     name = '',
     folderName = '',
     cover = '',
     source = '',
-    sourceId = '',
+    sourceID = '',
     type = 'manga',
     extraName = '',
     titleColor = '',
@@ -39,11 +41,12 @@ export class Favorite {
     readeds = []
   }: {
     id?: number;
+    userID?: number;
     name: string;
     folderName: string;
     cover: string;
     source: string;
-    sourceId: string;
+    sourceID: string;
     type?: string;
     extraName?: string;
     titleColor?: string;
@@ -56,18 +59,19 @@ export class Favorite {
     readeds?: Chapter[];
   }) {
     this.id = id;
+    this.userID = userID;
     this.name = name;
     this.folderName = folderName;
     this.cover = cover;
     this.source = source;
-    this.sourceId = sourceId;
+    this.sourceID = sourceID;
     this.type = type;
     this.extraName = extraName;
     this.titleColor = titleColor;
     this.cardColor = cardColor;
     this.grade = grade;
     this.author = author;
-    this.isNotify = isNotify;
+    this.isUltraFavorite = isNotify;
     this.description = description;
     this.marks = marks;
     this.readeds = readeds;

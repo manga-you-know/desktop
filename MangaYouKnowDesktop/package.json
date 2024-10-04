@@ -4,17 +4,18 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "dev": "nuxi dev",
+    "generate": "nuxi generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/image": "^1.8.0",
     "@nuxt/ui": "^2.18.4",
-    "@prisma/nuxt": "^0.0.35",
-    "@tauri-apps/api": "2.0.0-rc.4",
+    "@tauri-apps/api": "2.0.1",
     "@tauri-apps/plugin-http": "^2.0.0-rc.2",
+    "@tauri-apps/plugin-log": "~2.0.0-rc",
+    "@tauri-apps/plugin-sql": "~2.0.0-rc",
     "@types/node": "^22.5.1",
     "add": "^2.0.6",
     "axios": "^1.7.7",
@@ -23,19 +24,19 @@
     "module": "^1.2.5",
     "nuxi": "^3.13.0",
     "nuxt": "^3.13.1",
-    "prisma": "^5.19.0",
+    "prisma": "^5.20.0",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "ui": "^0.2.4",
     "vue": "latest",
+    "vue-router": "^4.4.5",
     "yup": "^1.4.0"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
-    "@prisma/client": "^5.19.1",
-    "@tauri-apps/cli": "^2.0.0-rc.7",
+    "@tauri-apps/cli": "2.0.0-rc.18",
     "@types/add": "^2",
     "@types/lodash": "^4"
   }

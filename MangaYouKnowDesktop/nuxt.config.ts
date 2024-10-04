@@ -4,17 +4,23 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@nuxt/ui',
-    '@prisma/nuxt',
     '@nuxt/image',
   ],
   srcDir: 'src',
-  buildDir: 'dist',
   ssr: false,
-  spaLoadingTemplate: false,
-  prisma: {
-    generateClient: true,
-    installStudio: false,
-    autoSetupPrisma: true,
-    runMigration: true,
+  telemetry: false,
+  devServer: { host: '0.0.0.0' },
+  vite: {
+    clearScreen: false,
+    envPrefix: ['VITE_', 'TAURI_'],
+    server: {
+      strictPort: true,
+      hmr: {
+        protocol: 'ws',
+        host: '0.0.0.0',
+        port: 5183,
+      },
+    },
   },
+  spaLoadingTemplate: false,
 })

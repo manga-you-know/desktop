@@ -1,31 +1,31 @@
 <script setup>
-import { useRoute } from '#vue-router'
-const route = useRoute()
-const path = computed(() => route.path);
-watch(() => route, () => {
-  links[0].forEach(link => {
-    if (link.to === '/') {
-      if (route.path === '/') {
-        link.icon = 'i-heroicons-home-solid'
-      } else {
-        link.icon = 'i-heroicons-home'
-      }
-    }
-    else if (link.to === '/favorites') {
-      if (route.path === '/favorites') {
-        link.icon = 'i-heroicons-star-solid'
-      } else {
-        link.icon = 'i-heroicons-star'
-      }
-    } else if (link.to === '/configs') {
-      if (route.path === '/configs') {
-        link.icon = 'i-heroicons-cog-6-tooth-solid'
-      } else {
-        link.icon = 'i-heroicons-cog-6-tooth'
-      }
-    }
-  })
-}, { deep: true })
+// import { useRoute } from '#vue-router'
+// const route = useRoute()
+// const path = computed(() => route.path);
+// watch(() => route, () => {
+//   links[0].forEach(link => {
+//     if (link.to === '/') {
+//       if (route.path === '/') {
+//         link.icon = 'i-heroicons-home-solid'
+//       } else {
+//         link.icon = 'i-heroicons-home'
+//       }
+//     }
+//     else if (link.to === '/favorites') {
+//       if (route.path === '/favorites') {
+//         link.icon = 'i-heroicons-star-solid'
+//       } else {
+//         link.icon = 'i-heroicons-star'
+//       }
+//     } else if (link.to === '/configs') {
+//       if (route.path === '/configs') {
+//         link.icon = 'i-heroicons-cog-6-tooth-solid'
+//       } else {
+//         link.icon = 'i-heroicons-cog-6-tooth'
+//       }
+//     }
+//   })
+// }, { deep: true })
 const links = [
   [{
     label: 'Profile',
@@ -34,15 +34,15 @@ const links = [
     },
   }, {
     label: 'Home',
-    icon: path === '/' ? 'i-heroicons-home-solid' : 'i-heroicons-home',
+    icon: 'i-heroicons-home',
     to: '/'
   }, {
     label: 'Favorites',
-    icon: path === '/favorites' ? 'i-heroicons-star-solid' : 'i-heroicons-star',
+    icon: 'i-heroicons-star',
     to: '/favorites'
   }, {
     label: 'Configs',
-    icon: route === '/configs' ? 'i-heroicons-cog-6-tooth-solid' : 'i-heroicons-cog-6-tooth',
+    icon: 'i-heroicons-cog-6-tooth',
     to: '/configs'
   }], [{
       label: 'Example',

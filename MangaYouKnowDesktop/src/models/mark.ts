@@ -1,17 +1,18 @@
-import { Favorite } from './favorite';
-
 export class Mark {
   id: number;
   name: string;
-  userId: number;
+  userID: number;
   color?: string;
-  favorites: Favorite[];
 
-  constructor(id: number, name: string, userId: number, color?: string, favorites: Favorite[] = []) {
+  constructor(
+    id: number, 
+    name: string, 
+    userID: number, 
+    color?: string
+  ) {
     this.id = id;
     this.name = name;
-    this.userId = userId;
+    this.userID = userID;
     this.color = color;
-    this.favorites = favorites;
   }
 }

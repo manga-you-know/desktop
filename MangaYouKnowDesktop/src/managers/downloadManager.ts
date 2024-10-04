@@ -5,7 +5,7 @@ import type { AnimeDl } from '~/interfaces/animeDl';
 import { Chapter } from '~/models/chapter';
 import { Episode } from '../models/episode';
 import { MangaSeeDl } from '~/downloaders/manga/mangasee';
-import type { Favorite } from '@prisma/client';
+import type { Favorite } from '~/models/favorite';
 
 
 export class DownloadManager {
@@ -38,7 +38,7 @@ export class DownloadManager {
 
   async getChapters(favorite: Favorite): Promise<Chapter[]> {
     let sourceDl = this.getMangaSource(favorite.source);
-    return await sourceDl.getChapters(favorite.sourceId);
+    return await sourceDl.getChapters(favorite.sourceID);
   }
 
   async getEpisodes(anime_id: string, source: string): Promise<Chapter[]> {

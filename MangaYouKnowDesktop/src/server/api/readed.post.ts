@@ -1,14 +1,11 @@
-import prisma from "~/lib/prisma";
+import Database from '@tauri-apps/plugin-sql';
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   const body = await readBody(event)
-  const readed = await prisma.readed.create({
-    data: {
-      favoriteId: body.favoriteId,
-      chapterId: body.chapterId,
-      source: body.source,
-      language: body.language,
-    }
-  })
+  const readed = await db.execute(
+    'INSERT INTO Readed (favoriteID, chapterID, source, language) VALUES (?, ?, ?, ?)',
+    [body.favoriteId, body.chapterId, body.source, body.language]
+  );
   return readed
-}); 
+});

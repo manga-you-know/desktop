@@ -1,26 +1,26 @@
-import prisma from "~/lib/prisma";
+import Database from "@tauri-apps/plugin-sql";
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   const body = await readBody(event)
-  const favorite = await prisma.favorite.update({
-    where: {
-      id: body.id,
-    },
-    data: {
-      name: body.name,
-      folderName: body.folderName,
-      cover: body.cover,
-      source: body.source,
-      sourceId: body.sourceId,
-      type: body.type,
-      extraName: body.extraName,
-      titleColor: body.titleColor,
-      cardColor: body.cardColor,
-      grade: body.grade,
-      author: body.author,
-      description: body.description,
-      isUltraFavorite: body.isUltraFavorite,
-    }
-  })
+  const favorite = await db.execute(
+    'UPDATE Favorite SET name = ?, folderName = ?, cover = ?, source = ?, sourceID = ?, type = ?, extraName = ?, titleColor = ?, cardColor = ?, grade = ?, author = ?, description = ?, isUltraFavorite = ? WHERE id = ?',
+    [
+      body.name,
+      body.folderName,
+      body.cover,
+      body.source,
+      body.sourceId,
+      body.type,
+      body.extraName,
+      body.titleColor,
+      body.cardColor,
+      body.grade,
+      body.author,
+      body.description,
+      body.isUltraFavorite,
+      body.id
+    ]
+  );
   return favorite
 }); 

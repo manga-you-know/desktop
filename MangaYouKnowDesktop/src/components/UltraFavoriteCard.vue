@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import type { Favorite } from '@prisma/client';
+  import { ReadedDB } from '~/database';
+  import type { Favorite } from '~/models';
   import type { DownloadManager } from '~/managers/downloadManager';
   const { favorite } = defineProps<{
         favorite: Favorite
@@ -12,14 +13,9 @@
   const chaptersReaded = ref()
   onMounted(async () => {
     isLoading.value = true
+    const readeds = await ReadedDB.getReadeds(favorite)
     const chapters = await dlManager.value.getChapters(favorite)
     isLoading.value = false
-    const readeds = await $fetch('/api/readeds', {
-      method: 'GET',
-      params: {
-        favoriteId: favorite.id,
-      }
-    })
     chaptersToRead.value = (chapters.length - readeds.length) > 0 ? ('+' + (chapters.length - readeds.length)) : 'All readed'
     chaptersReaded.value = `${readeds.length}/${chapters.length}`
   })

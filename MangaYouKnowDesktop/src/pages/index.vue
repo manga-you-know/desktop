@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
-import type { Favorite, User } from '@prisma/client';
+  import { FavoriteDB } from '~/database';
+  import type { Favorite, User } from '~/models';
 
   const mangaSources = [
     'MangaSee', 'MangaDex', 'TCB'
@@ -11,13 +12,7 @@ import type { Favorite, User } from '@prisma/client';
   const isOpen = useState<Boolean>('isSearchOpen', () => false)
   const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => [])
   onMounted(async () => {
-    //@ts-ignore
-    ultraFavorites.value = await $fetch('/api/ultrafavorites', {
-        method: 'GET',
-        params: {
-            userId: user.value.id,
-        }
-    })
+    ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id)
   })
 </script>
 
@@ -42,7 +37,7 @@ import type { Favorite, User } from '@prisma/client';
         />
       </div>
     </div>
-    <div class="flex flex-row flex-wrap gap-2">
+    <div class="pb-5 flex flex-row flex-wrap gap-2">
       <div v-for="favorite in ultraFavorites" :key="favorite.name">
         <UltraFavoriteCard :favorite="favorite" />
       </div>

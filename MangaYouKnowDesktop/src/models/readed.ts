@@ -1,21 +1,21 @@
-export class Chapter {
-  chNumber: number | string;
-  title: string;
+export class Readed {
+  id: number;
   chapterID: string;
   source: string;
-  language: string;
+  language?: string;
+  favoriteID: number;
 
   constructor(
-    chNumber: number | string,
-    title: string,
+    id: number,
     chapterID: string,
     source: string,
     language: string = "default",
+    favoriteID: number
   ) {
-    this.chNumber = chNumber;
-    this.title = title;
+    this.id = id;
     this.chapterID = chapterID;
     this.source = source;
     this.language = language;
+    this.favoriteID = favoriteID;
   }
 }

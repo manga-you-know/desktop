@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "identifier": "com.mangayouknow.dev",
   "build": {
-    "devUrl": "http://localhost:1420",
+    "frontendDist": "../.output/public",
+    "devUrl": "http://localhost:3000",
     "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
-    "frontendDist": "../dist"
+    "beforeBuildCommand": "yarn generate"
   },
   "app": {
     "windows": [
@@ -24,7 +24,7 @@
       } 
     ],
     "security": {
-      "csp": null
+      "csp" : "default-src ‘self’  connect-src ipc : http://ipc.localhost ; media-src stream : http://stream.localhost asset : http://asset.localhost"
     }
   },
   "bundle": {

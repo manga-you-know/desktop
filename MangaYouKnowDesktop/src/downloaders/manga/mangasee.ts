@@ -2,8 +2,7 @@
 import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
 import type { MangaDl } from '~/interfaces/mangaDl';
-import { Chapter } from '~/models/chapter';
-import type { Favorite } from '@prisma/client';
+import { Favorite, Chapter } from '~/models';
 import { Favorite as FavoriteModel } from '~/models/favorite';
 
 
@@ -44,7 +43,7 @@ export class MangaSeeDl implements MangaDl {
         folderName: manga.i,
         cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,
         source: 'MangaSee',
-        sourceId: manga.i,
+        sourceID: manga.i,
         extraName: manga.al[0] || '',
         grade: 0,
         author: manga.a[0] || '',

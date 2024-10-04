@@ -1,5 +1,4 @@
-import type { Favorite } from "@prisma/client";
-import type { Chapter } from "~/models/chapter";
+import type { Favorite, Chapter } from "~/models";
 
 
 

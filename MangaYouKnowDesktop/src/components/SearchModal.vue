@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import type { Favorite, Readed, User } from '@prisma/client';
+  import type { Favorite, Readed, User } from '~/models';
   import { DownloadManager } from '~/managers/downloadManager';
+  import { FavoriteDB } from '~/database';
 
   const user = useState<User>('user')
   const query = ref('')
@@ -29,12 +30,7 @@
       return
     }
     try {
-      favorites.value = await $fetch('/api/favorites', { 
-        method: 'GET', 
-        params: { 
-          userId: user.value.id 
-        } 
-      })
+      favorites.value = await FavoriteDB.getFavorites(user.value.id)
       results.value = (await dlManager.value.search(query.value, 'MangaSee')).slice(0, 20);
     } catch (error) {
       finished.value = error
@@ -43,57 +39,26 @@
     }
   }
   async function verifyFavorites() {
-    const favorites = await $fetch('/api/favorites')
+    const favorites = await FavoriteDB.getFavorites(user.value.id)
   }
   function isFavorite(favorite: Favorite) {
-    return favorites.value.find(f => f.name === favorite.name && f.source === favorite.source && f.sourceId === favorite.sourceId)
+    return favorites.value.find(f => f.name === favorite.name && f.source === favorite.source && f.sourceID === favorite.sourceID)
   }
 
   async function favorite(favorite: Favorite) {
     const isFavoriteh = isFavorite(favorite)
     if (isFavoriteh) {
-      await $fetch('/api/favorites', {
-        method: 'DELETE',
-        body: JSON.stringify({
-          id: isFavoriteh?.id,
-          userId: user.value.id,
-        })
-      })
-      favorites.value = await $fetch('/api/favorites', { 
-        method: 'GET', 
-        params: { 
-          userId: user.value.id 
-        } 
-      })
+      await FavoriteDB.deleteFavorite(isFavoriteh)
+      favorites.value = await FavoriteDB.getFavorites(user.value.id)
       return
     }
-    await $fetch('/api/favorites', {
-      method: 'POST',
-      body: JSON.stringify({
-        userId: user.value.id,
-        name: favorite.name,
-        folderName: favorite.folderName,
-        cover: favorite.cover,
-        source: favorite.source,
-        sourceId: favorite.sourceId,
-        type: favorite.type,
-        extraName: favorite.extraName,
-        titleColor: favorite.titleColor,
-        cardColor: favorite.cardColor,
-        grade: favorite.grade,
-        author: favorite.author,
-        description: favorite.description,
-      })
-    })
-    favorites.value = await $fetch('/api/favorites', { 
-      method: 'GET', 
-      params: { userId: user.value.id } 
-    })
+    await FavoriteDB.createFavorite(favorite, user.value.id)
+    favorites.value = await FavoriteDB.getFavorites(user.value.id)
   }
 </script>
 
 <template>
-  <UModal class="rounded" :overlay="false">
+  <UModal class="rounded" :overlay="true">
     <div class="w-full h-11 flex justify-center items-center">
       <UInput
         v-model="query"

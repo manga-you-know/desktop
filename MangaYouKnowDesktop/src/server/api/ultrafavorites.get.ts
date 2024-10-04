@@ -1,12 +1,11 @@
-import prisma from "~/lib/prisma";
+import Database from "@tauri-apps/plugin-sql";
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   var query  = getQuery(event);
-  const favorites = await prisma.favorite.findMany({
-    where: { //@ts-ignore
-      userId: Number(query.userId),
-      isUltraFavorite: true
-    }
-  })
+  const favorites = await db.select(
+    'SELECT * FROM Favorite WHERE userID = ? AND isUltraFavorite = ?', 
+    [query.userId, true]
+  );
   return favorites
 }); 

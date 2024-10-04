@@ -1,11 +1,12 @@
-import prisma from "~/lib/prisma";
+import Database from "@tauri-apps/plugin-sql";
+import type { Readed } from "~/models";
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   const query  = getQuery(event);
-  const readeds = await prisma.readed.findMany({
-    where: { //@ts-ignore
-      favoriteId: Number(query.favoriteId),
-    }
-  })
+  const readeds: Readed[] = await db.select(
+    'SELECT * FROM Readed WHERE favoriteID = ?', 
+    [query.favoriteId]
+  );
   return readeds
 }); 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import type { Favorite, User } from '@prisma/client';
+  import { FavoriteDB } from '~/database';
+  import type { Favorite, User } from '~/models';
   const { favorite } = defineProps<{
     favorite: Favorite
   }>()
@@ -13,21 +14,9 @@
     isFavoriteOpen.value = true
   }
 
-  async function deleteFavorite() {
-    await $fetch('/api/favorites', {
-      method: 'DELETE',
-      body: JSON.stringify({
-        id: favorite.id,
-        userId: user.value.id,
-      })
-    })
-    //@ts-ignore
-    favorites.value = await $fetch('/api/favorites', {
-      method: 'GET',
-      params: {
-        userId: user.value.id,
-      }
-    })
+  async function deleteFavoriteHandler() {
+    await FavoriteDB.deleteFavorite(favorite)
+    favorites.value = await FavoriteDB.getFavorites(user.value.id)
   }
 </script>
 
@@ -54,7 +43,7 @@
         icon="i-heroicons-pencil-square-solid"
       />
       <UButton
-        @click="deleteFavorite"
+        @click="deleteFavoriteHandler"
         color="gray"
         variant="ghost"
         icon="i-heroicons-x-circle-solid"

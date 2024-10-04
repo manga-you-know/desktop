@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { object, string, type InferType } from 'yup'
 import type { FormSubmitEvent } from '#ui/types'
-import type { User } from '@prisma/client';
+import type { User } from '~/models'
+import { migrationQuery, UserDB } from '~/database';
+import Database from '@tauri-apps/plugin-sql';
 
 const user = useState<User>('user')
 const isLogged = useState<Boolean>('isLogged', () => false)
@@ -25,32 +27,38 @@ const state = reactive({
   password: undefined
 })
 
+
 async function onSubmit (event: FormSubmitEvent<Schema>) {
   // Do something with event.data
   console.log(event.data)
 }
 
 async function onSubmitDefault () {
-  const defaultUser = await $fetch('/api/user-default')
-  user.value = defaultUser
-  console.log(defaultUser)
+  const db = await Database.load('sqlite:mykdata.db');
+  await db.execute(migrationQuery);
+  const defaultuser = await UserDB.getDefaultUser()
+  user.value = defaultuser
+  console.log(defaultuser)
   isLogged.value = true
 }
 </script>
 
 <template>
-  <UContainer class="h-full flex flex-col items-center justify-center">
-    <br><br>
-    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UInput disabled v-model="state.username" />
-      <UInput disabled v-model="state.email" />
-      <UInput disabled v-model="state.password" type="password" />
-      <UButton disabled type="submit">
+  <div class="h-screen flex flex-col items-center justify-center">
+    <UForm :schema="schema" :state="state" class="gap-4" @submit="onSubmit">
+      <UInput color="cyan" disabled v-model="state.username" />
+      <UInput color="cyan" disabled v-model="state.email" />
+      <UInput color="cyan" disabled v-model="state.password" type="password" />
+      <UButton 
+        color="cyan"
+        disabled 
+        type="submit"
+      >
         Submit
       </UButton>
-      <UButton variant="link" @click="onSubmitDefault"> 
+      <UButton color="cyan" variant="link" @click="onSubmitDefault"> 
         Use default local account
       </UButton>
     </UForm>
-  </UContainer>
+  </div>
 </template>

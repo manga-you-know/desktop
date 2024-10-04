@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import type { Favorite, User } from '@prisma/client';
+    import { FavoriteDB } from '~/database';
+    import type { Favorite, User } from '~/models';
     const user = useState<User>('user')
     const query = ref('')
     const isLoading = ref(false)
@@ -7,14 +8,7 @@
     async function search() {
         isLoading.value = true
         try {
-            //@ts-ignore
-            favorites.value = await $fetch('/api/favorites', {
-                method: 'GET',
-                params: {
-                    userId: user.value.id,
-                    query: query.value,
-                }
-            })
+            favorites.value = await FavoriteDB.getFavorites(user.value.id, query.value)
         } catch (error) {
             console.log(error)
         } finally {
@@ -22,13 +16,7 @@
         }
     }
     onMounted(async () => {
-        //@ts-ignore
-        favorites.value = await $fetch('/api/favorites', {
-            method: 'GET',
-            params: {
-                userId: user.value.id,
-            }
-        })
+        favorites.value = await FavoriteDB.getFavorites(user.value.id)
     })
 </script>
 
@@ -42,12 +30,13 @@
                     v-on:update:model-value="search"
                     :loading="isLoading" 
                     placeholder="Search..." 
+                    color="cyan"
                     icon="i-heroicons-magnifying-glass-solid" 
                     class="w-full"
                 />
             </div>
         </div>
-        <div class="w-full  flex flex-row justify-start gap-2 flex-wrap">
+        <div class="w-full pb-5 flex flex-row justify-start gap-2 flex-wrap">
             <div 
                 class=""
                 v-for="favorite in favorites" 

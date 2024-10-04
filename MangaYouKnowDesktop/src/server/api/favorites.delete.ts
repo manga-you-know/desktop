@@ -1,17 +1,15 @@
-import prisma from "~/lib/prisma";
+import Database from "@tauri-apps/plugin-sql";
 
 export default defineEventHandler(async (event) => {
+  const db = await Database.load('sqlite:myk.db');
   const body = await readBody(event)
-  const favorite = await prisma.favorite.delete({
-    where: {
-      id: body.id,
-      userId: body.userId,
-    }
-  })
-  prisma.readed.deleteMany({
-    where: {
-      favoriteId: body.id
-    }
-  })
+  const favorite = await db.execute(
+    'DELETE FROM Favorite WHERE id = ? AND userID = ?',
+    [body.id, body.userId]
+  );
+  await db.execute(
+    'DELETE FROM Readed WHERE favoriteID = ?',
+    [body.id]
+  );
   return favorite
 }); 

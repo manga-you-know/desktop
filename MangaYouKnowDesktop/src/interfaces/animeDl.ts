@@ -1,6 +1,4 @@
-import { Favorite } from '~/models/favorite'
-import { Chapter } from '~/models/chapter'
-import { Episode } from '~/models/episode'
+import { Favorite, Chapter, Episode } from '~/models'
 
 
 export interface AnimeDl {
