@@ -2,6 +2,7 @@
 The new version of the BAD Manga You Know!
 Now using Nuxt + Tauri!!!
 
+![icon github (1)](https://github.com/user-attachments/assets/18c5ed4c-962b-4671-be6b-952b99c9fcfe)
 
 I'm really sorry for this Readme be a mess, but I don't have time to make a better one for now.
 
