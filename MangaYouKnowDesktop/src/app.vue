@@ -8,6 +8,7 @@
   const isLogged = useState<Boolean>('isLogged', () => false)
   const isSearchOpen = useState<Boolean>('isSearchOpen', () => false)
   const isFavoriteOpen = useState<Boolean>('isFavoriteOpen', () => false)
+  const isEditFavoriteOpen = useState<Boolean>('isEditFavoriteOpen', () => false)
   const currentWindow = getCurrentWindow()
   const user = useState<User>('user')
   const favorite = useState<Favorite>('favorite')
@@ -16,7 +17,9 @@
     meta_k: {
       usingInput: true,
       handler: () => {
-        isSearchOpen.value = !isSearchOpen.value
+        if (user.value) {
+          isSearchOpen.value = !isSearchOpen.value
+        }
       }
   }})
   defineShortcuts({
@@ -28,7 +31,7 @@
     }
   })
   onBeforeMount(async () => {
-    const db = await Database.load('sqlite:mykdata.db');
+    const db = await Database.load('sqlite:data.db');
     await db.execute(migrationQuery);
   })
 </script>
@@ -38,6 +41,7 @@
   <!-- overlay's -->
   <SearchModal v-model="isSearchOpen" />
   <FavoriteModal v-if="favorite" v-model="isFavoriteOpen" :key="favorite.id" />
+  <EditFavoriteModal v-if="favorite" v-model="isEditFavoriteOpen" :key="favorite.id" />
   <!-- main app -->
   <div v-if="isLogged">
     <div v-if="!isDivMainHidden" class="flex" >

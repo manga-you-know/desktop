@@ -4,74 +4,74 @@ import { Chapter } from './chapter';
 
 export class Favorite {
   id?: number;
-  userID?: number;
+  user_id?: number;
   name: string;
-  folderName: string;
+  folder_name: string;
   cover: string;
   source: string;
-  sourceID: string;
+  source_id: string;
   type: string;
-  extraName?: string;
-  titleColor?: string;
-  cardColor?: string;
+  extra_name?: string;
+  title_color?: string;
+  card_color?: string;
   grade: number;
   author?: string;
-  isUltraFavorite: boolean;
+  is_ultra_favorite: boolean;
   description?: string;
   marks: Mark[];
   readeds: Chapter[];
 
   constructor({
     id = -1,
-    userID = -1,
+    user_id = -1,
     name = '',
-    folderName = '',
+    folder_name = '',
     cover = '',
     source = '',
-    sourceID = '',
+    source_id = '',
     type = 'manga',
-    extraName = '',
-    titleColor = '',
-    cardColor = '',
+    extra_name = '',
+    title_color = '',
+    card_color = '',
     grade = 0.0,
     author = 'Unknow',
-    isNotify = false,
+    is_ultra_favorite = false,
     description = '',
     marks = [],
     readeds = []
   }: {
     id?: number;
-    userID?: number;
+    user_id?: number;
     name: string;
-    folderName: string;
+    folder_name: string;
     cover: string;
     source: string;
-    sourceID: string;
+    source_id: string;
     type?: string;
-    extraName?: string;
-    titleColor?: string;
-    cardColor?: string;
+    extra_name?: string;
+    title_color?: string;
+    card_color?: string;
     grade?: number;
     author?: string;
-    isNotify?: boolean;
+    is_ultra_favorite?: boolean;
     description?: string;
     marks?: Mark[];
     readeds?: Chapter[];
   }) {
     this.id = id;
-    this.userID = userID;
+    this.user_id = user_id;
     this.name = name;
-    this.folderName = folderName;
+    this.folder_name = folder_name;
     this.cover = cover;
     this.source = source;
-    this.sourceID = sourceID;
+    this.source_id = source_id;
     this.type = type;
-    this.extraName = extraName;
-    this.titleColor = titleColor;
-    this.cardColor = cardColor;
+    this.extra_name = extra_name;
+    this.title_color = title_color;
+    this.card_color = card_color;
     this.grade = grade;
     this.author = author;
-    this.isUltraFavorite = isNotify;
+    this.is_ultra_favorite = is_ultra_favorite;
     this.description = description;
     this.marks = marks;
     this.readeds = readeds;

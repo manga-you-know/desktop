@@ -1,9 +1,9 @@
 export class MarkFavorites {
-  markID: number;
-  favoriteID: number;
+  mark_id: number;
+  favorite_id: number;
 
-  constructor(markID: number, favoriteID: number) {
-    this.markID = markID;
-    this.favoriteID = favoriteID;
+  constructor(mark_id: number, favorite_id: number) {
+    this.mark_id = mark_id;
+    this.favorite_id = favorite_id;
   }
 }

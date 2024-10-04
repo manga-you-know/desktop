@@ -1,21 +1,21 @@
 export class Readed {
   id: number;
-  chapterID: string;
+  chapter_id: string;
   source: string;
   language?: string;
-  favoriteID: number;
+  favorite_id: number;
 
   constructor(
     id: number,
-    chapterID: string,
+    chapter_id: string,
     source: string,
     language: string = "default",
-    favoriteID: number
+    favorite_id: number
   ) {
     this.id = id;
-    this.chapterID = chapterID;
+    this.chapter_id = chapter_id;
     this.source = source;
     this.language = language;
-    this.favoriteID = favoriteID;
+    this.favorite_id = favorite_id;
   }
 }

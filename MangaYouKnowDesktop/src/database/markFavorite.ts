@@ -3,7 +3,7 @@ import type { MarkFavorites, Mark, Favorite } from '~/models';
 
 
 export async function createMarkFavorite(favorite: Favorite, mark: Mark): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		await db.execute(
 			'INSERT INTO mark_favorites (mark_id, favorite_id) VALUES (?, ?)',
@@ -12,12 +12,12 @@ export async function createMarkFavorite(favorite: Favorite, mark: Mark): Promis
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function getMarkFavorites(favorite: Favorite): Promise<MarkFavorites[]> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		const markFavorites: MarkFavorites[] = await db.select(
 			'SELECT * FROM mark_favorites WHERE favorite_id = ?', 
@@ -28,12 +28,12 @@ export async function getMarkFavorites(favorite: Favorite): Promise<MarkFavorite
 		console.log(error)
 		return [] 
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function deleteMarkFavorite(favorite: Favorite, mark: Mark): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		await db.execute(
 			'DELETE FROM mark_favorites WHERE favorite_id = ? AND mark_id = ?',
@@ -42,6 +42,6 @@ export async function deleteMarkFavorite(favorite: Favorite, mark: Mark): Promis
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }

@@ -23,10 +23,10 @@
       "identifier": "http:default",
       "allow": [
         {
-          "url": "http://localhost:3000/*"
+          "url": "http://*"
         },
         {
-          "url": "https://mangasee123.com/*"
+          "url": "https://*"
         }
       ]
     },

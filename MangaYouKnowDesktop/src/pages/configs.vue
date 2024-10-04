@@ -4,8 +4,6 @@
 
 <template>
     <div>
-        <br>
-        <br>
-        <br>
+        Soon!
     </div>
 </template>

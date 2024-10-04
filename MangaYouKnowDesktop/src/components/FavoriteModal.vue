@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Favorite, Readed, Chapter } from '~/models';
+  import type { Favorite, Readed, Chapter, User } from '~/models';
   import type { DownloadManager } from '~/managers/downloadManager';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { FavoriteDB, ReadedDB } from '~/database';
@@ -13,12 +13,14 @@
   const rerenderIndex = useState<number>('rerenderIndex')
   const currentWindow = getCurrentWindow()
   const readeds = useState<Readed[]>('readeds')
+  const ultraFavorites = useState<Favorite[]>('ultraFavorites')
   const chapterQuery = ref('')
   const isSearching = ref(false)
   const currentChapter = ref<Chapter>()
+  const user = useState<User>('user')
 
   async function readChapter(chapter: Chapter) {
-    images.value = await dlManager.value.getChapterImages(chapter.chapterID, favorite.value.source)
+    images.value = await dlManager.value.getChapterImages(chapter.chapter_id, favorite.value.source)
     isFavoriteOpen.value = false
     isDivMainHidden.value = true
     currentWindow.setFullscreen(true)
@@ -38,7 +40,7 @@
       isSearching.value = false
       return
     }
-    chaptersDisplayed.value = chapters.value.filter(chapter => chapter.chNumber.toString().includes(chapterQuery.value)).reverse()
+    chaptersDisplayed.value = chapters.value.filter(chapter => chapter.number.toString().includes(chapterQuery.value)).reverse()
     isSearching.value = false
   }
   function resetChapters() {
@@ -48,11 +50,11 @@
     isSearching.value = false
   }
   async function updateFavoriteHandler() {
-    favorite.value.isUltraFavorite = !favorite.value.isUltraFavorite
+    favorite.value.is_ultra_favorite = !favorite.value.is_ultra_favorite
     await FavoriteDB.updateFavorite(favorite.value)
   }  
   function isReaded(chapter: Chapter) {
-    return readeds.value.find(r => r.chapterID === chapter.chapterID && r.source === favorite.value.source && r.language === chapter.language)
+    return readeds.value.find(r => r.chapter_id === chapter.chapter_id && r.source === favorite.value.source && r.language === chapter.language)
   }
   async function addReadedBelow(chapter: Chapter) {
     const readed = isReaded(chapter)
@@ -63,7 +65,7 @@
     var toAdd = []
     var isForAdd = false
     for (var chapterI of chapters.value) {
-      if (chapterI.chapterID == chapter.chapterID) {
+      if (chapterI.chapter_id == chapter.chapter_id) {
         isForAdd = true
       }
       if (isForAdd ) {
@@ -87,7 +89,7 @@
     var toDelete = []
     var isForDelete = false
     for (var chapter of [...chapters.value].reverse()) {
-      if (chapter.chapterID == readed.chapterID) {
+      if (chapter.chapter_id == readed.chapter_id) {
         isForDelete = true
       }
       if (isForDelete ) {
@@ -101,7 +103,8 @@
     readeds.value = await ReadedDB.getReadeds(favorite.value)
     currentChapter.value = getNextForRead()
   }
-  function onClose() {
+  async function onClose() {
+    ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id)
     rerenderIndex.value++
   }
   var isChapterFetched = false
@@ -139,7 +142,7 @@
         <div class="w-[50%] flex flex-col h-80 m-6">
           <NuxtImg :src="favorite.cover" class="h-60 w-40 m-2 object-contain rounded-xl" />
           <UButton 
-            :icon="favorite.isUltraFavorite? 'i-heroicons-star-solid' : 'i-heroicons-star'"
+            :icon="favorite.is_ultra_favorite? 'i-heroicons-star-solid' : 'i-heroicons-star'"
             color="gray"
             variant="link"
             class="h-10 m-0.5"
@@ -154,7 +157,7 @@
                   :class="['w-[115px]', 'p-0.5', 'flex', 'justify-start', 'bg-slate-800', 'font-medium', 'text-white', currentChapter ? 'hover:bg-transparent' : '']"
                   @click="() => currentChapter? readChapter(currentChapter) : console.log('nada')"
                 >
-                  {{ currentChapter?.chNumber || 'all readed!' }}
+                  {{ currentChapter?.number || 'all readed!' }}
                 </button>
                 <button 
                   class="w-[40px] bg-slate-800 font-medium text-white hover:bg-transparent"
@@ -196,7 +199,7 @@
             <div 
               class=" m-0.5 flex flex-col items-center "
               v-for="chapter in chaptersDisplayed" 
-              :key="chapter.chapterID"
+              :key="chapter.chapter_id"
             >
               <!-- Uses nested components to better performance :) -->
               <div class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm">
@@ -204,7 +207,7 @@
                   class="w-28 p-0.5 flex justify-start  bg-slate-800 font-medium text-white hover:bg-transparent"
                   @click="() => readChapter(chapter)"
                 >
-                  {{ chapter.chNumber }}
+                  {{ chapter.number }}
                 </button>
                 <button 
                   class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"

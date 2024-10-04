@@ -1,9 +1,8 @@
 // import axios from 'axios';
 import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
-import type { MangaDl } from '~/interfaces/mangaDl';
+import type { MangaDl } from '~/interfaces';
 import { Favorite, Chapter } from '~/models';
-import { Favorite as FavoriteModel } from '~/models/favorite';
 
 
 export class MangaSeeDl implements MangaDl {
@@ -38,13 +37,13 @@ export class MangaSeeDl implements MangaDl {
     const text = await response.text();
     var mangaList = JSON.parse(text.split('vm.Directory = ')[1].split(';\r\n')[0])
     return mangaList.map((manga: any) => {
-      var mangaOrdered = new FavoriteModel({
+      var mangaOrdered = new Favorite({
         name: manga.s,
-        folderName: manga.i,
+        folder_name: manga.i,
         cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,
         source: 'MangaSee',
-        sourceID: manga.i,
-        extraName: manga.al[0] || '',
+        source_id: manga.i,
+        extra_name: manga.al[0] || '',
         grade: 0,
         author: manga.a[0] || '',
         description: '',
@@ -66,8 +65,12 @@ export class MangaSeeDl implements MangaDl {
         .includes(query.toLowerCase())? grade++ : grade;
       manga.name.toLowerCase() === query
         .toLowerCase()? grade+=3 : grade;
-      manga.extraName?.toLowerCase()
+      manga.name.toLowerCase()
+        .startsWith(query.toLowerCase())? grade+=2 : grade;
+      manga.extra_name?.toLowerCase()
         .includes(query.toLowerCase())? grade+=0.5 : grade;
+      manga.extra_name?.toLowerCase()
+        .startsWith(query.toLowerCase())? grade+=0.5 : grade;
       manga.author?.toLowerCase()
         .includes(query.toLowerCase())? grade+=0.5 : grade;
       if (grade > 0) {
@@ -75,16 +78,15 @@ export class MangaSeeDl implements MangaDl {
       }
     });
     const sortedMangas = mangasWithGrade
-      .sort((obj) => obj.grade)
-      .reverse()
+      .sort((a, b) => b.grade - a.grade)
       .map(obj => {
         let manga = obj.manga;
         manga.grade = 0
         manga.author = manga.author !== ''? manga.author: 'Unknow';
-        manga.extraName = manga.extraName !== ''? manga.extraName: 'Unknow';
+        manga.extra_name = manga.extra_name !== ''? manga.extra_name : 'Unknow';
         return obj.manga
       });
-    return sortedMangas.slice(0, 20);
+    return sortedMangas;
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {

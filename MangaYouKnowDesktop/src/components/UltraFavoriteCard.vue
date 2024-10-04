@@ -28,8 +28,8 @@
 <template>
   <div>
     <div class="bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center">
-    <UTooltip :text=favorite.name placement="bottom">
-      <UBadge class="w-36 m-1 flex justify-center" color="white" variant="solid" >
+    <UTooltip :prevent="favorite.name.length < 17" :text=favorite.name :popper="{ placement: 'bottom', arrow: true }" >
+      <UBadge class="w-36 m-1 flex justify-center cursor-default" color="white" variant="solid" >
         {{ favorite.name.substring(0, 16) + (favorite.name.length > 16? "..." : "") }}
       </UBadge>
     </UTooltip>
@@ -42,12 +42,14 @@
         variant="solid"
         icon="i-heroicons-book-open-solid"
       />
-      <UTooltip :text="chaptersReaded" :popper="{ placement: 'top' }" >
+      <UTooltip :prevent="isLoading" :text="chaptersReaded" :popper="{ placement: 'top', arrow: true,  }" >
         <UButton
+          class="cursor-default disabled:cursor-default"
           :loading="isLoading"
           color="white"
           variant="solid"
-          >
+
+        >
           {{ chaptersToRead }}
         </UButton>
       </UTooltip>

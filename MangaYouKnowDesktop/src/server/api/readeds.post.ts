@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const placeholders = body.chapters.map(() => '(?, ?, ?, ?)').join(', ');
   const values = body.chapters.flatMap((chapter: Chapter) => [
     body.favoriteId,
-    chapter.chapterID,
+    chapter.chapter_id,
     chapter.source,
     chapter.language,
   ]);

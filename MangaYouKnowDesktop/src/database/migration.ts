@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS favorite (
   author             TEXT DEFAULT 'Unknow',
   is_ultra_favorite  BOOLEAN DEFAULT false,
   description        TEXT DEFAULT '',
-  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (user_id) REFERENCES user(id),
+  UNIQUE (source_id, source, type, user_id)
 );
 
 -- Mark table

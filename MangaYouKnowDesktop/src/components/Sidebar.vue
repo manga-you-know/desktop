@@ -59,6 +59,5 @@ const links = [
     <UVerticalNavigation 
       class="fixed md:w-[110px] w-[40px] mt-[30px] mr-5" 
       :links="links"
-      :active-color="route === '/favorites' ? '#f5f5f5' : '#1a1a1a'"
     />
 </template>

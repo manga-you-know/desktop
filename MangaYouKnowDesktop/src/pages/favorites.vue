@@ -7,13 +7,8 @@
     const favorites = useState<Favorite[]>('favorites', () => [])
     async function search() {
         isLoading.value = true
-        try {
-            favorites.value = await FavoriteDB.getFavorites(user.value.id, query.value)
-        } catch (error) {
-            console.log(error)
-        } finally {
-            isLoading.value = false
-        }
+        favorites.value = await FavoriteDB.getFavorites(user.value.id, query.value)
+        isLoading.value = false
     }
     onMounted(async () => {
         favorites.value = await FavoriteDB.getFavorites(user.value.id)

@@ -3,16 +3,16 @@ import type { Chapter, Favorite, Readed } from "~/models";
 
 
 export async function createReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		await db.execute(
 			'INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?)', 
-			[readed.favoriteID, readed.chapterID, readed.source, readed.language]
+			[readed.favorite_id, readed.chapter_id, readed.source, readed.language]
 		);
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
@@ -20,12 +20,12 @@ export async function createReadeds(chapters: Chapter[], favoriteID?: number): P
 	if (favoriteID === undefined) {
 		return
 	}
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		const placeholders = chapters.map(() => '(?, ?, ?, ?)').join(', ');
 		const values = chapters.flatMap((chapter: Chapter) => [
 			favoriteID,
-			chapter.chapterID,
+			chapter.chapter_id,
 			chapter.source,
 			chapter.language,
 		]);
@@ -36,12 +36,12 @@ export async function createReadeds(chapters: Chapter[], favoriteID?: number): P
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		const readeds: Readed[] = await db.select(
 			'SELECT * FROM readed WHERE favorite_id = ?', 
@@ -52,26 +52,26 @@ export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
 		console.log(error)
 		return [] 
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function updateReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		await db.execute(
 			'UPDATE readed SET chapter_id = ?, source = ?, language = ? WHERE id = ?',
-			[readed.chapterID, readed.source, readed.language, readed.id]
+			[readed.chapter_id, readed.source, readed.language, readed.id]
 		);
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function deleteReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		await db.execute(
 			'DELETE FROM readed WHERE id = ?',
@@ -80,12 +80,12 @@ export async function deleteReaded(readed: Readed): Promise<void> {
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
 
 export async function deleteReadeds(readeds: Readed[]): Promise<void> {
-	const db = await Database.load('sqlite:mykdata.db');
+	const db = await Database.load('sqlite:data.db');
 	try {
 		const placeholders = readeds.map(() => '?').join(', ');
 		await db.execute(
@@ -94,13 +94,9 @@ export async function deleteReadeds(readeds: Readed[]): Promise<void> {
 				return readed.id
 			})
 		);
-		console.log(`DELETE FROM readed WHERE id IN (${placeholders})`)
-		console.log(readeds.map((readed: Readed) => {
-			return readed.id
-		}))
 	} catch (error) {
 		console.log(error)
 	} finally {
-		db.close()
+		// db.close()
 	}
 }
