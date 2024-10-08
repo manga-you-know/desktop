@@ -1,4 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
+import { DATABASE_NAME } from '~/constants';
 import type { Favorite, Mark } from '~/models';
 
 
@@ -6,7 +7,7 @@ export async function createFavorite(favorite: Favorite, userId?: number): Promi
 	if (userId === undefined) {
 		return
 	}
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'INSERT INTO favorite (user_id, name, folder_name, cover, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -33,7 +34,7 @@ export async function createFavorite(favorite: Favorite, userId?: number): Promi
 	}
 }
 export async function getFavorites(userID: number | undefined, query: string = ''): Promise<Favorite[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		if (query === '') {
 			const favorites: Favorite[] = await db.select(
@@ -57,7 +58,7 @@ export async function getFavorites(userID: number | undefined, query: string = '
 }
 
 export async function getUltraFavorites(userID: number | undefined): Promise<Favorite[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const favorites: Favorite[] = await db.select(
 			'SELECT * FROM favorite WHERE user_id = ? AND is_ultra_favorite = ?', 
@@ -73,7 +74,7 @@ export async function getUltraFavorites(userID: number | undefined): Promise<Fav
 }
 
 export async function getFavoritesByMark(userID: number | undefined, mark: Mark): Promise<Favorite[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const favorites: Favorite[] = await db.select(
 			'SELECT * FROM favorite WHERE user_id = ? AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)',
@@ -89,7 +90,7 @@ export async function getFavoritesByMark(userID: number | undefined, mark: Mark)
 }
 
 export async function getFavoritesByTypes(userID: number | undefined, types: string[]): Promise<Favorite[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const favorites: Favorite[] = await db.select(
 			'SELECT * FROM favorite WHERE user_id = ? AND type in (?)',
@@ -105,7 +106,7 @@ export async function getFavoritesByTypes(userID: number | undefined, types: str
 }
 
 export async function updateFavorite(favorite: Favorite): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'UPDATE favorite SET name = ?, folder_name = ?, cover = ?, source = ?, source_id = ?, type = ?, extra_name = ?, title_color = ?, card_color = ?, grade = ?, author = ?, description = ?, is_ultra_favorite = ? WHERE id = ?',
@@ -134,7 +135,7 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
 }
 
 export async function deleteFavorite(favorite: Favorite): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'DELETE FROM favorite WHERE id = ?',

@@ -1,8 +1,9 @@
 import Database from '@tauri-apps/plugin-sql';
+import { DATABASE_NAME } from '~/constants';
 import type { Mark, User } from '~/models';
 
 export async function createMark(mark: Mark): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	const user = useState<User>('user')
 	try {
 		await db.execute(
@@ -17,7 +18,7 @@ export async function createMark(mark: Mark): Promise<void> {
 }
 
 export async function getMarks(query: string = ''): Promise<Mark[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const user = useState<User>('user')
 		if (query === '') {
@@ -41,7 +42,7 @@ export async function getMarks(query: string = ''): Promise<Mark[]> {
 	}
 }
 export async function updateMark(mark: Mark): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'UPDATE mark SET name = ?, user_id = ?, color = ? WHERE id = ?',
@@ -55,7 +56,7 @@ export async function updateMark(mark: Mark): Promise<void> {
 }
 
 export async function deleteMark(mark: Mark): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'DELETE FROM mark WHERE id = ? AND user_id = ?',

@@ -1,9 +1,10 @@
 import Database from "@tauri-apps/plugin-sql";
+import { DATABASE_NAME } from "~/constants";
 import type { Chapter, Favorite, Readed } from "~/models";
 
 
 export async function createReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?)', 
@@ -20,7 +21,7 @@ export async function createReadeds(chapters: Chapter[], favoriteID?: number): P
 	if (favoriteID === undefined) {
 		return
 	}
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const placeholders = chapters.map(() => '(?, ?, ?, ?)').join(', ');
 		const values = chapters.flatMap((chapter: Chapter) => [
@@ -41,7 +42,7 @@ export async function createReadeds(chapters: Chapter[], favoriteID?: number): P
 }
 
 export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const readeds: Readed[] = await db.select(
 			'SELECT * FROM readed WHERE favorite_id = ?', 
@@ -57,7 +58,7 @@ export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
 }
 
 export async function updateReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'UPDATE readed SET chapter_id = ?, source = ?, language = ? WHERE id = ?',
@@ -71,7 +72,7 @@ export async function updateReaded(readed: Readed): Promise<void> {
 }
 
 export async function deleteReaded(readed: Readed): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'DELETE FROM readed WHERE id = ?',
@@ -85,7 +86,7 @@ export async function deleteReaded(readed: Readed): Promise<void> {
 }
 
 export async function deleteReadeds(readeds: Readed[]): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const placeholders = readeds.map(() => '?').join(', ');
 		await db.execute(

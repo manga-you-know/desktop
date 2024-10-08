@@ -1,24 +1,37 @@
 <script setup lang="ts">
     import { getCurrentWindow } from '@tauri-apps/api/window';
     const images = useState<string[]>('images')
-    const currentlyChapter = ref(1)
-    const totalChapter = ref(images.value.length)
+    const currentlyPage = ref(1)
+    const totalPage = ref(images.value.length)
     const selectedImage = ref<string>(images.value[0])
     const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => true)
     function toNextPage() {
-        if (currentlyChapter.value == totalChapter.value) {
+        if (currentlyPage.value == totalPage.value) {
             return
         }
-        currentlyChapter.value++
-        selectedImage.value = images.value[currentlyChapter.value - 1]
+        currentlyPage.value++
+        selectedImage.value = images.value[currentlyPage.value - 1]
     }
     function toPrevPage() {
-        if (currentlyChapter.value == 1) {
+        if (currentlyPage.value == 1) {
             return
         }
-        currentlyChapter.value--
-        selectedImage.value = images.value[currentlyChapter.value - 1]
+        currentlyPage.value--
+        selectedImage.value = images.value[currentlyPage.value - 1]
     }
+    // ill make the app preloads all the images in images.value using the link rel="preload" tag
+    useHead({
+        title: 'MangaYouKnow',
+        link: images.value.map(image => {
+            return {
+                rel: 'preload',
+                href: image,
+                as: 'image'
+            }
+        })
+        
+    })
+        
     defineShortcuts({
         f4: {
             usingInput: true,
@@ -42,20 +55,20 @@
 
 <template>
     <div class="fixed w-screen h-screen flex">
-        <button class="w-[50%] cursor-default" tabindex="-1" @click="toPrevPage"/>
-        <button class="w-[50%] cursor-default" tabindex="-1" @click="toNextPage"/>
+        <button class="w-[50%] cursor-default outline-none border-none" tabindex="-1" @click="toPrevPage"/>
+        <button class="w-[50%] cursor-default outline-none border-none" tabindex="-1" @click="toNextPage"/>
     </div>
     <div class="fixed w-screen p-[1%] flex justify-end">
         <UBadge class="m-1" color="white" variant="solid" >
-            {{ currentlyChapter }} / {{ totalChapter }}
+            {{ currentlyPage }} / {{ totalPage }}
         </UBadge>
     </div>
     <div>
         <!-- <UCarousel v-slot="{ item }" :items="images" arrows> -->
         <NuxtImg :src=selectedImage placeholder class="object-contain w-screen h-screen max-w-screen  max-h-screen" /> 
-        <div v-for="image in images" class="hidden">
+        <!-- <div v-for="image in images" class="hidden">
             <img :src="image" rel="preload" draggable="false">
-        </div>
+        </div> -->
         <!-- </UCarousel> -->
     </div>
     <!-- <div class="flex w-screen h-screen justify-center items-center" >

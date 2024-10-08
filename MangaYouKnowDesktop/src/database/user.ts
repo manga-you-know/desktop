@@ -1,8 +1,9 @@
 import Database from '@tauri-apps/plugin-sql';
+import { DATABASE_NAME } from '~/constants';
 import type { User } from '~/models';
 
 export async function createUser(user: User): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'INSERT INTO user (username, email, icon, password) VALUES (?, ?, ?, ?)',
@@ -17,7 +18,7 @@ export async function createUser(user: User): Promise<void> {
 }
 
 export async function getUsers(): Promise<User[]> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		const users: User[] = await db.select('SELECT * FROM user');
 		return users
@@ -30,16 +31,16 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getDefaultUser(): Promise<User> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
-		const user: User[] = await db.select('SELECT * FROM user WHERE username = ?', ['admin']);
+		const user: User[] = await db.select('SELECT * FROM user WHERE username = ?', ['default']);
 		if (user.length === 0) {
 			await createUser({
 					username: 'default',
 					email: 'default@example.com',
 					icon: 'https://avatars.githubusercontent.com/u/103978193?v=4',
 				})
-			const user: User[] = await db.select('SELECT * FROM user WHERE username = ?', ['admin']);
+			const user: User[] = await db.select('SELECT * FROM user WHERE username = ?', ['default']);
 			console.log(user)
 			console.log('look up')
 			return user[0]
@@ -54,7 +55,7 @@ export async function getDefaultUser(): Promise<User> {
 }
 
 export async function updateUser(user: User): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'UPDATE user SET username = ?, email = ?, icon = ?, password = ? WHERE id = ?',
@@ -68,7 +69,7 @@ export async function updateUser(user: User): Promise<void> {
 }
 
 export async function deleteUser(user: User): Promise<void> {
-	const db = await Database.load('sqlite:data.db');
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
 			'DELETE FROM user WHERE id = ?',

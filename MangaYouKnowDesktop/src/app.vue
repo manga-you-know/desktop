@@ -4,6 +4,7 @@
   import { migrationQuery } from "~/database";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { DownloadManager } from "./managers/downloadManager";
+import { DATABASE_NAME } from "./constants";
   const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
   const isLogged = useState<Boolean>('isLogged', () => false)
   const isSearchOpen = useState<Boolean>('isSearchOpen', () => false)
@@ -31,7 +32,7 @@
     }
   })
   onBeforeMount(async () => {
-    const db = await Database.load('sqlite:data.db');
+    const db = await Database.load(`sqlite:${DATABASE_NAME}`);
     await db.execute(migrationQuery);
   })
 </script>

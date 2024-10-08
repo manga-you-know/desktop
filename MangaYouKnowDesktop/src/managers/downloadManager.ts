@@ -18,18 +18,24 @@ export class DownloadManager {
       'MangaDex': new MangaDexDl(),
       'TCB': new TCBScansDl(),
     };
-    // this.search = conditionalMemoize(this.search);
-    // this.getChapters = memoizeWithExpiration(this.getChapters, 590);
-    // this.getEpisodes = memoizeWithExpiration(this.getEpisodes, 590);
-    // this.getChapterImages = conditionalMemoize(this.getChapterImages);
-    // this.getEpisodeUrls = conditionalMemoize(this.getEpisodeUrls);
+    this.search = this.search.bind(this);
+    this.getChapters = this.getChapters.bind(this);
+    this.getEpisodes = this.getEpisodes.bind(this);
+    this.getChapterImages = this.getChapterImages.bind(this);
+    this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
+
+    this.search = conditionalMemoize(this.search);
+    this.getChapters = memoizeWithExpiration(this.getChapters, 590);
+    this.getEpisodes = memoizeWithExpiration(this.getEpisodes, 590);
+    this.getChapterImages = conditionalMemoize(this.getChapterImages);
+    this.getEpisodeUrls = conditionalMemoize(this.getEpisodeUrls);
   }
 
   getMangaSource(source: string): MangaDl  {
     return this.mangaSources[source];
   }
 
-   getAnimeSource(source: string): AnimeDl  {
+  getAnimeSource(source: string): AnimeDl  {
     return this.animeSources[source];
   }
 
