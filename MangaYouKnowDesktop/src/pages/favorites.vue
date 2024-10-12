@@ -17,7 +17,7 @@
 
 
 <template>
-    <div class="w-full h-full ">
+    <div class="w-full h-full transition-transform duration-300 ease-in-out">
         <div class="w-full h-12 mt-2 flex justify-center ">
             <div >
                 <UInput 

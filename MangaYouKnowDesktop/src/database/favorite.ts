@@ -44,8 +44,13 @@ export async function getFavorites(userID: number | undefined, query: string = '
 			return favorites
 		} else {
 			const favorites: Favorite[] = await db.select(
-				'SELECT * FROM favorite WHERE user_id = ? AND INSTR(LOWER(NAME), ?) > 0', 
-				[userID, query.toLowerCase()]
+				`
+				SELECT * FROM favorite 
+				WHERE user_id = ? 
+				AND INSTR(LOWER(NAME), LOWER(?)) > 0
+				OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0
+				`, 
+				[userID, query, query]
 			);
 			return favorites
 		}

@@ -54,9 +54,9 @@ export class DownloadManager {
     return await sourceDl.getEpisodes(anime_id);
   }
 
-  async getChapterImages(chapter_id: string, source: string): Promise<string[]> {
-    let sourceDl = this.getMangaSource(source);
-    return await sourceDl.getChapterImages(chapter_id);
+  async getChapterImages(chapter: Chapter): Promise<string[]> {
+    let sourceDl = this.getMangaSource(chapter.source);
+    return await sourceDl.getChapterImages(chapter.chapter_id);
   }
   async getEpisodeUrls(episode_id: string, source: string): Promise<Episode[]> {
     let sourceDl = this.getAnimeSource(source);

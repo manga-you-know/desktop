@@ -7,6 +7,7 @@
   const dlManager = useState<DownloadManager>('dlManager')
   const images = useState<string[]>('images')
   const chapters = useState<Chapter[]>('chapters')
+  const chapterH = useState<Chapter>('chapter')
   const chaptersDisplayed = ref<Chapter[]>([])
   const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
   const isFavoriteOpen = useState<Boolean>('isFavoriteOpen')
@@ -20,9 +21,10 @@
   const user = useState<User>('user')
 
   async function readChapter(chapter: Chapter) {
-    images.value = await dlManager.value.getChapterImages(chapter.chapter_id, favorite.value.source)
+    images.value = await dlManager.value.getChapterImages(chapter)
     isFavoriteOpen.value = false
     isDivMainHidden.value = true
+    chapterH.value = chapter
     currentWindow.setFullscreen(true)
     if (!isReaded(chapter)) {
       addReadedBelow(chapter)
@@ -132,15 +134,21 @@
 </script>
 
 <template>
-  <UModal class="rounded-xl" @close="onClose">
+  <UModal 
+    class="rounded-xl w-20" 
+    :ui="{ 
+      width: '10%',
+    }" 
+    @close="onClose"
+  >
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <div v-if="favorite" class="h-120 flex flex-col justify-center items-center">
+    <div v-if="favorite" class="h-120 my-3 flex flex-col justify-center items-center">
       <UBadge class="m-1" color="white" variant="solid" >
         {{ favorite.name }}
       </UBadge>
       <div class="flex flex-row justify-between">
-        <div class="w-[50%] flex flex-col h-80 m-6">
-          <NuxtImg :src="favorite.cover" class="h-60 w-40 m-2 object-contain rounded-xl" />
+        <div class="w-[50%] flex flex-col h-80">
+          <NuxtImg :src="favorite.cover" class="h-60 w-40 object-contain rounded-xl" />
           <UButton 
             :icon="favorite.is_ultra_favorite? 'i-heroicons-star-solid' : 'i-heroicons-star'"
             color="gray"
@@ -149,9 +157,8 @@
             @click="updateFavoriteHandler"
           />
         </div>
-        <UDivider orientation="vertical" size="sm"/>
-        <div class="w-[50%] flex flex-col h-80 m-6">
-          <div class="w-[200px] bg-gray-800 rounded-xl m-1 p-1 flex justify-center">
+        <div class="w-[50%] flex flex-col h-80 ">
+          <div class="w-[200px] bg-gray-800 rounded-xl p-1 flex justify-center">
             <div class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm">
                 <button 
                   :class="['w-[115px]', 'p-0.5', 'flex', 'justify-start', 'bg-slate-800', 'font-medium', 'text-white', currentChapter ? 'hover:bg-transparent' : '']"

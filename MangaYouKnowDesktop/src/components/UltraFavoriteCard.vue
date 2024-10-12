@@ -27,13 +27,13 @@
 
 <template>
   <div>
-    <div class="bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center">
+    <div class="relative bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:z-10 border border-transparent hover:border-white hover:border-2" @click="openFavorite">
     <UTooltip :prevent="favorite.name.length < 17" :text=favorite.name :popper="{ placement: 'bottom', arrow: true }" >
       <UBadge class="w-36 m-1 flex justify-center cursor-default" color="white" variant="solid" >
         {{ favorite.name.substring(0, 16) + (favorite.name.length > 16? "..." : "") }}
       </UBadge>
     </UTooltip>
-    <NuxtImg :src="favorite.cover" class="h-52 w-36 object-contain rounded-xl" />
+    <NuxtImg :src="favorite.cover" class="h-52 w-36 object-contain rounded-xl select-none" />
     <UButtonGroup orientation="horizontal" class="w-full flex justify-center">
       <UButton
         @click="openFavorite"

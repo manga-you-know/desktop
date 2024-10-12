@@ -1,37 +1,61 @@
 <script setup lang="ts">
     import { getCurrentWindow } from '@tauri-apps/api/window';
-    const images = useState<string[]>('images')
-    const currentlyPage = ref(1)
-    const totalPage = ref(images.value.length)
-    const selectedImage = ref<string>(images.value[0])
+    import type { DownloadManager } from '~/managers';
+    import type { Chapter, Favorite } from '~/models';
+    import { ReadedDB } from '~/database';
+
+    const dlManager = useState<DownloadManager>('dlManager')
+    const pages = useState<string[]>('images')
+    const favorite = useState<Favorite>('favorite')
+    const chapters = useState<Chapter[]>('chapters')
+    const chapter = useState<Chapter>('chapter')
+    const currentlyCount = ref(1)
+    const totalPage = ref(pages.value.length)
+    const currentlyPage = ref<string>(pages.value[0])
     const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => true)
+    const openMenuChapters = ref(false)
     function toNextPage() {
-        if (currentlyPage.value == totalPage.value) {
+        if (currentlyCount.value == totalPage.value) {
             return
         }
-        currentlyPage.value++
-        selectedImage.value = images.value[currentlyPage.value - 1]
+        currentlyCount.value++
+        currentlyPage.value = pages.value[currentlyCount.value - 1]
     }
     function toPrevPage() {
-        if (currentlyPage.value == 1) {
+        if (currentlyCount.value == 1) {
             return
         }
-        currentlyPage.value--
-        selectedImage.value = images.value[currentlyPage.value - 1]
+        currentlyCount.value--
+        currentlyPage.value = pages.value[currentlyCount.value - 1]
     }
-    // ill make the app preloads all the images in images.value using the link rel="preload" tag
-    useHead({
-        title: 'MangaYouKnow',
-        link: images.value.map(image => {
-            return {
-                rel: 'preload',
-                href: image,
-                as: 'image'
-            }
+    async function readNextOrPrevChapter(way: 'next' | 'prev' = 'next') {
+        const nextChapter = chapters.value[chapters.value.indexOf(chapter.value) - (way === 'next' ? 1 : -1)]
+        pages.value = await dlManager.value.getChapterImages(nextChapter)
+        chapter.value = nextChapter
+        currentlyCount.value = 1
+        currentlyPage.value = pages.value[currentlyCount.value - 1]
+        totalPage.value = pages.value.length
+        fetchPages()
+        await ReadedDB.createReaded({
+            id: -1,
+            favorite_id: favorite.value.id || 0,
+            chapter_id: chapter.value.chapter_id,
+            source: chapter.value.source,
         })
-        
-    })
-        
+    }
+    async function fetchPages () {
+        useHead({
+            title: favorite.value.name,
+            link: pages.value.map(image => {
+                return {
+                    rel: 'preload',
+                    href: image,
+                    as: 'image'
+                }
+            })
+            
+        })
+    }
     defineShortcuts({
         f4: {
             usingInput: true,
@@ -51,31 +75,55 @@
     },
     { chainDelay: 400 }
     )
+    fetchPages()
 </script>
 
 <template>
+    <MenuChaptersSlideover
+        v-model="openMenuChapters"
+        :chapters="chapters" 
+        :currentlyChapter="chapter" 
+    />
     <div class="fixed w-screen h-screen flex">
         <button class="w-[50%] cursor-default outline-none border-none" tabindex="-1" @click="toPrevPage"/>
         <button class="w-[50%] cursor-default outline-none border-none" tabindex="-1" @click="toNextPage"/>
     </div>
-    <div class="fixed w-screen p-[1%] flex justify-end">
+    <div class="fixed w-screen gap-1 p-[1%] flex justify-end pointer-events-none">
         <UBadge class="m-1" color="white" variant="solid" >
-            {{ currentlyPage }} / {{ totalPage }}
+            {{ currentlyCount }} / {{ totalPage }}
         </UBadge>
+        <UButton
+            class="pointer-events-auto"
+            icon="i-heroicons-bars-3-solid"
+            color="gray"
+            @click="openMenuChapters = true"
+        />
+        <UPopover 
+            mode="hover"
+            :popper="{ arrow: true, placement: 'left-start' }"
+            class="pointer-events-auto"
+        >
+            <UButton
+                icon="i-heroicons-code-bracket-square"
+                color="gray"
+            />
+            <template #panel>
+                <div class="p-2 gap-1 flex flex-row rounded-lg">
+                    <UButton
+                        icon="i-heroicons-arrow-left-solid"
+                        color="gray"
+                        @click="readNextOrPrevChapter('prev')"
+                    />
+                    <UButton
+                        icon="i-heroicons-arrow-right-solid"
+                        color="gray"
+                        @click="readNextOrPrevChapter('next')"
+                    />
+                </div>
+            </template>
+        </UPopover>
     </div>
     <div>
-        <!-- <UCarousel v-slot="{ item }" :items="images" arrows> -->
-        <NuxtImg :src=selectedImage placeholder class="object-contain w-screen h-screen max-w-screen  max-h-screen" /> 
-        <!-- <div v-for="image in images" class="hidden">
-            <img :src="image" rel="preload" draggable="false">
-        </div> -->
-        <!-- </UCarousel> -->
+        <NuxtImg :src=currentlyPage placeholder class="object-contain w-screen h-screen max-w-screen  max-h-screen" /> 
     </div>
-    <!-- <div class="flex w-screen h-screen justify-center items-center" >
-        <UCarousel v-slot="{ image }" :items="images" :ui="{ item: 'basis-full' }" class="rounded-lg ">
-            <img :src="image" class="w-full" draggable="false">
-             <NuxtImg :src=image placeholder class="object-contain w-screen h-screen max-w-screen  max-h-screen" /> -->
-        <!-- </UCarousel> -->
-
-    <!-- </div> --> 
 </template>
