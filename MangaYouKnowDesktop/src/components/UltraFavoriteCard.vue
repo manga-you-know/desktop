@@ -16,8 +16,15 @@
     const readeds = await ReadedDB.getReadeds(favorite)
     const chapters = await dlManager.value.getChapters(favorite)
     isLoading.value = false
-    chaptersToRead.value = (chapters.length - readeds.length) > 0 ? ('+' + (chapters.length - readeds.length)) : 'All readed'
-    chaptersReaded.value = `${readeds.length}/${chapters.length}`
+    if (!chapters.ok) {
+      chaptersToRead.value = 'Error'
+      chaptersReaded.value = 'Error'
+      return
+    }
+    //@ts-ignore
+    chaptersToRead.value = (chapters.chapters.length - readeds.length) > 0 ? ('+' + (chapters.chapters.length - readeds.length)) : 'All readed'
+    //@ts-ignore
+    chaptersReaded.value = `${readeds.length}/${chapters.chapters.length}`
   })
   function openFavorite() {
     favoriteOpen.value = favorite
@@ -37,7 +44,7 @@
     <UButtonGroup orientation="horizontal" class="w-full flex justify-center">
       <UButton
         @click="openFavorite"
-        class="h-10"
+        class="h-8"
         color="white"
         variant="solid"
         icon="i-heroicons-book-open-solid"
@@ -48,7 +55,6 @@
           :loading="isLoading"
           color="white"
           variant="solid"
-
         >
           {{ chaptersToRead }}
         </UButton>

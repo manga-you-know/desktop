@@ -30,8 +30,8 @@
       }, 10)
     })
     if (query.value === '') {
-      results.value = []
       isLoading.value = false
+      results.value = []
       return
     }
     try {
@@ -82,13 +82,14 @@
         <template #trailing>
           <UButton
             tabindex="-1"
-            v-show="query !== ''"
+            v-if="query !== ''"
             color="gray"
             variant="link"
             icon="i-heroicons-x-mark-20-solid"
             :padded="false"
             @click="resetResults"
           />
+          <div v-else />
         </template>
       </UInput>
     </div>

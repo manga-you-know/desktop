@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS readed (
   source             TEXT NOT NULL,
   language           TEXT DEFAULT 'default',
   favorite_id        INTEGER NOT NULL,
-  FOREIGN KEY (favorite_id) REFERENCES favorite(id)
+  FOREIGN KEY (favorite_id) REFERENCES favorite(id),
+  UNIQUE(chapter_id, source, language, favorite_id)
 );
 
 -- Junction table for many-to-many relation between Mark and Favorite

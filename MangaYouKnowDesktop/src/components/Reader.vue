@@ -3,6 +3,7 @@
     import type { DownloadManager } from '~/managers';
     import type { Chapter, Favorite } from '~/models';
     import { ReadedDB } from '~/database';
+    import { addReadedBelow } from '~/functions';
 
     const dlManager = useState<DownloadManager>('dlManager')
     const pages = useState<string[]>('images')
@@ -36,12 +37,7 @@
         currentlyPage.value = pages.value[currentlyCount.value - 1]
         totalPage.value = pages.value.length
         fetchPages()
-        await ReadedDB.createReaded({
-            id: -1,
-            favorite_id: favorite.value.id || 0,
-            chapter_id: chapter.value.chapter_id,
-            source: chapter.value.source,
-        })
+        await addReadedBelow(chapter.value, chapters.value, favorite.value, undefined, true)
     }
     async function fetchPages () {
         useHead({

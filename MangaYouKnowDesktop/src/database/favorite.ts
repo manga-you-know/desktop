@@ -110,6 +110,50 @@ export async function getFavoritesByTypes(userID: number | undefined, types: str
 	}
 }
 
+export async function getFavoritesBySource(userID: number | undefined, source: string, query: string = ''): Promise<Favorite[]> {
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+	try {
+		const favorites: Favorite[] = 
+			query == ''?
+			await db.select(
+				'SELECT * FROM favorite WHERE user_id = ? AND source = ?',
+				[userID, source]
+			) : await db.select(
+			`
+			SELECT * FROM favorite 
+			WHERE user_id = ? 
+			AND source = ?
+			AND (INSTR(LOWER(NAME), LOWER(?)) > 0
+			OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)
+			`, 
+			[userID, source, query, query]
+		);
+		return favorites
+	} catch (error) {
+		console.log(error)
+		return [] 
+	} finally {
+		// db.close()
+	}
+}
+
+export async function getFavoriteSources(userID: number | undefined): Promise<string[]> {
+	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+	try {
+		const sources: string[] = await db.select(
+			'SELECT DISTINCT source FROM favorite WHERE user_id = ?',
+			[userID]
+		);
+		//@ts-ignore
+		return sources.map(source => source.source)
+	} catch (error) {
+		console.log(error)
+		return [] 
+	} finally {
+		// db.close()
+	}
+}
+
 export async function updateFavorite(favorite: Favorite): Promise<void> {
 	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {

@@ -1,6 +1,7 @@
 import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
-import type { MangaDl } from '~/interfaces';
+import * as cheerio from 'cheerio';
+import type { ChaptersResponse, MangaDl } from '~/interfaces';
 import { Favorite, Chapter } from '~/models';
 
 export class TCBScansDl implements MangaDl {
@@ -41,22 +42,20 @@ export class TCBScansDl implements MangaDl {
       return [];
     }
     const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
+    const $ = cheerio.load(text); // Use Cheerio to load the HTML
     const mangas: Favorite[] = [];
-    
-    const links = doc.querySelectorAll('a[href*="/mangas"]');
-    links.forEach((a) => {
-      const img = a.querySelector('img');
-      if (img) {
+
+    $('a[href*="/mangas"]').each((_, a) => {
+      const img = $(a).find('img');
+      if (img.length) {
         mangas.push(
           new Favorite({
-            name: img.getAttribute('alt') || '',
-            source_id: a.getAttribute('href')?.replace('/mangas/', '') || '',
-            folder_name: a.getAttribute('href')?.split('/').pop() || '',
-            cover:img.getAttribute('src') || '',
-						source: 'TCB',
-				})
+            name: img.attr('alt') || '',
+            source_id: $(a).attr('href')?.replace('/mangas/', '') || '',
+            folder_name: $(a).attr('href')?.split('/').pop() || '',
+            cover: img.attr('src') || '',
+            source: 'TCB',
+          })
         );
       }
     });
@@ -74,31 +73,29 @@ export class TCBScansDl implements MangaDl {
     return sortedMangas;
   }
 
-  async getChapters(mangaId: string): Promise<Chapter[]> {
+  async getChapters(mangaId: string): Promise<ChaptersResponse> {
     const response = await fetch(`${this.baseUrl}mangas/${mangaId}`, {
       headers: this.headers,
     });
     if (response.status !== 200) {
-      return [];
+      return { ok: false };
     }
     const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
+    const $ = cheerio.load(text);
     const chaptersList: Chapter[] = [];
-    
-    const chapterLinks = doc.querySelectorAll('div.col-span-2 a[href]');
-    chapterLinks.forEach(a => {
-      const divs = a.querySelectorAll('div');
+
+    $('div.col-span-2 a[href]').each((_, a) => {
+      const divs = $(a).find('div');
       chaptersList.push(
         new Chapter(
-					divs[0]?.textContent?.split(' ').pop() || '',
-          divs[1]?.textContent || '',
-          a.getAttribute('href')?.replace('/chapters/', '') || '',
-					'TCB'
+          divs.eq(0).text().split(' ').pop() || '',
+          divs.eq(1).text() || '',
+          $(a).attr('href')?.replace('/chapters/', '') || '',
+          'TCB'
         )
       );
     });
-    return chaptersList;
+    return { ok: true, chapters: chaptersList };
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
@@ -109,13 +106,11 @@ export class TCBScansDl implements MangaDl {
       return [];
     }
     const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
+    const $ = cheerio.load(text);
     const chapterImgs: string[] = [];
 
-    const imgs = doc.querySelectorAll('img.fixed-ratio-content[src]');
-    imgs.forEach(img => {
-      chapterImgs.push(img.getAttribute('src') || '');
+    $('img.fixed-ratio-content[src]').each((_, img) => {
+      chapterImgs.push($(img).attr('src') || '');
     });
     return chapterImgs;
   }

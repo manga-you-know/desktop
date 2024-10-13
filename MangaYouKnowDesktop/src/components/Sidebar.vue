@@ -57,7 +57,7 @@ const links = [
 
 <template>
     <UVerticalNavigation 
-      class="fixed md:w-[110px] w-[40px] mt-[30px] mr-5" 
+      class="md:w-[110px] w-[40px] mt-[30px] mr-5 -z-0 fixed select-none" 
       :links="links"
     />
 </template>

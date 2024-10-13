@@ -1,7 +1,7 @@
 // import axios from 'axios';
 import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
-import type { MangaDl } from '~/interfaces';
+import type { ChaptersResponse, MangaDl } from '~/interfaces';
 import { Favorite, Chapter } from '~/models';
 
 
@@ -20,7 +20,6 @@ export class MangaSeeDl implements MangaDl {
         'Sec-Fetch-Site': 'none',
         'Sec-Fetch-User': '?1',
     };
-  chapterImagesRegex = /vm\.Images\s*=\s*(\[\{.*?\}\]);/s;
 
   constructor() {
     this.getMangas = memoize(this.getMangas);
@@ -89,13 +88,13 @@ export class MangaSeeDl implements MangaDl {
     return sortedMangas;
   }
 
-  async getChapters(mangaId: string): Promise<Chapter[]> {
+  async getChapters(mangaId: string): Promise<ChaptersResponse> {
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers
     });
     //@ts-ignore
     if (response.status !== 200) {
-      return [];
+      return { ok: false };
     }
     const chapters: Chapter[] = [];
     const text = await response.text();
@@ -117,7 +116,7 @@ export class MangaSeeDl implements MangaDl {
         )
       );
     });
-    return chapters;
+    return { ok: true, chapters: chapters };
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

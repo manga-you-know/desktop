@@ -1,5 +1,5 @@
 import { fetch } from '@tauri-apps/plugin-http';
-import type { MangaDl } from '~/interfaces';
+import type { ChaptersResponse, MangaDl } from '~/interfaces';
 import { Favorite, Chapter } from '~/models';
 
 export class MangaDexDl implements MangaDl {
@@ -27,7 +27,7 @@ export class MangaDexDl implements MangaDl {
         new Favorite({
           source_id: manga.id,
           name: titleName,
-          folder_name: manga.id,
+          folder_name: encodeURIComponent(titleName),
           extra_name: manga.attributes.altTitles,
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
@@ -53,15 +53,17 @@ export class MangaDexDl implements MangaDl {
   //   return await response.json();
   // }
 
-  async getChapters(mangaId: string, language: string = 'en', limit: number = 500): Promise<Chapter[]> {
+  async getChapters(mangaId: string, language: string = 'en', limit: number = 500): Promise<ChaptersResponse> {
     let offset = 0;
     const chaptersList: any[] = [];
     while (true) {
-      const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
+      // const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
+      //   method: 'GET',
+      // });
+      const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
         method: 'GET',
       });
 			const responseJson = await response.json();
-			console.log(responseJson)
       if (!response || !response.ok || responseJson.data.length === 0) {
         break;
       }
@@ -72,16 +74,26 @@ export class MangaDexDl implements MangaDl {
       offset += limit;
     }
 
-    const formattedList: Chapter[] = chaptersList.map(chapter => 
-      new Chapter(
+    const formattedList = chaptersList.reduce((acc, chapter) => {
+      const language = chapter.attributes.translatedLanguage;
+      const formattedChapter = new Chapter(
         chapter.attributes.chapter,
         chapter.attributes.title,
         chapter.id,
-				'TCB'
-      )
-    );
-    
-    return formattedList;
+        'MangaDex',
+        language
+      );
+      if (!acc[language]) {
+        acc[language] = [];
+      }
+      acc[language].push(formattedChapter);
+      return acc;
+    }, {} as { [key: string]: Chapter[] });
+    return {
+      ok: true,
+      isMultipleLanguage: true,
+      chapters: formattedList,
+    };
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

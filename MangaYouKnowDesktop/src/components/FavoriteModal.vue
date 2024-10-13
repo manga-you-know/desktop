@@ -3,6 +3,8 @@
   import type { DownloadManager } from '~/managers/downloadManager';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { FavoriteDB, ReadedDB } from '~/database';
+  import { addReadedBelow } from '~/functions';
+import type { ChaptersResponse } from '~/interfaces';
   const favorite = useState<Favorite>('favorite')
   const dlManager = useState<DownloadManager>('dlManager')
   const images = useState<string[]>('images')
@@ -19,6 +21,10 @@
   const isSearching = ref(false)
   const currentChapter = ref<Chapter>()
   const user = useState<User>('user')
+  const chaptersResponse = ref<ChaptersResponse>()
+  const sourceLanguage = ref('default')
+  const languageOptions = ref(['default'])
+  const isLanguagesDisable = ref(false)
 
   async function readChapter(chapter: Chapter) {
     images.value = await dlManager.value.getChapterImages(chapter)
@@ -27,7 +33,7 @@
     chapterH.value = chapter
     currentWindow.setFullscreen(true)
     if (!isReaded(chapter)) {
-      addReadedBelow(chapter)
+      addReaded(chapter)
     }
   }
   async function searchChapters() {
@@ -58,26 +64,8 @@
   function isReaded(chapter: Chapter) {
     return readeds.value.find(r => r.chapter_id === chapter.chapter_id && r.source === favorite.value.source && r.language === chapter.language)
   }
-  async function addReadedBelow(chapter: Chapter) {
-    const readed = isReaded(chapter)
-    if (readed) {
-      await deleteReadedAbove(readed)
-      return
-    }
-    var toAdd = []
-    var isForAdd = false
-    for (var chapterI of chapters.value) {
-      if (chapterI.chapter_id == chapter.chapter_id) {
-        isForAdd = true
-      }
-      if (isForAdd ) {
-        const read = isReaded(chapterI) 
-        if (!read) {
-          toAdd.push(chapterI)
-        }
-      }
-    }
-    await ReadedDB.createReadeds(toAdd, favorite.value.id)
+  async function addReaded(chapter: Chapter) {
+    await addReadedBelow(chapter, chapters.value, favorite.value, readeds.value)
     readeds.value = await ReadedDB.getReadeds(favorite.value)
     currentChapter.value = getNextForRead()
   }
@@ -87,32 +75,39 @@
   function getNextForRead() {
     return chapters.value.filter(chapter => !isReaded(chapter)).reverse()[0]
   }
-  async function deleteReadedAbove(readed: Readed) {
-    var toDelete = []
-    var isForDelete = false
-    for (var chapter of [...chapters.value].reverse()) {
-      if (chapter.chapter_id == readed.chapter_id) {
-        isForDelete = true
-      }
-      if (isForDelete ) {
-        const read = isReaded(chapter) 
-        if (read) {
-          toDelete.push(read)
-        }
-      }
-    }
-    await ReadedDB.deleteReadeds(toDelete)
-    readeds.value = await ReadedDB.getReadeds(favorite.value)
-    currentChapter.value = getNextForRead()
-  }
   async function onClose() {
     ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id)
     rerenderIndex.value++
   }
+  async function updateLanguage () {
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve(true)
+      }, 10)
+    })
+    console.log(chaptersResponse.value)
+    //@ts-ignore
+    chapters.value = chaptersResponse.value.chapters[sourceLanguage.value]
+    chaptersDisplayed.value = chapters.value
+    currentChapter.value = getNextForRead()
+  }
   var isChapterFetched = false
   onBeforeMount(async () => {
     chaptersDisplayed.value = []
-    chapters.value = await dlManager.value.getChapters(favorite.value)
+    //@ts-ignore
+    chaptersResponse.value = await dlManager.value.getChapters(favorite.value)
+    if (chaptersResponse.value.isMultipleLanguage) {
+      //@ts-ignore
+      languageOptions.value = Object.keys(chaptersResponse.value.chapters)
+      sourceLanguage.value = languageOptions.value[0]
+      //@ts-ignore
+      chapters.value = chaptersResponse.value.chapters[sourceLanguage.value]
+    } else {
+      //@ts-ignore
+      chapters.value = chaptersResponse.value.chapters
+      chaptersDisplayed.value = chapters.value
+      isLanguagesDisable.value = true
+    }
     isChapterFetched = true
   })
   onMounted(async () => {
@@ -149,13 +144,26 @@
       <div class="flex flex-row justify-between">
         <div class="w-[50%] flex flex-col h-80">
           <NuxtImg :src="favorite.cover" class="h-60 w-40 object-contain rounded-xl" />
-          <UButton 
-            :icon="favorite.is_ultra_favorite? 'i-heroicons-star-solid' : 'i-heroicons-star'"
-            color="gray"
-            variant="link"
-            class="h-10 m-0.5"
-            @click="updateFavoriteHandler"
-          />
+          <div class="flex flex-row justify-center">
+            <UButton 
+              :icon="favorite.is_ultra_favorite? 'i-heroicons-star-solid' : 'i-heroicons-star'"
+              color="gray"
+              variant="link"
+              class="h-10 w-10 m-0.5"
+              @click="updateFavoriteHandler"
+            />
+            <!-- @vue-ignore -->
+            <USelectMenu
+              :disabled="isLanguagesDisable"
+              class='w-20 pt-2' 
+              searchable
+              v-on:update:model-value="updateLanguage"
+              clear-search-on-close
+              v-model="sourceLanguage"
+              :options="languageOptions"
+              color="cyan"
+            />
+          </div>
         </div>
         <div class="w-[50%] flex flex-col h-80 ">
           <div class="w-[200px] bg-gray-800 rounded-xl p-1 flex justify-center">
@@ -174,7 +182,7 @@
                 </button> 
                 <button 
                   class="w-[33px] bg-slate-800 font-medium text-white hover:bg-transparent"
-                  @click="() => currentChapter? addReadedBelow(currentChapter) : console.log('nada')"
+                  @click="() => currentChapter? addReaded(currentChapter) : console.log('nada')"
                 >
                   <i class="fa fa-angle-right" />
                 </button>
@@ -224,7 +232,7 @@
                 </button> 
                 <button 
                   class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
-                  @click="() => addReadedBelow(chapter)"
+                  @click="() => addReaded(chapter)"
                 >
                   <i :class="isReaded(chapter)? 'fa fa-check' : 'fa fa-minus'" />
                 </button>

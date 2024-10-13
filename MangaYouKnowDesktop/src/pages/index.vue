@@ -7,9 +7,11 @@
   const rerender = useState<number>('rerenderIndex', () => 0)
   const isOpen = useState<Boolean>('isSearchOpen', () => false)
   const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => [])
-  const sourceQuery = ref('')
   const mangaSources = [
-    'MangaSee', 'MangaDex', 'TCB'
+    'MangaReader.to',
+    'MangaSee', 
+    'MangaDex', 
+    'TCB'
   ]
   const sourceSearch = useState<string>('sourceSearch', () => mangaSources[0])
   defineShortcuts({
@@ -26,39 +28,40 @@
 </script>
 
 <template>
-  <div :key="rerender" class="flex flex-col h-full w-full">
-    <div class="flex m-5 gap-1 justify-end">
-      <div>
-        <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
-          <UButton
-          color="gray"
-          variant="ghost"
-          icon="i-heroicons-magnifying-glass-20-solid"
-          @click="isOpen = true"
-          />
-        </UTooltip>
-        <UTooltip text="Refresh" :shortcuts="['Ctrl', 'R']">
-          <UButton
+  <div :key="rerender" class="h-full w-full flex flex-col">
+    <div class="w-full h-16 flex  justify-end">
+      <div class="m-5 gap-1 flex relative">
+        <div>
+          <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
+            <UButton
             color="gray"
             variant="ghost"
-            icon="i-heroicons-arrow-path-solid"
-            @click="rerender++"
-          />
-        </UTooltip>
-      </div>
-      <div>
-        <USelectMenu
-          searchable
-          class="w-[115px] "
-          v-on:open="sourceQuery = ''"
-          v-model:query="sourceQuery"
-          v-model="sourceSearch"
-          :options="mangaSources"
-          color="cyan"
-        />
+            icon="i-heroicons-magnifying-glass-20-solid"
+            @click="isOpen = true"
+            />
+          </UTooltip>
+          <UTooltip text="Refresh" :shortcuts="['Ctrl', 'R']">
+            <UButton
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-arrow-path-solid"
+              @click="rerender++"
+            />
+          </UTooltip>
+        </div>
+        <div>
+          <USelectMenu
+            searchable
+            class="w-[115px] z-[100]"
+            clear-search-on-close
+            v-model="sourceSearch"
+            :options="mangaSources"
+            color="cyan"
+          />  
+        </div>
       </div>
     </div>
-    <div class="pb-5 flex flex-row flex-wrap gap-2">
+    <div class=" h-[calc(100vh-4rem)] pb-5 flex flex-row flex-wrap gap-2 overflow-y-auto overflow-x-hidden">
       <div v-for="favorite in ultraFavorites" :key="favorite.name">
         <UltraFavoriteCard :favorite="favorite" />
       </div>

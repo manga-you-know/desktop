@@ -1,10 +1,9 @@
 import { conditionalMemoize } from '~/utils/conditionalMemoize';
 import { memoizeWithExpiration } from '~/utils/memoizedWithTime';
-import type { MangaDl } from '~/interfaces/mangaDl';
-import type { AnimeDl } from '~/interfaces/animeDl';
+import type { MangaDl, AnimeDl, ChaptersResponse } from '~/interfaces';
 import { Chapter } from '~/models/chapter';
 import { Episode } from '../models/episode';
-import { MangaSeeDl, MangaDexDl, TCBScansDl } from '~/downloaders/manga';
+import { MangaSeeDl, MangaDexDl, TCBScansDl, MangaReaderToDl } from '~/downloaders/manga';
 import type { Favorite } from '~/models/favorite';
 
 
@@ -17,6 +16,7 @@ export class DownloadManager {
       'MangaSee': new MangaSeeDl(),
       'MangaDex': new MangaDexDl(),
       'TCB': new TCBScansDl(),
+      'MangaReader.to': new MangaReaderToDl(),
     };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
@@ -44,7 +44,7 @@ export class DownloadManager {
     return await sourceDl.search(query);
   }
 
-  async getChapters(favorite: Favorite): Promise<Chapter[]> {
+  async getChapters(favorite: Favorite): Promise<ChaptersResponse> {
     let sourceDl = this.getMangaSource(favorite.source);
     return await sourceDl.getChapters(favorite.source_id);
   }
