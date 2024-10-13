@@ -164,6 +164,7 @@ import type { ChaptersResponse } from '~/interfaces';
               color="cyan"
             />
           </div>
+          <ULink :to="favorite.link" target="_blank" class="transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:text-violet-600 ">Favorite link</ULink>
         </div>
         <div class="w-[50%] flex flex-col h-80 ">
           <div class="w-[200px] bg-gray-800 rounded-xl p-1 flex justify-center">

@@ -28,6 +28,7 @@ export class MangaDexDl implements MangaDl {
           source_id: manga.id,
           name: titleName,
           folder_name: encodeURIComponent(titleName),
+          link: `https://mangadex.org/title/${manga.id}`,
           extra_name: manga.attributes.altTitles,
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,

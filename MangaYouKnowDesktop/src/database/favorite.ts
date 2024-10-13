@@ -10,12 +10,13 @@ export async function createFavorite(favorite: Favorite, userId?: number): Promi
 	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
-			'INSERT INTO favorite (user_id, name, folder_name, cover, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+			'INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 			[
 				userId,
 				favorite.name,
 				favorite.folder_name,
 				favorite.cover,
+				favorite.link,
 				favorite.source,
 				favorite.source_id,
 				favorite.type,
@@ -158,11 +159,12 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
 	const db = await Database.load(`sqlite:${DATABASE_NAME}`);
 	try {
 		await db.execute(
-			'UPDATE favorite SET name = ?, folder_name = ?, cover = ?, source = ?, source_id = ?, type = ?, extra_name = ?, title_color = ?, card_color = ?, grade = ?, author = ?, description = ?, is_ultra_favorite = ? WHERE id = ?',
+			'UPDATE favorite SET name = ?, folder_name = ?, cover = ?, link = ?, source = ?, source_id = ?, type = ?, extra_name = ?, title_color = ?, card_color = ?, grade = ?, author = ?, description = ?, is_ultra_favorite = ? WHERE id = ?',
 			[
 				favorite.name,
 				favorite.folder_name,
 				favorite.cover,
+				favorite.link,
 				favorite.source,
 				favorite.source_id,
 				favorite.type,

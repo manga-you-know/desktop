@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS favorite (
   user_id            INTEGER NOT NULL,
   name               TEXT NOT NULL,
   folder_name        TEXT NOT NULL,
+  link               TEXT NOT NULL,
   cover              TEXT NOT NULL,
   source             TEXT NOT NULL,
   source_id          TEXT NOT NULL,
@@ -59,4 +60,6 @@ CREATE TABLE IF NOT EXISTS mark_favorites (
   FOREIGN KEY (favorite_id) REFERENCES favorite(id)
 );
 
+-- changes
+ALTER TABLE favorite ADD COLUMN link TEXT NOT NULL DEFAULT '';
 `

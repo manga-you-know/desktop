@@ -7,6 +7,7 @@ export class Favorite {
   user_id?: number;
   name: string;
   folder_name: string;
+  link?: string;
   cover: string;
   source: string;
   source_id: string;
@@ -26,6 +27,7 @@ export class Favorite {
     user_id = -1,
     name = '',
     folder_name = '',
+    link = '',
     cover = '',
     source = '',
     source_id = '',
@@ -44,6 +46,7 @@ export class Favorite {
     user_id?: number;
     name: string;
     folder_name: string;
+    link?: string;
     cover: string;
     source: string;
     source_id: string;
@@ -62,6 +65,7 @@ export class Favorite {
     this.user_id = user_id;
     this.name = name;
     this.folder_name = folder_name;
+    this.link = link;
     this.cover = cover;
     this.source = source;
     this.source_id = source_id;

@@ -53,6 +53,7 @@ export class TCBScansDl implements MangaDl {
             name: img.attr('alt') || '',
             source_id: $(a).attr('href')?.replace('/mangas/', '') || '',
             folder_name: $(a).attr('href')?.split('/').pop() || '',
+            link: `${this.baseUrl}${$(a).attr('href')?.slice(1)}`,
             cover: img.attr('src') || '',
             source: 'TCB',
           })

@@ -43,7 +43,8 @@ export class MangaReaderToDl implements MangaDl {
 				new Favorite({
 					source_id: a.attr('href')?.slice(1) || '',
 					name: a.attr('title') || '',
-					folder_name: a.attr('href') || '',
+					folder_name: a.attr('href')?.slice(1) || '',
+					link: `${this.baseUrl}${a.attr('href')}`,
 					cover: img.attr('src') || '',
 					source: 'MangaReader.to',
 				})

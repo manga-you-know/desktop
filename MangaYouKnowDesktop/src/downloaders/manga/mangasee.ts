@@ -39,6 +39,7 @@ export class MangaSeeDl implements MangaDl {
       var mangaOrdered = new Favorite({
         name: manga.s,
         folder_name: manga.i,
+        link: `${this.baseUrl}/manga/${manga.i}`,
         cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,
         source: 'MangaSee',
         source_id: manga.i,

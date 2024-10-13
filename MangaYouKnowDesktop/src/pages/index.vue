@@ -52,7 +52,7 @@
         <div>
           <USelectMenu
             searchable
-            class="w-[115px] z-[100]"
+            class="w-[135px] z-[100]"
             clear-search-on-close
             v-model="sourceSearch"
             :options="mangaSources"

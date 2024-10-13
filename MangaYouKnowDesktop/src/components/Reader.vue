@@ -2,7 +2,6 @@
     import { getCurrentWindow } from '@tauri-apps/api/window';
     import type { DownloadManager } from '~/managers';
     import type { Chapter, Favorite } from '~/models';
-    import { ReadedDB } from '~/database';
     import { addReadedBelow } from '~/functions';
 
     const dlManager = useState<DownloadManager>('dlManager')
@@ -10,9 +9,9 @@
     const favorite = useState<Favorite>('favorite')
     const chapters = useState<Chapter[]>('chapters')
     const chapter = useState<Chapter>('chapter')
-    const currentlyCount = ref(1)
-    const totalPage = ref(pages.value.length)
-    const currentlyPage = ref<string>(pages.value[0])
+    const currentlyCount = useState<number>('currentlyCount', () => 1)
+    const totalPage = useState<number>('totalPage', () => pages.value.length)
+    const currentlyPage = useState<string>('currentlyPage', () => pages.value[0])
     const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => true)
     const openMenuChapters = ref(false)
     function toNextPage() {
@@ -38,6 +37,7 @@
         totalPage.value = pages.value.length
         fetchPages()
         await addReadedBelow(chapter.value, chapters.value, favorite.value, undefined, true)
+        closeMenu()
     }
     async function fetchPages () {
         useHead({
@@ -49,8 +49,10 @@
                     as: 'image'
                 }
             })
-            
         })
+    }
+    function closeMenu() {
+        openMenuChapters.value = false
     }
     defineShortcuts({
         f4: {
@@ -78,7 +80,9 @@
     <MenuChaptersSlideover
         v-model="openMenuChapters"
         :chapters="chapters" 
-        :currentlyChapter="chapter" 
+        :currentlyChapter="chapter"
+        :readChapterNextOrPrev="readNextOrPrevChapter"
+        :closeMenu="closeMenu"
     />
     <div class="fixed w-screen h-screen flex">
         <button class="w-[50%] cursor-default outline-none border-none" tabindex="-1" @click="toPrevPage"/>
