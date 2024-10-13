@@ -10,6 +10,11 @@ export default defineNuxtConfig({
   ssr: false,
   telemetry: false,
   devServer: { host: '0.0.0.0' },
+  routeRules: {
+    '/': { swr : true },
+    '/favorites': { swr : true },
+    '/configs': { swr : true }
+  },
   vite: {
     clearScreen: false,
     envPrefix: ['VITE_', 'TAURI_'],
