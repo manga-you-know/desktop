@@ -1,59 +1,60 @@
 <script setup lang="ts">
-	import { getCurrentWindow } from '@tauri-apps/api/window';
-	import { Readed, type Chapter, type Favorite } from '~/models';
-	import { isReaded, addReadedBelow } from '~/functions';
-	import type { DownloadManager } from '~/managers';
-	import { ReadedDB } from '~/database';
-	const isOpen = ref(false)
-	const { chapters, currentlyChapter, readChapterNextOrPrev, closeMenu } = defineProps<{
-		chapters: Chapter[],
-		currentlyChapter: Chapter,
-		readChapterNextOrPrev: (way: 'next' | 'prev') => void,
-		closeMenu: () => void,
-	}>()
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { ReadedDB } from '~/database';
+import { addReadedBelow, isReaded } from '~/functions';
+import type { DownloadManager } from '~/managers';
+import type { Chapter, Favorite, Readed } from '~/models';
+const isOpen = ref(false);
+const { chapters, currentlyChapter, readChapterNextOrPrev, closeMenu } =
+  defineProps<{
+    chapters: Chapter[];
+    currentlyChapter: Chapter;
+    readChapterNextOrPrev: (way: 'next' | 'prev') => void;
+    closeMenu: () => void;
+  }>();
 
-	const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => true)
-	const dlManager = useState<DownloadManager>('dlManager')
-	const favorite = useState<Favorite>('favorite')
-	const images = useState<string[]>('images')
-	const chapterH = useState<Chapter>('chapter')
-	const readeds = ref<Readed[]>([])
-	const currentlyCount = useState<number>('currentlyCount')
-	const totalPage = useState<number>('totalPage')
-	const currentlyPage = useState<string>('currentlyPage')
+const isDivMainHidden = useState<boolean>('isDivMainHidden', () => true);
+const dlManager = useState<DownloadManager>('dlManager');
+const favorite = useState<Favorite>('favorite');
+const images = useState<string[]>('images');
+const chapterH = useState<Chapter>('chapter');
+const readeds = ref<Readed[]>([]);
+const currentlyCount = useState<number>('currentlyCount');
+const totalPage = useState<number>('totalPage');
+const currentlyPage = useState<string>('currentlyPage');
 
-	async function readChapter(chapter: Chapter) {
-		images.value = await dlManager.value.getChapterImages(chapter)
-		closeMenu()
-		currentlyPage.value = images.value[currentlyCount.value - 1]
-		totalPage.value = images.value.length
-		chapterH.value = chapter
-		currentlyCount.value = 1
-		await fetchPages()
-		await addReadedBelow(chapter, chapters, favorite.value, undefined, true)
-	}
-	async function addReaded(chapter: Chapter) {
-		await addReadedBelow(chapter, chapters, favorite.value, readeds.value)
-		readeds.value = await ReadedDB.getReadeds(favorite.value)
-	}
-	function isReadedHere(chapter: Chapter) {
-		return isReaded(chapter, readeds.value)
-	}
-	async function fetchPages () {
-        useHead({
-            title: favorite.value.name,
-            link: images.value.map(image => {
-                return {
-                    rel: 'preload',
-                    href: image,
-                    as: 'image'
-                }
-            })
-        })
-    }
-	onMounted(async () => {
-		readeds.value = await ReadedDB.getReadeds(favorite.value)
-	})
+async function readChapter(chapter: Chapter) {
+  images.value = await dlManager.value.getChapterImages(chapter);
+  closeMenu();
+  currentlyPage.value = images.value[currentlyCount.value - 1];
+  totalPage.value = images.value.length;
+  chapterH.value = chapter;
+  currentlyCount.value = 1;
+  await fetchPages();
+  await addReadedBelow(chapter, chapters, favorite.value, undefined, true);
+}
+async function addReaded(chapter: Chapter) {
+  await addReadedBelow(chapter, chapters, favorite.value, readeds.value);
+  readeds.value = await ReadedDB.getReadeds(favorite.value);
+}
+function isReadedHere(chapter: Chapter) {
+  return isReaded(chapter, readeds.value);
+}
+async function fetchPages() {
+  useHead({
+    title: favorite.value.name,
+    link: images.value.map((image) => {
+      return {
+        rel: 'preload',
+        href: image,
+        as: 'image',
+      };
+    }),
+  });
+}
+onMounted(async () => {
+  readeds.value = await ReadedDB.getReadeds(favorite.value);
+});
 </script>
 
 <template>

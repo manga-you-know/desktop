@@ -1,6 +1,5 @@
-import { Mark } from './mark';
-import { Chapter } from './chapter';
-
+import type { Chapter } from './chapter';
+import type { Mark } from './mark';
 
 export class Favorite {
   id?: number;
@@ -40,7 +39,7 @@ export class Favorite {
     is_ultra_favorite = false,
     description = '',
     marks = [],
-    readeds = []
+    readeds = [],
   }: {
     id?: number;
     user_id?: number;

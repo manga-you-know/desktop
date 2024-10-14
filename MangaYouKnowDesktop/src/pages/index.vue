@@ -1,30 +1,25 @@
 
 <script setup lang="ts">
-  import { FavoriteDB } from '~/database';
-  import type { Favorite, User } from '~/models';
+import { FavoriteDB } from '~/database';
+import type { Favorite, User } from '~/models';
 
-  const user = useState<User>('user')
-  const rerender = useState<number>('rerenderIndex', () => 0)
-  const isOpen = useState<Boolean>('isSearchOpen', () => false)
-  const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => [])
-  const mangaSources = [
-    'MangaReader.to',
-    'MangaSee', 
-    'MangaDex', 
-    'TCB'
-  ]
-  const sourceSearch = useState<string>('sourceSearch', () => mangaSources[0])
-  defineShortcuts({
-    meta_r: {
-      usingInput: true,
-      handler: () => {
-        rerender.value++
-      }
+const user = useState<User>('user');
+const rerender = useState<number>('rerenderIndex', () => 0);
+const isOpen = useState<boolean>('isSearchOpen', () => false);
+const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => []);
+const mangaSources = ['MangaReader.to', 'MangaSee', 'MangaDex', 'TCB'];
+const sourceSearch = useState<string>('sourceSearch', () => mangaSources[0]);
+defineShortcuts({
+  meta_r: {
+    usingInput: true,
+    handler: () => {
+      rerender.value++;
     },
-  })
-  onMounted(async () => {
-    ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id)
-  })
+  },
+});
+onMounted(async () => {
+  ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id);
+});
 </script>
 
 <template>

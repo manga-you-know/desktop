@@ -10,7 +10,7 @@ export class Chapter {
     title: string,
     chapter_id: string,
     source: string,
-    language: string = "default",
+    language = 'default',
   ) {
     this.number = number;
     this.title = title;

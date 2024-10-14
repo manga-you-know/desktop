@@ -1,40 +1,44 @@
 <script setup lang="ts">
-  import Database from "@tauri-apps/plugin-sql";
-  import type { User, Favorite } from "~/models";
-  import { migrationQuery } from "~/database";
-  import { getCurrentWindow } from "@tauri-apps/api/window";
-  import { DownloadManager } from "./managers/downloadManager";
-import { DATABASE_NAME } from "./constants";
-  const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
-  const isLogged = useState<Boolean>('isLogged', () => false)
-  const isSearchOpen = useState<Boolean>('isSearchOpen', () => false)
-  const isFavoriteOpen = useState<Boolean>('isFavoriteOpen', () => false)
-  const isEditFavoriteOpen = useState<Boolean>('isEditFavoriteOpen', () => false)
-  const currentWindow = getCurrentWindow()
-  const user = useState<User>('user')
-  const favorite = useState<Favorite>('favorite')
-  const dlManager = useState<DownloadManager>('dlManager', () => new DownloadManager())
-  defineShortcuts({
-    meta_k: {
-      usingInput: true,
-      handler: () => {
-        if (user.value) {
-          isSearchOpen.value = !isSearchOpen.value
-        }
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import Database from '@tauri-apps/plugin-sql';
+import { migrationQuery } from '~/database';
+import type { Favorite, User } from '~/models';
+import { DATABASE_NAME } from './constants';
+import { DownloadManager } from './managers/downloadManager';
+const isDivMainHidden = useState<boolean>('isDivMainHidden', () => false);
+const isLogged = useState<boolean>('isLogged', () => false);
+const isSearchOpen = useState<boolean>('isSearchOpen', () => false);
+const isFavoriteOpen = useState<boolean>('isFavoriteOpen', () => false);
+const isEditFavoriteOpen = useState<boolean>('isEditFavoriteOpen', () => false);
+const currentWindow = getCurrentWindow();
+const user = useState<User>('user');
+const favorite = useState<Favorite>('favorite');
+const dlManager = useState<DownloadManager>(
+  'dlManager',
+  () => new DownloadManager(),
+);
+defineShortcuts({
+  meta_k: {
+    usingInput: true,
+    handler: () => {
+      if (user.value) {
+        isSearchOpen.value = !isSearchOpen.value;
       }
-  }})
-  defineShortcuts({
-    f11: {
-      usingInput: true,
-      handler: async () => {
-        currentWindow.setFullscreen(!await currentWindow.isFullscreen());
-      }
-    }
-  })
-  onBeforeMount(async () => {
-    const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-    await db.execute(migrationQuery);
-  })
+    },
+  },
+});
+defineShortcuts({
+  f11: {
+    usingInput: true,
+    handler: async () => {
+      currentWindow.setFullscreen(!(await currentWindow.isFullscreen()));
+    },
+  },
+});
+onBeforeMount(async () => {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  await db.execute(migrationQuery);
+});
 </script>
 
 
