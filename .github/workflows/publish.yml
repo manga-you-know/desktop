@@ -1,0 +1,111 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - release
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.changelog.outputs.tag }}
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.changelog.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GIT_TOKEN }}
+      
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      
+      - run: |
+          cd MangaYouKnowDesktop
+          yarn add conventional-changelog-conventionalcommits@7.0.2 --dev
+          yarn add conventional-changelog-conventionalcommits@9.0.0 --dev
+          cd ..
+      
+      - name: Generate Changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5.2.1
+        with:
+          github-token: ${{ secrets.GIT_TOKEN }}
+          git-user-name: 'MangaYouKnow Bot'
+          git-user-email: 'admin@myk.com'
+          config-file-path: ./.github/.config.cjs
+          pre-commit: ./.github/.pre-commit.cjs
+          version-file: './MangaYouKnowDesktop/src-tauri/tauri.conf.json'
+          skip-version-file: false
+          skip-git-pull: false
+          pre-release: true
+  release:
+    name: Release
+    needs: changelog
+    if: ${{ needs.changelog.outputs.skipped != 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04"
+            args: ""
+          - platform: "windows-latest"
+            args: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GIT_TOKEN }}
+      
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      
+      - name: Install front-end dependencies
+        run: |
+          cd MangaYouKnowDesktop
+          yarn install
+          cd ..
+          
+      - name: Update Cargo.toml
+        run: bash library u ${{ needs.changelog.outputs.version }}
+      
+      - name: Publish Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ needs.changelog.outputs.tag }}
+          releaseBody: ${{ needs.changelog.outputs.changelog }}
+          releaseDraft: true
+          args: ${{ matrix.args }}
+          projectPath: './MangaYouKnowDesktop'
