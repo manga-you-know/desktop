@@ -9,8 +9,8 @@ export class Readed {
     id: number,
     chapter_id: string,
     source: string,
-    language: string = "default",
-    favorite_id: number
+    language = 'default',
+    favorite_id: number,
   ) {
     this.id = id;
     this.chapter_id = chapter_id;

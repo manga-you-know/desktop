@@ -1,7 +1,7 @@
 import { memoize } from 'lodash';
 
 export function memoizeWithExpiration(fn: any, ttl: number) {
-  let cache: { [key: string]: { result: any; timestamp: number } } = {};
+  const cache: { [key: string]: { result: any; timestamp: number } } = {};
 
   const memoized = memoize(fn, (...args) => {
     const key = JSON.stringify(args);
@@ -10,7 +10,7 @@ export function memoizeWithExpiration(fn: any, ttl: number) {
     }
     const result = fn(...args);
     cache[key] = { result, timestamp: Date.now() };
-    
+
     return result;
   });
 

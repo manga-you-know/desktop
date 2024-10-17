@@ -7,12 +7,12 @@ export class User {
   is_authenticated?: boolean;
 
   constructor(
-    id: number = -1,
+    id = -1,
     username: string,
     email?: string,
-    icon: string = "https://cdn.discordapp.com/embed/avatars/0.png",
-    password: string = "",
-    is_authenticated: boolean = false
+    icon = 'https://cdn.discordapp.com/embed/avatars/0.png',
+    password = '',
+    is_authenticated = false,
   ) {
     this.id = id;
     this.username = username;

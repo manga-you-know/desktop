@@ -27,32 +27,40 @@
 //   })
 // }, { deep: true })
 const links = [
-  [{
-    label: 'Profile',
-    avatar: {
-      src: 'https://avatars.githubusercontent.com/u/103978193?v=4'
+  [
+    {
+      label: 'Profile',
+      avatar: {
+        src: 'https://avatars.githubusercontent.com/u/103978193?v=4',
+      },
     },
-  }, {
-    label: 'Home',
-    icon: 'i-heroicons-home',
-    to: '/'
-  }, {
-    label: 'Favorites',
-    icon: 'i-heroicons-star',
-    to: '/favorites'
-  }, {
-    label: 'Configs',
-    icon: 'i-heroicons-cog-6-tooth',
-    to: '/configs'
-  }], [{
+    {
+      label: 'Home',
+      icon: 'i-heroicons-home',
+      to: '/',
+    },
+    {
+      label: 'Favorites',
+      icon: 'i-heroicons-star',
+      to: '/favorites',
+    },
+    {
+      label: 'Configs',
+      icon: 'i-heroicons-cog-6-tooth',
+      to: '/configs',
+    },
+  ],
+  [
+    {
       label: 'Example',
-      icon: 'i-heroicons-light-bulb'
-    }, {
+      icon: 'i-heroicons-light-bulb',
+    },
+    {
       label: 'Help',
-      icon: 'i-heroicons-question-mark-circle'
-  }]
-]
-
+      icon: 'i-heroicons-question-mark-circle',
+    },
+  ],
+];
 </script>
 
 <template>

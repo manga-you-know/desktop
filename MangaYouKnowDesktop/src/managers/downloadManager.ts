@@ -1,11 +1,15 @@
+import {
+  MangaDexDl,
+  MangaReaderToDl,
+  MangaSeeDl,
+  TCBScansDl,
+} from '~/downloaders/manga';
+import type { AnimeDl, ChaptersResponse, MangaDl } from '~/interfaces';
+import type { Chapter } from '~/models/chapter';
+import type { Favorite } from '~/models/favorite';
 import { conditionalMemoize } from '~/utils/conditionalMemoize';
 import { memoizeWithExpiration } from '~/utils/memoizedWithTime';
-import type { MangaDl, AnimeDl, ChaptersResponse } from '~/interfaces';
-import { Chapter } from '~/models/chapter';
-import { Episode } from '../models/episode';
-import { MangaSeeDl, MangaDexDl, TCBScansDl, MangaReaderToDl } from '~/downloaders/manga';
-import type { Favorite } from '~/models/favorite';
-
+import type { Episode } from '../models/episode';
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
@@ -13,9 +17,9 @@ export class DownloadManager {
 
   constructor() {
     this.mangaSources = {
-      'MangaSee': new MangaSeeDl(),
-      'MangaDex': new MangaDexDl(),
-      'TCB': new TCBScansDl(),
+      MangaSee: new MangaSeeDl(),
+      MangaDex: new MangaDexDl(),
+      TCB: new TCBScansDl(),
       'MangaReader.to': new MangaReaderToDl(),
     };
     this.search = this.search.bind(this);
@@ -31,35 +35,35 @@ export class DownloadManager {
     this.getEpisodeUrls = conditionalMemoize(this.getEpisodeUrls);
   }
 
-  getMangaSource(source: string): MangaDl  {
+  getMangaSource(source: string): MangaDl {
     return this.mangaSources[source];
   }
 
-  getAnimeSource(source: string): AnimeDl  {
+  getAnimeSource(source: string): AnimeDl {
     return this.animeSources[source];
   }
 
   async search(query: string, source: string): Promise<Favorite[]> {
-    let sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
     return await sourceDl.search(query);
   }
 
   async getChapters(favorite: Favorite): Promise<ChaptersResponse> {
-    let sourceDl = this.getMangaSource(favorite.source);
+    const sourceDl = this.getMangaSource(favorite.source);
     return await sourceDl.getChapters(favorite.source_id);
   }
 
   async getEpisodes(anime_id: string, source: string): Promise<Chapter[]> {
-    let sourceDl = this.getAnimeSource(source);
+    const sourceDl = this.getAnimeSource(source);
     return await sourceDl.getEpisodes(anime_id);
   }
 
   async getChapterImages(chapter: Chapter): Promise<string[]> {
-    let sourceDl = this.getMangaSource(chapter.source);
+    const sourceDl = this.getMangaSource(chapter.source);
     return await sourceDl.getChapterImages(chapter.chapter_id);
   }
   async getEpisodeUrls(episode_id: string, source: string): Promise<Episode[]> {
-    let sourceDl = this.getAnimeSource(source);
+    const sourceDl = this.getAnimeSource(source);
     return await sourceDl.getEpisodeUrls(episode_id);
   }
 }

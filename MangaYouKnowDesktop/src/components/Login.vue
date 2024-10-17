@@ -1,61 +1,59 @@
 <script setup lang="ts">
-import { object, string, type InferType } from 'yup'
-import type { FormSubmitEvent } from '#ui/types'
-import type { User } from '~/models'
+import { type InferType, object, string } from 'yup';
 import { UserDB } from '~/database';
+import type { User } from '~/models';
+import type { FormSubmitEvent } from '#ui/types';
 
-const user = useState<User>('user')
-const isLogged = useState<Boolean>('isLogged', () => false)
+const user = useState<User>('user');
+const isLogged = useState<boolean>('isLogged', () => false);
 const schema = object({
   username: string()
     .required('Required')
     .max(20, 'Must be at most 20 characters'),
-  email: string()
-    .email('Invalid email')
-    .required('Required'),
+  email: string().email('Invalid email').required('Required'),
   password: string()
     .min(8, 'Must be at least 8 characters')
-    .required('Required')
-})
-const isThereUsers = ref(false)
-const users = ref<User[]>([])
+    .required('Required'),
+});
+const isThereUsers = ref(false);
+const users = ref<User[]>([]);
 
-type Schema = InferType<typeof schema>
+type Schema = InferType<typeof schema>;
 
 const state = reactive({
   username: undefined,
   email: undefined,
-  password: undefined
-})
+  password: undefined,
+});
 
 onMounted(async () => {
-  const defaultuser = await UserDB.getDefaultUser()
-  user.value = defaultuser
-  isLogged.value = true
-  return
-  const usersH = await UserDB.getUsers()
-  console.log(usersH)
-  if (usersH.length > 0) {
-    users.value = usersH
-    isThereUsers.value = true
-  }
-})
+  const defaultuser = await UserDB.getDefaultUser();
+  user.value = defaultuser;
+  isLogged.value = true;
+  return;
+  // const usersH = await UserDB.getUsers();
+  // console.log(usersH);
+  // if (usersH.length > 0) {
+  //   users.value = usersH;
+  //   isThereUsers.value = true;
+  // }
+});
 
-async function onSubmit (event: FormSubmitEvent<Schema>) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
   // Do something with event.data
-  console.log(event.data)
+  console.log(event.data);
 }
 
 function selectUser(userOut: User) {
-  console.log(userOut)
-  user.value = userOut
-  isLogged.value = true
+  console.log(userOut);
+  user.value = userOut;
+  isLogged.value = true;
 }
 
-async function onSubmitDefault () {
-  const defaultuser = await UserDB.getDefaultUser()
-  user.value = defaultuser
-  isLogged.value = true
+async function onSubmitDefault() {
+  const defaultuser = await UserDB.getDefaultUser();
+  user.value = defaultuser;
+  isLogged.value = true;
 }
 </script>
 

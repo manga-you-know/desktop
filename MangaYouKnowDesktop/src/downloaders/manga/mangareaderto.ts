@@ -1,17 +1,17 @@
 import { fetch } from '@tauri-apps/plugin-http';
 import * as cheerio from 'cheerio';
 import type { ChaptersResponse, MangaDl } from '~/interfaces';
-import { Favorite, Chapter } from '~/models';
-
+import { Chapter, Favorite } from '~/models';
 
 export class MangaReaderToDl implements MangaDl {
-	baseUrl: string = 'https://mangareader.to';
-	headers = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+  baseUrl = 'https://mangareader.to';
+  headers = {
+    accept:
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'accept-language': 'en-US,en;q=0.9',
-    'dnt': '1',
-    'priority': 'u=0, i',
-    'referer': 'https://mangareader.to/',
+    dnt: '1',
+    priority: 'u=0, i',
+    referer: 'https://mangareader.to/',
     'sec-ch-ua': '"Chromium";v="129", "Not=A?Brand";v="8"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
@@ -20,8 +20,9 @@ export class MangaReaderToDl implements MangaDl {
     'sec-fetch-site': 'same-origin',
     'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
-  }
+    'user-agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+  };
 
 	async search(query: string): Promise<Favorite[]> {
 		const response = await fetch(
@@ -29,7 +30,7 @@ export class MangaReaderToDl implements MangaDl {
 			headers: this.headers
 		});
 		if (response.status !== 200) {
-			throw new Error(`Failed to search ${query} ${response.status}`);;
+			return [];
 		}
 		const mangas: Favorite[] = [];
 		const text = await response.text();
@@ -51,8 +52,8 @@ export class MangaReaderToDl implements MangaDl {
 			);
 		});
 
-		return mangas;
-	}
+    return mangas;
+  }
 
 	async getChapters(mangaId: string): Promise<ChaptersResponse> {
 		const response = await fetch(

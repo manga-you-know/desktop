@@ -1,16 +1,19 @@
 import { fetch } from '@tauri-apps/plugin-http';
 import type { ChaptersResponse, MangaDl } from '~/interfaces';
-import { Favorite, Chapter } from '~/models';
+import { Chapter, Favorite } from '~/models';
 
 export class MangaDexDl implements MangaDl {
-  async search(query: string, limit: string = '20'): Promise<Favorite[]> {
-		const response = await fetch(`https://api.mangadex.org/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(query)}&limit=${limit}`, {
-      method: 'GET',
-    });
+  async search(query: string, limit = '20'): Promise<Favorite[]> {
+    const response = await fetch(
+      `https://api.mangadex.org/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(query)}&limit=${limit}`,
+      {
+        method: 'GET',
+      },
+    );
     if (!response || !response.ok) {
       throw new Error(`Failed to search ${query} ${response.status}`);
     }
-		const responseJson = await response.json();
+    const responseJson = await response.json();
     const listMangas: Favorite[] = [];
     for (const manga of await responseJson.data) {
       let idFilename = '';
@@ -19,8 +22,8 @@ export class MangaDexDl implements MangaDl {
           idFilename = type.attributes.fileName;
         }
       }
-      const titleName = manga.attributes.title.en 
-        ? manga.attributes.title.en 
+      const titleName = manga.attributes.title.en
+        ? manga.attributes.title.en
         : manga.attributes.title[Object.keys(manga.attributes.title)[0]];
 
       listMangas.push(
@@ -32,8 +35,8 @@ export class MangaDexDl implements MangaDl {
           extra_name: manga.attributes.altTitles,
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
-					source: 'MangaDex'
-				})
+          source: 'MangaDex',
+        }),
       );
     }
     return listMangas;
@@ -54,17 +57,24 @@ export class MangaDexDl implements MangaDl {
   //   return await response.json();
   // }
 
-  async getChapters(mangaId: string, language: string = 'en', limit: number = 500): Promise<ChaptersResponse> {
+  async getChapters(
+    mangaId: string,
+    language = 'en',
+    limit = 500,
+  ): Promise<ChaptersResponse> {
     let offset = 0;
     const chaptersList: any[] = [];
     while (true) {
       // const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
       //   method: 'GET',
       // });
-      const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
-        method: 'GET',
-      });
-			const responseJson = await response.json();
+      const response = await fetch(
+        `https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`,
+        {
+          method: 'GET',
+        },
+      );
+      const responseJson = await response.json();
       if (!response || !response.ok || responseJson.data.length === 0) {
         break;
       }
@@ -75,21 +85,24 @@ export class MangaDexDl implements MangaDl {
       offset += limit;
     }
 
-    const formattedList = chaptersList.reduce((acc, chapter) => {
-      const language = chapter.attributes.translatedLanguage;
-      const formattedChapter = new Chapter(
-        chapter.attributes.chapter,
-        chapter.attributes.title,
-        chapter.id,
-        'MangaDex',
-        language
-      );
-      if (!acc[language]) {
-        acc[language] = [];
-      }
-      acc[language].push(formattedChapter);
-      return acc;
-    }, {} as { [key: string]: Chapter[] });
+    const formattedList = chaptersList.reduce(
+      (acc, chapter) => {
+        const language = chapter.attributes.translatedLanguage;
+        const formattedChapter = new Chapter(
+          chapter.attributes.chapter,
+          chapter.attributes.title,
+          chapter.id,
+          'MangaDex',
+          language,
+        );
+        if (!acc[language]) {
+          acc[language] = [];
+        }
+        acc[language].push(formattedChapter);
+        return acc;
+      },
+      {} as { [key: string]: Chapter[] },
+    );
     return {
       ok: true,
       isMultipleLanguage: true,
@@ -98,54 +111,57 @@ export class MangaDexDl implements MangaDl {
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
-    const response = await fetch(`https://api.mangadex.org/at-home/server/${chapterId}?forcePort443=false`, {
-      method: 'GET',
-    });
+    const response = await fetch(
+      `https://api.mangadex.org/at-home/server/${chapterId}?forcePort443=false`,
+      {
+        method: 'GET',
+      },
+    );
 
     if (response.status !== 200) {
       throw new Error(`Failed to get chapter images ${chapterId} ${response.status}`);
     }
 
     const chapter = await response.json();
-    const chapterImgs: string[] = chapter.chapter.data.map((img: string) => 
-      `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`
+    const chapterImgs: string[] = chapter.chapter.data.map(
+      (img: string) => `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`,
     );
 
     return chapterImgs;
   }
 
-//   async downloadChapter(chapterId: string): Promise<boolean> {
-//     const urls = await this.getChapterImgs(chapterId);
-//     if (!urls) return false;
+  //   async downloadChapter(chapterId: string): Promise<boolean> {
+  //     const urls = await this.getChapterImgs(chapterId);
+  //     if (!urls) return false;
 
-//     const chapterInfo = await fetch(`https://api.mangadex.org/chapter/${chapterId}?includes[]=scanlation_group&includes[]=manga&includes[]=user`, {
-//       method: 'GET',
-//     });
+  //     const chapterInfo = await fetch(`https://api.mangadex.org/chapter/${chapterId}?includes[]=scanlation_group&includes[]=manga&includes[]=user`, {
+  //       method: 'GET',
+  //     });
 
-//     if (!chapterInfo) return false;
+  //     if (!chapterInfo) return false;
 
-//     const chapterPath = new Path(`MangaDex/${chapterInfo.data.attributes.chapter}/`);
-//     chapterPath.mkdir({ recursive: true });
+  //     const chapterPath = new Path(`MangaDex/${chapterInfo.data.attributes.chapter}/`);
+  //     chapterPath.mkdir({ recursive: true });
 
-//     const hash = urls.hash;
+  //     const hash = urls.hash;
 
-//     const downloadMangaPage = async (url: string, path: Path) => {
-//       const image = await fetch(url, { method: 'GET' });
-//       if (!image) return false;
+  //     const downloadMangaPage = async (url: string, path: Path) => {
+  //       const image = await fetch(url, { method: 'GET' });
+  //       if (!image) return false;
 
-//       const file = await image.arrayBuffer();
-//       const writer = new FileWriter(path);
-//       await writer.write(file);
-//     };
+  //       const file = await image.arrayBuffer();
+  //       const writer = new FileWriter(path);
+  //       await writer.write(file);
+  //     };
 
-//     const threads = new ThreadManager();
-//     for (const [i, image] of urls.data.entries()) {
-//       threads.addThread(async () => {
-//         await downloadMangaPage(`https://uploads.mangadex.org/data/${hash}/${image}`, chapterPath.join(`${i.toString().padStart(4, '0')}.png`));
-//       });
-//     }
-//     threads.start();
-//     await threads.join();
-//     return true;
-//   }
+  //     const threads = new ThreadManager();
+  //     for (const [i, image] of urls.data.entries()) {
+  //       threads.addThread(async () => {
+  //         await downloadMangaPage(`https://uploads.mangadex.org/data/${hash}/${image}`, chapterPath.join(`${i.toString().padStart(4, '0')}.png`));
+  //       });
+  //     }
+  //     threads.start();
+  //     await threads.join();
+  //     return true;
+  //   }
 }

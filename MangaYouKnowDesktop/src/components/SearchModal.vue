@@ -1,65 +1,72 @@
 <script setup lang="ts">
-  import type { Favorite, Readed, User } from '~/models';
-  import { DownloadManager } from '~/managers/downloadManager';
-  import { FavoriteDB } from '~/database';
+import { FavoriteDB } from '~/database';
+import type { DownloadManager } from '~/managers/downloadManager';
+import type { Favorite, Readed, User } from '~/models';
 
-  const user = useState<User>('user')
-  const query = ref('')
-  const dlManager = useState<DownloadManager>('dlManager')
-  const isLoading = ref(false)
-  const results = ref<Favorite[]>([]);
-  const favorites = useState<Favorite[]>('favorites')
-  const isSearchOpen = useState<Boolean>('isSearchOpen')
-  const sourceSearch = useState<string>('sourceSearch')
-  const finished = ref()
+const user = useState<User>('user');
+const query = ref('');
+const dlManager = useState<DownloadManager>('dlManager');
+const isLoading = ref(false);
+const results = ref<Favorite[]>([]);
+const favorites = useState<Favorite[]>('favorites');
+const isSearchOpen = useState<boolean>('isSearchOpen');
+const sourceSearch = useState<string>('sourceSearch');
+const finished = ref();
 
-  function resetResults() {
-    if (query.value === '') {
-      isSearchOpen.value = false
-      return
-    }
-    query.value = ''
-    results.value = []
+function resetResults() {
+  if (query.value === '') {
+    isSearchOpen.value = false;
+    return;
   }
+  query.value = '';
+  results.value = [];
+}
 
-  async function search() {
-    isLoading.value = true
-    await new Promise(resolve => {
-      setTimeout(() => {
-        resolve(true)
-      }, 10)
-    })
-    if (query.value === '') {
-      isLoading.value = false
-      results.value = []
-      return
-    }
-    try {
-      favorites.value = await FavoriteDB.getFavorites(user.value.id)
-      results.value = (await dlManager.value.search(query.value, sourceSearch.value)).slice(0, 20);
-    } catch (error) {
-      finished.value = error
-    } finally {
-      isLoading.value = false;
-    }
+async function search() {
+  isLoading.value = true;
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 10);
+  });
+  if (query.value === '') {
+    isLoading.value = false;
+    results.value = [];
+    return;
   }
-  async function verifyFavorites() {
-    const favorites = await FavoriteDB.getFavorites(user.value.id)
+  try {
+    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    results.value = (
+      await dlManager.value.search(query.value, sourceSearch.value)
+    ).slice(0, 20);
+  } catch (error) {
+    finished.value = error;
+  } finally {
+    isLoading.value = false;
   }
-  function isFavorite(favorite: Favorite) {
-    return favorites.value.find(f => f.name === favorite.name && f.source === favorite.source && f.source_id === favorite.source_id)
-  }
+}
+async function verifyFavorites() {
+  const favorites = await FavoriteDB.getFavorites(user.value.id);
+}
+function isFavorite(favorite: Favorite) {
+  return favorites.value.find(
+    (f) =>
+      f.name === favorite.name &&
+      f.source === favorite.source &&
+      f.source_id === favorite.source_id,
+  );
+}
 
-  async function favorite(favorite: Favorite) {
-    const isFavoriteh = isFavorite(favorite)
-    if (isFavoriteh) {
-      await FavoriteDB.deleteFavorite(isFavoriteh)
-      favorites.value = await FavoriteDB.getFavorites(user.value.id)
-      return
-    }
-    await FavoriteDB.createFavorite(favorite, user.value.id)
-    favorites.value = await FavoriteDB.getFavorites(user.value.id)
+async function favorite(favorite: Favorite) {
+  const isFavoriteh = isFavorite(favorite);
+  if (isFavoriteh) {
+    await FavoriteDB.deleteFavorite(isFavoriteh);
+    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    return;
   }
+  await FavoriteDB.createFavorite(favorite, user.value.id);
+  favorites.value = await FavoriteDB.getFavorites(user.value.id);
+}
 </script>
 
 <template>
