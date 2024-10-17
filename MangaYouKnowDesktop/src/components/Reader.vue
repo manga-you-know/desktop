@@ -104,7 +104,7 @@
             class="pointer-events-auto"
         >
             <UButton
-                icon="i-heroicons-code-bracket-square"
+                icon="nimbus:arrows-horizontal"
                 color="gray"
             />
             <template #panel>

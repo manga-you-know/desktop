@@ -30,8 +30,7 @@ export class MangaSeeDl implements MangaDl {
       headers: this.headers
     })
     if (response.status !== 200) {
-      console.log('error')
-      return [];
+      throw new Error(`Failed to get mangas ${response.status}`);
     }
     const text = await response.text();
     var mangaList = JSON.parse(text.split('vm.Directory = ')[1].split(';\r\n')[0])
@@ -54,10 +53,6 @@ export class MangaSeeDl implements MangaDl {
 
   async search(query: string): Promise<Favorite[]> {
     const unsortedMangas = await this.getMangas();
-    if (unsortedMangas.length === 0) {
-      console.log('empty')
-      return []
-    }
     const mangasWithGrade: { grade: number, manga: Favorite }[] = [];
     unsortedMangas.forEach(manga => {
       let grade = 0;
@@ -95,7 +90,7 @@ export class MangaSeeDl implements MangaDl {
     });
     //@ts-ignore
     if (response.status !== 200) {
-      return { ok: false };
+      throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
     }
     const chapters: Chapter[] = [];
     const text = await response.text();
@@ -124,6 +119,9 @@ export class MangaSeeDl implements MangaDl {
     const response = await fetch(`${this.baseUrl}/read-online/${chapterId}`, {
       headers: this.headers
     });
+    if (response.status !== 200) {
+      throw new Error(`Failed to get chapter images ${chapterId} ${response.status}`);
+    }
     const text = await response.text();
     const dominy = text.split('vm.CurPathName = "')[1].split('"')[0];
     const manga_id = text.split('vm.IndexName = "')[1].split('"')[0];

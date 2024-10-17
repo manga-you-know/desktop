@@ -8,9 +8,9 @@
   const isOpen = useState<Boolean>('isSearchOpen', () => false)
   const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => [])
   const mangaSources = [
-    'MangaReader.to',
     'MangaSee', 
     'MangaDex', 
+    'MangaReader.to',
     'TCB'
   ]
   const sourceSearch = useState<string>('sourceSearch', () => mangaSources[0])

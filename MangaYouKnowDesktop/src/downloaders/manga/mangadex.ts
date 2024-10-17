@@ -8,7 +8,7 @@ export class MangaDexDl implements MangaDl {
       method: 'GET',
     });
     if (!response || !response.ok) {
-      return [];
+      throw new Error(`Failed to search ${query} ${response.status}`);
     }
 		const responseJson = await response.json();
     const listMangas: Favorite[] = [];
@@ -102,8 +102,8 @@ export class MangaDexDl implements MangaDl {
       method: 'GET',
     });
 
-    if (!response) {
-      return [];
+    if (response.status !== 200) {
+      throw new Error(`Failed to get chapter images ${chapterId} ${response.status}`);
     }
 
     const chapter = await response.json();

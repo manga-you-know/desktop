@@ -25,8 +25,8 @@ export class DownloadManager {
     this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
 
     this.search = conditionalMemoize(this.search);
-    this.getChapters = memoizeWithExpiration(this.getChapters, 590);
-    this.getEpisodes = memoizeWithExpiration(this.getEpisodes, 590);
+    this.getChapters = memoizeWithExpiration(this.getChapters, 600);
+    this.getEpisodes = memoizeWithExpiration(this.getEpisodes, 600);
     this.getChapterImages = conditionalMemoize(this.getChapterImages);
     this.getEpisodeUrls = conditionalMemoize(this.getEpisodeUrls);
   }

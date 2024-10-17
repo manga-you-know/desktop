@@ -29,7 +29,7 @@ export class MangaReaderToDl implements MangaDl {
 			headers: this.headers
 		});
 		if (response.status !== 200) {
-			return [];
+			throw new Error(`Failed to search ${query} ${response.status}`);;
 		}
 		const mangas: Favorite[] = [];
 		const text = await response.text();
@@ -60,7 +60,7 @@ export class MangaReaderToDl implements MangaDl {
 				headers: this.headers
 		});
 		if (response.status !== 200) {
-			return { ok: false };
+			throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
 		}
 		const chapters: { [key: string]: Chapter[] } = {};
 		const text = await response.text();
@@ -91,7 +91,7 @@ export class MangaReaderToDl implements MangaDl {
 				headers: this.headers
 		});
 		if (response.status !== 200) {
-			return [];
+			throw new Error(`Failed to get chapter images ${chapterId} ${response.status}`);;
 		}
 		const text = await response.text();
 		const $ = cheerio.load(text);
