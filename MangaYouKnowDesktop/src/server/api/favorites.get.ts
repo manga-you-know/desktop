@@ -5,15 +5,15 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   if (query.query === undefined) {
     const favorites = await db.select(
-      'SELECT * FROM Favorite WHERE userID = ?', 
-      [query.userId]
+      'SELECT * FROM Favorite WHERE userID = ?',
+      [query.userId],
     );
-    return favorites
+    return favorites;
   } else {
     const favorites = await db.select(
-      'SELECT * FROM Favorite WHERE userID = ? AND name LIKE "%?%"', 
-      [query.userId, query.query]
+      'SELECT * FROM Favorite WHERE userID = ? AND name LIKE "%?%"',
+      [query.userId, query.query],
     );
-    return favorites
+    return favorites;
   }
-}); 
+});

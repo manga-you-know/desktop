@@ -1,35 +1,39 @@
 <script setup lang="ts">
-  import { ReadedDB } from '~/database';
-  import type { Favorite } from '~/models';
-  import type { DownloadManager } from '~/managers/downloadManager';
-  const { favorite } = defineProps<{
-        favorite: Favorite
-  }>()
-  const dlManager = useState<DownloadManager>('dlManager')
-  const isFavoriteOpen = useState<Boolean>('isFavoriteOpen')
-  const favoriteOpen = useState<Favorite>('favorite')
-  const isLoading = ref(false)
-  const chaptersToRead = ref()
-  const chaptersReaded = ref()
-  onMounted(async () => {
-    isLoading.value = true
-    const readeds = await ReadedDB.getReadeds(favorite)
-    const chapters = await dlManager.value.getChapters(favorite)
-    isLoading.value = false
-    if (!chapters.ok) {
-      chaptersToRead.value = 'Error'
-      chaptersReaded.value = 'Error'
-      return
-    }
-    //@ts-ignore
-    chaptersToRead.value = (chapters.chapters.length - readeds.length) > 0 ? ('+' + (chapters.chapters.length - readeds.length)) : 'All readed'
-    //@ts-ignore
-    chaptersReaded.value = `${readeds.length}/${chapters.chapters.length}`
-  })
-  function openFavorite() {
-    favoriteOpen.value = favorite
-    isFavoriteOpen.value = true
+import { ReadedDB } from '~/database';
+import type { DownloadManager } from '~/managers/downloadManager';
+import type { Favorite } from '~/models';
+const { favorite } = defineProps<{
+  favorite: Favorite;
+}>();
+const dlManager = useState<DownloadManager>('dlManager');
+const isFavoriteOpen = useState<boolean>('isFavoriteOpen');
+const favoriteOpen = useState<Favorite>('favorite');
+const isLoading = ref(false);
+const chaptersToRead = ref();
+const chaptersReaded = ref();
+onMounted(async () => {
+  isLoading.value = true;
+  const readeds = await ReadedDB.getReadeds(favorite);
+  const chapters = await dlManager.value.getChapters(favorite);
+  isLoading.value = false;
+  if (!chapters.ok) {
+    chaptersToRead.value = 'Error';
+    chaptersReaded.value = 'Error';
+    return;
   }
+  const chaptersLen = Number(chapters?.chapters?.length) ?? 0;
+  //@ts-ignore
+  chaptersToRead.value =
+    chaptersLen - readeds.length > 0
+      ? '+' + (chaptersLen - readeds.length)
+      : 'All readed';
+  //@ts-ignore
+  chaptersReaded.value = `${readeds.length}/${chapters.chapters.length}`;
+});
+function openFavorite() {
+  favoriteOpen.value = favorite;
+  isFavoriteOpen.value = true;
+}
 </script>
 
 <template>

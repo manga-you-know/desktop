@@ -1,8 +1,8 @@
-import Database from "@tauri-apps/plugin-sql";
+import Database from '@tauri-apps/plugin-sql';
 
 export default defineEventHandler(async (event) => {
   const db = await Database.load('sqlite:myk.db');
-  const body = await readBody(event)
+  const body = await readBody(event);
   const favorite = await db.execute(
     'UPDATE Favorite SET name = ?, folderName = ?, cover = ?, source = ?, sourceID = ?, type = ?, extraName = ?, titleColor = ?, cardColor = ?, grade = ?, author = ?, description = ?, isUltraFavorite = ? WHERE id = ?',
     [
@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
       body.author,
       body.description,
       body.isUltraFavorite,
-      body.id
-    ]
+      body.id,
+    ],
   );
-  return favorite
-}); 
+  return favorite;
+});

@@ -1,131 +1,138 @@
 <script setup lang="ts">
-  import type { Favorite, Readed, Chapter, User } from '~/models';
-  import type { DownloadManager } from '~/managers/downloadManager';
-  import { getCurrentWindow } from '@tauri-apps/api/window';
-  import { FavoriteDB, ReadedDB } from '~/database';
-  import { addReadedBelow } from '~/functions';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { FavoriteDB, ReadedDB } from '~/database';
+import { addReadedBelow } from '~/functions';
 import type { ChaptersResponse } from '~/interfaces';
-  const favorite = useState<Favorite>('favorite')
-  const dlManager = useState<DownloadManager>('dlManager')
-  const images = useState<string[]>('images')
-  const chapters = useState<Chapter[]>('chapters')
-  const chapterH = useState<Chapter>('chapter')
-  const chaptersDisplayed = ref<Chapter[]>([])
-  const isDivMainHidden = useState<Boolean>('isDivMainHidden', () => false)
-  const isFavoriteOpen = useState<Boolean>('isFavoriteOpen')
-  const rerenderIndex = useState<number>('rerenderIndex')
-  const currentWindow = getCurrentWindow()
-  const readeds = useState<Readed[]>('readeds')
-  const ultraFavorites = useState<Favorite[]>('ultraFavorites')
-  const chapterQuery = ref('')
-  const isSearching = ref(false)
-  const currentChapter = ref<Chapter>()
-  const user = useState<User>('user')
-  const chaptersResponse = ref<ChaptersResponse>()
-  const sourceLanguage = ref('default')
-  const languageOptions = ref(['default'])
-  const isLanguagesDisable = ref(false)
+import type { DownloadManager } from '~/managers/downloadManager';
+import type { Chapter, Favorite, Readed, User } from '~/models';
+const favorite = useState<Favorite>('favorite');
+const dlManager = useState<DownloadManager>('dlManager');
+const images = useState<string[]>('images');
+const chapters = useState<Chapter[]>('chapters');
+const chapterH = useState<Chapter>('chapter');
+const chaptersDisplayed = ref<Chapter[]>([]);
+const isDivMainHidden = useState<boolean>('isDivMainHidden', () => false);
+const isFavoriteOpen = useState<boolean>('isFavoriteOpen');
+const rerenderIndex = useState<number>('rerenderIndex');
+const currentWindow = getCurrentWindow();
+const readeds = useState<Readed[]>('readeds');
+const ultraFavorites = useState<Favorite[]>('ultraFavorites');
+const chapterQuery = ref('');
+const isSearching = ref(false);
+const currentChapter = ref<Chapter>();
+const user = useState<User>('user');
+const chaptersResponse = ref<ChaptersResponse>();
+const sourceLanguage = ref('default');
+const languageOptions = ref(['default']);
+const isLanguagesDisable = ref(false);
 
-  async function readChapter(chapter: Chapter) {
-    images.value = await dlManager.value.getChapterImages(chapter)
-    isFavoriteOpen.value = false
-    isDivMainHidden.value = true
-    chapterH.value = chapter
-    currentWindow.setFullscreen(true)
-    if (!isReaded(chapter)) {
-      addReaded(chapter)
-    }
+async function readChapter(chapter: Chapter) {
+  images.value = await dlManager.value.getChapterImages(chapter);
+  isFavoriteOpen.value = false;
+  isDivMainHidden.value = true;
+  chapterH.value = chapter;
+  currentWindow.setFullscreen(true);
+  if (!isReaded(chapter)) {
+    addReaded(chapter);
   }
-  async function searchChapters() {
-    isSearching.value = true
-    await new Promise(resolve => {
-      setTimeout(() => {
-        resolve(true)
-      }, 10)
-    })
-    if (chapterQuery.value === '') {
-      chaptersDisplayed.value = chapters.value
-      isSearching.value = false
-      return
-    }
-    chaptersDisplayed.value = chapters.value.filter(chapter => chapter.number.toString().includes(chapterQuery.value)).reverse()
-    isSearching.value = false
+}
+async function searchChapters() {
+  isSearching.value = true;
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 10);
+  });
+  if (chapterQuery.value === '') {
+    chaptersDisplayed.value = chapters.value;
+    isSearching.value = false;
+    return;
   }
-  function resetChapters() {
-    isSearching.value = true
-    chapterQuery.value = ''
-    chaptersDisplayed.value = chapters.value
-    isSearching.value = false
-  }
-  async function updateFavoriteHandler() {
-    favorite.value.is_ultra_favorite = !favorite.value.is_ultra_favorite
-    await FavoriteDB.updateFavorite(favorite.value)
-  }  
-  function isReaded(chapter: Chapter) {
-    return readeds.value.find(r => r.chapter_id === chapter.chapter_id && r.source === favorite.value.source && r.language === chapter.language)
-  }
-  async function addReaded(chapter: Chapter) {
-    await addReadedBelow(chapter, chapters.value, favorite.value, readeds.value)
-    readeds.value = await ReadedDB.getReadeds(favorite.value)
-    currentChapter.value = getNextForRead()
-  }
-  function getLastReaded() {
-    return chapters.value.filter(chapter => isReaded(chapter))[0]
-  }
-  function getNextForRead() {
-    return chapters.value.filter(chapter => !isReaded(chapter)).reverse()[0]
-  }
-  async function onClose() {
-    ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id)
-    rerenderIndex.value++
-  }
-  async function updateLanguage () {
-    await new Promise(resolve => {
-      setTimeout(() => {
-        resolve(true)
-      }, 10)
-    })
-    console.log(chaptersResponse.value)
+  chaptersDisplayed.value = chapters.value
+    .filter((chapter) => chapter.number.toString().includes(chapterQuery.value))
+    .reverse();
+  isSearching.value = false;
+}
+function resetChapters() {
+  isSearching.value = true;
+  chapterQuery.value = '';
+  chaptersDisplayed.value = chapters.value;
+  isSearching.value = false;
+}
+async function updateFavoriteHandler() {
+  favorite.value.is_ultra_favorite = !favorite.value.is_ultra_favorite;
+  await FavoriteDB.updateFavorite(favorite.value);
+}
+function isReaded(chapter: Chapter) {
+  return readeds.value.find(
+    (r) =>
+      r.chapter_id === chapter.chapter_id &&
+      r.source === favorite.value.source &&
+      r.language === chapter.language,
+  );
+}
+async function addReaded(chapter: Chapter) {
+  await addReadedBelow(chapter, chapters.value, favorite.value, readeds.value);
+  readeds.value = await ReadedDB.getReadeds(favorite.value);
+  currentChapter.value = getNextForRead();
+}
+function getLastReaded() {
+  return chapters.value.filter((chapter) => isReaded(chapter))[0];
+}
+function getNextForRead() {
+  return chapters.value.filter((chapter) => !isReaded(chapter)).reverse()[0];
+}
+async function onClose() {
+  ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id);
+  rerenderIndex.value++;
+}
+async function updateLanguage() {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 10);
+  });
+  console.log(chaptersResponse.value);
+  //@ts-ignore
+  chapters.value = chaptersResponse.value.chapters[sourceLanguage.value];
+  chaptersDisplayed.value = chapters.value;
+  currentChapter.value = getNextForRead();
+}
+let isChapterFetched = false;
+onBeforeMount(async () => {
+  chaptersDisplayed.value = [];
+  //@ts-ignore
+  chaptersResponse.value = await dlManager.value.getChapters(favorite.value);
+  if (chaptersResponse.value.isMultipleLanguage) {
     //@ts-ignore
-    chapters.value = chaptersResponse.value.chapters[sourceLanguage.value]
-    chaptersDisplayed.value = chapters.value
-    currentChapter.value = getNextForRead()
-  }
-  var isChapterFetched = false
-  onBeforeMount(async () => {
-    chaptersDisplayed.value = []
+    languageOptions.value = Object.keys(chaptersResponse.value.chapters);
+    sourceLanguage.value = languageOptions.value[0];
     //@ts-ignore
-    chaptersResponse.value = await dlManager.value.getChapters(favorite.value)
-    if (chaptersResponse.value.isMultipleLanguage) {
-      //@ts-ignore
-      languageOptions.value = Object.keys(chaptersResponse.value.chapters)
-      sourceLanguage.value = languageOptions.value[0]
-      //@ts-ignore
-      chapters.value = chaptersResponse.value.chapters[sourceLanguage.value]
-    } else {
-      //@ts-ignore
-      chapters.value = chaptersResponse.value.chapters
-      chaptersDisplayed.value = chapters.value
-      isLanguagesDisable.value = true
-    }
-    isChapterFetched = true
-  })
-  onMounted(async () => {
-    if (!favorite.value) {
-      return
-    }
-    readeds.value = await ReadedDB.getReadeds(favorite.value)
-    chaptersDisplayed.value = []
-    while (!isChapterFetched) {
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve(true)
-        }, 10)
-      })
-    }
-    chaptersDisplayed.value = chapters.value
-    currentChapter.value = getNextForRead()
-  })
+    chapters.value = chaptersResponse.value.chapters[sourceLanguage.value];
+  } else {
+    //@ts-ignore
+    chapters.value = chaptersResponse.value.chapters;
+    chaptersDisplayed.value = chapters.value;
+    isLanguagesDisable.value = true;
+  }
+  isChapterFetched = true;
+});
+onMounted(async () => {
+  if (!favorite.value) {
+    return;
+  }
+  readeds.value = await ReadedDB.getReadeds(favorite.value);
+  chaptersDisplayed.value = [];
+  while (!isChapterFetched) {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 10);
+    });
+  }
+  chaptersDisplayed.value = chapters.value;
+  currentChapter.value = getNextForRead();
+});
 </script>
 
 <template>

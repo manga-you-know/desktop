@@ -1,29 +1,29 @@
 <script setup lang="ts">
-  import { FavoriteDB } from '~/database';
-  import type { Favorite, User } from '~/models';
-  const { favorite } = defineProps<{
-    favorite: Favorite
-  }>()
-  const user = useState<User>('user')
-  const isFavoriteOpen = useState<Boolean>('isFavoriteOpen', () => false)
-  const isEditFavoriteOpen = useState<Boolean>('isEditFavoriteOpen', () => false)
-  const favoriteOpen = useState<Favorite>('favorite')
-  const favorites = useState<Favorite[]>('favorites')
-  const openPopover = ref(false)
-  function openFavorite() {
-    favoriteOpen.value = favorite
-    isFavoriteOpen.value = true
-  }
+import { FavoriteDB } from '~/database';
+import type { Favorite, User } from '~/models';
+const { favorite } = defineProps<{
+  favorite: Favorite;
+}>();
+const user = useState<User>('user');
+const isFavoriteOpen = useState<boolean>('isFavoriteOpen', () => false);
+const isEditFavoriteOpen = useState<boolean>('isEditFavoriteOpen', () => false);
+const favoriteOpen = useState<Favorite>('favorite');
+const favorites = useState<Favorite[]>('favorites');
+const openPopover = ref(false);
+function openFavorite() {
+  favoriteOpen.value = favorite;
+  isFavoriteOpen.value = true;
+}
 
-  function openEditFavorite() {
-    favoriteOpen.value = favorite
-    isEditFavoriteOpen.value = true
-  }
+function openEditFavorite() {
+  favoriteOpen.value = favorite;
+  isEditFavoriteOpen.value = true;
+}
 
-  async function deleteFavorite() {
-    await FavoriteDB.deleteFavorite(favorite)
-    favorites.value = await FavoriteDB.getFavorites(user.value.id)
-  }
+async function deleteFavorite() {
+  await FavoriteDB.deleteFavorite(favorite);
+  favorites.value = await FavoriteDB.getFavorites(user.value.id);
+}
 </script>
 
 <template>

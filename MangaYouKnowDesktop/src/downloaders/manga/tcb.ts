@@ -1,23 +1,25 @@
-import { memoize } from 'lodash';
 import { fetch } from '@tauri-apps/plugin-http';
 import * as cheerio from 'cheerio';
+import { memoize } from 'lodash';
 import type { ChaptersResponse, MangaDl } from '~/interfaces';
-import { Favorite, Chapter } from '~/models';
+import { Chapter, Favorite } from '~/models';
 
 export class TCBScansDl implements MangaDl {
-  baseUrl: string = 'https://tcbscans.me/';
+  baseUrl = 'https://tcbscans.me/';
   headers = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    accept:
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'accept-language': 'en-US,en;q=0.9',
     'cache-control': 'max-age=0',
-    'dnt': '1',
-    'priority': 'u=0, i',
-    'referer': 'https://tcbscans.me/',
+    dnt: '1',
+    priority: 'u=0, i',
+    referer: 'https://tcbscans.me/',
     'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
     'sec-ch-ua-arch': '"x86"',
     'sec-ch-ua-bitness': '"64"',
     'sec-ch-ua-full-version': '"125.0.6422.112"',
-    'sec-ch-ua-full-version-list': '"Chromium";v="125.0.6422.112", "Not.A/Brand";v="24.0.0.0"',
+    'sec-ch-ua-full-version-list':
+      '"Chromium";v="125.0.6422.112", "Not.A/Brand";v="24.0.0.0"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-model': '""',
     'sec-ch-ua-platform': '"Windows"',
@@ -27,7 +29,8 @@ export class TCBScansDl implements MangaDl {
     'sec-fetch-site': 'same-origin',
     'sec-fetch-user': '?1',
     'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    'user-agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
   };
 
   constructor() {
@@ -56,7 +59,7 @@ export class TCBScansDl implements MangaDl {
             link: `${this.baseUrl}${$(a).attr('href')?.slice(1)}`,
             cover: img.attr('src') || '',
             source: 'TCB',
-          })
+          }),
         );
       }
     });
@@ -66,7 +69,7 @@ export class TCBScansDl implements MangaDl {
   async search(query: string): Promise<Favorite[]> {
     const mangas: Favorite[] = await this.getMangas();
     const sortedMangas: Favorite[] = [];
-    mangas.forEach(manga => {
+    mangas.forEach((manga) => {
       if (manga.name.toLowerCase().includes(query.toLowerCase())) {
         sortedMangas.push(manga);
       }
@@ -92,8 +95,8 @@ export class TCBScansDl implements MangaDl {
           divs.eq(0).text().split(' ').pop() || '',
           divs.eq(1).text() || '',
           $(a).attr('href')?.replace('/chapters/', '') || '',
-          'TCB'
-        )
+          'TCB',
+        ),
       );
     });
     return { ok: true, chapters: chaptersList };

@@ -1,37 +1,53 @@
 <script setup lang="ts">
-    import { FavoriteDB } from '~/database';
-    import type { Favorite, User } from '~/models';
-    const user = useState<User>('user')
-    const query = ref('')
-    const isLoading = ref(false)
-    const favorites = useState<Favorite[]>('favorites', () => [])
-    const sources = ref<string[]>([])
-    const sourceSearch = ref()
-    async function search() {
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(true)
-            }, 10)
-        })
-        if (query.value === '') {
-            isLoading.value = false
-            favorites.value = sourceSearch.value === 'all'? await FavoriteDB.getFavorites(user.value.id) : await FavoriteDB.getFavoritesBySource(user.value.id, sourceSearch.value)
-            return
-        }
-        isLoading.value = true
-        favorites.value = sourceSearch.value === 'all'? await FavoriteDB.getFavorites(user.value.id, query.value) : await FavoriteDB.getFavoritesBySource(user.value.id, sourceSearch.value, query.value)
-        isLoading.value = false
-    }
-    async function resetResults() {
-        query.value = ''
-        isLoading.value = false
-        favorites.value = await FavoriteDB.getFavorites(user.value.id)
-    }
-    onMounted(async () => {
-        favorites.value = await FavoriteDB.getFavorites(user.value.id)
-        sources.value = ['all', ...(await FavoriteDB.getFavoriteSources(user.value.id))];
-        sourceSearch.value = sources.value[0]
-    })
+import { FavoriteDB } from '~/database';
+import type { Favorite, User } from '~/models';
+const user = useState<User>('user');
+const query = ref('');
+const isLoading = ref(false);
+const favorites = useState<Favorite[]>('favorites', () => []);
+const sources = ref<string[]>([]);
+const sourceSearch = ref();
+async function search() {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 10);
+  });
+  if (query.value === '') {
+    isLoading.value = false;
+    favorites.value =
+      sourceSearch.value === 'all'
+        ? await FavoriteDB.getFavorites(user.value.id)
+        : await FavoriteDB.getFavoritesBySource(
+            user.value.id,
+            sourceSearch.value,
+          );
+    return;
+  }
+  isLoading.value = true;
+  favorites.value =
+    sourceSearch.value === 'all'
+      ? await FavoriteDB.getFavorites(user.value.id, query.value)
+      : await FavoriteDB.getFavoritesBySource(
+          user.value.id,
+          sourceSearch.value,
+          query.value,
+        );
+  isLoading.value = false;
+}
+async function resetResults() {
+  query.value = '';
+  isLoading.value = false;
+  favorites.value = await FavoriteDB.getFavorites(user.value.id);
+}
+onMounted(async () => {
+  favorites.value = await FavoriteDB.getFavorites(user.value.id);
+  sources.value = [
+    'all',
+    ...(await FavoriteDB.getFavoriteSources(user.value.id)),
+  ];
+  sourceSearch.value = sources.value[0];
+});
 </script>
 
 

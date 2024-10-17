@@ -62,4 +62,4 @@ CREATE TABLE IF NOT EXISTS mark_favorites (
 
 -- changes
 ALTER TABLE favorite ADD COLUMN link TEXT NOT NULL DEFAULT '';
-`
+`;
