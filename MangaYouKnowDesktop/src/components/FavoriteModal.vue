@@ -7,14 +7,10 @@ import type { DownloadManager } from '~/managers/downloadManager';
 import type { Chapter, Favorite, Readed, User } from '~/models';
 const favorite = useState<Favorite>('favorite');
 const dlManager = useState<DownloadManager>('dlManager');
-const images = useState<string[]>('images');
 const chapters = useState<Chapter[]>('chapters');
-const chapterH = useState<Chapter>('chapter');
 const chaptersDisplayed = ref<Chapter[]>([]);
-const isDivMainHidden = useState<boolean>('isDivMainHidden', () => false);
 const isFavoriteOpen = useState<boolean>('isFavoriteOpen');
 const rerenderIndex = useState<number>('rerenderIndex');
-const currentWindow = getCurrentWindow();
 const readeds = useState<Readed[]>('readeds');
 const ultraFavorites = useState<Favorite[]>('ultraFavorites');
 const chapterQuery = ref('');
@@ -25,17 +21,6 @@ const chaptersResponse = ref<ChaptersResponse>();
 const sourceLanguage = ref('default');
 const languageOptions = ref(['default']);
 const isLanguagesDisable = ref(false);
-
-async function readChapter(chapter: Chapter) {
-  images.value = await dlManager.value.getChapterImages(chapter);
-  isFavoriteOpen.value = false;
-  isDivMainHidden.value = true;
-  chapterH.value = chapter;
-  currentWindow.setFullscreen(true);
-  if (!isReaded(chapter)) {
-    addReaded(chapter);
-  }
-}
 async function searchChapters() {
   isSearching.value = true;
   await new Promise((resolve) => {
@@ -137,10 +122,6 @@ onMounted(async () => {
 
 <template>
   <UModal 
-    class="rounded-xl w-20" 
-    :ui="{ 
-      width: '10%',
-    }" 
     @close="onClose"
   >
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -178,7 +159,7 @@ onMounted(async () => {
             <div class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm">
                 <button 
                   :class="['w-[115px]', 'p-0.5', 'flex', 'justify-start', 'bg-slate-800', 'font-medium', 'text-white', currentChapter ? 'hover:bg-transparent' : '']"
-                  @click="() => currentChapter? readChapter(currentChapter) : console.log('nada')"
+                  @click="() => currentChapter?  navigateTo(`/reader/${favorite.id}/${currentChapter.chapter_id}`) : console.log('nada')"
                 >
                   {{ currentChapter?.number || 'all readed!' }}
                 </button>
@@ -228,7 +209,7 @@ onMounted(async () => {
               <div class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm">
                 <button 
                   class="w-28 p-0.5 flex justify-start  bg-slate-800 font-medium text-white hover:bg-transparent"
-                  @click="() => readChapter(chapter)"
+                  @click="() =>  navigateTo(`/reader/${favorite.id}/${chapter.chapter_id}`)"
                 >
                   {{ chapter.number }}
                 </button>
@@ -250,5 +231,5 @@ onMounted(async () => {
         </div>
       </div>
     </div> 
-  </UModal >
+  </UModal>
 </template>

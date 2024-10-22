@@ -36,6 +36,18 @@ export async function createFavorite(
     // db.close()
   }
 }
+
+export async function getFavorite(id: number | string | string[]): Promise<Favorite> {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  const favorite: Favorite[] = await db.select(
+    'SELECT * FROM favorite WHERE id = ? LIMIT 1',
+    [id],
+  );
+  if (favorite) {
+    return favorite[0]
+  }
+  throw new Error('Favorite not found')
+}
 export async function getFavorites(
   userID: number | undefined,
   query = '',

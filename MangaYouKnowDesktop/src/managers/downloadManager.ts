@@ -1,3 +1,4 @@
+import { memoize } from 'lodash' 
 import {
   MangaDexDl,
   MangaReaderToDl,
@@ -5,10 +6,8 @@ import {
   TCBScansDl,
 } from '~/downloaders/manga';
 import type { AnimeDl, ChaptersResponse, MangaDl } from '~/interfaces';
-import type { Chapter } from '~/models/chapter';
-import type { Favorite } from '~/models/favorite';
-import { conditionalMemoize } from '~/utils/conditionalMemoize';
-import { memoizeWithExpiration } from '~/utils/memoizedWithTime';
+import type { Chapter, Favorite } from '~/models';
+import { memoizeExpiring } from '~/utils/memoizedWithTime';
 import type { Episode } from '../models/episode';
 
 export class DownloadManager {
@@ -20,7 +19,7 @@ export class DownloadManager {
       MangaSee: new MangaSeeDl(),
       MangaDex: new MangaDexDl(),
       TCB: new TCBScansDl(),
-      'MangaReader.to': new MangaReaderToDl(),
+      MangaReaderTo: new MangaReaderToDl(),
     };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
@@ -28,11 +27,11 @@ export class DownloadManager {
     this.getChapterImages = this.getChapterImages.bind(this);
     this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
 
-    this.search = conditionalMemoize(this.search);
-    this.getChapters = memoizeWithExpiration(this.getChapters, 600);
-    this.getEpisodes = memoizeWithExpiration(this.getEpisodes, 600);
-    this.getChapterImages = conditionalMemoize(this.getChapterImages);
-    this.getEpisodeUrls = conditionalMemoize(this.getEpisodeUrls);
+    this.search = memoize(this.search);
+    this.getChapters = memoizeExpiring(this.getChapters, 600);
+    this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
+    this.getChapterImages = memoize(this.getChapterImages);
+    this.getEpisodeUrls = memoize(this.getEpisodeUrls);
   }
 
   getMangaSource(source: string): MangaDl {

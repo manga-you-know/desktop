@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ReadedDB } from '~/database';
+import { isReaded } from '~/functions';
 import type { DownloadManager } from '~/managers/downloadManager';
 import type { Favorite } from '~/models';
 const { favorite } = defineProps<{
@@ -22,13 +23,22 @@ onMounted(async () => {
     return;
   }
   const chaptersLen = Number(chapters?.chapters?.length) ?? 0;
+  let countToRead = 0;
+  //@ts-ignore
+  for (const chapter of chapters.chapters) {
+    if (isReaded(chapter, readeds)) {
+      break;
+    }
+    countToRead++;
+  }
   //@ts-ignore
   chaptersToRead.value =
-    chaptersLen - readeds.length > 0
-      ? '+' + (chaptersLen - readeds.length)
+    countToRead > 0
+      //@ts-ignore
+      ? `+${countToRead}`
       : 'All readed';
   //@ts-ignore
-  chaptersReaded.value = `${readeds.length}/${chapters.chapters.length}`;
+  chaptersReaded.value = `${chaptersLen - countToRead}/${chapters.chapters.length}`;
 });
 function openFavorite() {
   favoriteOpen.value = favorite;

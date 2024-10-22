@@ -1,6 +1,6 @@
 import { memoize } from 'lodash';
 
-export function memoizeWithExpiration(fn: any, ttl: number) {
+export function memoizeExpiring(fn: any, ttl: number) {
   const cache: { [key: string]: { result: any; timestamp: number } } = {};
 
   const memoized = memoize(fn, (...args) => {

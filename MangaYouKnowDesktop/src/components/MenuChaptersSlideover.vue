@@ -13,7 +13,6 @@ const { chapters, currentlyChapter, readChapterNextOrPrev, closeMenu } =
     closeMenu: () => void;
   }>();
 
-const isDivMainHidden = useState<boolean>('isDivMainHidden', () => true);
 const dlManager = useState<DownloadManager>('dlManager');
 const favorite = useState<Favorite>('favorite');
 const images = useState<string[]>('images');
@@ -22,7 +21,7 @@ const readeds = ref<Readed[]>([]);
 const currentlyCount = useState<number>('currentlyCount');
 const totalPage = useState<number>('totalPage');
 const currentlyPage = useState<string>('currentlyPage');
-
+const rerender = ref(0);
 async function readChapter(chapter: Chapter) {
   images.value = await dlManager.value.getChapterImages(chapter);
   closeMenu();
@@ -52,21 +51,24 @@ async function fetchPages() {
     }),
   });
 }
+
 onMounted(async () => {
   readeds.value = await ReadedDB.getReadeds(favorite.value);
+  rerender.value++;
 });
+
 </script>
 
 <template>
-	<USlideover v-model:model-value="isOpen">
+	<USlideover :key="rerender" v-model:model-value="isOpen">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<div>
 			<div class="w-full h-11 flex justify-center items-center">
 				<UButton
 					@click="() => {
 						isOpen = false
-						isDivMainHidden = false
 						getCurrentWindow().setFullscreen(false)
+            navigateTo(useRoute().redirectedFrom)
 					}"
 					icon="i-heroicons-home"
 				/>

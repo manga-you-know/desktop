@@ -1,6 +1,6 @@
 import { fetch } from '@tauri-apps/plugin-http';
 // import axios from 'axios';
-import { memoize } from 'lodash';
+import { memoize } from 'lodash' 
 import type { ChaptersResponse, MangaDl } from '~/interfaces';
 import { Chapter, Favorite } from '~/models';
 
@@ -8,13 +8,12 @@ export class MangaSeeDl implements MangaDl {
   baseUrl = 'https://mangasee123.com';
   headers = {
     'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
-    Accept:
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
     'Accept-Language': 'pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3',
     'Accept-Encoding': 'gzip, deflate, br',
     'Alt-Used': 'www.mangasee123.com',
-    Connection: 'keep-alive',
+    'Connection': 'keep-alive',
     'Upgrade-Insecure-Requests': '1',
     'Sec-Fetch-Dest': 'document',
     'Sec-Fetch-Mode': 'navigate',
@@ -57,8 +56,7 @@ export class MangaSeeDl implements MangaDl {
   async search(query: string): Promise<Favorite[]> {
     const unsortedMangas = await this.getMangas();
     if (unsortedMangas.length === 0) {
-      console.log('empty')
-      return []
+      throw new Error('empty')
     }
     const mangasWithGrade: { grade: number, manga: Favorite }[] = [];
     unsortedMangas.forEach(manga => {

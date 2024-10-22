@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FavoriteDB } from '~/database';
+import { MANGASOURCES } from '~/constants';
 import type { DownloadManager } from '~/managers/downloadManager';
 import type { Favorite, Readed, User } from '~/models';
 
@@ -87,16 +88,25 @@ async function favorite(favorite: Favorite) {
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template #trailing>
-          <UButton
-            tabindex="-1"
-            v-if="query !== ''"
-            color="gray"
-            variant="link"
-            icon="i-heroicons-x-mark-20-solid"
-            :padded="false"
-            @click="resetResults"
-          />
-          <div v-else />
+          <div class="flex gap-2">
+            <USelectMenu
+              tabindex="-1"
+              searchable
+              class="w-[135px] z-[100]"
+              clear-search-on-close
+              v-model="sourceSearch"
+              :options="MANGASOURCES"
+              color="cyan"
+            />  
+            <UButton
+              tabindex="-1"
+              color="gray"
+              variant="link"
+              icon="i-heroicons-x-mark-20-solid"
+              :padded="false"
+              @click="resetResults"
+            />
+          </div>
         </template>
       </UInput>
     </div>

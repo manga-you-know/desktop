@@ -7,7 +7,7 @@ export class Chapter {
 
   constructor(
     number: number | string,
-    title: string,
+    title: string = '',
     chapter_id: string,
     source: string,
     language = 'default',

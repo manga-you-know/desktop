@@ -47,7 +47,7 @@ export class MangaReaderToDl implements MangaDl {
 					folder_name: a.attr('href')?.slice(1) || '',
 					link: `${this.baseUrl}${a.attr('href')}`,
 					cover: img.attr('src') || '',
-					source: 'MangaReader.to',
+					source: 'MangaReaderTo',
 				})
 			);
 		});
@@ -79,7 +79,7 @@ export class MangaReaderToDl implements MangaDl {
 					$(li).attr('data-number') || '',
 					a.attr('title') || '',
 					id || '',
-					'MangaReader.to',
+					'MangaReaderTo',
 					language
 				)
 			);

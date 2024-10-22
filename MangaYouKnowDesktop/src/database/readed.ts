@@ -21,7 +21,7 @@ export async function createReadeds(
   favoriteID?: number,
 ): Promise<void> {
   if (favoriteID === undefined) {
-    return;
+    throw new Error('favoriteID is undefined');
   }
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {

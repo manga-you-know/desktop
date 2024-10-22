@@ -5,6 +5,7 @@ const user = useState<User>('user');
 const query = ref('');
 const isLoading = ref(false);
 const favorites = useState<Favorite[]>('favorites', () => []);
+const isSelecting = useState<boolean>('isSelecting', () => false);
 const sources = ref<string[]>([]);
 const sourceSearch = ref();
 async function search() {
@@ -54,37 +55,42 @@ onMounted(async () => {
 <template>
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
-            <div class="relative gap-3 flex">
-                <UInput 
-                    v-model="query"
-                    v-on:update:model-value="search"
-                    :loading="isLoading" 
-                    placeholder="Search..." 
-                    color="cyan"
-                    icon="i-heroicons-magnifying-glass-solid" 
-                    class="w-full"
-                >
-                    <template #trailing>
-                        <UButton
-                            tabindex="-1"
-                            color="gray"
-                            variant="link"
-                            icon="i-heroicons-x-mark-20-solid"
-                            class="pointer-events-auto"
-                            @click="resetResults"
-                        />
-                    </template>
-                </UInput>
-                <USelectMenu
-                    class="w-32"
-                    searchable
-                    clear-search-on-close
-                    v-on:update:model-value="search"
-                    v-model="sourceSearch"
-                    :options="sources"
-                    color="cyan"
-                />
-            </div>
+          <div class="relative gap-3 flex">
+            <UInput 
+                v-model="query"
+                v-on:update:model-value="search"
+                :loading="isLoading" 
+                placeholder="Search..." 
+                color="cyan"
+                icon="i-heroicons-magnifying-glass-solid" 
+                class="w-full"
+            >
+                <template #trailing>
+                    <UButton
+                        tabindex="-1"
+                        color="gray"
+                        variant="link"
+                        icon="i-heroicons-x-mark-20-solid"
+                        class="pointer-events-auto"
+                        @click="resetResults"
+                    />
+                </template>
+            </UInput>
+            <USelectMenu
+                class="w-32"
+                searchable
+                clear-search-on-close
+                v-on:update:model-value="search"
+                v-model="sourceSearch"
+                :options="sources"
+                color="cyan"
+            />
+            <UButton
+              @click="isSelecting = !isSelecting"
+            >
+              turn
+            </UButton>
+          </div>
         </div>
         <div class="w-full h-[calc(100vh-3rem)] pb-5 overflow-y-auto overflow-x-hidden  flex flex-row justify-start gap-2 flex-wrap">
             <div 

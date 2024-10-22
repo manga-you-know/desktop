@@ -5,7 +5,7 @@ import { migrationQuery } from '~/database';
 import type { Favorite, User } from '~/models';
 import { DATABASE_NAME } from './constants';
 import { DownloadManager } from './managers/downloadManager';
-const isDivMainHidden = useState<boolean>('isDivMainHidden', () => false);
+const activeSidebar = useState<boolean>('activeSidebar', () => true);
 const isLogged = useState<boolean>('isLogged', () => false);
 const isSearchOpen = useState<boolean>('isSearchOpen', () => false);
 const isFavoriteOpen = useState<boolean>('isFavoriteOpen', () => false);
@@ -13,10 +13,7 @@ const isEditFavoriteOpen = useState<boolean>('isEditFavoriteOpen', () => false);
 const currentWindow = getCurrentWindow();
 const user = useState<User>('user');
 const favorite = useState<Favorite>('favorite');
-const dlManager = useState<DownloadManager>(
-  'dlManager',
-  () => new DownloadManager(),
-);
+useState<DownloadManager>('dlManager', () => new DownloadManager());
 defineShortcuts({
   meta_k: {
     usingInput: true,
@@ -49,13 +46,10 @@ onBeforeMount(async () => {
   <EditFavoriteModal v-if="favorite" v-model="isEditFavoriteOpen" :key="favorite.id" />
   <!-- main app -->
   <div v-if="isLogged">
-    <div v-if="!isDivMainHidden" class="flex" >
-      <Sidebar />
-      <div class="w-[30px] min-w-[30px] md:w-[100px] md:min-w-[100px] mr-5" />
+    <div class="flex">
+      <Sidebar v-if="activeSidebar"/>
+      <div class="w-[30px] min-w-[30px] md:w-[100px] md:min-w-[100px] mr-5 -z-10" />
       <NuxtPage />
-    </div>
-    <div v-if="isDivMainHidden">
-      <Reader />
     </div>
   </div>
   <!-- login -->

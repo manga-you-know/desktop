@@ -1,14 +1,14 @@
 
 <script setup lang="ts">
 import { FavoriteDB } from '~/database';
+import { MANGASOURCES } from '~/constants';
 import type { Favorite, User } from '~/models';
 
 const user = useState<User>('user');
 const rerender = useState<number>('rerenderIndex', () => 0);
 const isOpen = useState<boolean>('isSearchOpen', () => false);
 const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => []);
-const mangaSources = ['MangaReader.to', 'MangaSee', 'MangaDex', 'TCB'];
-const sourceSearch = useState<string>('sourceSearch', () => mangaSources[0]);
+const sourceSearch = useState<string>('sourceSearch', () => MANGASOURCES[0]);
 defineShortcuts({
   meta_r: {
     usingInput: true,
@@ -29,10 +29,10 @@ onMounted(async () => {
         <div>
           <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
             <UButton
-            color="gray"
-            variant="ghost"
-            icon="i-heroicons-magnifying-glass-20-solid"
-            @click="isOpen = true"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-magnifying-glass-20-solid"
+              @click="isOpen = true"
             />
           </UTooltip>
           <UTooltip text="Refresh" :shortcuts="['Ctrl', 'R']">
@@ -50,13 +50,13 @@ onMounted(async () => {
             class="w-[135px] z-[100]"
             clear-search-on-close
             v-model="sourceSearch"
-            :options="mangaSources"
+            :options="MANGASOURCES"
             color="cyan"
           />  
         </div>
       </div>
     </div>
-    <div class=" h-[calc(100vh-4rem)] pb-5 flex flex-row flex-wrap gap-2 overflow-y-auto overflow-x-hidden">
+    <div class=" h-[calc(100vh-4rem)] w-full pb-5 flex flex-row flex-wrap justify-start gap-2 overflow-y-auto overflow-x-hidden">
       <div v-for="favorite in ultraFavorites" :key="favorite.name">
         <UltraFavoriteCard :favorite="favorite" />
       </div>
