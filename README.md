@@ -1,16 +1,75 @@
-# desktop
-The new version of the BAD Manga You Know!
-Now using Nuxt + Tauri!!!
+# Nuxt 3 Minimal Starter
 
-![icon github (1)](https://github.com/user-attachments/assets/18c5ed4c-962b-4671-be6b-952b99c9fcfe)
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-I'm really sorry for this Readme be a mess, but I don't have time to make a better one for now.
+## Setup
 
-## How to use
-1. Download the latest release from [here](https://github.com/manga-you-know/desktop/releases)
-2. Just run the executable file and setup it
-3. Enjoy!
+Make sure to install the dependencies:
 
-any questions or suggestions, please open an issue or contact me on discord: @reiloko. 
+```bash
+# npm
+npm install
 
-(with the dot.)
+# pnpm
+pnpm install
+
+# yarn
+yarn install
+
+# bun
+bun install
+```
+
+## Development Server
+
+Start the development server on `http://localhost:3000`:
+
+```bash
+# npm
+npm run dev
+
+# pnpm
+pnpm run dev
+
+# yarn
+yarn dev
+
+# bun
+bun run dev
+```
+
+## Production
+
+Build the application for production:
+
+```bash
+# npm
+npm run build
+
+# pnpm
+pnpm run build
+
+# yarn
+yarn build
+
+# bun
+bun run build
+```
+
+Locally preview production build:
+
+```bash
+# npm
+npm run preview
+
+# pnpm
+pnpm run preview
+
+# yarn
+yarn preview
+
+# bun
+bun run preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
