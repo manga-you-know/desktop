@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../.output/public",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn generate"
+    "beforeDevCommand": "bun dev",
+    "beforeBuildCommand": "bun generate"
   },
   "app": {
     "windows": [

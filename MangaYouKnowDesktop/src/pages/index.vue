@@ -24,8 +24,8 @@ onMounted(async () => {
 
 <template>
   <div :key="rerender" class="h-full w-full flex flex-col">
-    <div class="w-full h-16 flex  justify-end">
-      <div class="m-5 gap-1 flex relative">
+    <div class="w-full h-16 flex relative justify-end">
+      <div class="m-5 gap-1 flex ">
         <div>
           <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
             <UButton
@@ -47,7 +47,7 @@ onMounted(async () => {
         <div>
           <USelectMenu
             searchable
-            class="w-[135px] z-[100]"
+            class="w-[150px]"
             clear-search-on-close
             v-model="sourceSearch"
             :options="MANGASOURCES"

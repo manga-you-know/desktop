@@ -92,7 +92,7 @@ async function favorite(favorite: Favorite) {
             <USelectMenu
               tabindex="-1"
               searchable
-              class="w-[135px] z-[100]"
+              class="w-[150px]"
               clear-search-on-close
               v-model="sourceSearch"
               :options="MANGASOURCES"
