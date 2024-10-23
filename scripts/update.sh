@@ -20,7 +20,7 @@ sed -i "s/version = \"$current_version\"/version = \"$new_version\"/" $TOML_FILE
 
 echo "$current_version -> $new_version ($TOML_FILE)"
 
-current_version=$(grep -E "^\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"" $TAURI_FILE | cut -d '"' -f 2)
+current_version=$(grep -Eo "\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"" "$TAURI_FILE" | cut -d '"' -f 4)
 sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" $TAURI_FILE
 
 echo "$current_version -> $new_version ($TAURI_FILE)"
