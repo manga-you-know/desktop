@@ -15,7 +15,7 @@
     "@tauri-apps/api": "2.0.1",
     "@tauri-apps/plugin-http": "^2.0.0-rc.2",
     "@tauri-apps/plugin-log": "~2.0.0-rc",
-    "@tauri-apps/plugin-sql": "https://github.com/tauri-apps/tauri-plugin-sql#v2",
+    "@tauri-apps/plugin-sql": "^2.0.0",
     "@tresjs/cientos": "^4.0.3",
     "@tresjs/core": "^4.3.1",
     "@tresjs/nuxt": "^3.0.7",
@@ -39,13 +39,14 @@
     "vue-router": "^4.4.5",
     "yup": "^1.4.0"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@tauri-apps/cli": "v2.0.1",
     "@types/add": "^2",
     "@types/lodash": "^4",
     "@types/memoizee": "^0.4.11",
+    "conventional-changelog-conventionalcommits": "7.0.2",
+    "conventional-recommended-bump": "9.0.0",
     "three": "^0.169.0"
   }
 }

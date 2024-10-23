@@ -4,7 +4,7 @@ const config = require('conventional-changelog-conventionalcommits')
 function whatBump(commits) {
   let releaseType = 2
 
-  for (let commit of commits) {
+  for (const commit of commits) {
     if (commit == null || !commit.header) continue
     if (commit.header.startsWith('chore(bump-mc)') || commit.header.startsWith('chore!')) {
       releaseType = 0
@@ -35,7 +35,7 @@ function whatBump(commits) {
 }
 
 async function getOptions() {
-  let options = await config({
+  const options = await config({
     types: [
       // Unhide all types except "ci" so that they show up on generated changelog
       // Default values:

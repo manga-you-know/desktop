@@ -1,8 +1,8 @@
-const fs = require('fs')
+const fs = require('node:fs')
 
 exports.preCommit = (props) => {
   const replaceVersion = (path, newVersion) => {
-    let content = fs.readFileSync(path, 'utf-8')
+    const content = fs.readFileSync(path, 'utf-8')
     const versionRegex = /"version":\s*"(\d+\.\d+\.\d+)"/
 
     if (content.match(versionRegex)) {
@@ -14,5 +14,5 @@ exports.preCommit = (props) => {
     }
   }
 
-  replaceVersion('./tauri.conf.json', props.version)
+  replaceVersion('./src-tauri/tauri.conf.json', props.version)
 }
