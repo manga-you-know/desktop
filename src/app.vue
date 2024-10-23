@@ -4,7 +4,7 @@ import Database from '@tauri-apps/plugin-sql';
 import { migrationQuery } from '~/database';
 import type { Favorite, User } from '~/models';
 import { DATABASE_NAME } from './constants';
-import { DownloadManager } from './managers/downloadManager';
+import { DownloadManager } from './managers/_downloadManager';
 const activeSidebar = useState<boolean>('activeSidebar', () => true);
 const isLogged = useState<boolean>('isLogged', () => false);
 const isSearchOpen = useState<boolean>('isSearchOpen', () => false);

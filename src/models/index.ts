@@ -1,7 +1,7 @@
-export { Chapter } from './chapter';
-export { Favorite } from './favorite';
-export { Mark } from './mark';
-export { Readed } from './readed';
-export { User } from './user';
-export { MarkFavorites } from './markFavorite';
-export { Episode } from './episode';
+export { Chapter } from './_chapter';
+export { Favorite } from './_favorite';
+export { Mark } from './_mark';
+export { Readed } from './_readed';
+export { User } from './_user';
+export { MarkFavorites } from './_markFavorite';
+export { Episode } from './_episode';

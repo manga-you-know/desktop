@@ -8,7 +8,7 @@ import {
 import type { AnimeDl, ChaptersResponse, MangaDl } from '~/interfaces';
 import type { Chapter, Favorite } from '~/models';
 import { memoizeExpiring } from '~/utils/memoizedWithTime';
-import type { Episode } from '../models/episode';
+import type { Episode } from '../models/_episode';
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};

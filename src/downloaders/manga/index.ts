@@ -1,4 +1,4 @@
-export { MangaSeeDl } from './mangasee';
-export { MangaDexDl } from './mangadex';
-export { TCBScansDl } from './tcb';
-export { MangaReaderToDl } from './mangareaderto';
+export { MangaSeeDl } from './_mangasee';
+export { MangaDexDl } from './_mangadex';
+export { TCBScansDl } from './_tcb';
+export { MangaReaderToDl } from './_mangareaderto';

@@ -1,5 +1,5 @@
-import type { Chapter } from './chapter';
-import type { Mark } from './mark';
+import type { Chapter } from './_chapter';
+import type { Mark } from './_mark';
 
 export class Favorite {
   id?: number;
