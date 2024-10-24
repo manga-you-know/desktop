@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../.output/public",
@@ -21,10 +21,10 @@
         "minWidth": 640,
         "center": true,
         "decorations": true
-      } 
+      }
     ],
     "security": {
-      "csp" : "default-src ‘self’  connect-src ipc : http://ipc.localhost ; media-src stream : http://stream.localhost asset : http://asset.localhost"
+      "csp": "default-src ‘self’  connect-src ipc : http://ipc.localhost ; media-src stream : http://stream.localhost asset : http://asset.localhost"
     }
   },
   "bundle": {
