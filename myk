@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+case "$1" in
+    "u" | "update")
+        bash scripts/update.sh $2
+    ;;
+    *)
+        echo "Commands:"
+        echo "  * u, update <version>          | Update version of Cargo.toml"
+    ;;
+esac

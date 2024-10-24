@@ -1,0 +1,95 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.changelog.outputs.tag }}
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.changelog.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install front-end dependencies
+        run: bun install
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate Changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5.2.1
+        with:
+          github-token: ${{ secrets.GIT_TOKEN }}
+          git-user-name: 'MangaYouKnow Bot'
+          git-user-email: 'admin@myk.com'
+          config-file-path: ./.github/.config.cjs
+          pre-commit: ./.github/.pre-commit.cjs
+          version-file: './src-tauri/tauri.conf.json'
+          skip-version-file: false
+          skip-git-pull: false
+          pre-release: false
+
+      - run: |
+          rm -rf node_modules
+          rm package.json
+  release:
+    name: Release
+    needs: changelog
+    if: ${{ needs.changelog.outputs.skipped != 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install front-end dependencies
+        run: bun install
+
+      - name: Update Cargo.toml
+        run: bash myk u ${{ needs.changelog.outputs.version }}
+
+      - name: Publish Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseName: v${{ needs.changelog.outputs.version }}
+          tagName: ${{ needs.changelog.outputs.tag }}
+          appVersion: ${{ needs.changelog.outputs.version }}
+          releaseBody: ${{ needs.changelog.outputs.changelog }}
+          args: ${{ matrix.args }}
