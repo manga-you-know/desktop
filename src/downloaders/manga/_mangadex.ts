@@ -65,9 +65,6 @@ export class MangaDexDl implements MangaDl {
     let offset = 0;
     const chaptersList: any[] = [];
     while (true) {
-      // const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`, {
-      //   method: 'GET',
-      // });
       const response = await fetch(
         `https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`,
         {

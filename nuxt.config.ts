@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/': { swr : true },
     '/favorites': { swr : true },
-    '/configs': { swr : false }
+    '/configs': { swr : false, prerender: true }
   },
   vite: {
     clearScreen: false,
