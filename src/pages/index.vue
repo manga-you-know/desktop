@@ -9,6 +9,9 @@ const rerender = useState<number>('rerenderIndex', () => 0);
 const isOpen = useState<boolean>('isSearchOpen', () => false);
 const ultraFavorites = useState<Favorite[]>('ultraFavorites', () => []);
 const sourceSearch = useState<string>('sourceSearch', () => MANGASOURCES[0]);
+definePageMeta({
+  name: 'Home'
+})
 defineShortcuts({
   meta_r: {
     usingInput: true,

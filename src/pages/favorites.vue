@@ -8,6 +8,9 @@ const favorites = useState<Favorite[]>('favorites', () => []);
 const isSelecting = useState<boolean>('isSelecting', () => false);
 const sources = ref<string[]>([]);
 const sourceSearch = ref();
+definePageMeta({
+  name: 'Favorites'
+})
 async function search() {
   await new Promise((resolve) => {
     setTimeout(() => {

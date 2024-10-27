@@ -1,41 +1,24 @@
-# Nuxt 3 Minimal Starter
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup
+
+In this project, I use [Bun](https://bun.sh/) as the JavaScript runtime.
+If you want to use another runtime, you must change the `src-tauri/tauri.conf.json` file.
+There you replace `bun`in the `beforeDevCommand` and `beforeBuildCommand` with the runtime you want to use.
+
+Please don't commit the change of runtime in the `src-tauri/tauri.conf.json` file.
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
 bun install
 ```
 
-## Development Server
+## Start a development app
 
-Start the development server on `http://localhost:3000`:
+
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+bun tauri dev
 ```
 
 ## Production
@@ -43,33 +26,5 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+bun tauri build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { getCurrentWindow } from '@tauri-apps/api/window';
 import { FavoriteDB, ReadedDB } from '~/database';
 import { addReadedBelow } from '~/functions';
 import type { ChaptersResponse } from '~/interfaces';
-import type { DownloadManager } from '~/managers/downloadManager';
+import type { DownloadManager } from '~/managers';
 import type { Chapter, Favorite, Readed, User } from '~/models';
 const favorite = useState<Favorite>('favorite');
 const dlManager = useState<DownloadManager>('dlManager');
@@ -88,6 +87,7 @@ onBeforeMount(async () => {
   chaptersDisplayed.value = [];
   //@ts-ignore
   chaptersResponse.value = await dlManager.value.getChapters(favorite.value);
+  //@ts-ignore
   if (chaptersResponse.value.isMultipleLanguage) {
     //@ts-ignore
     languageOptions.value = Object.keys(chaptersResponse.value.chapters);

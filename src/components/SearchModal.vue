@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FavoriteDB } from '~/database';
 import { MANGASOURCES } from '~/constants';
-import type { DownloadManager } from '~/managers/downloadManager';
+import type { DownloadManager } from '~/managers';
 import type { Favorite, Readed, User } from '~/models';
 
 const user = useState<User>('user');
@@ -36,6 +36,7 @@ async function search() {
     return;
   }
   try {
+    console.log(sourceSearch.value);
     favorites.value = await FavoriteDB.getFavorites(user.value.id);
     results.value = (
       await dlManager.value.search(query.value, sourceSearch.value)
@@ -96,6 +97,7 @@ async function favorite(favorite: Favorite) {
               clear-search-on-close
               v-model="sourceSearch"
               :options="MANGASOURCES"
+              v-on:update:model-value="search"
               color="cyan"
             />  
             <UButton

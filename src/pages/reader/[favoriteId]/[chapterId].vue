@@ -18,9 +18,9 @@
 	const chapter = ref<Chapter>(foundChapter);
 	const currentlyCount = useState<number>('currentlyCount', () => 1);
 	const totalPage = useState<number>('totalPage');
-	const currentlyPage = useState<string>('currentlyPage');
+	const currentlyPage = useState<string>('currentlyPage', () => 'https://github.com/ReiLoko4/manga-you-know/assets/103978193/d0d4ff85-2308-4baa-b56a-0e99a9faa7dc');
 	const openMenuChapters = ref(false);
-	
+	getCurrentWindow().setTitle(`MangaYouKnow - ${favorite.name} - ${chapter.value.number}`)
 	function toNextPage() {
 		if (currentlyCount.value === totalPage.value) return;
 		currentlyCount.value++; 
@@ -72,8 +72,7 @@
 				usingInput: true,
 				handler: () => {
 					navigateTo(useRoute().redirectedFrom);
-					getCurrentWindow().setFullscreen(false);
-				},
+				}
 			},
 			arrowleft: {
 				usingInput: true,
@@ -90,11 +89,11 @@
 		await addReadedBelow(chapter.value, chapters.value, favorite, undefined, true);
 	});
 	onMounted(async () => {
+		currentlyPage.value = 'https://github.com/ReiLoko4/manga-you-know/assets/103978193/d0d4ff85-2308-4baa-b56a-0e99a9faa7dc'
 		pages.value = await dlManager.value.getChapterImages(chapter.value);
 		totalPage.value = pages.value.length;
 		currentlyPage.value = pages.value[0];
 		currentlyCount.value = 1;
-		getCurrentWindow().setFullscreen(true);
 		fetchPages();
 	});
 </script>

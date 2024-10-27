@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { TresCanvas, useRenderLoop } from '@tresjs/core'
   import { OrbitControls, GLTFModel  } from '@tresjs/cientos'
+  definePageMeta({
+    name: 'Configs'
+  })
 
   const mykRef = ref(null)
 

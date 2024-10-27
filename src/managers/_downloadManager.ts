@@ -27,7 +27,7 @@ export class DownloadManager {
     this.getChapterImages = this.getChapterImages.bind(this);
     this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
 
-    this.search = memoize(this.search);
+    this.search = memoize(this.search, (query, source) => `${query}:${source}`);
     this.getChapters = memoizeExpiring(this.getChapters, 600);
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getChapterImages = memoize(this.getChapterImages);

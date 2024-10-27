@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { load } from '@tauri-apps/plugin-store';
 import { ReadedDB } from '~/database';
-import { isReaded } from '~/functions';
-import type { DownloadManager } from '~/managers/downloadManager';
+import { isReaded, notify } from '~/functions';
+import type { DownloadManager } from '~/managers';
 import type { Favorite } from '~/models';
 const { favorite } = defineProps<{
   favorite: Favorite;
 }>();
+const store = await load('ultrafavorites_data.json')
 const dlManager = useState<DownloadManager>('dlManager');
 const isFavoriteOpen = useState<boolean>('isFavoriteOpen');
 const favoriteOpen = useState<Favorite>('favorite');
@@ -39,6 +41,15 @@ onMounted(async () => {
       : 'All readed';
   //@ts-ignore
   chaptersReaded.value = `${chaptersLen - countToRead}/${chapters.chapters.length}`;
+  const valToRead = await store.get<{chapters: number, chaptersReaded: number, chaptersToRead: number}>(favorite.id?.toString() ?? '');
+  if (valToRead) if (countToRead > valToRead.chaptersToRead) {
+    notify(favorite.name, `+${valToRead.chaptersToRead - countToRead} new chapters!`);
+  }
+  await store.set(favorite.id?.toString() ?? '', {
+    chapters: chapters.chapters?.length ?? 0,
+    chaptersReaded: chaptersLen - countToRead,
+    chaptersToRead: countToRead,
+  })
 });
 function openFavorite() {
   favoriteOpen.value = favorite;
