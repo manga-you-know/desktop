@@ -1,11 +1,16 @@
-## [0.2.1](https://github.com/manga-you-know/desktop/compare/v0.2.2...v0.2.1) (2024-10-27)
+## [0.2.2-rc.0](https://github.com/manga-you-know/desktop/compare/v0.2.0...v0.2.2-rc.0) (2024-11-02)
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.1 [skip ci] ([2fd02aa](https://github.com/manga-you-know/desktop/commit/2fd02aa59db0d2d54b732b33df8745fe0ef8ea19))
+
+## [0.2.0](https://github.com/manga-you-know/desktop/compare/v0.1.0-alpha...v0.2.0) (2024-10-27)
 
 
 ### New Features
 
 * Add desktop notifications and fix bugs ([922a3a2](https://github.com/manga-you-know/desktop/commit/922a3a2a6521c5189ca148bde15968458568a6f9))
-
-## [0.2.2](https://github.com/manga-you-know/desktop/compare/v0.1.0-alpha...v0.2.2) (2024-10-24)
 
 
 ### Miscellaneous Chores
