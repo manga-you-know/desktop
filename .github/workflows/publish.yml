@@ -44,7 +44,7 @@ jobs:
           version-file: './src-tauri/tauri.conf.json'
           skip-version-file: false
           skip-git-pull: false
-          pre-release: true
+          pre-release: false
 
       - run: |
           rm -rf node_modules
