@@ -57,8 +57,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-22.04, windows-latest]
-        args:
-          []
           
     runs-on: ${{ matrix.platform }}
     steps:
@@ -95,4 +93,4 @@ jobs:
           tagName: ${{ needs.changelog.outputs.tag }}
           appVersion: ${{ needs.changelog.outputs.version }}
           releaseBody: ${{ needs.changelog.outputs.changelog }}
-          args: ${{ matrix.args }}
+          # args: ${{ matrix.args }}
