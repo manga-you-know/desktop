@@ -1,9 +1,15 @@
-## [0.2.2-rc.0](https://github.com/manga-you-know/desktop/compare/v0.2.0...v0.2.2-rc.0) (2024-11-02)
+## [0.2.2-rc.1](https://github.com/manga-you-know/desktop/compare/v0.2.0...v0.2.2-rc.1) (2024-11-02)
+
+
+### Bug Fixes
+
+* a fix yeh ([d403da2](https://github.com/manga-you-know/desktop/commit/d403da28ad5b847397855a05319aaa3e6dc3be0a))
 
 
 ### Miscellaneous Chores
 
 * **release:** v0.2.1 [skip ci] ([2fd02aa](https://github.com/manga-you-know/desktop/commit/2fd02aa59db0d2d54b732b33df8745fe0ef8ea19))
+* **release:** v0.2.2-rc.0 [skip ci] ([691ae09](https://github.com/manga-you-know/desktop/commit/691ae090fb697c826ba3a2800f8a964cec928265))
 
 ## [0.2.0](https://github.com/manga-you-know/desktop/compare/v0.1.0-alpha...v0.2.0) (2024-10-27)
 
