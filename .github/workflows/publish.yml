@@ -44,7 +44,7 @@ jobs:
           version-file: './src-tauri/tauri.conf.json'
           skip-version-file: false
           skip-git-pull: false
-          pre-release: false
+          pre-release: true
 
       - run: |
           rm -rf node_modules
@@ -56,7 +56,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-22.04, windows-latest]
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+          
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
