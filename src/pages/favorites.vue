@@ -7,7 +7,9 @@ const favorites = useState<Favorite[]>("favorites", () => []);
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
-const order = useState<string>("order", () => "upper");
+const order = useState<{ id: string; icon: string }>("order", () => {
+    return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
+});
 const isLoading = ref(false);
 const sources = ref<string[]>([]);
 definePageMeta({
