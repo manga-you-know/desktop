@@ -10,6 +10,7 @@
 	const pages = ref<string[]>([]);
 	const favorite = await FavoriteDB.getFavorite(favoriteId);
 	const chapters = useState<Chapter[]>('chapters');
+	// biome-ignore lint/suspicious/noDoubleEquals: <explanation>
 	let foundChapter = chapters.value?.find((chapter) => chapter.chapter_id == chapterId);
 	if (!foundChapter) {
 		//@ts-ignore
@@ -20,7 +21,7 @@
 	const totalPage = useState<number>('totalPage');
 	const currentlyPage = useState<string>('currentlyPage', () => 'https://github.com/ReiLoko4/manga-you-know/assets/103978193/d0d4ff85-2308-4baa-b56a-0e99a9faa7dc');
 	const openMenuChapters = ref(false);
-	getCurrentWindow().setTitle(`MangaYouKnow - ${favorite.name} - ${chapter.value.number}`)
+	getCurrentWindow().setTitle(`MangaYouKnow - ${favorite.name} / ${chapter.value.number}`)
 	function toNextPage() {
 		if (currentlyCount.value === totalPage.value) return;
 		currentlyCount.value++; 

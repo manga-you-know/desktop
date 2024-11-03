@@ -43,7 +43,7 @@ onMounted(async () => {
   chaptersReaded.value = `${chaptersLen - countToRead}/${chapters.chapters.length}`;
   const valToRead = await store.get<{chapters: number, chaptersReaded: number, chaptersToRead: number}>(favorite.id?.toString() ?? '');
   if (valToRead) if (countToRead > valToRead.chaptersToRead) {
-    notify(favorite.name, `+${valToRead.chaptersToRead - countToRead} new chapters!`);
+    notify(favorite.name, `+${countToRead - valToRead.chaptersToRead} new chapters!`);
   }
   await store.set(favorite.id?.toString() ?? '', {
     chapters: chapters.chapters?.length ?? 0,

@@ -3,6 +3,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
 	const window = getCurrentWindow();
 	const activeSidebar = useState<boolean>('activeSidebar');
 	const isFavoriteOpen = useState<boolean>('isFavoriteOpen');
+	const isSelecting = useState<boolean>('isSelecting')
+	isSelecting.value = false;
 	isFavoriteOpen.value = false;
 	activeSidebar.value = !to.path.startsWith('/reader');
 	window.setFullscreen(to.path.startsWith('/reader'));

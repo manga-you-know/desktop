@@ -308,6 +308,7 @@
     "log:default",
     "notification:default",
     "fs:default",
-    "store:default"
+    "store:default",
+    "dialog:default"
   ]
 }

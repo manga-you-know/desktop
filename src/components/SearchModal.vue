@@ -11,7 +11,7 @@ const isLoading = ref(false);
 const results = ref<Favorite[]>([]);
 const favorites = useState<Favorite[]>('favorites');
 const isSearchOpen = useState<boolean>('isSearchOpen');
-const sourceSearch = useState<string>('sourceSearch');
+const sourceSearch = useState<string>('sourceSearch', () => MANGASOURCES[0]);
 const finished = ref();
 
 function resetResults() {

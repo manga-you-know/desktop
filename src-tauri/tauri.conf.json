@@ -1,11 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-<<<<<<< HEAD
-  "version": "0.2.0",
-=======
-  "version": "0.2.3",
->>>>>>> f385a329eb4eb7ea7abb22cb8b9e1e98f99161fc
+  "version": "0.2.4",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../.output/public",

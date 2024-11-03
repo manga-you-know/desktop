@@ -81,14 +81,15 @@ jobs:
       - name: Install front-end dependencies
         run: bun install
 
-      # - name: Update Cargo.toml
-      #   run: bash myk u ${{ needs.changelog.outputs.version }}
+      - name: Update Cargo.toml
+        run: bash myk u ${{ needs.changelog.outputs.version }}
 
       - name: Publish Release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          prerelease: true
           releaseName: v${{ needs.changelog.outputs.version }}
           tagName: ${{ needs.changelog.outputs.tag }}
           appVersion: ${{ needs.changelog.outputs.version }}
