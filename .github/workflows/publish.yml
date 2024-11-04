@@ -60,9 +60,6 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Update Cargo.toml
-        run: bash myk u ${{ needs.changelog.outputs.version }}
-
       - name: Checkout
         uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -83,6 +80,9 @@ jobs:
 
       - name: Install front-end dependencies
         run: bun install
+
+      - name: Update Cargo.toml
+        run: bash myk u ${{ needs.changelog.outputs.version }}
 
       - name: Publish Release
         uses: tauri-apps/tauri-action@v0
