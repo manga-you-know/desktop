@@ -1,4 +1,16 @@
-## [0.2.7](https://github.com/manga-you-know/desktop/compare/v0.2.5...v0.2.7) (2024-11-03)
+## [0.2.8](https://github.com/manga-you-know/desktop/compare/v0.2.6...v0.2.8) (2024-11-04)
+
+
+### New Features
+
+* fix favorite modal and add button to next chapter ([9cc076b](https://github.com/manga-you-know/desktop/commit/9cc076b10abc748c792da2100d46ab379998ed6f))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.7 [skip ci] ([923f355](https://github.com/manga-you-know/desktop/commit/923f355099fd8d3a8e32aaf88ebb9836a4b2e484))
+
+## [0.2.6](https://github.com/manga-you-know/desktop/compare/v0.2.5...v0.2.6) (2024-11-03)
 
 
 ### Bug Fixes
