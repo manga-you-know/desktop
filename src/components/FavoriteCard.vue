@@ -46,10 +46,11 @@ watch(isSelecting, () => {
 <template>
     <div
         :class="{
-            'relative bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
+            'relative rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
             'hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg transform hover:scale-[1.08] hover:z-50 hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:z-50 focus:border-white focus:border-1':
                 !isSelecting,
-            'bg-gray-800 shadow-lg hover:scale-[1.04]': isSelecting,
+            'bg-gray-900': !isSelected && !isSelecting,
+            ' shadow-lg hover:scale-[1.04]': isSelecting && !isSelected,
             'border-white': isSelecting && !isSelected,
             'border-green-400 bg-gray-700': isSelected && isSelecting,
         }"
