@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FavoriteDB } from "~/database";
+import { FavoriteDB, MarkDB } from "~/database";
 import type { Favorite, User } from "~/models";
 const user = useState<User>("user");
 const query = useState<string>("favoriteQuery", () => "");
@@ -7,11 +7,14 @@ const favorites = useState<Favorite[]>("favorites", () => []);
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
+const currentlyMark = useState<string>("mark", () => "-");
 const order = useState<{ id: string; icon: string }>("order", () => {
     return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
 });
 const isLoading = ref(false);
+const isMarkModalOpen = ref(false);
 const sources = ref<string[]>([]);
+const marks = ref<string[]>([]);
 definePageMeta({
     name: "Favorites",
 });
@@ -22,8 +25,9 @@ async function search() {
         }, 10);
     });
     if (query.value === "") {
-        isLoading.value = false;
+        isLoading.value = true;
         favorites.value = await FavoriteDB.getFavorites(user.value.id);
+        isLoading.value = false;
         return;
     }
     isLoading.value = true;
@@ -41,6 +45,7 @@ onMounted(async () => {
         "-",
         ...(await FavoriteDB.getFavoriteSources(user.value.id)),
     ];
+    marks.value = ["-", ...(await MarkDB.getMarks()).map((mark) => mark.name)];
     sourceSearch.value = sources.value[0];
 });
 watch(isSelecting, () => {
@@ -49,10 +54,18 @@ watch(isSelecting, () => {
 </script>
 
 <template>
+    <MarksModal v-model="isMarkModalOpen" />
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
-            <div class="relative gap-3 flex">
-                <SelectOrder @change="search" />
+            <div class="relative gap-1 flex">
+                <UButton
+                    class="w-8 justify-center pointer-events-none"
+                    color="white"
+                    :loading="isLoading"
+                >
+                    {{ isLoading ? "" : favorites.length }}
+                </UButton>
+                <SelectOrder class="w-18" @change="search" />
                 <UInput
                     v-model="query"
                     v-on:update:model-value="search"
@@ -60,7 +73,7 @@ watch(isSelecting, () => {
                     placeholder="Search..."
                     color="cyan"
                     icon="i-heroicons-magnifying-glass-solid"
-                    class="w-full"
+                    class="w-[160px]"
                 >
                     <template #trailing>
                         <UButton
@@ -74,13 +87,27 @@ watch(isSelecting, () => {
                     </template>
                 </UInput>
                 <USelectMenu
-                    class="w-32"
+                    class="w-24"
                     searchable
                     clear-search-on-close
                     v-on:update:model-value="search"
                     v-model="sourceSearch"
                     :options="sources"
                     color="cyan"
+                />
+                <USelectMenu
+                    class="w-24"
+                    searchable
+                    clear-search-on-close
+                    v-on:update:model-value="search"
+                    v-model="currentlyMark"
+                    :options="marks"
+                    color="cyan"
+                />
+                <UButton
+                    color="white"
+                    icon="i-heroicons-archive-box"
+                    @click="isMarkModalOpen = true"
                 />
                 <UButtonGroup
                     orientation="horizontal"

@@ -1,5 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "~/constants";
+import { MarkDB } from "~/database";
 import type { Favorite, Mark } from "~/models";
 
 export async function createFavorite(
@@ -56,17 +57,22 @@ export async function getFavorites(
 ): Promise<Favorite[]> {
   const favoriteQuery = useState<string>("favoriteQuery", () => "");
   const sourceQuery = useState<string>("sourceQuery", () => "-");
+  const currentlyMark = useState<string>("mark");
   const order = useState<{ id: string; icon: string }>("order", () => {
     return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
   });
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-  let query = "SELECT * FROM favorite WHERE user_id = ? ";
+  let query = "SELECT * FROM favorite WHERE user_id = ?";
   if (sourceQuery.value !== "-") {
-    query += "AND source = ? ";
+    query += " AND source = ?";
   }
   if (favoriteQuery.value !== "") {
     query +=
-      "AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
+      " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
+  }
+  if (currentlyMark.value !== "-") {
+    console.log("REAK");
+    query += ` AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ${await MarkDB.getMarkId(currentlyMark.value)})`;
   }
   query += ` ORDER BY id ${order.value.id}`;
   try {

@@ -1,32 +1,46 @@
 <script lang="ts" setup>
 import { confirm } from "@tauri-apps/plugin-dialog";
-import { FavoriteDB } from "~/database";
+import { FavoriteDB, MarkDB, MarkFavoriteDB } from "~/database";
 import type { Favorite, User } from "~/models";
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const favorites = useState<Favorite[]>("favorites");
 const user = useState<User>("user");
+const currentlyMark = useState<string>("mark");
 const items = [
-    // [
-    //     {
-    //         label: "Edit",
-    //         icon: "i-heroicons-pencil-square-20-solid",
-    //     },
-    // ],
-    // [
-    //     {
-    //         label: "Add selected to Mark",
-    //         icon: "i-heroicons-archive-box-20-solid",
-    //     },
-    //     {
-    //         label: "Ultrafavorite selected",
-    //         icon: "i-heroicons-star-20-solid",
-    //         click: async () => {
-    //             await FavoriteDB.ultraFavoriteAll(selectedFavorites.value);
-    //             isSelecting.value = false;
-    //         },
-    //     },
-    // ],
+    [
+        {
+            label: "Add to Mark",
+            icon: "i-heroicons-archive-box-20-solid",
+            click: async () => {
+                await MarkFavoriteDB.addMarkFavorites(
+                    selectedFavorites.value,
+                    currentlyMark.value === "-"
+                        ? -1
+                        : await MarkDB.getMarkId(currentlyMark.value),
+                );
+                isSelecting.value = false;
+            },
+        },
+        //     {
+        //         label: "Edit",
+        //         icon: "i-heroicons-pencil-square-20-solid",
+        //     },
+        // ],
+        // [
+        //     {
+        //         label: "Add selected to Mark",
+        //         icon: "i-heroicons-archive-box-20-solid",
+        //     },
+        //     {
+        //         label: "Ultrafavorite selected",
+        //         icon: "i-heroicons-star-20-solid",
+        //         click: async () => {
+        //             await FavoriteDB.ultraFavoriteAll(selectedFavorites.value);
+        //             isSelecting.value = false;
+        //         },
+        //     },
+    ],
     [
         // {
         //     label: "Remove ultrafavorite",
