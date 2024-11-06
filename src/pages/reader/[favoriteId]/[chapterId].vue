@@ -26,6 +26,7 @@ const currentlyPage = useState<string>(
         "https://github.com/ReiLoko4/manga-you-know/assets/103978193/d0d4ff85-2308-4baa-b56a-0e99a9faa7dc",
 );
 const openMenuChapters = ref(false);
+const isTheLastChapter = ref(chapter.value === chapters.value[0]);
 getCurrentWindow().setTitle(
     `MangaYouKnow - ${favorite.name} / ${chapter.value.number}`,
 );
@@ -52,6 +53,7 @@ async function readNextOrPrevChapter(way: "next" | "prev" = "next") {
     getCurrentWindow().setTitle(
         `MangaYouKnow - ${favorite.name} / ${chapter.value.number}`,
     );
+    isTheLastChapter.value = chapter.value === chapters.value[0];
     fetchPages();
     await addReadedBelow(
         chapter.value,
@@ -112,6 +114,7 @@ onMounted(async () => {
     totalPage.value = pages.value.length;
     currentlyPage.value = pages.value[0];
     currentlyCount.value = 1;
+    isTheLastChapter.value = chapter.value === chapters.value[0];
     fetchPages();
 });
 </script>
@@ -128,7 +131,7 @@ onMounted(async () => {
         class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
     >
         <UButton
-            v-if="currentlyCount === totalPage"
+            v-if="currentlyCount === totalPage && !isTheLastChapter"
             icon="i-heroicons-arrow-right-solid"
             color="white"
             class="pointer-events-auto"
