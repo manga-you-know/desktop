@@ -7,19 +7,17 @@ const isSelecting = useState<boolean>("isSelecting", () => false);
 const favorites = useState<Favorite[]>("favorites");
 const user = useState<User>("user");
 const currentlyMark = useState<string>("mark");
+const isMarkSelectedModalOpen = useState<boolean>(
+    "isMarkSelectedModalOpen",
+    () => false,
+);
 const items = [
     [
         {
             label: "Add to Mark",
             icon: "i-heroicons-archive-box-20-solid",
-            click: async () => {
-                await MarkFavoriteDB.addMarkFavorites(
-                    selectedFavorites.value,
-                    currentlyMark.value === "-"
-                        ? -1
-                        : await MarkDB.getMarkId(currentlyMark.value),
-                );
-                isSelecting.value = false;
+            click: () => {
+                isMarkSelectedModalOpen.value = true;
             },
         },
         //     {
@@ -46,6 +44,19 @@ const items = [
         //     label: "Remove ultrafavorite",
         //     icon: "i-heroicons-star",
         // },
+        {
+            label: `Remove from ${currentlyMark.value}`,
+            icon: "i-heroicons-minus-circle-solid",
+            //    disabled: currentlyMark.value == "-",
+            click: async () => {
+                await MarkFavoriteDB.deleteMarkFavorites(
+                    selectedFavorites.value,
+                    await MarkDB.getMarkId(currentlyMark.value),
+                );
+                favorites.value = await FavoriteDB.getFavorites(user.value.id);
+                isSelecting.value = false;
+            },
+        },
         {
             label: "Delete selected",
             icon: "i-heroicons-trash-20-solid",

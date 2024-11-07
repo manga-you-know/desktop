@@ -13,6 +13,10 @@ const order = useState<{ id: string; icon: string }>("order", () => {
 });
 const isLoading = ref(false);
 const isMarkModalOpen = ref(false);
+const isMarkSelectedModalOpen = useState<boolean>(
+    "isMarkSelectedModalOpen",
+    () => false,
+);
 const sources = ref<string[]>([]);
 const marks = ref<string[]>([]);
 definePageMeta({
@@ -39,13 +43,16 @@ async function resetResults() {
     isLoading.value = false;
     favorites.value = await FavoriteDB.getFavorites(user.value.id);
 }
+async function fetchMarks() {
+    marks.value = ["-", ...(await MarkDB.getMarks()).map((mark) => mark.name)];
+}
 onMounted(async () => {
     favorites.value = await FavoriteDB.getFavorites(user.value.id);
     sources.value = [
         "-",
         ...(await FavoriteDB.getFavoriteSources(user.value.id)),
     ];
-    marks.value = ["-", ...(await MarkDB.getMarks()).map((mark) => mark.name)];
+    await fetchMarks();
     sourceSearch.value = sources.value[0];
 });
 watch(isSelecting, () => {
@@ -55,6 +62,7 @@ watch(isSelecting, () => {
 
 <template>
     <MarksModal v-model="isMarkModalOpen" />
+    <MarkSelectedModal v-model="isMarkSelectedModalOpen" />
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
             <div class="relative gap-1 flex">
@@ -99,6 +107,7 @@ watch(isSelecting, () => {
                     class="w-24"
                     searchable
                     clear-search-on-close
+                    @click="fetchMarks"
                     v-on:update:model-value="search"
                     v-model="currentlyMark"
                     :options="marks"

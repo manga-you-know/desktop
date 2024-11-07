@@ -89,3 +89,22 @@ export async function deleteMarkFavorite(
     // db.close()
   }
 }
+
+export async function deleteMarkFavorites(
+  favorites: Favorite[],
+  markId: number,
+): Promise<void> {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    const values = favorites.map((favorite) => favorite.id);
+    const placeholder = favorites.map(() => "?").join(", ");
+    await db.execute(
+      `DELETE FROM mark_favorites WHERE mark_id = ? AND favorite_id IN (${placeholder})`,
+      [markId, ...values],
+    );
+  } catch (error) {
+    console.log(error);
+  } finally {
+    // db.close()
+  }
+}
