@@ -56,6 +56,7 @@ onBeforeMount(async () => {
         <div class="flex">
             <Sidebar v-if="activeSidebar" />
             <div
+                v-if="activeSidebar"
                 class="w-[30px] min-w-[30px] md:w-[100px] md:min-w-[100px] mr-5 -z-10"
             />
             <NuxtPage />
