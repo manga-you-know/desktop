@@ -1,3 +1,11 @@
+## [0.2.11](https://github.com/manga-you-know/desktop/compare/v0.2.10...v0.2.11) (2024-11-07)
+
+
+### Bug Fixes
+
+* now you can actually add and delete the favorites to marks ([6ad9920](https://github.com/manga-you-know/desktop/commit/6ad9920d6019956c70d19a75d517b0e36a90ff17))
+* page not properly in the center ([5b9cafb](https://github.com/manga-you-know/desktop/commit/5b9cafb26c579d62dfc4e4f282ad19820624167e))
+
 ## [0.2.10](https://github.com/manga-you-know/desktop/compare/v0.2.9...v0.2.10) (2024-11-06)
 
 
@@ -10,6 +18,11 @@
 
 * Button to change chapter spawning improperly ([d255ff7](https://github.com/manga-you-know/desktop/commit/d255ff741a21cb7e9ed1e8bb7b3dd1a8487eb261))
 * Menu in chapter actually changing chapter ([c1f280e](https://github.com/manga-you-know/desktop/commit/c1f280eb4dce2787c6bb27824295697ec27311d6))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.10 [skip ci] ([ef1bf5d](https://github.com/manga-you-know/desktop/commit/ef1bf5dcba315dcd91164bbe5a340d98ac312a0e))
 
 ## [0.2.9](https://github.com/manga-you-know/desktop/compare/v0.2.6...v0.2.9) (2024-11-04)
 
@@ -60,19 +73,4 @@
 * **release:** v0.2.2-rc.1 [skip ci] ([10abf1c](https://github.com/manga-you-know/desktop/commit/10abf1c5a0e3e55808a646c641e310fb66989a3c))
 * **release:** v0.2.3 [skip ci] ([f385a32](https://github.com/manga-you-know/desktop/commit/f385a329eb4eb7ea7abb22cb8b9e1e98f99161fc))
 * **release:** v0.2.5 [skip ci] ([b60b792](https://github.com/manga-you-know/desktop/commit/b60b7923ba41dd24a3cf2911c478cb3e7f515214))
-
-## [0.2.0](https://github.com/manga-you-know/desktop/compare/v0.1.0-alpha...v0.2.0) (2024-10-27)
-
-
-### New Features
-
-* Add desktop notifications and fix bugs ([922a3a2](https://github.com/manga-you-know/desktop/commit/922a3a2a6521c5189ca148bde15968458568a6f9))
-
-
-### Miscellaneous Chores
-
-* Added biomejs to fix and format ([c13ce50](https://github.com/manga-you-know/desktop/commit/c13ce50465a0c24cbef5b91e169918944042446b))
-* folder improviments ([a4ce71c](https://github.com/manga-you-know/desktop/commit/a4ce71c37e7e045f95abcdfa221c673e7077e5fe))
-* **release:** v0.2.2 [skip ci] ([29e0208](https://github.com/manga-you-know/desktop/commit/29e0208cb81e53554959c9ceca543670a76c1c10))
-* some changes ([26ef8fd](https://github.com/manga-you-know/desktop/commit/26ef8fd3b189b2ceb4d16861240f81f852c0ea37))
 
