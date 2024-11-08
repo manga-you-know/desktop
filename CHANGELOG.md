@@ -1,3 +1,15 @@
+## [0.2.12](https://github.com/manga-you-know/desktop/compare/v0.2.11...v0.2.12) (2024-11-08)
+
+
+### New Features
+
+* Add order alphebetic. icons must change ([33df046](https://github.com/manga-you-know/desktop/commit/33df046f4daf8fbe4017e2ce6fb443db93b2e92e))
+
+
+### Bug Fixes
+
+* now the remove from mark is actually reactive. ([b29f372](https://github.com/manga-you-know/desktop/commit/b29f372719a564131490cbcefd7c780cb480b27c))
+
 ## [0.2.11](https://github.com/manga-you-know/desktop/compare/v0.2.10...v0.2.11) (2024-11-07)
 
 
@@ -5,6 +17,11 @@
 
 * now you can actually add and delete the favorites to marks ([6ad9920](https://github.com/manga-you-know/desktop/commit/6ad9920d6019956c70d19a75d517b0e36a90ff17))
 * page not properly in the center ([5b9cafb](https://github.com/manga-you-know/desktop/commit/5b9cafb26c579d62dfc4e4f282ad19820624167e))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.11 [skip ci] ([d95519a](https://github.com/manga-you-know/desktop/commit/d95519a9103f1a560e60360d8824c1a0bcf2c52f))
 
 ## [0.2.10](https://github.com/manga-you-know/desktop/compare/v0.2.9...v0.2.10) (2024-11-06)
 
@@ -49,28 +66,4 @@
 ### Bug Fixes
 
 * add a default order ([17ceff2](https://github.com/manga-you-know/desktop/commit/17ceff2ff7ac9947ddff4e47429d47897079f058))
-
-## [0.2.5](https://github.com/manga-you-know/desktop/compare/v0.2.0...v0.2.5) (2024-11-03)
-
-
-### New Features
-
-* add order by and select (soon new options to select) ([14af3e7](https://github.com/manga-you-know/desktop/commit/14af3e7f552190363b5d1250767841975dbc493e))
-
-
-### Bug Fixes
-
-* a fix yeh ([d403da2](https://github.com/manga-you-know/desktop/commit/d403da28ad5b847397855a05319aaa3e6dc3be0a))
-* again ([617952f](https://github.com/manga-you-know/desktop/commit/617952ff5958c1f01694a873218511c72977906d))
-* fix windows ([2989037](https://github.com/manga-you-know/desktop/commit/29890370c1f01b1eb15c421979a107749cd91579))
-* update ([e32cc98](https://github.com/manga-you-know/desktop/commit/e32cc98540c1e0e8a06d3642025176caa36ca575))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.2 [skip ci] ([ba5d590](https://github.com/manga-you-know/desktop/commit/ba5d5908251f82975cceca4d470487cce6d9104d))
-* **release:** v0.2.2-rc.0 [skip ci] ([691ae09](https://github.com/manga-you-know/desktop/commit/691ae090fb697c826ba3a2800f8a964cec928265))
-* **release:** v0.2.2-rc.1 [skip ci] ([10abf1c](https://github.com/manga-you-know/desktop/commit/10abf1c5a0e3e55808a646c641e310fb66989a3c))
-* **release:** v0.2.3 [skip ci] ([f385a32](https://github.com/manga-you-know/desktop/commit/f385a329eb4eb7ea7abb22cb8b9e1e98f99161fc))
-* **release:** v0.2.5 [skip ci] ([b60b792](https://github.com/manga-you-know/desktop/commit/b60b7923ba41dd24a3cf2911c478cb3e7f515214))
 
