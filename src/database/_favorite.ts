@@ -59,7 +59,7 @@ export async function getFavorites(
   const sourceQuery = useState<string>("sourceQuery", () => "-");
   const currentlyMark = useState<string>("mark");
   const order = useState<{ id: string; icon: string }>("order", () => {
-    return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
+    return { id: "id asc", icon: "i-heroicons-chevron-up-solid" };
   });
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
@@ -74,7 +74,7 @@ export async function getFavorites(
     console.log("REAK");
     query += ` AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ${await MarkDB.getMarkId(currentlyMark.value)})`;
   }
-  query += ` ORDER BY id ${order.value.id}`;
+  query += ` ORDER BY ${order.value.id}`;
   try {
     const favorites: Favorite[] = await db.select(query, [
       userID,

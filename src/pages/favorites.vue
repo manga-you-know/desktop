@@ -9,7 +9,7 @@ const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
 const currentlyMark = useState<string>("mark", () => "-");
 const order = useState<{ id: string; icon: string }>("order", () => {
-    return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
+    return { id: "id asc", icon: "i-heroicons-chevron-up-solid" };
 });
 const isLoading = ref(false);
 const isMarkModalOpen = ref(false);
@@ -103,16 +103,21 @@ watch(isSelecting, () => {
                     :options="sources"
                     color="cyan"
                 />
-                <USelectMenu
-                    class="w-24"
-                    searchable
-                    clear-search-on-close
-                    @click="fetchMarks"
-                    v-on:update:model-value="search"
-                    v-model="currentlyMark"
-                    :options="marks"
-                    color="cyan"
-                />
+                <UTooltip
+                    :text="currentlyMark"
+                    :prevent="currentlyMark === '-'"
+                >
+                    <USelectMenu
+                        class="w-24"
+                        searchable
+                        clear-search-on-close
+                        @click="fetchMarks"
+                        v-on:update:model-value="search"
+                        v-model="currentlyMark"
+                        :options="marks"
+                        color="cyan"
+                    />
+                </UTooltip>
                 <UButton
                     color="white"
                     icon="i-heroicons-archive-box"

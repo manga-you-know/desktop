@@ -1,15 +1,23 @@
 <script setup lang="ts">
 const order = useState<{ id: string; icon: string }>("order", () => {
-    return { id: "asc", icon: "i-heroicons-chevron-up-solid" };
+    return { id: "id asc", icon: "i-heroicons-chevron-up-solisd" };
 });
 const orders = [
     {
-        id: "asc",
+        id: "id asc",
         icon: "i-heroicons-chevron-up-solid",
     },
     {
-        id: "desc",
+        id: "id desc",
         icon: "i-heroicons-chevron-down-solid",
+    },
+    {
+        id: "name asc",
+        icon: "i-heroicons-chevron-double-up-solid",
+    },
+    {
+        id: "name desc",
+        icon: "i-heroicons-chevron-double-down-solid",
     },
 ];
 </script>
