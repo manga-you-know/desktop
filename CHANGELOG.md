@@ -1,3 +1,11 @@
+## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
+
+
+### New Features
+
+* add button to enter e out fullscreen ([4259ebb](https://github.com/manga-you-know/desktop/commit/4259ebb5fa3683054c936b25bb8bf64d99c21a8e))
+* Change order dropdown and add persistency to it and search source ([48041dd](https://github.com/manga-you-know/desktop/commit/48041dd5e95619cf8406c7f7afebab519a874de8))
+
 ## [0.2.12](https://github.com/manga-you-know/desktop/compare/v0.2.11...v0.2.12) (2024-11-08)
 
 
@@ -9,6 +17,11 @@
 ### Bug Fixes
 
 * now the remove from mark is actually reactive. ([b29f372](https://github.com/manga-you-know/desktop/commit/b29f372719a564131490cbcefd7c780cb480b27c))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.12 [skip ci] ([6d3f50f](https://github.com/manga-you-know/desktop/commit/6d3f50f858ec25e3b1d723fe8f7756e45df71d62))
 
 ## [0.2.11](https://github.com/manga-you-know/desktop/compare/v0.2.10...v0.2.11) (2024-11-07)
 
@@ -59,11 +72,4 @@
 * **release:** v0.2.7 [skip ci] ([923f355](https://github.com/manga-you-know/desktop/commit/923f355099fd8d3a8e32aaf88ebb9836a4b2e484))
 * **release:** v0.2.8 [skip ci] ([bf6537f](https://github.com/manga-you-know/desktop/commit/bf6537f4ffcb6a1f1cfe8b3c3a87337edc87ea71))
 * **release:** v0.2.9 [skip ci] ([790a88b](https://github.com/manga-you-know/desktop/commit/790a88b77b46856cb4dfe83f7c8dae38364076f4))
-
-## [0.2.6](https://github.com/manga-you-know/desktop/compare/v0.2.5...v0.2.6) (2024-11-03)
-
-
-### Bug Fixes
-
-* add a default order ([17ceff2](https://github.com/manga-you-know/desktop/commit/17ceff2ff7ac9947ddff4e47429d47897079f058))
 
