@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/image',
     '@tresjs/nuxt',
+    '@nuxt/icon',
   ],
   srcDir: 'src',
   ssr: false,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { ReadedDB } from "~/database";
+import { ReadedRepository } from "~/database";
 import { addReadedBelow, isReaded } from "~/functions";
 import type { DownloadManager } from "~/managers";
 import type { Chapter, Favorite, Readed } from "~/models";
@@ -34,7 +34,7 @@ async function readChapter(chapter: Chapter) {
 }
 async function addReaded(chapter: Chapter) {
     await addReadedBelow(chapter, chapters, favorite.value, readeds.value);
-    readeds.value = await ReadedDB.getReadeds(favorite.value);
+    readeds.value = await ReadedRepository.getReadeds(favorite.value);
 }
 function isReadedHere(chapter: Chapter) {
     return isReaded(chapter, readeds.value);
@@ -53,7 +53,7 @@ async function fetchPages() {
 }
 
 onMounted(async () => {
-    readeds.value = await ReadedDB.getReadeds(favorite.value);
+    readeds.value = await ReadedRepository.getReadeds(favorite.value);
     rerender.value++;
 });
 </script>
@@ -74,16 +74,16 @@ onMounted(async () => {
                             navigateTo(useRoute().redirectedFrom);
                         }
                     "
-                    icon="i-heroicons-home"
+                    icon="heroicons:home"
                 />
                 <div class="p-2 gap-1 flex flex-row rounded-lg">
                     <UButton
-                        icon="i-heroicons-arrow-left-solid"
+                        icon="heroicons:arrow-left-solid"
                         color="gray"
                         @click="readChapterNextOrPrev('prev')"
                     />
                     <UButton
-                        icon="i-heroicons-arrow-right-solid"
+                        icon="heroicons:arrow-right-solid"
                         color="gray"
                         @click="readChapterNextOrPrev('next')"
                     />

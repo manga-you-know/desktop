@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MarkDB } from "~/database";
+import { MarkRepository } from "~/database";
 import type { Favorite, Mark } from "~/models";
 const mark = ref("");
 const marks = ref<Mark[]>([]);
@@ -9,25 +9,25 @@ async function addMark() {
         return;
     }
     if (mark.value) {
-        if (await MarkDB.addMark(mark.value)) {
+        if (await MarkRepository.addMark(mark.value)) {
             mark.value = "";
         }
     }
-    marks.value = await MarkDB.getMarks();
+    marks.value = await MarkRepository.getMarks();
 }
 
 async function updateMark(mark: Mark) {
-    await MarkDB.updateMark(mark);
-    marks.value = await MarkDB.getMarks();
+    await MarkRepository.updateMark(mark);
+    marks.value = await MarkRepository.getMarks();
 }
 
 async function deleteMark(mark: Mark) {
-    await MarkDB.deleteMark(mark);
-    marks.value = await MarkDB.getMarks();
+    await MarkRepository.deleteMark(mark);
+    marks.value = await MarkRepository.getMarks();
 }
 
 onMounted(async () => {
-    marks.value = await MarkDB.getMarks();
+    marks.value = await MarkRepository.getMarks();
 });
 </script>
 
@@ -40,13 +40,13 @@ onMounted(async () => {
                     v-model="mark"
                     placeholder="Mark..."
                     color="cyan"
-                    icon="i-heroicons-archive-box"
+                    icon="heroicons:archive-box"
                     class="w-[220px]"
                     @keydown.enter="addMark"
                 />
                 <UButton
                     color="cyan"
-                    icon="i-heroicons-plus-circle-solid"
+                    icon="heroicons:plus-circle-solid"
                     @click="addMark"
                 />
             </UButtonGroup>
@@ -61,7 +61,7 @@ onMounted(async () => {
                         />
                         <UButton
                             color="red"
-                            icon="i-heroicons-x-circle-solid"
+                            icon="heroicons:x-circle-solid"
                             @click="async () => await deleteMark(mark)"
                         />
                     </UButtonGroup>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MarkDB, MarkFavoriteDB } from "~/database";
+import { MarkRepository, MarkFavoriteRepository } from "~/database";
 import type { Favorite, Mark } from "~/models";
 const selectedFavorites = useState<Favorite[]>("selectedFavorites");
 const marks = ref<Mark[]>([]);
@@ -10,17 +10,20 @@ const isMarkSelectedModalOpen = useState<boolean>(
 );
 
 async function addSelectedToMark(mark: Mark) {
-    await MarkFavoriteDB.addMarkFavorites(selectedFavorites.value, mark.id);
+    await MarkFavoriteRepository.addMarkFavorites(
+        selectedFavorites.value,
+        mark.id,
+    );
     isMarkSelectedModalOpen.value = false;
     isSelecting.value = false;
 }
 
 watch(isMarkSelectedModalOpen, async () => {
-    marks.value = await MarkDB.getMarks();
+    marks.value = await MarkRepository.getMarks();
 });
 
 onMounted(async () => {
-    marks.value = await MarkDB.getMarks();
+    marks.value = await MarkRepository.getMarks();
 });
 </script>
 
@@ -43,12 +46,12 @@ onMounted(async () => {
                             disabled
                             v-model="mark.name"
                             color="cyan"
-                            icon="i-heroicons-archive-box"
+                            icon="heroicons:archive-box"
                             class="w-[200px] pointer-events-none"
                         />
                         <UButton
                             color="cyan"
-                            icon="i-heroicons-plus-circle-solid"
+                            icon="heroicons:plus-circle-solid"
                             @click="async () => await addSelectedToMark(mark)"
                         />
                     </UButtonGroup>

@@ -1,5 +1,5 @@
-import { ReadedDB } from '~/database';
-import type { Chapter, Favorite, Readed } from '~/models';
+import { ReadedRepository } from "~/database";
+import type { Chapter, Favorite, Readed } from "~/models";
 
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(
@@ -15,7 +15,7 @@ export async function addReadedBelow(
   readeds?: Readed[],
   dontDelete?: boolean,
 ) {
-  const localReadeds = readeds ?? (await ReadedDB.getReadeds(favorite));
+  const localReadeds = readeds ?? (await ReadedRepository.getReadeds(favorite));
   const readed = isReaded(chapter, localReadeds);
   if (readed) {
     if (!dontDelete) await deleteReadedAbove(readed, chapters, localReadeds);
@@ -27,7 +27,7 @@ export async function addReadedBelow(
     if (chapterI.chapter_id === chapter.chapter_id) isForAdd = true;
     if (isForAdd) if (!isReaded(chapterI, localReadeds)) toAdd.push(chapterI);
   }
-  await ReadedDB.createReadeds(toAdd, favorite.id);
+  await ReadedRepository.createReadeds(toAdd, favorite.id);
 }
 
 export async function deleteReadedAbove(
@@ -44,5 +44,5 @@ export async function deleteReadedAbove(
       if (read) toDelete.push(read);
     }
   }
-  await ReadedDB.deleteReadeds(toDelete);
+  await ReadedRepository.deleteReadeds(toDelete);
 }

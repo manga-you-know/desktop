@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FavoriteDB, ReadedDB } from "~/database";
+import { FavoriteRepository, ReadedRepository } from "~/database";
 import { addReadedBelow } from "~/functions";
 import type { ChaptersResponse } from "~/interfaces";
 import type { DownloadManager } from "~/managers";
@@ -47,7 +47,7 @@ function resetChapters() {
 }
 async function updateFavoriteHandler() {
     favorite.value.is_ultra_favorite = !favorite.value.is_ultra_favorite;
-    await FavoriteDB.updateFavorite(favorite.value);
+    await FavoriteRepository.updateFavorite(favorite.value);
 }
 function isReaded(chapter: Chapter) {
     return readeds.value.find(
@@ -64,7 +64,7 @@ async function addReaded(chapter: Chapter) {
         favorite.value,
         readeds.value,
     );
-    readeds.value = await ReadedDB.getReadeds(favorite.value);
+    readeds.value = await ReadedRepository.getReadeds(favorite.value);
     currentChapter.value = getNextForRead();
 }
 function getLastReaded() {
@@ -74,7 +74,7 @@ function getNextForRead() {
     return chapters.value.filter((chapter) => !isReaded(chapter)).reverse()[0];
 }
 async function onClose() {
-    ultraFavorites.value = await FavoriteDB.getUltraFavorites(user.value.id);
+    ultraFavorites.value = await FavoriteRepository.getUltraFavorites(user.value.id);
     rerenderIndex.value++;
 }
 async function updateLanguage() {
@@ -113,7 +113,7 @@ onMounted(async () => {
     if (!favorite.value) {
         return;
     }
-    readeds.value = await ReadedDB.getReadeds(favorite.value);
+    readeds.value = await ReadedRepository.getReadeds(favorite.value);
     chaptersDisplayed.value = [];
     while (!isChapterFetched) {
         await new Promise((resolve) => {
@@ -127,7 +127,7 @@ onMounted(async () => {
 });
 watch(isFavoriteOpen, async () => {
     if (isFavoriteOpen.value) {
-        readeds.value = await ReadedDB.getReadeds(favorite.value);
+        readeds.value = await ReadedRepository.getReadeds(favorite.value);
         currentChapter.value = getNextForRead();
     }
 });
@@ -139,10 +139,7 @@ watch(isFavoriteOpen, async () => {
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
-        <div
-            v-if="favorite"
-            class="h-120 my-3 flex flex-col justify-center items-center"
-        >
+        <div v-if="favorite" class="flex flex-col justify-center items-center">
             <UBadge class="m-1" color="white" variant="solid">
                 {{ favorite.name }}
             </UBadge>
@@ -156,8 +153,8 @@ watch(isFavoriteOpen, async () => {
                         <UButton
                             :icon="
                                 favorite.is_ultra_favorite
-                                    ? 'i-heroicons-star-solid'
-                                    : 'i-heroicons-star'
+                                    ? 'heroicons:star-solid'
+                                    : 'heroicons:star'
                             "
                             color="gray"
                             variant="link"
@@ -239,7 +236,7 @@ watch(isFavoriteOpen, async () => {
                         :loading="isSearching"
                         color="cyan"
                         placeholder="Chapters..."
-                        icon="i-heroicons-magnifying-glass-solid"
+                        icon="heroicons:magnifying-glass-solid"
                         class="w-50 m-0.5"
                         autocomplete="off"
                         :ui="{ icon: { trailing: { pointer: '' } } }"
@@ -249,7 +246,7 @@ watch(isFavoriteOpen, async () => {
                                 v-show="chapterQuery !== ''"
                                 color="gray"
                                 variant="link"
-                                icon="i-heroicons-x-mark-20-solid"
+                                icon="heroicons:x-mark-20-solid"
                                 :padded="false"
                                 @click="resetChapters"
                             />

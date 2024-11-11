@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { FavoriteDB, MarkDB } from "~/database";
+import { load } from "@tauri-apps/plugin-store";
+import { FavoriteRepository, MarkRepository } from "~/database";
 import type { Favorite, User } from "~/models";
 const user = useState<User>("user");
 const query = useState<string>("favoriteQuery", () => "");
@@ -8,8 +9,9 @@ const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
 const currentlyMark = useState<string>("mark", () => "-");
-const order = useState<{ id: string; icon: string }>("order", () => {
-    return { id: "id asc", icon: "i-heroicons-chevron-up-solid" };
+const isAsc = useState<boolean>("isAsc", () => true);
+const order = useState<{ type: string; icon: string }>("order", () => {
+    return { type: "id", icon: "mdi:sort" };
 });
 const isLoading = ref(false);
 const isMarkModalOpen = ref(false);
@@ -19,6 +21,7 @@ const isMarkSelectedModalOpen = useState<boolean>(
 );
 const sources = ref<string[]>([]);
 const marks = ref<string[]>([]);
+const config = await load("config.json");
 definePageMeta({
     name: "Favorites",
 });
@@ -30,33 +33,42 @@ async function search() {
     });
     if (query.value === "") {
         isLoading.value = true;
-        favorites.value = await FavoriteDB.getFavorites(user.value.id);
+        favorites.value = await FavoriteRepository.getFavorites(user.value.id);
         isLoading.value = false;
         return;
     }
     isLoading.value = true;
-    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
     isLoading.value = false;
 }
 async function resetResults() {
     query.value = "";
     isLoading.value = false;
-    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
 }
 async function fetchMarks() {
-    marks.value = ["-", ...(await MarkDB.getMarks()).map((mark) => mark.name)];
+    marks.value = [
+        "-",
+        ...(await MarkRepository.getMarks()).map((mark) => mark.name),
+    ];
 }
 onMounted(async () => {
-    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
     sources.value = [
         "-",
-        ...(await FavoriteDB.getFavoriteSources(user.value.id)),
+        ...(await FavoriteRepository.getFavoriteSources(user.value.id)),
     ];
     await fetchMarks();
     sourceSearch.value = sources.value[0];
 });
 watch(isSelecting, () => {
     selectedFavorites.value = [];
+});
+watch(order, async () => {
+    await Promise.all([search(), config.set("order_type", order.value.type)]);
+});
+watch(isAsc, async () => {
+    await Promise.all([search(), config.set("is_asc", isAsc.value)]);
 });
 </script>
 
@@ -73,14 +85,14 @@ watch(isSelecting, () => {
                 >
                     {{ isLoading ? "" : favorites.length }}
                 </UButton>
-                <SelectOrder class="w-18" @change="search" />
+                <SelectOrder />
                 <UInput
                     v-model="query"
                     v-on:update:model-value="search"
                     :loading="isLoading"
                     placeholder="Search..."
                     color="cyan"
-                    icon="i-heroicons-magnifying-glass-solid"
+                    icon="heroicons:magnifying-glass-solid"
                     class="w-[160px]"
                 >
                     <template #trailing>
@@ -88,7 +100,7 @@ watch(isSelecting, () => {
                             tabindex="-1"
                             color="gray"
                             variant="link"
-                            icon="i-heroicons-x-mark-20-solid"
+                            icon="heroicons:x-mark-20-solid"
                             class="pointer-events-auto"
                             @click="resetResults"
                         />
@@ -120,7 +132,7 @@ watch(isSelecting, () => {
                 </UTooltip>
                 <UButton
                     color="white"
-                    icon="i-heroicons-archive-box"
+                    icon="heroicons:archive-box"
                     @click="isMarkModalOpen = true"
                 />
                 <UButtonGroup
@@ -132,8 +144,8 @@ watch(isSelecting, () => {
                         @click="isSelecting = !isSelecting"
                         :icon="
                             isSelecting
-                                ? 'i-heroicons-pencil-square-solid'
-                                : 'i-heroicons-pencil-square'
+                                ? 'heroicons:pencil-square-solid'
+                                : 'heroicons:pencil-square'
                         "
                     />
                     <SelectedDropdown />

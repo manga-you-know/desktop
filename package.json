@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/icon": "^1.7.2",
     "@nuxt/image": "^1.8.1",
     "@nuxt/ui": "^2.19.2",
     "@tauri-apps/api": "2.0.3",
@@ -45,6 +46,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@iconify-json/heroicons": "^1.2.1",
+    "@iconify-json/ic": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.1",
+    "@iconify-json/typcn": "^1.2.1",
     "@nuxt/kit": "^3.14.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@tauri-apps/cli": "2.0.4",

@@ -1,6 +1,6 @@
-export * as UserDB from './_user';
-export * as FavoriteDB from './_favorite';
-export * as ReadedDB from './_readed';
-export * as MarkDB from './_mark';
-export * as MarkFavoriteDB from './_markFavorite';
-export { migrationQuery } from './_migration';
+export * as UserRepository from "./_user";
+export * as FavoriteRepository from "./_favorite";
+export * as ReadedRepository from "./_readed";
+export * as MarkRepository from "./_mark";
+export * as MarkFavoriteRepository from "./_markFavorite";
+export { migrationQuery } from "./_migration";

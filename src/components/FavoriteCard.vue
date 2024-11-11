@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FavoriteDB } from "~/database";
+import { FavoriteRepository } from "~/database";
 import { addSelected } from "~/hooks";
 import type { Favorite, User } from "~/models";
 const { favorite } = defineProps<{
@@ -33,8 +33,8 @@ function openEditFavorite() {
 }
 
 async function deleteFavorite() {
-    await FavoriteDB.deleteFavorite(favorite);
-    favorites.value = await FavoriteDB.getFavorites(user.value.id);
+    await FavoriteRepository.deleteFavorite(favorite);
+    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
 }
 watch(isSelecting, () => {
     if (isSelecting.value) {
@@ -87,7 +87,7 @@ watch(isSelecting, () => {
                 class="h-10 hover:bg-gray-900"
                 color="gray"
                 variant="ghost"
-                icon="i-heroicons-book-open-solid"
+                icon="heroicons:book-open-solid"
                 tabindex="-1"
             />
             <UButton
@@ -96,7 +96,7 @@ watch(isSelecting, () => {
                 color="gray"
                 class="hover:bg-gray-900"
                 variant="ghost"
-                icon="i-heroicons-pencil-square-solid"
+                icon="heroicons:pencil-square-solid"
                 tabindex="-1"
             />
             <UPopover
@@ -109,7 +109,7 @@ watch(isSelecting, () => {
                     @click="openPopover = true"
                     color="gray"
                     variant="ghost"
-                    icon="i-heroicons-x-circle-solid"
+                    icon="heroicons:x-circle-solid"
                     tabindex="-1"
                 />
                 <template #panel>
