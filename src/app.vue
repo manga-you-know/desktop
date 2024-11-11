@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { load } from "@tauri-apps/plugin-store";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Database from "@tauri-apps/plugin-sql";
 import { migrationQuery } from "~/database";
@@ -10,10 +11,17 @@ const isLogged = useState<boolean>("isLogged", () => false);
 const isSearchOpen = useState<boolean>("isSearchOpen", () => false);
 const isFavoriteOpen = useState<boolean>("isFavoriteOpen", () => false);
 const isEditFavoriteOpen = useState<boolean>("isEditFavoriteOpen", () => false);
+const isAsc = useState<boolean>("isAsc");
+const order = useState<{ type: string; icon: string }>("order");
 const currentWindow = getCurrentWindow();
 const user = useState<User>("user");
 const favorite = useState<Favorite>("favorite");
 useState<DownloadManager>("dlManager", () => new DownloadManager());
+const config = await load("config.json");
+const icons: { [key: string]: string } = {
+    id: "mdi:sort",
+    name: "mdi:sort-alphabetical-variant",
+};
 defineShortcuts({
     meta_k: {
         usingInput: true,
@@ -33,6 +41,14 @@ defineShortcuts({
     },
 });
 onBeforeMount(async () => {
+    const [savedType, savedIsAsc] = await Promise.all([
+        config.get<string>("order_type"),
+        config.get<boolean>("is_asc"),
+    ]);
+    if (savedType && savedIsAsc !== undefined) {
+        order.value = { type: savedType, icon: icons[savedType] };
+        isAsc.value = savedIsAsc;
+    }
     const db = await Database.load(`sqlite:${DATABASE_NAME}`);
     await db.execute(migrationQuery);
 });

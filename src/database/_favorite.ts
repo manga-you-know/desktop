@@ -58,10 +58,9 @@ export async function getFavorites(
   const favoriteQuery = useState<string>("favoriteQuery", () => "");
   const sourceQuery = useState<string>("sourceQuery", () => "-");
   const currentlyMark = useState<string>("mark");
-  const order = useState<{ type: string; icon: string }>("order", () => {
-    return { type: "id", icon: "mdi:sort" };
-  });
-  const isAsc = useState<boolean>("isAsc", () => true);
+  const order = useState<{ type: string; icon: string }>("order");
+  const isAsc = useState<boolean>("isAsc");
+  console.log(order.value, isAsc.value);
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
   if (sourceQuery.value !== "-") {

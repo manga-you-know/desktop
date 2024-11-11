@@ -9,10 +9,8 @@ const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
 const currentlyMark = useState<string>("mark", () => "-");
-const isAsc = useState<boolean>("isAsc", () => true);
-const order = useState<{ type: string; icon: string }>("order", () => {
-    return { type: "id", icon: "mdi:sort" };
-});
+const isAsc = useState<boolean>("isAsc");
+const order = useState<{ type: string; icon: string }>("order");
 const isLoading = ref(false);
 const isMarkModalOpen = ref(false);
 const isMarkSelectedModalOpen = useState<boolean>(
@@ -21,6 +19,7 @@ const isMarkSelectedModalOpen = useState<boolean>(
 );
 const sources = ref<string[]>([]);
 const marks = ref<string[]>([]);
+const isOrderFetched = ref(false);
 const config = await load("config.json");
 definePageMeta({
     name: "Favorites",
@@ -52,6 +51,7 @@ async function fetchMarks() {
         ...(await MarkRepository.getMarks()).map((mark) => mark.name),
     ];
 }
+
 onMounted(async () => {
     favorites.value = await FavoriteRepository.getFavorites(user.value.id);
     sources.value = [
