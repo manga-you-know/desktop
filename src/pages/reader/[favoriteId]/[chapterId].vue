@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { FavoriteDB, ReadedDB } from "~/database";
+import { FavoriteRepository, ReadedRepository } from "~/database";
 import { addReadedBelow } from "~/functions";
 import type { DownloadManager } from "~/managers";
 import { Chapter } from "~/models";
 const { favoriteId, chapterId } = useRoute().params;
+const window = getCurrentWindow();
 const dlManager = useState<DownloadManager>("dlManager");
 const pages = ref<string[]>([]);
-const favorite = await FavoriteDB.getFavorite(favoriteId);
+const favorite = await FavoriteRepository.getFavorite(favoriteId);
 const chapters = useState<Chapter[]>("chapters");
 // biome-ignore lint/suspicious/noDoubleEquals: <explanation>
 let foundChapter = chapters.value?.find(
@@ -27,9 +28,7 @@ const currentlyPage = useState<string>(
 );
 const openMenuChapters = ref(false);
 const isTheLastChapter = ref(chapter.value === chapters.value[0]);
-getCurrentWindow().setTitle(
-    `MangaYouKnow - ${favorite.name} / ${chapter.value.number}`,
-);
+window.setTitle(`MangaYouKnow - ${favorite.name} / ${chapter.value.number}`);
 function toNextPage() {
     if (currentlyCount.value === totalPage.value) return;
     currentlyCount.value++;
@@ -132,7 +131,7 @@ onMounted(async () => {
     >
         <UButton
             v-if="currentlyCount === totalPage && !isTheLastChapter"
-            icon="i-heroicons-arrow-right-solid"
+            icon="heroicons:arrow-right-solid"
             color="white"
             class="pointer-events-auto"
             @click="() => readNextOrPrevChapter('next')"
@@ -151,39 +150,54 @@ onMounted(async () => {
         />
     </div>
     <div
-        class="fixed w-screen gap-1 p-[1%] flex justify-end pointer-events-none"
+        class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end pointer-events-none"
     >
-        <UBadge class="m-1" color="white" variant="solid">
-            {{ currentlyCount }} / {{ totalPage }}
-        </UBadge>
-        <UButton
-            class="pointer-events-auto"
-            icon="i-heroicons-bars-3-solid"
-            color="gray"
-            @click="openMenuChapters = true"
-        />
-        <UPopover
-            mode="hover"
-            :popper="{ arrow: true, placement: 'left-start' }"
-            class="pointer-events-auto"
-        >
-            <UButton icon="nimbus:arrows-horizontal" color="gray" />
-            <template #panel>
-                <div class="p-2 gap-1 flex flex-row rounded-lg">
-                    <UButton
-                        icon="i-heroicons-arrow-left-solid"
-                        color="gray"
-                        @click="readNextOrPrevChapter('prev')"
-                    />
-                    <UButton
-                        icon="i-heroicons-arrow-right-solid"
-                        color="gray"
-                        @click="readNextOrPrevChapter('next')"
-                    />
-                </div>
-            </template>
-        </UPopover>
+        <div class="flex gap-1">
+            <UBadge class="m-1" color="white" variant="solid">
+                {{ currentlyCount }} / {{ totalPage }}
+            </UBadge>
+            <UButton
+                class="pointer-events-auto"
+                icon="heroicons:bars-3-solid"
+                color="gray"
+                @click="openMenuChapters = true"
+            />
+            <UPopover
+                mode="hover"
+                :popper="{ arrow: true, placement: 'left-start' }"
+                class="pointer-events-auto"
+            >
+                <UButton icon="nimbus:arrows-horizontal" color="gray" />
+                <template #panel>
+                    <div class="p-2 gap-1 flex flex-row rounded-lg">
+                        <UButton
+                            icon="heroicons:arrow-left-solid"
+                            color="gray"
+                            @click="readNextOrPrevChapter('prev')"
+                        />
+                        <UButton
+                            icon="heroicons:arrow-right-solid"
+                            color="gray"
+                            @click="readNextOrPrevChapter('next')"
+                        />
+                    </div>
+                </template>
+            </UPopover>
+        </div>
+        <div>
+            <UButton
+                class="pointer-events-auto"
+                icon="ic:outline-fullscreen-exit"
+                color="gray"
+                @click="
+                    async () => {
+                        window.setFullscreen(!(await window.isFullscreen()));
+                    }
+                "
+            />
+        </div>
     </div>
+
     <div>
         <NuxtImg
             :src="currentlyPage"
