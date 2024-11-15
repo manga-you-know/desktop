@@ -1,11 +1,12 @@
-## [0.2.15](https://github.com/manga-you-know/desktop/compare/v0.2.14...v0.2.15) (2024-11-15)
+## [0.2.16](https://github.com/manga-you-know/desktop/compare/v0.2.15...v0.2.16) (2024-11-15)
 
 
 ### Bug Fixes
 
-* publish.yml ([30a249d](https://github.com/manga-you-know/desktop/commit/30a249d4fc43c8e42da2a1e22c99e421347e5b75))
+* AGAIN AGAIN ([a362309](https://github.com/manga-you-know/desktop/commit/a362309c03af7df8c919cf066d10b508a65fe189))
+* fix again ([22e64c8](https://github.com/manga-you-know/desktop/commit/22e64c87911901c6ae6e1c990d7c17e665bcb876))
 
-## [0.2.14](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.14) (2024-11-15)
+## [0.2.15](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.15) (2024-11-15)
 
 
 ### New Features
@@ -17,12 +18,14 @@
 
 * favorites search now actually works ([10485ae](https://github.com/manga-you-know/desktop/commit/10485aebdf4f14d05618325f06a7ce586184380a))
 * Fix persistency in order ([3c1b1e1](https://github.com/manga-you-know/desktop/commit/3c1b1e1c92baad141d66185591bac6007d97d6ef))
+* publish.yml ([30a249d](https://github.com/manga-you-know/desktop/commit/30a249d4fc43c8e42da2a1e22c99e421347e5b75))
 * some mouse overlappings ([d60e4c3](https://github.com/manga-you-know/desktop/commit/d60e4c38c4b5b8f53db71eba6f45e342569b2e1a))
 
 
 ### Miscellaneous Chores
 
 * **release:** v0.2.14 [skip ci] ([03c1b07](https://github.com/manga-you-know/desktop/commit/03c1b078fdcf08ebf39f73e2e16b27753971fd77))
+* **release:** v0.2.15 [skip ci] ([efef616](https://github.com/manga-you-know/desktop/commit/efef616a139718948e3922b93fa8150b706ce8eb))
 
 ## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
 
