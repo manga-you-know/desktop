@@ -52,7 +52,10 @@ onBeforeMount(async () => {
     }
     const db = await Database.load(`sqlite:${DATABASE_NAME}`);
     await db.execute(migrationQuery);
-    await checkForAppUpdates();
+    const autoSearchUpdates = await config.get<boolean>("auto_search_updates");
+    if (autoSearchUpdates) {
+        await checkForAppUpdates();
+    }
 });
 </script>
 
