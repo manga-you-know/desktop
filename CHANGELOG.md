@@ -1,9 +1,21 @@
+## [0.2.24](https://github.com/manga-you-know/desktop/compare/v0.2.23...v0.2.24) (2024-11-15)
+
+
+### Bug Fixes
+
+* A FKNG G!!!!!! ([388010f](https://github.com/manga-you-know/desktop/commit/388010fd4116cba9458d8ee7aa82bb8cfa3d43a8))
+
 ## [0.2.23](https://github.com/manga-you-know/desktop/compare/v0.2.22...v0.2.23) (2024-11-15)
 
 
 ### Bug Fixes
 
 * LETS WIN ([4640adc](https://github.com/manga-you-know/desktop/commit/4640adc4de36a5267c2ca4a726491a21346c31c9))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.23 [skip ci] ([92b53c2](https://github.com/manga-you-know/desktop/commit/92b53c2105713d3ceb6bcfec7f8f6b573d3cef55))
 
 ## [0.2.22](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.22) (2024-11-15)
 
@@ -70,17 +82,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.12 [skip ci] ([6d3f50f](https://github.com/manga-you-know/desktop/commit/6d3f50f858ec25e3b1d723fe8f7756e45df71d62))
-
-## [0.2.11](https://github.com/manga-you-know/desktop/compare/v0.2.10...v0.2.11) (2024-11-07)
-
-
-### Bug Fixes
-
-* now you can actually add and delete the favorites to marks ([6ad9920](https://github.com/manga-you-know/desktop/commit/6ad9920d6019956c70d19a75d517b0e36a90ff17))
-* page not properly in the center ([5b9cafb](https://github.com/manga-you-know/desktop/commit/5b9cafb26c579d62dfc4e4f282ad19820624167e))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.11 [skip ci] ([d95519a](https://github.com/manga-you-know/desktop/commit/d95519a9103f1a560e60360d8824c1a0bcf2c52f))
 
