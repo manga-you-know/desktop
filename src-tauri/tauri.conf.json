@@ -28,6 +28,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "windows": {
       "allowDowngrades": true,
       "certificateThumbprint": null,
@@ -51,5 +52,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgyNjY1NzU0MzBEMjE4QUIKUldTckdOSXdWRmRtZ3FhU3JFbm41NjFoVmdoUnNrckQ3MjlnOEN6Qkt3eVh3UjVFVEdDaVpUVTQK",
+      "endpoints": [
+        "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

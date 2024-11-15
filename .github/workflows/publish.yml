@@ -87,11 +87,12 @@ jobs:
       - name: Publish Release
         uses: tauri-apps/tauri-action@v0
         env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          prerelease: true
           releaseName: v${{ needs.changelog.outputs.version }}
           tagName: ${{ needs.changelog.outputs.tag }}
           appVersion: ${{ needs.changelog.outputs.version }}
           releaseBody: ${{ needs.changelog.outputs.changelog }}
-          # args: ${{ matrix.args }}
+          includeUpdaterJson: true
+          args: ${{ matrix.args }}

@@ -2,6 +2,7 @@
 import { load } from "@tauri-apps/plugin-store";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Database from "@tauri-apps/plugin-sql";
+import { updateIfExists } from "~/functions";
 import { migrationQuery } from "~/database";
 import type { Favorite, User } from "~/models";
 import { DATABASE_NAME } from "./constants";
@@ -41,6 +42,7 @@ defineShortcuts({
     },
 });
 onBeforeMount(async () => {
+    await updateIfExists();
     const [savedType, savedIsAsc] = await Promise.all([
         config.get<string>("order_type"),
         config.get<boolean>("is_asc"),
