@@ -1,4 +1,4 @@
-## [0.2.18](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.18) (2024-11-15)
+## [0.2.19](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.19) (2024-11-15)
 
 
 ### New Features
@@ -8,6 +8,7 @@
 
 ### Bug Fixes
 
+* a new try!! confident ([c0a9205](https://github.com/manga-you-know/desktop/commit/c0a920518c38edbd850d3985121e5c9bd665e261))
 * AAAAAAAAAAA ([8bb1d27](https://github.com/manga-you-know/desktop/commit/8bb1d27d44be8bebc70598e468f8ce6bd51e1b4c))
 * AGAIN AGAIN ([a362309](https://github.com/manga-you-know/desktop/commit/a362309c03af7df8c919cf066d10b508a65fe189))
 * DUMB ([7cec5ff](https://github.com/manga-you-know/desktop/commit/7cec5ffe6d37b14ae96ab7b37c3a640ebb944345))
@@ -24,6 +25,7 @@
 * **release:** v0.2.15 [skip ci] ([efef616](https://github.com/manga-you-know/desktop/commit/efef616a139718948e3922b93fa8150b706ce8eb))
 * **release:** v0.2.16 [skip ci] ([1980936](https://github.com/manga-you-know/desktop/commit/19809367f3df2974d9eb3671635dcdd795e380a7))
 * **release:** v0.2.17 [skip ci] ([20ac9b0](https://github.com/manga-you-know/desktop/commit/20ac9b00759a3e05a6c28fc8f23db9a88fe438c9))
+* **release:** v0.2.18 [skip ci] ([2644423](https://github.com/manga-you-know/desktop/commit/2644423538b63df3ebcd98f14fb672a7604127ca))
 
 ## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
 
