@@ -60,28 +60,32 @@ export async function getFavorites(
   const currentlyMark = useState<string>("mark");
   const order = useState<{ type: string; icon: string }>("order");
   const isAsc = useState<boolean>("isAsc");
-  console.log(order.value, isAsc.value);
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
+  const params: any[] = [userID];
+
   if (sourceQuery.value !== "-") {
     query += " AND source = ?";
+    params.push(sourceQuery.value);
   }
+
   if (favoriteQuery.value !== "") {
     query +=
       " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
+    params.push(favoriteQuery.value, favoriteQuery.value);
   }
+
   if (currentlyMark.value !== "-") {
-    console.log("REAK");
-    query += ` AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ${await MarkRepository.getMarkId(currentlyMark.value)})`;
+    const markId = await MarkRepository.getMarkId(currentlyMark.value);
+    query +=
+      " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
+    params.push(markId);
   }
-  query += ` ORDER BY ${order.value.type} ${isAsc.value ? "ASC" : "DESC"}`;
+
+  query += " ORDER BY " + order.value.type + (isAsc.value ? " ASC" : " DESC");
+
   try {
-    const favorites: Favorite[] = await db.select(query, [
-      userID,
-      sourceQuery.value,
-      favoriteQuery.value,
-      favoriteQuery.value,
-    ]);
+    const favorites: Favorite[] = await db.select(query, params);
     return favorites;
   } catch (error) {
     console.log(error);
