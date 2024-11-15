@@ -2,7 +2,7 @@
 import { load } from "@tauri-apps/plugin-store";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import Database from "@tauri-apps/plugin-sql";
-import { updateIfExists } from "~/functions";
+import { checkForAppUpdates } from "~/functions";
 import { migrationQuery } from "~/database";
 import type { Favorite, User } from "~/models";
 import { DATABASE_NAME } from "./constants";
@@ -52,7 +52,7 @@ onBeforeMount(async () => {
     }
     const db = await Database.load(`sqlite:${DATABASE_NAME}`);
     await db.execute(migrationQuery);
-    await updateIfExists();
+    await checkForAppUpdates();
 });
 </script>
 
