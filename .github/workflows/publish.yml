@@ -85,11 +85,11 @@ jobs:
         run: bash myk u ${{ needs.changelog.outputs.version }}
 
       - name: Publish Release
-        uses: tauri-apps/tauri-action@v0.5
+        uses: tauri-apps/tauri-action@dev
         env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_SIGNING_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNIN_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           releaseName: v${{ needs.changelog.outputs.version }}
           tagName: ${{ needs.changelog.outputs.tag }}
