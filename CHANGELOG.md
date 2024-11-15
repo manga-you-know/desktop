@@ -1,4 +1,4 @@
-## [0.2.17](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.17) (2024-11-15)
+## [0.2.18](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.18) (2024-11-15)
 
 
 ### New Features
@@ -10,6 +10,7 @@
 
 * AAAAAAAAAAA ([8bb1d27](https://github.com/manga-you-know/desktop/commit/8bb1d27d44be8bebc70598e468f8ce6bd51e1b4c))
 * AGAIN AGAIN ([a362309](https://github.com/manga-you-know/desktop/commit/a362309c03af7df8c919cf066d10b508a65fe189))
+* DUMB ([7cec5ff](https://github.com/manga-you-know/desktop/commit/7cec5ffe6d37b14ae96ab7b37c3a640ebb944345))
 * favorites search now actually works ([10485ae](https://github.com/manga-you-know/desktop/commit/10485aebdf4f14d05618325f06a7ce586184380a))
 * fix again ([22e64c8](https://github.com/manga-you-know/desktop/commit/22e64c87911901c6ae6e1c990d7c17e665bcb876))
 * Fix persistency in order ([3c1b1e1](https://github.com/manga-you-know/desktop/commit/3c1b1e1c92baad141d66185591bac6007d97d6ef))
@@ -22,6 +23,7 @@
 * **release:** v0.2.14 [skip ci] ([03c1b07](https://github.com/manga-you-know/desktop/commit/03c1b078fdcf08ebf39f73e2e16b27753971fd77))
 * **release:** v0.2.15 [skip ci] ([efef616](https://github.com/manga-you-know/desktop/commit/efef616a139718948e3922b93fa8150b706ce8eb))
 * **release:** v0.2.16 [skip ci] ([1980936](https://github.com/manga-you-know/desktop/commit/19809367f3df2974d9eb3671635dcdd795e380a7))
+* **release:** v0.2.17 [skip ci] ([20ac9b0](https://github.com/manga-you-know/desktop/commit/20ac9b00759a3e05a6c28fc8f23db9a88fe438c9))
 
 ## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
 
