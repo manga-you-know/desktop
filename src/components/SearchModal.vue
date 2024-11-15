@@ -92,6 +92,7 @@ async function favorite(favorite: Favorite) {
                 icon="heroicons:magnifying-glass-20-solid"
                 leading
                 autocomplete="off"
+                :autofocus="true"
                 :ui="{ icon: { trailing: { pointer: '' } } }"
             >
                 <template #trailing>
