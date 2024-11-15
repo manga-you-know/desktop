@@ -1,3 +1,10 @@
+## [0.2.15](https://github.com/manga-you-know/desktop/compare/v0.2.14...v0.2.15) (2024-11-15)
+
+
+### Bug Fixes
+
+* publish.yml ([30a249d](https://github.com/manga-you-know/desktop/commit/30a249d4fc43c8e42da2a1e22c99e421347e5b75))
+
 ## [0.2.14](https://github.com/manga-you-know/desktop/compare/v0.2.13...v0.2.14) (2024-11-15)
 
 
@@ -11,6 +18,11 @@
 * favorites search now actually works ([10485ae](https://github.com/manga-you-know/desktop/commit/10485aebdf4f14d05618325f06a7ce586184380a))
 * Fix persistency in order ([3c1b1e1](https://github.com/manga-you-know/desktop/commit/3c1b1e1c92baad141d66185591bac6007d97d6ef))
 * some mouse overlappings ([d60e4c3](https://github.com/manga-you-know/desktop/commit/d60e4c38c4b5b8f53db71eba6f45e342569b2e1a))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.14 [skip ci] ([03c1b07](https://github.com/manga-you-know/desktop/commit/03c1b078fdcf08ebf39f73e2e16b27753971fd77))
 
 ## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
 
@@ -54,22 +66,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.11 [skip ci] ([d95519a](https://github.com/manga-you-know/desktop/commit/d95519a9103f1a560e60360d8824c1a0bcf2c52f))
-
-## [0.2.10](https://github.com/manga-you-know/desktop/compare/v0.2.9...v0.2.10) (2024-11-06)
-
-
-### New Features
-
-* add marks (you cant delete for now) ([8d827fb](https://github.com/manga-you-know/desktop/commit/8d827fb749deec65e69f58a4eb40cf04a4c7307f))
-
-
-### Bug Fixes
-
-* Button to change chapter spawning improperly ([d255ff7](https://github.com/manga-you-know/desktop/commit/d255ff741a21cb7e9ed1e8bb7b3dd1a8487eb261))
-* Menu in chapter actually changing chapter ([c1f280e](https://github.com/manga-you-know/desktop/commit/c1f280eb4dce2787c6bb27824295697ec27311d6))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.10 [skip ci] ([ef1bf5d](https://github.com/manga-you-know/desktop/commit/ef1bf5dcba315dcd91164bbe5a340d98ac312a0e))
 
