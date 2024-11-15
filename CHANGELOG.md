@@ -1,9 +1,21 @@
+## [0.2.25](https://github.com/manga-you-know/desktop/compare/v0.2.24...v0.2.25) (2024-11-15)
+
+
+### Bug Fixes
+
+* order was bugging again cuz of the time it takes to update ([dd0692c](https://github.com/manga-you-know/desktop/commit/dd0692c59232c5b344ccd62b75ae85da6c9421fe))
+
 ## [0.2.24](https://github.com/manga-you-know/desktop/compare/v0.2.23...v0.2.24) (2024-11-15)
 
 
 ### Bug Fixes
 
 * A FKNG G!!!!!! ([388010f](https://github.com/manga-you-know/desktop/commit/388010fd4116cba9458d8ee7aa82bb8cfa3d43a8))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.24 [skip ci] ([66b3791](https://github.com/manga-you-know/desktop/commit/66b379199c25c95f6ba076b1f4027012b76b4e01))
 
 ## [0.2.23](https://github.com/manga-you-know/desktop/compare/v0.2.22...v0.2.23) (2024-11-15)
 
@@ -65,21 +77,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.13 [skip ci] ([da61e5d](https://github.com/manga-you-know/desktop/commit/da61e5d177f2f28e80b0cdc12b70c8ef27de4ccc))
-
-## [0.2.12](https://github.com/manga-you-know/desktop/compare/v0.2.11...v0.2.12) (2024-11-08)
-
-
-### New Features
-
-* Add order alphebetic. icons must change ([33df046](https://github.com/manga-you-know/desktop/commit/33df046f4daf8fbe4017e2ce6fb443db93b2e92e))
-
-
-### Bug Fixes
-
-* now the remove from mark is actually reactive. ([b29f372](https://github.com/manga-you-know/desktop/commit/b29f372719a564131490cbcefd7c780cb480b27c))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.12 [skip ci] ([6d3f50f](https://github.com/manga-you-know/desktop/commit/6d3f50f858ec25e3b1d723fe8f7756e45df71d62))
 
