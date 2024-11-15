@@ -36,7 +36,7 @@
     "updater:allow-download-and-install",
     "process:default",
     "process:allow-exit",
-    "process:allow-relaunch",
+    "process:allow-restart",
     "fs:allow-app-read-recursive",
     "fs:allow-app-write-recursive",
     "fs:allow-app-read",
