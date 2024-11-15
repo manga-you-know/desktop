@@ -79,12 +79,13 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Setup Tauri signing key (Ubuntu and MacOS)
-        if: matrix.platform == 'ubuntu-22.04' or matrix.platform == 'macos-latest'
-        run: EXPORT TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
+        if: matrix.platform == 'ubuntu-22.04' || matrix.platform == 'macos-latest'
+        run: export TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
 
       - name: Setup Tauri signing key (Windows)
         if: matrix.platform == 'windows-latest'
         run: $env:TAURI_SIGNING_PRIVATE_KEY="${{ secrets.TAURI_PRIVATE_KEY }}"
+
       - name: Install front-end dependencies
         run: bun install
 
