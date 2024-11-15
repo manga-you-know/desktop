@@ -31,9 +31,9 @@ onMounted(async () => {
     <UModal>
         <div class="p-4 flex justify-center items-center flex-col w-full">
             <UBadge color="white">
-                Select the marks you want to add to the
+                Select the mark you want your
                 {{ selectedFavorites.length }}
-                favorites
+                favorites to be added to!
             </UBadge>
             <div class="h-40 overflow-y-scroll m-2">
                 <div

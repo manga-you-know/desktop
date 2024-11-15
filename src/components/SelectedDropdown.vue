@@ -24,7 +24,10 @@ const isMarkSelectedModalOpen = useState<boolean>(
                 {
                     label: 'Add to Mark',
                     icon: 'heroicons:archive-box-20-solid',
-                    click: () => (isMarkSelectedModalOpen = true),
+                    click: () => {
+                        if (selectedFavorites.length === 0) return;
+                        isMarkSelectedModalOpen = true;
+                    },
                 },
             ],
             [
@@ -33,6 +36,7 @@ const isMarkSelectedModalOpen = useState<boolean>(
                     icon: 'heroicons:minus-circle-solid',
                     disabled: currentlyMark === '-',
                     click: async () => {
+                        if (selectedFavorites.length === 0) return;
                         await MarkFavoriteRepository.deleteMarkFavorites(
                             selectedFavorites,
                             await MarkRepository.getMarkId(currentlyMark),
@@ -47,6 +51,7 @@ const isMarkSelectedModalOpen = useState<boolean>(
                     label: 'Delete selected',
                     icon: 'heroicons:trash-20-solid',
                     click: async () => {
+                        if (selectedFavorites.length === 0) return;
                         const answer = await confirm(
                             `This will delete ${selectedFavorites.length} favorite(s). Are you sure?`,
                             { title: 'Delete selected', kind: 'warning' },

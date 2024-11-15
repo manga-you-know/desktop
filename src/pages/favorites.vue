@@ -77,7 +77,7 @@ watch(isAsc, async () => {
     <MarkSelectedModal v-model="isMarkSelectedModalOpen" />
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
-            <div class="relative gap-1 flex">
+            <div class="relative gap-1 flex z-50">
                 <UButton
                     class="w-8 justify-center pointer-events-none"
                     color="white"
@@ -106,15 +106,17 @@ watch(isAsc, async () => {
                         />
                     </template>
                 </UInput>
-                <USelectMenu
-                    class="w-24"
-                    searchable
-                    clear-search-on-close
-                    v-on:update:model-value="search"
-                    v-model="sourceSearch"
-                    :options="sources"
-                    color="cyan"
-                />
+                <UTooltip :text="sourceSearch" :prevent="sourceSearch === '-'">
+                    <USelectMenu
+                        class="w-24"
+                        searchable
+                        clear-search-on-close
+                        v-on:update:model-value="search"
+                        v-model="sourceSearch"
+                        :options="sources"
+                        color="cyan"
+                    />
+                </UTooltip>
                 <UTooltip
                     :text="currentlyMark"
                     :prevent="currentlyMark === '-'"

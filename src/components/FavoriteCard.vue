@@ -47,8 +47,9 @@ watch(isSelecting, () => {
     <div
         :class="{
             'relative rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
-            'hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg transform hover:scale-[1.08] hover:z-50 hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:z-50 focus:border-white focus:border-1':
+            'hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1':
                 !isSelecting,
+            'z-50': openPopover,
             'bg-gray-900': !isSelecting,
             ' shadow-lg hover:scale-[1.04]': isSelecting && !isSelected,
             'border-white': isSelecting && !isSelected,
