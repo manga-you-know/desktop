@@ -42,7 +42,6 @@ defineShortcuts({
     },
 });
 onBeforeMount(async () => {
-    await updateIfExists();
     const [savedType, savedIsAsc] = await Promise.all([
         config.get<string>("order_type"),
         config.get<boolean>("is_asc"),
@@ -53,6 +52,7 @@ onBeforeMount(async () => {
     }
     const db = await Database.load(`sqlite:${DATABASE_NAME}`);
     await db.execute(migrationQuery);
+    await updateIfExists();
 });
 </script>
 
