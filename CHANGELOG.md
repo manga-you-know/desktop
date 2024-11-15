@@ -1,9 +1,21 @@
+## [0.2.26](https://github.com/manga-you-know/desktop/compare/v0.2.25...v0.2.26) (2024-11-15)
+
+
+### Styles
+
+* Improve updater to let the user choose to not update ([114eba3](https://github.com/manga-you-know/desktop/commit/114eba31edfdcba1c0fb85579c46f346c47cbae6))
+
 ## [0.2.25](https://github.com/manga-you-know/desktop/compare/v0.2.24...v0.2.25) (2024-11-15)
 
 
 ### Bug Fixes
 
 * order was bugging again cuz of the time it takes to update ([dd0692c](https://github.com/manga-you-know/desktop/commit/dd0692c59232c5b344ccd62b75ae85da6c9421fe))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.25 [skip ci] ([1d09185](https://github.com/manga-you-know/desktop/commit/1d09185d989b4bfe67e56b5e738354a9f8844759))
 
 ## [0.2.24](https://github.com/manga-you-know/desktop/compare/v0.2.23...v0.2.24) (2024-11-15)
 
@@ -64,17 +76,4 @@
 * **release:** v0.2.20 [skip ci] ([df7e02d](https://github.com/manga-you-know/desktop/commit/df7e02d39f4d435e53b340571f487ae84b607a2b))
 * **release:** v0.2.21 [skip ci] ([3fda6ac](https://github.com/manga-you-know/desktop/commit/3fda6ac7ef5fa894f9de42599637ffb3d5cb8968))
 * **release:** v0.2.22 [skip ci] ([975aff8](https://github.com/manga-you-know/desktop/commit/975aff8980415154dfd24a17a6ad2a38ca461cdb))
-
-## [0.2.13](https://github.com/manga-you-know/desktop/compare/v0.2.12...v0.2.13) (2024-11-11)
-
-
-### New Features
-
-* add button to enter e out fullscreen ([4259ebb](https://github.com/manga-you-know/desktop/commit/4259ebb5fa3683054c936b25bb8bf64d99c21a8e))
-* Change order dropdown and add persistency to it and search source ([48041dd](https://github.com/manga-you-know/desktop/commit/48041dd5e95619cf8406c7f7afebab519a874de8))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.13 [skip ci] ([da61e5d](https://github.com/manga-you-know/desktop/commit/da61e5d177f2f28e80b0cdc12b70c8ef27de4ccc))
 
