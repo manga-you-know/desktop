@@ -1,3 +1,16 @@
+## [0.2.29](https://github.com/manga-you-know/desktop/compare/v0.2.28...v0.2.29) (2024-11-16)
+
+
+### New Features
+
+* now you can disable auto enter fullscreen ([67a865d](https://github.com/manga-you-know/desktop/commit/67a865d1f5ed9f77e0e82f35c3babac38c0e6014))
+* Now you can share, export and import favorites!! ([2ab73e9](https://github.com/manga-you-know/desktop/commit/2ab73e99f140e5ae92872da7a62fcfd47d6c84d4))
+
+
+### Bug Fixes
+
+* for the last time, auto update is fixed ([2b5f31d](https://github.com/manga-you-know/desktop/commit/2b5f31dcf80d57f1652b7aedb22479f507ff3a1e))
+
 ## [0.2.28](https://github.com/manga-you-know/desktop/compare/v0.2.27...v0.2.28) (2024-11-16)
 
 
@@ -9,6 +22,11 @@
 ### Bug Fixes
 
 * now the app wont open new broken windows ([a03c6af](https://github.com/manga-you-know/desktop/commit/a03c6af64abcb577138267a2efd7660a62798a05))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.28 [skip ci] ([37ffb48](https://github.com/manga-you-know/desktop/commit/37ffb48ceb2226264b36e16be371ee065f2e03da))
 
 ## [0.2.27](https://github.com/manga-you-know/desktop/compare/v0.2.26...v0.2.27) (2024-11-15)
 
@@ -57,16 +75,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.25 [skip ci] ([1d09185](https://github.com/manga-you-know/desktop/commit/1d09185d989b4bfe67e56b5e738354a9f8844759))
-
-## [0.2.24](https://github.com/manga-you-know/desktop/compare/v0.2.23...v0.2.24) (2024-11-15)
-
-
-### Bug Fixes
-
-* A FKNG G!!!!!! ([388010f](https://github.com/manga-you-know/desktop/commit/388010fd4116cba9458d8ee7aa82bb8cfa3d43a8))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.24 [skip ci] ([66b3791](https://github.com/manga-you-know/desktop/commit/66b379199c25c95f6ba076b1f4027012b76b4e01))
 
