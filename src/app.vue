@@ -51,11 +51,11 @@ onBeforeMount(async () => {
         isAsc.value = savedIsAsc;
     }
     const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-    await db.execute(migrationQuery);
     const autoSearchUpdates = await config.get<boolean>("auto_search_updates");
     if (autoSearchUpdates) {
         await checkForAppUpdates();
     }
+    await db.execute(migrationQuery);
 });
 </script>
 
