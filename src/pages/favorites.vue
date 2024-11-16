@@ -12,6 +12,7 @@ const currentlyMark = useState<string>("mark", () => "-");
 const isAsc = useState<boolean>("isAsc");
 const order = useState<{ type: string; icon: string }>("order");
 const isLoading = ref(false);
+const isImportModalOpen = ref(false);
 const isMarkModalOpen = ref(false);
 const isMarkSelectedModalOpen = useState<boolean>(
     "isMarkSelectedModalOpen",
@@ -32,18 +33,18 @@ async function search() {
     });
     if (query.value === "") {
         isLoading.value = true;
-        favorites.value = await FavoriteRepository.getFavorites(user.value.id);
+        favorites.value = await FavoriteRepository.getFavorites();
         isLoading.value = false;
         return;
     }
     isLoading.value = true;
-    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites();
     isLoading.value = false;
 }
 async function resetResults() {
     query.value = "";
     isLoading.value = false;
-    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites();
 }
 async function fetchMarks() {
     marks.value = [
@@ -53,11 +54,8 @@ async function fetchMarks() {
 }
 
 onMounted(async () => {
-    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
-    sources.value = [
-        "-",
-        ...(await FavoriteRepository.getFavoriteSources(user.value.id)),
-    ];
+    favorites.value = await FavoriteRepository.getFavorites();
+    sources.value = ["-", ...(await FavoriteRepository.getFavoriteSources())];
     await fetchMarks();
     sourceSearch.value = sources.value[0];
 });
@@ -73,11 +71,19 @@ watch(isAsc, async () => {
 </script>
 
 <template>
+    <ShareOrImportModal v-model="isImportModalOpen" />
     <MarksModal v-model="isMarkModalOpen" />
     <MarkSelectedModal v-model="isMarkSelectedModalOpen" />
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
             <div class="relative gap-1 flex z-50">
+                <UButton
+                    class="w-8 justify-center"
+                    color="cyan"
+                    icon="ic:outline-ios-share"
+                    variant="outline"
+                    @click="isImportModalOpen = true"
+                />
                 <UButton
                     class="w-8 justify-center pointer-events-none"
                     color="white"

@@ -1,7 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "~/constants";
 import { MarkRepository } from "~/database";
-import type { Favorite, Mark } from "~/models";
+import type { Favorite, Mark, User } from "~/models";
 
 export async function createFavorite(
   favorite: Favorite,
@@ -38,6 +38,44 @@ export async function createFavorite(
   }
 }
 
+export async function createFavoritesFromJson(
+  favorites: Favorite[],
+): Promise<void> {
+  const user = useState<User>("user");
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    const placeholders = favorites
+      .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .join(", ");
+    await db.execute(
+      `INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES ${placeholders}`,
+      favorites
+        .map((favorite) => [
+          user.value.id,
+          favorite.name,
+          favorite.folder_name,
+          favorite.cover,
+          favorite.link,
+          favorite.source,
+          favorite.source_id,
+          favorite.type,
+          favorite.extra_name,
+          favorite.title_color,
+          favorite.card_color,
+          favorite.grade,
+          favorite.author,
+          favorite.description,
+        ])
+        .flat(),
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error in createFavoritesFromJson");
+  } finally {
+    // db.close()
+  }
+}
+
 export async function getFavorite(
   id: number | string | string[],
 ): Promise<Favorite> {
@@ -52,9 +90,8 @@ export async function getFavorite(
   throw new Error("Favorite not found");
 }
 
-export async function getFavorites(
-  userID: number | undefined,
-): Promise<Favorite[]> {
+export async function getFavorites(): Promise<Favorite[]> {
+  const user = useState<User>("user");
   const favoriteQuery = useState<string>("favoriteQuery", () => "");
   const sourceQuery = useState<string>("sourceQuery", () => "-");
   const currentlyMark = useState<string>("mark");
@@ -62,7 +99,7 @@ export async function getFavorites(
   const isAsc = useState<boolean>("isAsc");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
-  const params: any[] = [userID];
+  const params: any[] = [user.value.id];
 
   if (sourceQuery.value !== "-") {
     query += " AND source = ?";
@@ -183,14 +220,13 @@ export async function getFavoritesBySource(
   }
 }
 
-export async function getFavoriteSources(
-  userID: number | undefined,
-): Promise<string[]> {
+export async function getFavoriteSources(): Promise<string[]> {
+  const user = useState<User>("user");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const sources: string[] = await db.select(
       "SELECT DISTINCT source FROM favorite WHERE user_id = ?",
-      [userID],
+      [user.value.id],
     );
     //@ts-ignore
     return sources.map((source) => source.source);
@@ -250,6 +286,9 @@ export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
 export async function deleteFavorite(favorite: Favorite): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
+    await db.execute("DELETE FROM mark_favorites WHERE favorite_id = ?", [
+      favorite.id,
+    ]);
     await db.execute("DELETE FROM readed WHERE favorite_id = ?", [favorite.id]);
     await db.execute("DELETE FROM favorite WHERE id = ?", [favorite.id]);
   } catch (error) {
@@ -263,6 +302,10 @@ export async function deleteFavorites(favorites: Favorite[]): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const placeholders = favorites.map(() => "?").join(", ");
+    await db.execute(
+      `DELETE FROM mark_favorites WHERE favorite_id IN (${placeholders})`,
+      favorites.map((favorite: Favorite) => favorite.id),
+    );
     await db.execute(
       `DELETE FROM readed WHERE favorite_id IN (${placeholders})`,
       favorites.map((favorite: Favorite) => favorite.id),
