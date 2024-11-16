@@ -1,3 +1,15 @@
+## [0.2.28](https://github.com/manga-you-know/desktop/compare/v0.2.27...v0.2.28) (2024-11-16)
+
+
+### New Features
+
+* Improve updater  and add it in settings ([62cc0b5](https://github.com/manga-you-know/desktop/commit/62cc0b5606a46be788d25f66cd703d6637b4397d))
+
+
+### Bug Fixes
+
+* now the app wont open new broken windows ([a03c6af](https://github.com/manga-you-know/desktop/commit/a03c6af64abcb577138267a2efd7660a62798a05))
+
 ## [0.2.27](https://github.com/manga-you-know/desktop/compare/v0.2.26...v0.2.27) (2024-11-15)
 
 
@@ -16,6 +28,11 @@
 ### Styles
 
 * make sidebar icons reactive in which page you are ([d971c69](https://github.com/manga-you-know/desktop/commit/d971c69230a696d21ab083ed7a787d952e591c9f))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.27 [skip ci] ([d304502](https://github.com/manga-you-know/desktop/commit/d304502aac978e9f33314533165206cd228de8ad))
 
 ## [0.2.26](https://github.com/manga-you-know/desktop/compare/v0.2.25...v0.2.26) (2024-11-15)
 
@@ -52,16 +69,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.24 [skip ci] ([66b3791](https://github.com/manga-you-know/desktop/commit/66b379199c25c95f6ba076b1f4027012b76b4e01))
-
-## [0.2.23](https://github.com/manga-you-know/desktop/compare/v0.2.22...v0.2.23) (2024-11-15)
-
-
-### Bug Fixes
-
-* LETS WIN ([4640adc](https://github.com/manga-you-know/desktop/commit/4640adc4de36a5267c2ca4a726491a21346c31c9))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.23 [skip ci] ([92b53c2](https://github.com/manga-you-know/desktop/commit/92b53c2105713d3ceb6bcfec7f8f6b573d3cef55))
 
