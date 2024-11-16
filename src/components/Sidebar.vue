@@ -15,27 +15,30 @@ const route = useRoute();
                 },
                 {
                     label: 'Home',
+                    active: route.path === '/',
                     icon:
                         route.path === '/'
                             ? 'heroicons:home-solid'
                             : 'heroicons:home',
-                    to: '/',
+                    click: async () => await navigateTo('/'),
                 },
                 {
                     label: 'Favorites',
+                    active: route.path === '/favorites',
                     icon:
                         route.path === '/favorites'
                             ? 'heroicons:star-solid'
                             : 'heroicons:star',
-                    to: '/favorites',
+                    click: async () => await navigateTo('/favorites'),
                 },
                 {
                     label: 'Settings',
+                    active: route.path === '/settings',
                     icon:
                         route.path === '/settings'
                             ? 'heroicons:cog-6-tooth-solid'
                             : 'heroicons:cog-6-tooth',
-                    to: '/settings',
+                    click: async () => await navigateTo('/settings'),
                 },
             ],
             [
