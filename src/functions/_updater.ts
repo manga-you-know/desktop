@@ -1,10 +1,17 @@
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { ask, message } from "@tauri-apps/plugin-dialog";
+import { fetch } from "@tauri-apps/plugin-http";
 
 export async function checkForAppUpdates(onUserClick: boolean = false) {
-  const update = await check();
-  if (update === null) {
+  const [update, response] = await Promise.all([
+    check(),
+    fetch(
+      "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json",
+    ),
+  ]);
+
+  if (update === null && !response.ok) {
     await message("Failed to check for updates.\nPlease try again later.", {
       title: "Error",
       kind: "error",
@@ -13,9 +20,9 @@ export async function checkForAppUpdates(onUserClick: boolean = false) {
     return;
   } else if (update?.available) {
     const yes = await ask(
-      `Update to ${update.version} is available!\n\nRelease notes: ${update.body}`,
+      `Update to ${update.version} is available!\n\nRelease url: https://github.com/manga-you-know/desktop/releases/tag/${update.version}\n\nDo you want to update now?`,
       {
-        title: "Update Available",
+        title: "New Update Available",
         kind: "info",
         okLabel: "Update",
         cancelLabel: "Cancel",
