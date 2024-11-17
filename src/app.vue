@@ -24,7 +24,7 @@ const icons: { [key: string]: string } = {
     name: "mdi:sort-alphabetical-variant",
 };
 defineShortcuts({
-    meta_k: {
+    ctrl_k: {
         usingInput: true,
         handler: () => {
             if (user.value) {
@@ -32,8 +32,6 @@ defineShortcuts({
             }
         },
     },
-});
-defineShortcuts({
     f11: {
         usingInput: true,
         handler: async () => {

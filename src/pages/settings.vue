@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+
 import { load } from "@tauri-apps/plugin-store";
 import { getVersion } from "@tauri-apps/api/app";
 import { checkForAppUpdates } from "~/functions";
@@ -46,7 +48,7 @@ onBeforeMount(async () => {
 <template>
     <div class="w-full h-screen flex flex-col pt-8 pr-4 gap-3">
         <UDivider label="Version" size="xl" />
-        <div class="pl-3">
+        <div>
             <UAlert :title="`Current version: v${currentlyVersion}`">
                 <template #description>
                     <UCheckbox

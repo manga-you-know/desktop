@@ -67,6 +67,7 @@ onMounted(async () => {
         <div>
             <div class="w-full h-11 flex justify-center items-center">
                 <UButton
+                    color="gray"
                     @click="
                         () => {
                             isOpen = false;

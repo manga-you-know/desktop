@@ -34,7 +34,7 @@ function openEditFavorite() {
 
 async function deleteFavorite() {
     await FavoriteRepository.deleteFavorite(favorite);
-    favorites.value = await FavoriteRepository.getFavorites(user.value.id);
+    favorites.value = await FavoriteRepository.getFavorites();
 }
 watch(isSelecting, () => {
     if (isSelecting.value) {
