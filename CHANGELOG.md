@@ -1,3 +1,16 @@
+## [0.2.30](https://github.com/manga-you-know/desktop/compare/v0.2.29...v0.2.30) (2024-11-17)
+
+
+### New Features
+
+* now you can click and see the favorite when searching ([72d2974](https://github.com/manga-you-know/desktop/commit/72d29748d22fb03730bb1b681bdffbc13fb2be69))
+* Zoom in reader! it sucks! ([ad1ef6c](https://github.com/manga-you-know/desktop/commit/ad1ef6c0e60daf2e14db9abfdf160256e6c8ac1c))
+
+
+### Bug Fixes
+
+* small fixes and changes ([58ddbb5](https://github.com/manga-you-know/desktop/commit/58ddbb5c83d454d906dfdd9ad0bc02aaa4350fb4))
+
 ## [0.2.29](https://github.com/manga-you-know/desktop/compare/v0.2.28...v0.2.29) (2024-11-16)
 
 
@@ -10,6 +23,11 @@
 ### Bug Fixes
 
 * for the last time, auto update is fixed ([2b5f31d](https://github.com/manga-you-know/desktop/commit/2b5f31dcf80d57f1652b7aedb22479f507ff3a1e))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.29 [skip ci] ([ae4cab0](https://github.com/manga-you-know/desktop/commit/ae4cab0f52787b79caaf0c8f6608b1b7be0406d1))
 
 ## [0.2.28](https://github.com/manga-you-know/desktop/compare/v0.2.27...v0.2.28) (2024-11-16)
 
@@ -63,16 +81,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.26 [skip ci] ([1c80db4](https://github.com/manga-you-know/desktop/commit/1c80db48cc2e8745361f1101505524a6e2adc431))
-
-## [0.2.25](https://github.com/manga-you-know/desktop/compare/v0.2.24...v0.2.25) (2024-11-15)
-
-
-### Bug Fixes
-
-* order was bugging again cuz of the time it takes to update ([dd0692c](https://github.com/manga-you-know/desktop/commit/dd0692c59232c5b344ccd62b75ae85da6c9421fe))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.25 [skip ci] ([1d09185](https://github.com/manga-you-know/desktop/commit/1d09185d989b4bfe67e56b5e738354a9f8844759))
 
