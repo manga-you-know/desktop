@@ -28,6 +28,9 @@ const currentlyPage = useState<string>(
 );
 const openMenuChapters = ref(false);
 const isTheLastChapter = ref(chapter.value === chapters.value[0]);
+const zoom = ref(0);
+const zoomMinusDown = ref(false);
+const zoomPlusDown = ref(false);
 window.setTitle(`MangaYouKnow - ${favorite.name} / ${chapter.value.number}`);
 function toNextPage() {
     if (currentlyCount.value === totalPage.value) return;
@@ -94,6 +97,13 @@ defineShortcuts(
             usingInput: true,
             handler: toNextPage,
         },
+        ctrl_minus: {
+            usingInput: true,
+            handler: () => {
+                console.log("fodasse");
+                zoom.value += 1;
+            },
+        },
     },
     { chainDelay: 400 },
 );
@@ -115,6 +125,38 @@ onMounted(async () => {
     currentlyCount.value = 1;
     isTheLastChapter.value = chapter.value === chapters.value[0];
     fetchPages();
+});
+watch(zoomMinusDown, async () => {
+    zoom.value -= 1;
+    await new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true);
+        }, 500);
+    });
+    while (zoomMinusDown.value) {
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(true);
+            }, 100);
+        });
+        zoom.value -= 1;
+    }
+});
+watch(zoomPlusDown, async () => {
+    zoom.value += 1;
+    await new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true);
+        }, 500);
+    });
+    while (zoomPlusDown.value) {
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(true);
+            }, 100);
+        });
+        zoom.value += 1;
+    }
 });
 </script>
 
@@ -152,7 +194,7 @@ onMounted(async () => {
     <div
         class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end pointer-events-none"
     >
-        <div class="flex gap-1">
+        <div class="flex gap-1 z-30">
             <UBadge class="m-1" color="white" variant="solid">
                 {{ currentlyCount }} / {{ totalPage }}
             </UBadge>
@@ -184,9 +226,30 @@ onMounted(async () => {
                 </template>
             </UPopover>
         </div>
-        <div>
+        <div class="flex gap-2">
+            <UButtonGroup class="gap-0.5 pointer-events-auto z-50">
+                <UButton
+                    color="gray"
+                    icon="ic:round-plus"
+                    @mousedown="zoomPlusDown = true"
+                    @mouseup="zoomPlusDown = false"
+                />
+                <UButton
+                    class="w-8 p-0 flex justify-center"
+                    color="gray"
+                    @click="zoom = 0"
+                >
+                    {{ zoom * 2 }}%
+                </UButton>
+                <UButton
+                    color="gray"
+                    icon="ic:round-minus"
+                    @mousedown="zoomMinusDown = true"
+                    @mouseup="zoomMinusDown = false"
+                />
+            </UButtonGroup>
             <UButton
-                class="pointer-events-auto"
+                class="pointer-events-auto z-50"
                 icon="ic:outline-fullscreen-exit"
                 color="gray"
                 @click="
@@ -198,11 +261,18 @@ onMounted(async () => {
         </div>
     </div>
 
-    <div>
-        <NuxtImg
-            :src="currentlyPage"
-            placeholder
-            class="object-contain w-screen h-screen max-w-screen max-h-screen"
-        />
+    <div class="h-full w-full overflow-auto">
+        <div class="min-h-full w-full flex items-center justify-center">
+            <NuxtImg
+                :src="currentlyPage"
+                placeholder
+                class="object-contain transition-all duration-200"
+                :style="{
+                    height: `calc(100vh + ${zoom}rem)`,
+                    maxWidth: '100%',
+                    maxHeight: `calc(100vh + ${zoom}rem)`,
+                }"
+            />
+        </div>
     </div>
 </template>
