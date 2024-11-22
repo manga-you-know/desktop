@@ -80,13 +80,17 @@ watch(order, async () => {
 watch(isAsc, async () => {
     await Promise.all([search(), config.set("is_asc", isAsc.value)]);
 });
+watch(favorites, async () => {
+    page.value = 1;
+    favoritesDisplayed.value = favorites.value.slice(0, itemsPerPage);
+});
 </script>
 
 <template>
     <ShareOrImportModal v-model:open="isImportModalOpen" />
     <MarksModal v-model:open="isMarkModalOpen" />
     <MarkSelectedModal v-model:open="isMarkSelectedModalOpen" />
-    <div class="w-full h-full">
+    <div class="w-full h-full overflow-x-hidden overflow-y-hidden">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
             <div class="relative gap-1 flex z-50">
                 <UButton

@@ -131,14 +131,13 @@ export async function getFavorites(): Promise<Favorite[]> {
   }
 }
 
-export async function getUltraFavorites(
-  userID: number | undefined,
-): Promise<Favorite[]> {
+export async function getUltraFavorites(): Promise<Favorite[]> {
+  const user = useState<User>("user");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const favorites: Favorite[] = await db.select(
       "SELECT * FROM favorite WHERE user_id = ? AND is_ultra_favorite = ?",
-      [userID, true],
+      [user.value.id, true],
     );
     return favorites;
   } catch (error) {
@@ -269,6 +268,7 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
 
 export async function setUltraFavorite(favorite: Favorite): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  console.log(favorite.is_ultra_favorite);
   try {
     await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [favorite.is_ultra_favorite, favorite.id]);
   } catch (error) {

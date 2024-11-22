@@ -36,16 +36,20 @@ async function updateFavorite() {
 </script>
 
 <template>
-    <UModal class="rounded-xl" @close="onClose">
+    <UModal title="Edit your favorite" class="rounded-xl" @close="onClose">
         <template #body>
-            <UInput
-                v-model:model-value="name"
-                v-on:update:model-value="updateFavorite"
-            />
-            <UInput
-                v-model:model-value="cover"
-                v-on:update:model-value="updateFavorite"
-            />
+            <div class="flex flex-col gap-2">
+                <UInput
+                    color="neutral"
+                    v-model:model-value="name"
+                    v-on:update:model-value="updateFavorite"
+                />
+                <UInput
+                    color="neutral"
+                    v-model:model-value="cover"
+                    v-on:update:model-value="updateFavorite"
+                />
+            </div>
         </template>
     </UModal>
 </template>

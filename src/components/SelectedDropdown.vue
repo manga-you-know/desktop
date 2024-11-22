@@ -9,8 +9,9 @@ import type { Favorite, User } from "~/models";
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const favorites = useState<Favorite[]>("favorites");
-const user = useState<User>("user");
 const currentlyMark = useState<string>("mark");
+const askModalText = useState<string>("askModalText");
+const isAskModalOpen = useState<boolean>("isAskModalOpen");
 const isMarkSelectedModalOpen = useState<boolean>(
     "isMarkSelectedModalOpen",
     () => false,
@@ -50,17 +51,8 @@ const isMarkSelectedModalOpen = useState<boolean>(
                     icon: 'heroicons:trash-20-solid',
                     onSelect: async () => {
                         if (selectedFavorites.length === 0) return;
-                        const answer = await confirm(
-                            `This will delete ${selectedFavorites.length} favorite(s). Are you sure?`,
-                            { title: 'Delete selected', kind: 'warning' },
-                        );
-                        if (answer) {
-                            await FavoriteRepository.deleteFavorites(
-                                selectedFavorites,
-                            );
-                            favorites = await FavoriteRepository.getFavorites();
-                            isSelecting = false;
-                        }
+                        askModalText = `This action will delete ${selectedFavorites.length} favorite(s).`;
+                        isAskModalOpen = true;
                     },
                 },
             ],

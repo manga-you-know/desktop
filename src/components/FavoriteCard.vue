@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { FavoriteRepository } from "~/repositories";
 import { addSelected } from "~/hooks";
-import type { Favorite, User } from "~/models";
+import { deleteFavorite } from "~/functions";
+import type { Favorite } from "~/models";
 const { favorite } = defineProps<{
     favorite: Favorite;
 }>();
@@ -31,10 +32,6 @@ function openEditFavorite() {
     isEditFavoriteOpen.value = true;
 }
 
-async function deleteFavorite() {
-    await FavoriteRepository.deleteFavorite(favorite);
-    favorites.value = await FavoriteRepository.getFavorites();
-}
 watch(isSelecting, () => {
     if (isSelecting.value) {
         isSelected.value = false;
@@ -44,104 +41,75 @@ watch(isSelecting, () => {
 
 <template>
     <FavoriteContextMenu :favorite="favorite" >
-    <div
-        :class="{
-            'relative rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
-            'hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1':
-                !isSelecting,
-            'z-50': openPopover,
-            'bg-gray-900': !isSelecting,
-            ' shadow-lg hover:scale-[1.04]': isSelecting && !isSelected,
-            'border-white': isSelecting && !isSelected,
-            'border-green-400 bg-gray-700': isSelected && isSelecting,
-        }"
-        @click="handleClick"
-        @keydown.enter="handleClick"
-        @mouseleave="openPopover = false"
-        tabindex="1"
-    >
-        <UTooltip :disabled="favorite.name.length < 17" :text="favorite.name">
-            <UBadge
-                class="w-36 m-1 flex justify-center cursor-default"
-                color="neutral"
-                variant="outline"
-            >
-                {{
-                    favorite.name.substring(0, 16) +
-                    (favorite.name.length > 16 ? "..." : "")
-                }}
-            </UBadge>
-        </UTooltip>
-        <div class="w-36 h-52">
-            <NuxtImg
-                :src="favorite.cover"
-                class="w-36 h-52 object-contain rounded-xl select-none"
-                draggable="false"
-            />
-        </div>
-        <UButtonGroup
-            orientation="horizontal"
-            class="w-full h-10 flex justify-center"
+        <div
+            :class="{
+                'relative rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
+                'hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1':
+                    !isSelecting,
+                'z-50': openPopover,
+                'bg-gray-900': !isSelecting,
+                ' shadow-lg hover:scale-[1.04]': isSelecting && !isSelected,
+                'border-white': isSelecting && !isSelected,
+                'border-green-400 bg-gray-700': isSelected && isSelecting,
+            }"
+            @click="handleClick"
+            @keydown.enter="handleClick"
+            @mouseleave="openPopover = false"
+            tabindex="1"
         >
-            <UButton
-                size="xl"
-                @click="openFavorite"
-                class="h-10 hover:bg-gray-900"
-                color="neutral"
-                variant="ghost"
-                icon="heroicons:book-open-solid"
-                tabindex="-1"
-            />
-            <UButton
-                size="xl"
-                @click.stop
-                @click="openEditFavorite"
-                color="neutral"
-                class="hover:bg-gray-900"
-                variant="ghost"
-                icon="heroicons:pencil-square-solid"
-                tabindex="-1"
-            />
-            <UPopover
-                v-model:open="openPopover"
-                :popper="{ arrow: true, placement: 'left' }"
+            <UTooltip :disabled="favorite.name.length < 17" :text="favorite.name">
+                <UBadge
+                    class="w-36 m-1 flex justify-center cursor-default"
+                    color="neutral"
+                    variant="outline"
+                >
+                    {{
+                        favorite.name.substring(0, 16) +
+                        (favorite.name.length > 16 ? "..." : "")
+                    }}
+                </UBadge>
+            </UTooltip>
+            <div class="w-36 h-52">
+                <NuxtImg
+                    :src="favorite.cover"
+                    class="w-36 h-52 object-contain rounded-xl select-none"
+                    draggable="false"
+                />
+            </div>
+            <UButtonGroup
+                orientation="horizontal"
+                class="w-full h-10 flex justify-center"
             >
+                <UButton
+                    size="xl"
+                    @click="openFavorite"
+                    class="h-10 hover:bg-gray-900"
+                    color="neutral"
+                    variant="ghost"
+                    icon="heroicons:book-open-solid"
+                    tabindex="-1"
+                />
+                <UButton
+                    size="xl"
+                    @click.stop
+                    @click="openEditFavorite"
+                    color="neutral"
+                    class="hover:bg-gray-900"
+                    variant="ghost"
+                    icon="heroicons:pencil-square-solid"
+                    tabindex="-1"
+                />
                 <UButton
                     size="xl"
                     class="h-10 hover:bg-gray-900"
                     @click.stop
-                    @click="openPopover = true"
+                    @click="deleteFavorite(favorite)"
                     color="neutral"
                     variant="ghost"
                     icon="heroicons:x-circle-solid"
                     tabindex="-1"
                 />
-                <template #panel>
-                    <div
-                        class="p-2 flex flex-row rounded-lg hover:cursor-auto z-50"
-                        @click.stop
-                    >
-                        <UBadge class="rounded-xl" color="neutral"
-                            >Delete?</UBadge
-                        >
-                        <UButton
-                            size="xl"
-                            @click="deleteFavorite"
-                            color="primary"
-                            class="m-0.5 rounded-xl"
-                            label="Yes"
-                        />
-                        <UButton
-                            size="xl"
-                            @click="openPopover = false"
-                            color="warning"
-                            class="m-0.5 rounded-xl"
-                            label="No"
-                        />
-                    </div>
-                </template>
-            </UPopover>
-        </UButtonGroup>
-    </div>
-</FavoriteContextMenu>
+            </UButtonGroup>
+        </div>
+    </FavoriteContextMenu>
 </template>

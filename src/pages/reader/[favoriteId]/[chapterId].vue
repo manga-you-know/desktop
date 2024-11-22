@@ -10,7 +10,6 @@ const dlManager = useState<DownloadManager>("dlManager");
 const pages = ref<string[]>([]);
 const favorite = await FavoriteRepository.getFavorite(favoriteId);
 const chapters = useState<Chapter[]>("chapters");
-// biome-ignore lint/suspicious/noDoubleEquals: <explanation>
 let foundChapter = chapters.value?.find(
     (chapter) => chapter.chapter_id == chapterId,
 );
@@ -180,7 +179,7 @@ watch(zoomPlusDown, async () => {
             size="xl"
             v-if="currentlyCount === totalPage && !isTheLastChapter"
             icon="heroicons:arrow-right-solid"
-            color="white"
+            color="neutral"
             class="pointer-events-auto"
             @click="() => readNextOrPrevChapter('next')"
         />
@@ -201,7 +200,7 @@ watch(zoomPlusDown, async () => {
         class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end pointer-events-none"
     >
         <div class="flex gap-1 z-30">
-            <UBadge class="m-1" color="white" variant="solid">
+            <UBadge class="m-1" color="neutral" variant="outline">
                 {{ currentlyCount }} / {{ totalPage }}
             </UBadge>
             <UButton
@@ -209,6 +208,7 @@ watch(zoomPlusDown, async () => {
                 class="pointer-events-auto"
                 icon="heroicons:bars-3-solid"
                 color="neutral"
+                variant="outline"
                 @click="openMenuChapters = true"
             />
             <UPopover
@@ -220,6 +220,7 @@ watch(zoomPlusDown, async () => {
                     size="xl"
                     icon="nimbus:arrows-horizontal"
                     color="neutral"
+                    variant="outline"
                 />
                 <template #panel>
                     <div class="p-2 gap-1 flex flex-row rounded-lg">
@@ -242,32 +243,32 @@ watch(zoomPlusDown, async () => {
         <div class="flex gap-2">
             <UButtonGroup class="gap-0.5 pointer-events-auto z-50">
                 <UButton
-                    size="xl"
                     color="neutral"
+                    variant="outline"
                     icon="ic:round-plus"
                     @mousedown="zoomPlusDown = true"
                     @mouseup="zoomPlusDown = false"
                 />
                 <UButton
-                    size="xl"
-                    class="w-8 p-0 flex justify-center"
+                    class="w-10 p-0 flex justify-center"
                     color="neutral"
+                    variant="outline"
                     @click="zoom = 0"
-                    :label="zoom * 2 + '%'"
+                    :label="(zoom * 2) + 100  + '%'"
                 />
                 <UButton
-                    size="xl"
                     color="neutral"
+                    variant="outline"
                     icon="ic:round-minus"
                     @mousedown="zoomMinusDown = true"
                     @mouseup="zoomMinusDown = false"
                 />
             </UButtonGroup>
             <UButton
-                size="xl"
                 class="pointer-events-auto z-50"
                 icon="ic:outline-fullscreen-exit"
                 color="neutral"
+                variant="outline"
                 @click="
                     async () => {
                         window.setFullscreen(!(await window.isFullscreen()));

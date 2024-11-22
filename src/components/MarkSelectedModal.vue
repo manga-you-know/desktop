@@ -31,7 +31,7 @@ onMounted(async () => {
     <UModal>
         <template #header>
             <div class="p-4 flex justify-center items-center flex-col w-full">
-                <UBadge color="white">
+                <UBadge color="neutral">
                     Select the mark you want your
                     {{ selectedFavorites.length }}
                     favorites to be added to!

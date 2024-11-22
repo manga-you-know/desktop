@@ -66,6 +66,7 @@ function openFavorite() {
 </script>
 
 <template>
+    <FavoriteContextMenu :favorite="favorite">
     <div>
         <div
             class="relative bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:z-10 border border-transparent hover:border-white hover:border-2"
@@ -78,8 +79,8 @@ function openFavorite() {
             >
                 <UBadge
                     class="w-36 m-1 flex justify-center cursor-default"
-                    color="white"
-                    variant="solid"
+                    color="neutral"
+                    variant="soft"
                 >
                     {{
                         favorite.name.substring(0, 16) +
@@ -87,10 +88,13 @@ function openFavorite() {
                     }}
                 </UBadge>
             </UTooltip>
-            <NuxtImg
-                :src="favorite.cover"
-                class="h-52 w-36 object-contain rounded-xl select-none"
-            />
+
+            <div class="w-36 h-52">
+                <NuxtImg
+                    :src="favorite.cover"
+                    class="h-52 w-36 object-contain rounded-xl select-none"
+                />
+            </div>
             <UButtonGroup
                 orientation="horizontal"
                 class="w-full flex justify-center"
@@ -98,26 +102,28 @@ function openFavorite() {
                 <UButton
                     size="xl"
                     @click="openFavorite"
-                    class="h-8"
                     color="neutral"
                     variant="ghost"
                     icon="heroicons:book-open-solid"
                 />
                 <UTooltip
-                    :prevent="isLoading"
+                    arrow
+                    :disabled="isLoading"
                     :text="chaptersReaded"
+                    :delay-duration="300"
                     :popper="{ placement: 'top', arrow: true }"
                 >
                     <UButton
                         size="xl"
                         class="cursor-default disabled:cursor-default"
                         :loading="isLoading"
-                        color="white"
-                        variant="solid"
+                        color="neutral"
+                        variant="ghost"
                         :label="chaptersToRead"
                     />
                 </UTooltip>
             </UButtonGroup>
         </div>
-    </div>
+        </div>
+    </FavoriteContextMenu>
 </template>

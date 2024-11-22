@@ -293,10 +293,10 @@ async function fetchSources() {
                                 class="justify-center w-40 h-16 mt-1"
                                 :color="
                                     !importError && !importSuccess
-                                        ? 'cyan'
+                                        ? 'neutral'
                                         : importSuccess
                                           ? 'primary'
-                                          : 'red'
+                                          : 'error'
                                 "
                                 variant="soft"
                             >

@@ -26,9 +26,7 @@ defineShortcuts({
     },
 });
 onMounted(async () => {
-    ultraFavorites.value = await FavoriteRepository.getUltraFavorites(
-        user.value.id,
-    );
+    ultraFavorites.value = await FavoriteRepository.getUltraFavorites();
 });
 </script>
 

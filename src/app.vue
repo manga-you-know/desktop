@@ -73,6 +73,8 @@ onBeforeMount(async () => {
             v-model:open="isEditFavoriteOpen"
             :key="favorite.id"
         />
+    <AskModal  />
+
         <!-- main app -->
         <div v-if="isLogged">
             <div class="flex">
