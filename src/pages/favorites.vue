@@ -131,7 +131,7 @@ watch(favorites, async () => {
                         />
                     </template>
                 </UInput>
-                <UTooltip :text="sourceSearch" :prevent="sourceSearch === '-'">
+                <UTooltip :text="sourceSearch" :disabled="sourceSearch === '-'">
                     <USelectMenu
                         class="w-24"
                         searchable
@@ -144,7 +144,7 @@ watch(favorites, async () => {
                 </UTooltip>
                 <UTooltip
                     :text="currentlyMark"
-                    :prevent="currentlyMark === '-'"
+                    :disabled="currentlyMark === '-'"
                 >
                     <USelectMenu
                         class="w-24"
@@ -161,7 +161,7 @@ watch(favorites, async () => {
                     size="xl"
                     color="neutral"
                     variant="outline"
-                    icon="heroicons:archive-box"
+                    icon="i-lucide-tag"
                     @click="isMarkModalOpen = true"
                 />
                 <UButtonGroup
@@ -190,7 +190,7 @@ watch(favorites, async () => {
             <FavoriteCard :favorite="favorite" />
         </div>
         <div class="w-full flex justify-center">
-        <UPagination v-model:page="page" :items-per-page="itemsPerPage" :total="favorites.length" active-color="neutral" />
+        <UPagination v-if="favorites.length > itemsPerPage" v-model:page="page" :items-per-page="itemsPerPage" :total="favorites.length" active-color="neutral" />
         </div>
     </div>
 </div>

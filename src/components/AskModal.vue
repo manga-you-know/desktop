@@ -7,10 +7,12 @@ const globalFavorite = useState<Favorite>("favorite");
 const selectedFavorites = useState<Favorite[]>("selectedFavorites");
 const isSelecting = useState<boolean>("isSelecting");
 const favorites = useState<Favorite[]>("favorites");
+const ultraFavorites = useState<Favorite[]>("ultraFavorites", () => []);
 async function deleteFavorite() {
     if (isSelecting.value) {
         await FavoriteRepository.deleteFavorites(selectedFavorites.value);
         favorites.value = await FavoriteRepository.getFavorites();
+        ultraFavorites.value = await FavoriteRepository.getUltraFavorites();
         selectedFavorites.value = [];
         isSelecting.value = false;
         isOpen.value = false;
@@ -18,6 +20,7 @@ async function deleteFavorite() {
     }
     await FavoriteRepository.deleteFavorite(globalFavorite.value);
     favorites.value = await FavoriteRepository.getFavorites();
+    ultraFavorites.value = await FavoriteRepository.getUltraFavorites();
     isOpen.value = false;
 }
 

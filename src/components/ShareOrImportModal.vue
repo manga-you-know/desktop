@@ -30,6 +30,7 @@ async function fetchSources() {
         <template #body>
             <div class="flex flex-col w-full justify-center">
                 <UNavigationMenu
+                    class="border-b border-gray-200 dark:border-gray-800"
                     color="neutral"
                     :items="[
                         {
@@ -51,16 +52,7 @@ async function fetchSources() {
                             onSelect: () => (localRoute = 'import'),
                         }
                     ]"
-                    tabindex="-1"
-                    class="border-b border-gray-200 dark:border-gray-800"
-                >
-                    <template #default="{ link }">
-                        <span
-                            class="group-hover:text-cyan-300 border-cyan-500 relative"
-                            >{{ link.label }}</span
-                        >
-                    </template>
-                </UNavigationMenu>
+                />
                 <div class="" v-if="localRoute === 'share'">
                     <UBadge
                         class="w-full my-2"
