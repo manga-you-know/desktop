@@ -49,7 +49,7 @@ async function fetchSources() {
                             active: localRoute === 'import',
                             icon: 'mdi:invoice-import-outline',
                             onSelect: () => (localRoute = 'import'),
-                        },
+                        }
                     ]"
                     tabindex="-1"
                     class="border-b border-gray-200 dark:border-gray-800"
