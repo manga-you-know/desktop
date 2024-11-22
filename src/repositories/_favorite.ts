@@ -131,6 +131,12 @@ export async function getFavorites(): Promise<Favorite[]> {
   }
 }
 
+export async function getRawFavorites(): Promise<Favorite[]> {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  const favorites: Favorite[] = await db.select("SELECT * FROM favorite");
+  return favorites;
+}
+
 export async function getUltraFavorites(): Promise<Favorite[]> {
   const user = useState<User>("user");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);

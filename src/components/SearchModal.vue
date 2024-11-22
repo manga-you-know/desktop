@@ -12,15 +12,15 @@ const dlManager = useState<DownloadManager>("dlManager");
 const isLoading = ref(false);
 const isFavoriteOpen = ref(false);
 const favoriteView = ref<Favorite>();
-const results = ref<Favorite[]>([]);
-const favorites = useState<Favorite[]>("favorites");
+const results = ref<{id: string, label: string, self: Favorite}[]>([]);
+const globalFavorites = useState<Favorite[]>("favorites");
+const favorites = ref<Favorite[]>([]);
 const isSearchOpen = useState<boolean>("isSearchOpen");
 const sourceSearch = useState<string>("sourceSearch", () => MANGASOURCES[0]);
 const sourceResult = await store.get<string>("source_search");
 sourceSearch.value = MANGASOURCES.includes(sourceResult ?? "")
     ? (sourceResult ?? "")
     : MANGASOURCES[0];
-const finished = ref();
 
 function resetResults() {
     if (query.value === "") {
@@ -45,19 +45,26 @@ async function search() {
         return;
     }
     try {
-        favorites.value = await FavoriteRepository.getFavorites();
         results.value = (
             await dlManager.value.search(query.value, sourceSearch.value)
-        ).slice(0, 20);
+        ).slice(0, 20).map((result) => ({
+            id: result.source_id,
+            label: result.name,
+            avatar: {src: result.cover, alt: result.name},
+            onSelect: () => {
+                favoriteView.value = result;
+                isFavoriteOpen.value = true;
+            },
+            self: result,
+        }));
+        console.log(query.value)
     } catch (error) {
-        finished.value = error;
+        console.log(error);
     } finally {
         isLoading.value = false;
     }
 }
-async function verifyFavorites() {
-    const favorites = await FavoriteRepository.getFavorites();
-}
+
 function isFavorite(favorite: Favorite) {
     return favorites.value.find(
         (f) =>
@@ -71,21 +78,29 @@ async function favorite(favorite: Favorite) {
     const isFavoriteh = isFavorite(favorite);
     if (isFavoriteh) {
         await FavoriteRepository.deleteFavorite(isFavoriteh);
-        favorites.value = await FavoriteRepository.getFavorites();
-        return;
+    } else {
+        await FavoriteRepository.createFavorite(favorite, user.value.id);
     }
-    await FavoriteRepository.createFavorite(favorite, user.value.id);
-    favorites.value = await FavoriteRepository.getFavorites();
+    favorites.value = await FavoriteRepository.getRawFavorites();
+    globalFavorites.value = await FavoriteRepository.getFavorites();
 }
+
+onMounted(async () => {
+    favorites.value = await FavoriteRepository.getRawFavorites();
+});
+
 watch(isSearchOpen, () => {
     if (isSearchOpen.value) {
         isFavoriteOpen.value = false;
     }
 });
+watch(query, async () => {
+    await search();
+});
 </script>
 
 <template>
-    <UModal class="rounded" :overlay="true">
+    <UModal :overlay="true">
         <template #content>
             <div class="relative overflow-hidden" style="min-height: 250px">
                 <div
@@ -95,93 +110,17 @@ watch(isSearchOpen, () => {
                         'translate-x-0': !isFavoriteOpen,
                     }"
                 >
-                    <div class="w-full h-11 flex justify-center items-center">
-                        <UInput
-                            v-model="query"
-                            v-on:update:model-value="search"
-                            name="query"
-                            :loading="isLoading"
-                            variant="none"
-                            :padded="false"
-                            class="w-[97%]"
-                            placeholder="Search..."
-                            icon="heroicons:magnifying-glass-20-solid"
-                            leading
-                            autocomplete="off"
-                            :autofocus="true"
-                            :ui="{ icon: { trailing: { pointer: '' } } }"
-                        >
-                            <template #trailing>
-                                <div class="flex gap-2">
-                                    <USelectMenu
-                                        tabindex="-1"
-                                        searchable
-                                        class="w-[150px]"
-                                        clear-search-on-close
-                                        v-model="sourceSearch"
-                                        :items="MANGASOURCES"
-                                        v-on:update:model-value="search"
-                                        color="neutral"
-                                    />
-                                    <UButton
-                                        size="xl"
-                                        tabindex="-1"
-                                        color="neutral"
-                                        variant="link"
-                                        icon="heroicons:x-mark-20-solid"
-                                        :padded="false"
-                                        @click="resetResults"
-                                    />
-                                </div>
-                            </template>
-                        </UInput>
-                    </div>
-                    <USeparator class="w-full h-1" />
-                    <div class="w-full h-48 flex flex-col overflow-y-scroll">
-                        <div v-for="(result, i) in results" :key="result.name">
-                            <div
-                                :tabindex="i + 1"
-                                @keydown.enter="favorite(result)"
-                                @keydown.space="console.log('fuck')"
-                            >
-                                <UButtonGroup
-                                    orientation="horizontal"
-                                    class="w-full"
-                                >
-                                    <UButton
-                                        size="xl"
-                                        tabindex="-1"
-                                        @click="
-                                            favoriteView = result;
-                                            isFavoriteOpen = true;
-                                        "
-                                        color="neutral"
-                                        variant="ghost"
-                                        class="w-[93%] h-10 m-0.5 flex justify-between"
-                                        :label="
-                                            result.name.substring(0, 60) +
-                                            (result.name.length > 60
-                                                ? '...'
-                                                : '')
-                                        "
-                                    />
-                                    <UButton
-                                        size="xl"
-                                        tabindex="-1"
-                                        :icon="
-                                            isFavorite(result)
-                                                ? 'heroicons:star-solid'
-                                                : 'heroicons:star'
-                                        "
-                                        color="neutral"
-                                        variant="link"
-                                        class="h-10 m-0.5"
-                                        @click="() => favorite(result)"
-                                    />
-                                </UButtonGroup>
-                            </div>
-                        </div>
-                    </div>
+                    <UCommandPalette v-model:searchTerm="query" placeholder="Search..." :close="{onClick: () => {
+                        if (query === '') {
+                            isSearchOpen = false;
+                        } else {
+                            query = '';
+                        }
+                    }}"  :loading="isLoading" :groups="[{id: 'results', filter: false, items: results}]" >
+                        <template #trailing>
+                            FODASSE
+                        </template>
+                    </UCommandPalette>
                 </div>
                 <div
                     class="w-full p-2 absolute transition-all duration-500 ease-in-out"
@@ -197,6 +136,7 @@ watch(isSearchOpen, () => {
                             icon="mdi:arrow-left-thick"
                             color="neutral"
                             variant="outline"
+                            tabindex="-1"
                             @click="isFavoriteOpen = false"
                         />
                         <div
@@ -226,7 +166,7 @@ watch(isSearchOpen, () => {
                                         favoriteView.extra_name
                                     "
                                     class="text-center"
-                                    color="white"
+                                    color="neutral"
                                 >
                                     {{ favoriteView.extra_name }}
                                 </UBadge>
