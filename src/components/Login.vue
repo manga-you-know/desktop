@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type InferType, object, string } from "yup";
-import { UserRepository } from "~/database";
+import { UserRepository } from "~/repositories";
 import type { User } from "~/models";
 import type { FormSubmitEvent } from "#ui/types";
 
@@ -73,33 +73,47 @@ async function onSubmitDefault() {
                 <UBadge class="m-1" color="white" variant="solid">
                     {{ user.username }}
                 </UBadge>
-                <UButton @click="selectUser(user)" color="cyan" variant="link">
-                    Login
-                </UButton>
                 <UButton
-                    color="cyan"
+                    size="xl"
+                    @click="selectUser(user)"
+                    color="neutral"
+                    variant="link"
+                    label="Login"
+                />
+                <UButton
+                    size="xl"
+                    color="neutral"
                     variant="link"
                     @click="isThereUsers = false"
-                >
-                    create a new account
-                </UButton>
+                    label="create a new account"
+                />
             </div>
         </div>
     </div>
     <div v-else class="h-screen flex flex-col items-center justify-center">
         <UForm :schema="schema" :state="state" class="gap-4" @submit="onSubmit">
-            <UInput color="cyan" disabled v-model="state.username" />
-            <UInput color="cyan" disabled v-model="state.email" />
+            <UInput color="neutral" disabled v-model="state.username" />
+            <UInput color="neutral" disabled v-model="state.email" />
             <UInput
-                color="cyan"
+                color="neutral"
                 disabled
                 v-model="state.password"
                 type="password"
             />
-            <UButton color="cyan" disabled type="submit"> Submit </UButton>
-            <UButton color="cyan" variant="link" @click="onSubmitDefault">
-                Use default local account
-            </UButton>
+            <UButton
+                size="xl"
+                color="neutral"
+                disabled
+                type="submit"
+                label="Submit"
+            />
+            <UButton
+                size="xl"
+                color="neutral"
+                variant="link"
+                @click="onSubmitDefault"
+                label="Use default local account"
+            />
         </UForm>
     </div>
 </template>

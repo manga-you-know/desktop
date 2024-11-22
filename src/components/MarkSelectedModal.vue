@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MarkRepository, MarkFavoriteRepository } from "~/database";
+import { MarkRepository, MarkFavoriteRepository } from "~/repositories";
 import type { Favorite, Mark } from "~/models";
 const selectedFavorites = useState<Favorite[]>("selectedFavorites");
 const marks = ref<Mark[]>([]);
@@ -29,34 +29,39 @@ onMounted(async () => {
 
 <template>
     <UModal>
-        <div class="p-4 flex justify-center items-center flex-col w-full">
-            <UBadge color="white">
-                Select the mark you want your
-                {{ selectedFavorites.length }}
-                favorites to be added to!
-            </UBadge>
-            <div class="h-40 overflow-y-scroll m-2">
-                <div
-                    class="flex flex-col gap-2"
-                    v-for="mark in marks"
-                    :key="mark.id"
-                >
-                    <UButtonGroup class="m-0.5" orientation="horizontal">
-                        <UInput
-                            disabled
-                            v-model="mark.name"
-                            color="cyan"
-                            icon="heroicons:archive-box"
-                            class="w-[200px] pointer-events-none"
-                        />
-                        <UButton
-                            color="cyan"
-                            icon="heroicons:plus-circle-solid"
-                            @click="async () => await addSelectedToMark(mark)"
-                        />
-                    </UButtonGroup>
+        <template #header>
+            <div class="p-4 flex justify-center items-center flex-col w-full">
+                <UBadge color="white">
+                    Select the mark you want your
+                    {{ selectedFavorites.length }}
+                    favorites to be added to!
+                </UBadge>
+                <div class="h-40 overflow-y-scroll m-2">
+                    <div
+                        class="flex flex-col gap-2"
+                        v-for="mark in marks"
+                        :key="mark.id"
+                    >
+                        <UButtonGroup class="m-0.5" orientation="horizontal">
+                            <UInput
+                                disabled
+                                v-model="mark.name"
+                                color="neutral"
+                                icon="heroicons:archive-box"
+                                class="w-[200px] pointer-events-none"
+                            />
+                            <UButton
+                                size="xl"
+                                color="neutral"
+                                icon="heroicons:plus-circle-solid"
+                                @click="
+                                    async () => await addSelectedToMark(mark)
+                                "
+                            />
+                        </UButtonGroup>
+                    </div>
                 </div>
             </div>
-        </div>
+        </template>
     </UModal>
 </template>

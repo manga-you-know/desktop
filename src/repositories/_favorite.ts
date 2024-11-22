@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "~/constants";
-import { MarkRepository } from "~/database";
+import { MarkRepository } from "~/repositories";
 import type { Favorite, Mark, User } from "~/models";
 
 export async function createFavorite(
@@ -50,7 +50,7 @@ export async function createFavoritesFromJson(
     await db.execute(
       `INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES ${placeholders}`,
       favorites
-        .map((favorite) => [
+        .flatMap((favorite) => [
           user.value.id,
           favorite.name,
           favorite.folder_name,
@@ -66,7 +66,6 @@ export async function createFavoritesFromJson(
           favorite.author,
           favorite.description,
         ])
-        .flat(),
     );
   } catch (error) {
     console.log(error);
@@ -99,7 +98,7 @@ export async function getFavorites(): Promise<Favorite[]> {
   const isAsc = useState<boolean>("isAsc");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
-  const params: any[] = [user.value.id];
+  const params: (string | number | boolean)[] = [user.value.id ?? 0];
 
   if (sourceQuery.value !== "-") {
     query += " AND source = ?";
@@ -119,7 +118,7 @@ export async function getFavorites(): Promise<Favorite[]> {
     params.push(markId);
   }
 
-  query += " ORDER BY " + order.value.type + (isAsc.value ? " ASC" : " DESC");
+  query += ` ORDER BY ${order.value.type} ${isAsc.value ?  ' ASC' : ' DESC'}`;
 
   try {
     const favorites: Favorite[] = await db.select(query, params);
@@ -261,6 +260,17 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
         favorite.id,
       ],
     );
+  } catch (error) {
+    console.log(error);
+  } finally {
+    // db.close()
+  }
+}
+
+export async function setUltraFavorite(favorite: Favorite): Promise<void> {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [favorite.is_ultra_favorite, favorite.id]);
   } catch (error) {
     console.log(error);
   } finally {

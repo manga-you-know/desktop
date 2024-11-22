@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { load } from "@tauri-apps/plugin-store";
-import { FavoriteRepository, MarkRepository } from "~/database";
+import { FavoriteRepository, MarkRepository } from "~/repositories";
 import type { Favorite, User } from "~/models";
 const user = useState<User>("user");
 const query = useState<string>("favoriteQuery", () => "");
 const favorites = useState<Favorite[]>("favorites", () => []);
+const favoritesDisplayed = ref<Favorite[]>([]);
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
 const sourceSearch = useState<string>("sourceQuery", () => "-");
@@ -14,13 +15,14 @@ const order = useState<{ type: string; icon: string }>("order");
 const isLoading = ref(false);
 const isImportModalOpen = ref(false);
 const isMarkModalOpen = ref(false);
+const page = ref(1);
+const itemsPerPage = 28;
 const isMarkSelectedModalOpen = useState<boolean>(
     "isMarkSelectedModalOpen",
     () => false,
 );
 const sources = ref<string[]>([]);
 const marks = ref<string[]>([]);
-const isOrderFetched = ref(false);
 const config = await load("config.json");
 definePageMeta({
     name: "Favorites",
@@ -34,17 +36,23 @@ async function search() {
     if (query.value === "") {
         isLoading.value = true;
         favorites.value = await FavoriteRepository.getFavorites();
+        page.value = 1;
+        favoritesDisplayed.value = favorites.value.slice(0, itemsPerPage);
         isLoading.value = false;
         return;
     }
     isLoading.value = true;
     favorites.value = await FavoriteRepository.getFavorites();
+    page.value = 1;
+    favoritesDisplayed.value = favorites.value.slice(0, itemsPerPage);
     isLoading.value = false;
 }
 async function resetResults() {
     query.value = "";
     isLoading.value = false;
     favorites.value = await FavoriteRepository.getFavorites();
+    page.value = 1;
+    favoritesDisplayed.value = favorites.value.slice(0, itemsPerPage);
 }
 async function fetchMarks() {
     marks.value = [
@@ -55,9 +63,13 @@ async function fetchMarks() {
 
 onMounted(async () => {
     favorites.value = await FavoriteRepository.getFavorites();
+    favoritesDisplayed.value = favorites.value.slice(0, itemsPerPage);
     sources.value = ["-", ...(await FavoriteRepository.getFavoriteSources())];
     await fetchMarks();
     sourceSearch.value = sources.value[0];
+});
+watch(page, () => {
+    favoritesDisplayed.value = favorites.value.slice((page.value - 1) * itemsPerPage, page.value * itemsPerPage);
 });
 watch(isSelecting, () => {
     selectedFavorites.value = [];
@@ -71,40 +83,43 @@ watch(isAsc, async () => {
 </script>
 
 <template>
-    <ShareOrImportModal v-model="isImportModalOpen" />
-    <MarksModal v-model="isMarkModalOpen" />
-    <MarkSelectedModal v-model="isMarkSelectedModalOpen" />
+    <ShareOrImportModal v-model:open="isImportModalOpen" />
+    <MarksModal v-model:open="isMarkModalOpen" />
+    <MarkSelectedModal v-model:open="isMarkSelectedModalOpen" />
     <div class="w-full h-full">
         <div class="w-full h-12 p-2 flex justify-center z-10 bg-gray-850">
             <div class="relative gap-1 flex z-50">
                 <UButton
+                    size="xl"
                     class="w-8 justify-center"
-                    color="cyan"
+                    color="neutral"
                     icon="ic:outline-ios-share"
                     variant="outline"
                     @click="isImportModalOpen = true"
                 />
                 <UButton
-                    class="w-8 justify-center pointer-events-none"
-                    color="white"
+                    size="md"
+                    class="w-12 justify-center pointer-events-none"
+                    color="neutral"
+                    variant="outline"
                     :loading="isLoading"
-                >
-                    {{ isLoading ? "" : favorites.length }}
-                </UButton>
+                    :label="`${isLoading ? '' : favorites.length}`"
+                />
                 <SelectOrder />
                 <UInput
                     v-model="query"
                     v-on:update:model-value="search"
                     :loading="isLoading"
                     placeholder="Search..."
-                    color="cyan"
+                    color="neutral"
                     icon="heroicons:magnifying-glass-solid"
                     class="w-[160px]"
                 >
                     <template #trailing>
                         <UButton
+                            size="xl"
                             tabindex="-1"
-                            color="gray"
+                            color="neutral"
                             variant="link"
                             icon="heroicons:x-mark-20-solid"
                             class="pointer-events-auto"
@@ -119,8 +134,8 @@ watch(isAsc, async () => {
                         clear-search-on-close
                         v-on:update:model-value="search"
                         v-model="sourceSearch"
-                        :options="sources"
-                        color="cyan"
+                        :items="sources"
+                        color="neutral"
                     />
                 </UTooltip>
                 <UTooltip
@@ -134,12 +149,14 @@ watch(isAsc, async () => {
                         @click="fetchMarks"
                         v-on:update:model-value="search"
                         v-model="currentlyMark"
-                        :options="marks"
-                        color="cyan"
+                        :items="marks"
+                        color="neutral"
                     />
                 </UTooltip>
                 <UButton
-                    color="white"
+                    size="xl"
+                    color="neutral"
+                    variant="outline"
                     icon="heroicons:archive-box"
                     @click="isMarkModalOpen = true"
                 />
@@ -148,7 +165,9 @@ watch(isAsc, async () => {
                     class="gap-0 flex justify-center"
                 >
                     <UButton
-                        color="white"
+                        size="xl"
+                        color="neutral"
+                        variant="soft"
                         @click="isSelecting = !isSelecting"
                         :icon="
                             isSelecting
@@ -163,9 +182,12 @@ watch(isAsc, async () => {
         <div
             class="w-full h-[calc(100vh-3rem)] pb-5 overflow-y-auto overflow-x-hidden flex flex-row justify-start gap-2 flex-wrap"
         >
-            <div class="" v-for="favorite in favorites" :key="favorite.id">
-                <FavoriteCard :favorite="favorite" />
-            </div>
+        <div class="" v-for="favorite in favoritesDisplayed" :key="favorite.id">
+            <FavoriteCard :favorite="favorite" />
+        </div>
+        <div class="w-full flex justify-center">
+        <UPagination v-model:page="page" :items-per-page="itemsPerPage" :total="favorites.length" active-color="neutral" />
         </div>
     </div>
+</div>
 </template>

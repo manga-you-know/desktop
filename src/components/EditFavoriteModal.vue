@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FavoriteRepository } from "~/database";
+import { FavoriteRepository } from "~/repositories";
 import type { Favorite, User } from "~/models";
 
 const isEditFavoriteOpen = useState<boolean>("isEditFavoriteOpen");
@@ -37,13 +37,15 @@ async function updateFavorite() {
 
 <template>
     <UModal class="rounded-xl" @close="onClose">
-        <UInput
-            v-model:model-value="name"
-            v-on:update:model-value="updateFavorite"
-        />
-        <UInput
-            v-model:model-value="cover"
-            v-on:update:model-value="updateFavorite"
-        />
+        <template #body>
+            <UInput
+                v-model:model-value="name"
+                v-on:update:model-value="updateFavorite"
+            />
+            <UInput
+                v-model:model-value="cover"
+                v-on:update:model-value="updateFavorite"
+            />
+        </template>
     </UModal>
 </template>

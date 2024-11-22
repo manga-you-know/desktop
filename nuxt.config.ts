@@ -2,32 +2,28 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-08-24",
   devtools: { enabled: false },
-  modules: [
-    '@nuxt/ui',
-    '@nuxt/image',
-    '@tresjs/nuxt',
-    '@nuxt/icon',
-  ],
-  srcDir: 'src',
+  modules: ["@nuxt/ui", "@nuxt/image", "@tresjs/nuxt", "@nuxt/icon"],
+  srcDir: "src",
+  css: ["@/css/app.css"],
   ssr: false,
   telemetry: false,
-  devServer: { host: '0.0.0.0' },
+  devServer: { host: "0.0.0.0", port: 3050, url: "http://localhost:3050" },
   routeRules: {
-    '/': { swr : true },
-    '/favorites': { swr : true },
-    '/configs': { swr : false, prerender: true }
+    "/": { swr: true },
+    "/favorites": { swr: true },
+    "/configs": { swr: false, prerender: true },
   },
   vite: {
     clearScreen: false,
-    envPrefix: ['VITE_', 'TAURI_'],
+    envPrefix: ["VITE_", "TAURI_"],
     server: {
       strictPort: true,
       hmr: {
-        protocol: 'ws',
-        host: '0.0.0.0',
+        protocol: "ws",
+        host: "0.0.0.0",
         port: 5183,
       },
     },
   },
   spaLoadingTemplate: false,
-})
+});

@@ -3,9 +3,12 @@ const route = useRoute();
 </script>
 
 <template>
-    <UVerticalNavigation
+    <UNavigationMenu
+        size="xl"
+        orientation="vertical"
+        color="neutral"
         class="md:w-[110px] w-[40px] mt-[30px] mr-5 -z-0 fixed select-none"
-        :links="[
+        :items="[
             [
                 {
                     label: 'Profile',
@@ -20,7 +23,7 @@ const route = useRoute();
                         route.path === '/'
                             ? 'heroicons:home-solid'
                             : 'heroicons:home',
-                    click: async () => await navigateTo('/'),
+                    onSelect: async () => await navigateTo('/'),
                 },
                 {
                     label: 'Favorites',
@@ -29,7 +32,7 @@ const route = useRoute();
                         route.path === '/favorites'
                             ? 'heroicons:star-solid'
                             : 'heroicons:star',
-                    click: async () => await navigateTo('/favorites'),
+                    onSelect: async () => await navigateTo('/favorites'),
                 },
                 {
                     label: 'Settings',
@@ -38,7 +41,7 @@ const route = useRoute();
                         route.path === '/settings'
                             ? 'heroicons:cog-6-tooth-solid'
                             : 'heroicons:cog-6-tooth',
-                    click: async () => await navigateTo('/settings'),
+                    onSelect: async () => await navigateTo('/settings'),
                 },
             ],
             [

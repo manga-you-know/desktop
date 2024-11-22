@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { load } from "@tauri-apps/plugin-store";
-import { FavoriteRepository } from "~/database";
+import { FavoriteRepository } from "~/repositories";
 import { MANGASOURCES } from "~/constants";
 import type { DownloadManager } from "~/managers";
 import type { Favorite, Readed, User } from "~/models";
@@ -86,162 +86,174 @@ watch(isSearchOpen, () => {
 
 <template>
     <UModal class="rounded" :overlay="true">
-        <div class="relative overflow-hidden" style="min-height: 250px">
-            <div
-                class="w-full absolute transition-all duration-500 ease-in-out"
-                :class="{
-                    '-translate-x-full': isFavoriteOpen,
-                    'translate-x-0': !isFavoriteOpen,
-                }"
-            >
-                <div class="w-full h-11 flex justify-center items-center">
-                    <UInput
-                        v-model="query"
-                        v-on:update:model-value="search"
-                        name="query"
-                        :loading="isLoading"
-                        variant="none"
-                        :padded="false"
-                        class="w-[97%]"
-                        placeholder="Search..."
-                        icon="heroicons:magnifying-glass-20-solid"
-                        leading
-                        autocomplete="off"
-                        :autofocus="true"
-                        :ui="{ icon: { trailing: { pointer: '' } } }"
-                    >
-                        <template #trailing>
-                            <div class="flex gap-2">
-                                <USelectMenu
-                                    tabindex="-1"
-                                    searchable
-                                    class="w-[150px]"
-                                    clear-search-on-close
-                                    v-model="sourceSearch"
-                                    :options="MANGASOURCES"
-                                    v-on:update:model-value="search"
-                                    color="cyan"
-                                />
-                                <UButton
-                                    tabindex="-1"
-                                    color="gray"
-                                    variant="link"
-                                    icon="heroicons:x-mark-20-solid"
-                                    :padded="false"
-                                    @click="resetResults"
-                                />
-                            </div>
-                        </template>
-                    </UInput>
-                </div>
-                <UDivider class="w-full h-1" />
-                <div class="w-full h-48 flex flex-col overflow-y-scroll">
-                    <div v-for="(result, i) in results" :key="result.name">
-                        <div
-                            :tabindex="i + 1"
-                            @keydown.enter="favorite(result)"
-                            @keydown.space="console.log('fuck')"
+        <template #content>
+            <div class="relative overflow-hidden" style="min-height: 250px">
+                <div
+                    class="w-full absolute transition-all duration-500 ease-in-out"
+                    :class="{
+                        '-translate-x-full': isFavoriteOpen,
+                        'translate-x-0': !isFavoriteOpen,
+                    }"
+                >
+                    <div class="w-full h-11 flex justify-center items-center">
+                        <UInput
+                            v-model="query"
+                            v-on:update:model-value="search"
+                            name="query"
+                            :loading="isLoading"
+                            variant="none"
+                            :padded="false"
+                            class="w-[97%]"
+                            placeholder="Search..."
+                            icon="heroicons:magnifying-glass-20-solid"
+                            leading
+                            autocomplete="off"
+                            :autofocus="true"
+                            :ui="{ icon: { trailing: { pointer: '' } } }"
                         >
-                            <UButtonGroup
-                                orientation="horizontal"
-                                class="w-full"
+                            <template #trailing>
+                                <div class="flex gap-2">
+                                    <USelectMenu
+                                        tabindex="-1"
+                                        searchable
+                                        class="w-[150px]"
+                                        clear-search-on-close
+                                        v-model="sourceSearch"
+                                        :items="MANGASOURCES"
+                                        v-on:update:model-value="search"
+                                        color="neutral"
+                                    />
+                                    <UButton
+                                        size="xl"
+                                        tabindex="-1"
+                                        color="neutral"
+                                        variant="link"
+                                        icon="heroicons:x-mark-20-solid"
+                                        :padded="false"
+                                        @click="resetResults"
+                                    />
+                                </div>
+                            </template>
+                        </UInput>
+                    </div>
+                    <USeparator class="w-full h-1" />
+                    <div class="w-full h-48 flex flex-col overflow-y-scroll">
+                        <div v-for="(result, i) in results" :key="result.name">
+                            <div
+                                :tabindex="i + 1"
+                                @keydown.enter="favorite(result)"
+                                @keydown.space="console.log('fuck')"
                             >
-                                <UButton
-                                    tabindex="-1"
-                                    @click="
-                                        favoriteView = result;
-                                        isFavoriteOpen = true;
-                                    "
-                                    color="gray"
-                                    variant="ghost"
-                                    class="w-[93%] h-10 m-0.5 flex justify-between"
+                                <UButtonGroup
+                                    orientation="horizontal"
+                                    class="w-full"
                                 >
-                                    {{
-                                        result.name.substring(0, 60) +
-                                        (result.name.length > 60 ? "..." : "")
-                                    }}
-                                </UButton>
-                                <UButton
-                                    tabindex="-1"
-                                    :icon="
-                                        isFavorite(result)
-                                            ? 'heroicons:star-solid'
-                                            : 'heroicons:star'
-                                    "
-                                    color="gray"
-                                    variant="link"
-                                    class="h-10 m-0.5"
-                                    @click="() => favorite(result)"
-                                />
-                            </UButtonGroup>
+                                    <UButton
+                                        size="xl"
+                                        tabindex="-1"
+                                        @click="
+                                            favoriteView = result;
+                                            isFavoriteOpen = true;
+                                        "
+                                        color="neutral"
+                                        variant="ghost"
+                                        class="w-[93%] h-10 m-0.5 flex justify-between"
+                                        :label="
+                                            result.name.substring(0, 60) +
+                                            (result.name.length > 60
+                                                ? '...'
+                                                : '')
+                                        "
+                                    />
+                                    <UButton
+                                        size="xl"
+                                        tabindex="-1"
+                                        :icon="
+                                            isFavorite(result)
+                                                ? 'heroicons:star-solid'
+                                                : 'heroicons:star'
+                                        "
+                                        color="neutral"
+                                        variant="link"
+                                        class="h-10 m-0.5"
+                                        @click="() => favorite(result)"
+                                    />
+                                </UButtonGroup>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div
-                class="w-full p-2 absolute transition-all duration-500 ease-in-out"
-                :class="{
-                    'translate-x-0': isFavoriteOpen,
-                    'translate-x-full': !isFavoriteOpen,
-                }"
-            >
-                <div class="w-full flex">
-                    <UButton
-                        class="w-8 h-8"
-                        icon="mdi:arrow-left-thick"
-                        color="white"
-                        @click="isFavoriteOpen = false"
-                    />
-                    <div
-                        v-if="favoriteView"
-                        class="w-[calc(100%-2rem)] p-2 flex"
-                    >
-                        <NuxtImg
-                            :src="favoriteView.cover"
-                            class="w-40 h-56 object-contain rounded-xl select-none"
-                            draggable="false"
+                <div
+                    class="w-full p-2 absolute transition-all duration-500 ease-in-out"
+                    :class="{
+                        'translate-x-0': isFavoriteOpen,
+                        'translate-x-full': !isFavoriteOpen,
+                    }"
+                >
+                    <div class="w-full flex">
+                        <UButton
+                            size="xl"
+                            class="w-8 h-8"
+                            icon="mdi:arrow-left-thick"
+                            color="neutral"
+                            variant="outline"
+                            @click="isFavoriteOpen = false"
                         />
                         <div
-                            class="w-full flex flex-col justify-center p-2 gap-2"
+                            v-if="favoriteView"
+                            class="w-[calc(100%-2rem)] p-2 flex"
                         >
-                            <UBadge class="text-center" color="white">
-                                {{ favoriteView.name }}
-                            </UBadge>
+                            <NuxtImg
+                                :src="favoriteView.cover"
+                                class="w-40 h-56 object-contain rounded-xl select-none"
+                                draggable="false"
+                            />
+                            <div
+                                class="w-full flex flex-col justify-center p-2 gap-2"
+                            >
+                                <UBadge
+                                    class="text-center"
+                                    color="neutral"
+                                    variant="outline"
+                                >
+                                    {{ favoriteView.name }}
+                                </UBadge>
 
-                            <UBadge
-                                v-if="
-                                    favoriteView.name !==
-                                        favoriteView.extra_name &&
-                                    favoriteView.extra_name
-                                "
-                                class="text-center"
-                                color="white"
-                            >
-                                {{ favoriteView.extra_name }}
-                            </UBadge>
-                            <UBadge
-                                class="text-center"
-                                color="cyan"
-                                variant="soft"
-                            >
-                                FROM: {{ favoriteView.author }}
-                            </UBadge>
-                            <UButton
-                                :icon="
-                                    isFavorite(favoriteView)
-                                        ? 'ic:round-star'
-                                        : 'ic:round-star-border'
-                                "
-                                color="cyan"
-                                variant="outline"
-                                @click="favorite(favoriteView)"
-                            >
-                                Favorite
-                            </UButton>
+                                <UBadge
+                                    v-if="
+                                        favoriteView.name !==
+                                            favoriteView.extra_name &&
+                                        favoriteView.extra_name
+                                    "
+                                    class="text-center"
+                                    color="white"
+                                >
+                                    {{ favoriteView.extra_name }}
+                                </UBadge>
+                                <UBadge
+                                    class="text-center"
+                                    color="neutral"
+                                    variant="soft"
+                                >
+                                    FROM: {{ favoriteView.author }}
+                                </UBadge>
+                                <UButton
+                                    size="xl"
+                                    :icon="
+                                        isFavorite(favoriteView)
+                                            ? 'ic:round-star'
+                                            : 'ic:round-star-border'
+                                    "
+                                    color="neutral"
+                                    variant="outline"
+                                    @click="favorite(favoriteView)"
+                                    label="Favorite"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </UModal>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { load } from "@tauri-apps/plugin-store";
-import { FavoriteRepository } from "~/database";
+import { FavoriteRepository } from "~/repositories";
 import { MANGASOURCES } from "~/constants";
 import type { Favorite, User } from "~/models";
 
@@ -34,20 +34,22 @@ onMounted(async () => {
 
 <template>
     <div :key="rerender" class="h-full w-full flex flex-col">
-        <div class="w-full h-16 flex relative justify-end">
+        <div class="w-full h-16 flex justify-end">
             <div class="m-5 gap-1 flex">
                 <div>
-                    <UTooltip text="Search" :shortcuts="['Ctrl', 'K']">
+                    <UTooltip text="Search" :kbds="['Ctrl', 'K']">
                         <UButton
-                            color="gray"
+                            size="xl"
+                            color="neutral"
                             variant="ghost"
-                            icon="heroicons:magnifying-glass-20-solid"
+                            icon="i-lucide-search"
                             @click="isOpen = true"
                         />
                     </UTooltip>
                     <UTooltip text="Refresh" :shortcuts="['Ctrl', 'R']">
                         <UButton
-                            color="gray"
+                            size="xl"
+                            color="neutral"
                             variant="ghost"
                             icon="heroicons:arrow-path-solid"
                             @click="rerender++"
@@ -64,8 +66,8 @@ onMounted(async () => {
                             async () =>
                                 await store.set('source_search', sourceSearch)
                         "
-                        :options="MANGASOURCES"
-                        color="cyan"
+                        :items="MANGASOURCES"
+                        color="neutral"
                     />
                 </div>
             </div>

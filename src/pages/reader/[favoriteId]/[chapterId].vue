@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { FavoriteRepository, ReadedRepository } from "~/database";
+import { FavoriteRepository, ReadedRepository } from "~/repositories";
 import { addReadedBelow } from "~/functions";
 import type { DownloadManager } from "~/managers";
 import { Chapter } from "~/models";
@@ -97,11 +97,16 @@ defineShortcuts(
             usingInput: true,
             handler: toNextPage,
         },
-        ctrl_minus: {
+        "ctrl_=": {
             usingInput: true,
             handler: () => {
-                console.log("fodasse");
                 zoom.value += 1;
+            },
+        },
+        "ctrl_-": {
+            usingInput: true,
+            handler: () => {
+                zoom.value -= 1;
             },
         },
     },
@@ -162,7 +167,7 @@ watch(zoomPlusDown, async () => {
 
 <template>
     <MenuChaptersSlideover
-        v-model="openMenuChapters"
+        v-model:open="openMenuChapters"
         :chapters="chapters"
         :currentlyChapter="chapter"
         :readChapterNextOrPrev="readNextOrPrevChapter"
@@ -172,6 +177,7 @@ watch(zoomPlusDown, async () => {
         class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
     >
         <UButton
+            size="xl"
             v-if="currentlyCount === totalPage && !isTheLastChapter"
             icon="heroicons:arrow-right-solid"
             color="white"
@@ -199,9 +205,10 @@ watch(zoomPlusDown, async () => {
                 {{ currentlyCount }} / {{ totalPage }}
             </UBadge>
             <UButton
+                size="xl"
                 class="pointer-events-auto"
                 icon="heroicons:bars-3-solid"
-                color="gray"
+                color="neutral"
                 @click="openMenuChapters = true"
             />
             <UPopover
@@ -209,17 +216,23 @@ watch(zoomPlusDown, async () => {
                 :popper="{ arrow: true, placement: 'left-start' }"
                 class="pointer-events-auto"
             >
-                <UButton icon="nimbus:arrows-horizontal" color="gray" />
+                <UButton
+                    size="xl"
+                    icon="nimbus:arrows-horizontal"
+                    color="neutral"
+                />
                 <template #panel>
                     <div class="p-2 gap-1 flex flex-row rounded-lg">
                         <UButton
+                            size="xl"
                             icon="heroicons:arrow-left-solid"
-                            color="gray"
+                            color="neutral"
                             @click="readNextOrPrevChapter('prev')"
                         />
                         <UButton
+                            size="xl"
                             icon="heroicons:arrow-right-solid"
-                            color="gray"
+                            color="neutral"
                             @click="readNextOrPrevChapter('next')"
                         />
                     </div>
@@ -229,29 +242,32 @@ watch(zoomPlusDown, async () => {
         <div class="flex gap-2">
             <UButtonGroup class="gap-0.5 pointer-events-auto z-50">
                 <UButton
-                    color="gray"
+                    size="xl"
+                    color="neutral"
                     icon="ic:round-plus"
                     @mousedown="zoomPlusDown = true"
                     @mouseup="zoomPlusDown = false"
                 />
                 <UButton
+                    size="xl"
                     class="w-8 p-0 flex justify-center"
-                    color="gray"
+                    color="neutral"
                     @click="zoom = 0"
-                >
-                    {{ zoom * 2 }}%
-                </UButton>
+                    :label="zoom * 2 + '%'"
+                />
                 <UButton
-                    color="gray"
+                    size="xl"
+                    color="neutral"
                     icon="ic:round-minus"
                     @mousedown="zoomMinusDown = true"
                     @mouseup="zoomMinusDown = false"
                 />
             </UButtonGroup>
             <UButton
+                size="xl"
                 class="pointer-events-auto z-50"
                 icon="ic:outline-fullscreen-exit"
-                color="gray"
+                color="neutral"
                 @click="
                     async () => {
                         window.setFullscreen(!(await window.isFullscreen()));

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MarkRepository } from "~/database";
+import { MarkRepository } from "~/repositories";
 import type { Favorite, Mark } from "~/models";
 const mark = ref("");
 const marks = ref<Mark[]>([]);
@@ -33,40 +33,48 @@ onMounted(async () => {
 
 <template>
     <UModal>
-        <div class="flex flex-col justify-center items-center gap-2 p-2">
-            <UBadge color="white">Add a new Mark!</UBadge>
-            <UButtonGroup orientation="horizontal">
-                <UInput
-                    v-model="mark"
-                    placeholder="Mark..."
-                    color="cyan"
-                    icon="heroicons:archive-box"
-                    class="w-[220px]"
-                    @keydown.enter="addMark"
-                />
-                <UButton
-                    color="cyan"
-                    icon="heroicons:plus-circle-solid"
-                    @click="addMark"
-                />
-            </UButtonGroup>
-            <div class="h-40 overflow-y-scroll m-2">
-                <div class="flex flex-col" v-for="mark in marks" :key="mark.id">
-                    <UButtonGroup class="m-0.5" orientation="horizontal">
-                        <UInput
-                            v-model="mark.name"
-                            color="cyan"
-                            class="w-[200px]"
-                            @keydown.enter="updateMark(mark)"
-                        />
-                        <UButton
-                            color="red"
-                            icon="heroicons:x-circle-solid"
-                            @click="async () => await deleteMark(mark)"
-                        />
-                    </UButtonGroup>
+        <template #body>
+            <div class="flex flex-col justify-center items-center gap-2 p-2">
+                <UBadge color="white">Add a new Mark!</UBadge>
+                <UButtonGroup orientation="horizontal">
+                    <UInput
+                        v-model="mark"
+                        placeholder="Mark..."
+                        color="neutral"
+                        icon="heroicons:archive-box"
+                        class="w-[220px]"
+                        @keydown.enter="addMark"
+                    />
+                    <UButton
+                        size="xl"
+                        color="neutral"
+                        icon="heroicons:plus-circle-solid"
+                        @click="addMark"
+                    />
+                </UButtonGroup>
+                <div class="h-40 overflow-y-scroll m-2">
+                    <div
+                        class="flex flex-col"
+                        v-for="mark in marks"
+                        :key="mark.id"
+                    >
+                        <UButtonGroup class="m-0.5" orientation="horizontal">
+                            <UInput
+                                v-model="mark.name"
+                                color="neutral"
+                                class="w-[200px]"
+                                @keydown.enter="updateMark(mark)"
+                            />
+                            <UButton
+                                size="xl"
+                                color="red"
+                                icon="heroicons:x-circle-solid"
+                                @click="async () => await deleteMark(mark)"
+                            />
+                        </UButtonGroup>
+                    </div>
                 </div>
             </div>
-        </div>
+        </template>
     </UModal>
 </template>

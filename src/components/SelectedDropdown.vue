@@ -4,7 +4,7 @@ import {
     FavoriteRepository,
     MarkRepository,
     MarkFavoriteRepository,
-} from "~/database";
+} from "~/repositories";
 import type { Favorite, User } from "~/models";
 const selectedFavorites = useState<Favorite[]>("selectedFavorites", () => []);
 const isSelecting = useState<boolean>("isSelecting", () => false);
@@ -18,13 +18,13 @@ const isMarkSelectedModalOpen = useState<boolean>(
 </script>
 
 <template>
-    <UDropdown
+    <UDropdownMenu
         :items="[
             [
                 {
                     label: 'Add to Mark',
                     icon: 'heroicons:archive-box-20-solid',
-                    click: () => {
+                    onSelect: () => {
                         if (selectedFavorites.length === 0) return;
                         isMarkSelectedModalOpen = true;
                     },
@@ -35,22 +35,20 @@ const isMarkSelectedModalOpen = useState<boolean>(
                     label: `Remove from ${currentlyMark}`,
                     icon: 'heroicons:minus-circle-solid',
                     disabled: currentlyMark === '-',
-                    click: async () => {
+                    onSelect: async () => {
                         if (selectedFavorites.length === 0) return;
                         await MarkFavoriteRepository.deleteMarkFavorites(
                             selectedFavorites,
                             await MarkRepository.getMarkId(currentlyMark),
                         );
-                        favorites = await FavoriteRepository.getFavorites(
-                            user.id,
-                        );
+                        favorites = await FavoriteRepository.getFavorites();
                         isSelecting = false;
                     },
                 },
                 {
                     label: 'Delete selected',
                     icon: 'heroicons:trash-20-solid',
-                    click: async () => {
+                    onSelect: async () => {
                         if (selectedFavorites.length === 0) return;
                         const answer = await confirm(
                             `This will delete ${selectedFavorites.length} favorite(s). Are you sure?`,
@@ -60,9 +58,7 @@ const isMarkSelectedModalOpen = useState<boolean>(
                             await FavoriteRepository.deleteFavorites(
                                 selectedFavorites,
                             );
-                            favorites = await FavoriteRepository.getFavorites(
-                                user.id,
-                            );
+                            favorites = await FavoriteRepository.getFavorites();
                             isSelecting = false;
                         }
                     },
@@ -72,10 +68,12 @@ const isMarkSelectedModalOpen = useState<boolean>(
         :popper="{ placement: 'bottom-start' }"
     >
         <UButton
-            color="white"
+            size="xl"
+            color="neutral"
+            variant="outline"
             :label="isSelecting ? selectedFavorites.length.toString() : ''"
             :disabled="!isSelecting"
             trailing-icon="heroicons:chevron-down-20-solid"
         />
-    </UDropdown>
+    </UDropdownMenu>
 </template>

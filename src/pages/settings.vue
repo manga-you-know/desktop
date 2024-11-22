@@ -13,15 +13,9 @@ const theme = ref("dark");
 const favoriteLanguage = ref("en");
 
 const currentlyVersion = ref("loading version...");
-const isSearchingUpdate = ref(false);
 const config = await load("config.json");
 async function saveConfig(key: string, value: any) {
     await config.set(key, value);
-}
-async function searchUpdate() {
-    isSearchingUpdate.value = true;
-    await checkForAppUpdates(true);
-    isSearchingUpdate.value = false;
 }
 onBeforeMount(async () => {
     const [
@@ -47,38 +41,42 @@ onBeforeMount(async () => {
 
 <template>
     <div class="w-full h-screen flex flex-col pt-8 pr-4 gap-3">
-        <UDivider label="Version" size="xl" />
+        <USeparator label="Version" size="xl" />
         <div>
-            <UAlert :title="`Current version: v${currentlyVersion}`">
+            <UAlert
+                color="neutral"
+                variant="soft"
+                :title="`Current version: v${currentlyVersion}`"
+            >
                 <template #description>
                     <UCheckbox
                         class="my-3"
                         label="Auto search for updates"
-                        color="cyan"
+                        color="neutral"
                         v-model:model-value="autoSearchUpdates"
                         v-on:update:model-value="
                             saveConfig('auto_search_updates', autoSearchUpdates)
                         "
                     />
                     <UButton
-                        color="cyan"
-                        variant="outline"
+                        size="xl"
+                        color="neutral"
+                        variant="soft"
                         icon="heroicons:magnifying-glass"
-                        :loading="isSearchingUpdate"
-                        @click="searchUpdate"
-                    >
-                        Search for updates
-                    </UButton>
+                        loadingAuto
+                        @click="async () => await checkForAppUpdates(true)"
+                        label="Search for updates"
+                    />
                 </template>
             </UAlert>
         </div>
-        <UDivider label="Reader" size="xl" />
-        <UAlert>
+        <USeparator label="Reader" size="xl" />
+        <UAlert color="neutral" variant="soft">
             <template #description>
                 <UCheckbox
                     class="my-3"
                     label="Auto enter in fullscreen"
-                    color="cyan"
+                    color="neutral"
                     v-model:model-value="autoEnterFullscreen"
                     v-on:update:model-value="
                         saveConfig('auto_enter_fullscreen', autoEnterFullscreen)

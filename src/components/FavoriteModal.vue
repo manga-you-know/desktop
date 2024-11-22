@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FavoriteRepository, ReadedRepository } from "~/database";
+import { FavoriteRepository, ReadedRepository } from "~/repositories";
 import { addReadedBelow } from "~/functions";
 import type { ChaptersResponse } from "~/interfaces";
 import type { DownloadManager } from "~/managers";
@@ -74,7 +74,9 @@ function getNextForRead() {
     return chapters.value.filter((chapter) => !isReaded(chapter)).reverse()[0];
 }
 async function onClose() {
-    ultraFavorites.value = await FavoriteRepository.getUltraFavorites(user.value.id);
+    ultraFavorites.value = await FavoriteRepository.getUltraFavorites(
+        user.value.id,
+    );
     rerenderIndex.value++;
 }
 async function updateLanguage() {
@@ -134,170 +136,176 @@ watch(isFavoriteOpen, async () => {
 </script>
 
 <template>
-    <UModal @close="onClose">
+    <UModal :title="favorite.name" @close="onClose">
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
-        <div v-if="favorite" class="flex flex-col justify-center items-center">
-            <UBadge class="m-1" color="white" variant="solid">
-                {{ favorite.name }}
-            </UBadge>
-            <div class="flex flex-row justify-between">
-                <div class="w-[50%] flex flex-col h-80">
-                    <NuxtImg
-                        :src="favorite.cover"
-                        class="h-60 w-40 object-contain rounded-xl"
-                    />
-                    <div class="flex flex-row justify-center">
-                        <UButton
-                            :icon="
-                                favorite.is_ultra_favorite
-                                    ? 'heroicons:star-solid'
-                                    : 'heroicons:star'
-                            "
-                            color="gray"
-                            variant="link"
-                            class="h-10 w-10 m-0.5"
-                            @click="updateFavoriteHandler"
+        <template #body>
+            <div
+                v-if="favorite"
+                class="flex flex-col justify-center items-center"
+            >
+                <div class="flex flex-row justify-between">
+                    <div class="w-[50%] flex flex-col h-80">
+                        <NuxtImg
+                            :src="favorite.cover"
+                            class="h-60 w-40 object-contain rounded-xl"
                         />
-                        <!-- @vue-ignore -->
-                        <USelectMenu
-                            :disabled="isLanguagesDisable"
-                            class="w-20 pt-2"
-                            searchable
-                            v-on:update:model-value="updateLanguage"
-                            clear-search-on-close
-                            v-model="sourceLanguage"
-                            :options="languageOptions"
-                            color="cyan"
-                        />
-                    </div>
-                    <ULink
-                        :to="favorite.link"
-                        target="_blank"
-                        class="transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:text-violet-600"
-                        >Favorite link</ULink
-                    >
-                </div>
-                <div class="w-[50%] flex flex-col h-80">
-                    <div
-                        class="w-[200px] bg-gray-800 rounded-xl p-1 flex justify-center"
-                    >
-                        <div
-                            class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
-                        >
-                            <button
-                                :class="[
-                                    'w-[115px]',
-                                    'p-0.5',
-                                    'flex',
-                                    'justify-start',
-                                    'bg-slate-800',
-                                    'font-medium',
-                                    'text-white',
-                                    currentChapter
-                                        ? 'hover:bg-transparent'
-                                        : '',
-                                ]"
-                                @click="
-                                    () =>
-                                        currentChapter
-                                            ? navigateTo(
-                                                  `/reader/${favorite.id}/${currentChapter.chapter_id}`,
-                                              )
-                                            : console.log('nada')
-                                "
-                            >
-                                {{ currentChapter?.number || "all readed!" }}
-                            </button>
-                            <button
-                                class="w-[40px] bg-slate-800 font-medium text-white hover:bg-transparent"
-                                @click="console.log('nada')"
-                            >
-                                <i class="fa fa-download"></i>
-                            </button>
-                            <button
-                                class="w-[33px] bg-slate-800 font-medium text-white hover:bg-transparent"
-                                @click="
-                                    () =>
-                                        currentChapter
-                                            ? addReaded(currentChapter)
-                                            : console.log('nada')
-                                "
-                            >
-                                <i class="fa fa-angle-right" />
-                            </button>
-                        </div>
-                    </div>
-                    <UInput
-                        v-model="chapterQuery"
-                        v-on:update:model-value="searchChapters"
-                        :loading="isSearching"
-                        color="cyan"
-                        placeholder="Chapters..."
-                        icon="heroicons:magnifying-glass-solid"
-                        class="w-50 m-0.5"
-                        autocomplete="off"
-                        :ui="{ icon: { trailing: { pointer: '' } } }"
-                    >
-                        <template #trailing>
+                        <div class="flex flex-row justify-center">
                             <UButton
-                                v-show="chapterQuery !== ''"
-                                color="gray"
+                                size="xl"
+                                :icon="
+                                    favorite.is_ultra_favorite
+                                        ? 'heroicons:star-solid'
+                                        : 'heroicons:star'
+                                "
+                                color="neutral"
                                 variant="link"
-                                icon="heroicons:x-mark-20-solid"
-                                :padded="false"
-                                @click="resetChapters"
+                                class="h-10 w-10 m-0.5"
+                                @click="updateFavoriteHandler"
                             />
-                        </template>
-                    </UInput>
-                    <div
-                        class="h-72 bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
-                    >
-                        <div
-                            class="m-0.5 flex flex-col items-center"
-                            v-for="chapter in chaptersDisplayed"
-                            :key="chapter.chapter_id"
+                            <!-- @vue-ignore -->
+                            <USelectMenu
+                                :disabled="isLanguagesDisable"
+                                class="w-20 pt-2"
+                                searchable
+                                v-on:update:model-value="updateLanguage"
+                                clear-search-on-close
+                                v-model="sourceLanguage"
+                                :items="languageOptions"
+                                color="neutral"
+                            />
+                        </div>
+                        <ULink
+                            :to="favorite.link"
+                            target="_blank"
+                            class="transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:text-violet-600"
+                            >Favorite link</ULink
                         >
-                            <!-- Uses nested components to better performance :) -->
+                    </div>
+                    <div class="w-[50%] flex flex-col h-80">
+                        <div
+                            class="w-[200px] bg-gray-800 rounded-xl p-1 flex justify-center"
+                        >
                             <div
                                 class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
                             >
                                 <button
-                                    class="w-28 p-0.5 flex justify-start bg-slate-800 font-medium text-white hover:bg-transparent"
+                                    :class="[
+                                        'w-[115px]',
+                                        'p-0.5',
+                                        'flex',
+                                        'justify-start',
+                                        'bg-slate-800',
+                                        'font-medium',
+                                        'text-white',
+                                        currentChapter
+                                            ? 'hover:bg-transparent'
+                                            : '',
+                                    ]"
                                     @click="
                                         () =>
-                                            navigateTo(
-                                                `/reader/${favorite.id}/${chapter.chapter_id}`,
-                                            )
+                                            currentChapter
+                                                ? navigateTo(
+                                                      `/reader/${favorite.id}/${currentChapter.chapter_id}`,
+                                                  )
+                                                : console.log('nada')
                                     "
                                 >
-                                    {{ chapter.number }}
+                                    {{
+                                        currentChapter?.number || "all readed!"
+                                    }}
                                 </button>
                                 <button
-                                    class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
+                                    class="w-[40px] bg-slate-800 font-medium text-white hover:bg-transparent"
                                     @click="console.log('nada')"
                                 >
                                     <i class="fa fa-download"></i>
                                 </button>
                                 <button
-                                    class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
-                                    @click="() => addReaded(chapter)"
+                                    class="w-[33px] bg-slate-800 font-medium text-white hover:bg-transparent"
+                                    @click="
+                                        () =>
+                                            currentChapter
+                                                ? addReaded(currentChapter)
+                                                : console.log('nada')
+                                    "
                                 >
-                                    <i
-                                        :class="
-                                            isReaded(chapter)
-                                                ? 'fa fa-check'
-                                                : 'fa fa-minus'
-                                        "
-                                    />
+                                    <i class="fa fa-angle-right" />
                                 </button>
+                            </div>
+                        </div>
+                        <UInput
+                            v-model="chapterQuery"
+                            v-on:update:model-value="searchChapters"
+                            :loading="isSearching"
+                            color="neutral"
+                            placeholder="Chapters..."
+                            icon="heroicons:magnifying-glass-solid"
+                            class="w-50 m-0.5"
+                            autocomplete="off"
+                            :ui="{ icon: { trailing: { pointer: '' } } }"
+                        >
+                            <template #trailing>
+                                <UButton
+                                    size="xl"
+                                    v-show="chapterQuery !== ''"
+                                    color="neutral"
+                                    variant="link"
+                                    icon="heroicons:x-mark-20-solid"
+                                    :padded="false"
+                                    @click="resetChapters"
+                                />
+                            </template>
+                        </UInput>
+                        <div
+                            class="h-72 bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
+                        >
+                            <div
+                                class="m-0.5 flex flex-col items-center"
+                                v-for="chapter in chaptersDisplayed"
+                                :key="chapter.chapter_id"
+                            >
+                                <!-- Uses nested components to better performance :) -->
+                                <div
+                                    class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
+                                >
+                                    <button
+                                        class="w-28 p-0.5 flex justify-start bg-slate-800 font-medium text-white hover:bg-transparent"
+                                        @click="
+                                            () =>
+                                                navigateTo(
+                                                    `/reader/${favorite.id}/${chapter.chapter_id}`,
+                                                )
+                                        "
+                                    >
+                                        {{ chapter.number }}
+                                    </button>
+                                    <button
+                                        class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
+                                        @click="console.log('nada')"
+                                    >
+                                        <i class="fa fa-download"></i>
+                                    </button>
+                                    <button
+                                        class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
+                                        @click="() => addReaded(chapter)"
+                                    >
+                                        <i
+                                            :class="
+                                                isReaded(chapter)
+                                                    ? 'fa fa-check'
+                                                    : 'fa fa-minus'
+                                            "
+                                        />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </UModal>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { load } from "@tauri-apps/plugin-store";
-import { ReadedRepository } from "~/database";
+import { ReadedRepository } from "~/repositories";
 import { isReaded, notify } from "~/functions";
 import type { DownloadManager } from "~/managers";
 import type { Favorite } from "~/models";
@@ -96,10 +96,11 @@ function openFavorite() {
                 class="w-full flex justify-center"
             >
                 <UButton
+                    size="xl"
                     @click="openFavorite"
                     class="h-8"
-                    color="white"
-                    variant="solid"
+                    color="neutral"
+                    variant="ghost"
                     icon="heroicons:book-open-solid"
                 />
                 <UTooltip
@@ -108,13 +109,13 @@ function openFavorite() {
                     :popper="{ placement: 'top', arrow: true }"
                 >
                     <UButton
+                        size="xl"
                         class="cursor-default disabled:cursor-default"
                         :loading="isLoading"
                         color="white"
                         variant="solid"
-                    >
-                        {{ chaptersToRead }}
-                    </UButton>
+                        :label="chaptersToRead"
+                    />
                 </UTooltip>
             </UButtonGroup>
         </div>

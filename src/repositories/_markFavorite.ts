@@ -42,7 +42,7 @@ export async function addMarkFavorites(
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
-    const values = favorites.map((favorite) => [favorite.id, markId]).flat();
+    const values = favorites.flatMap((favorite) => [favorite.id, markId]);
     const placeholder = favorites.map(() => "(?, ?)").join(", ");
     await db.execute(
       `INSERT INTO mark_favorites (favorite_id, mark_id) VALUES ${placeholder}`,

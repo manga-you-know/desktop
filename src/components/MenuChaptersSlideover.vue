@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { ReadedRepository } from "~/database";
+import { ReadedRepository } from "~/repositories";
 import { addReadedBelow, isReaded } from "~/functions";
 import type { DownloadManager } from "~/managers";
 import type { Chapter, Favorite, Readed } from "~/models";
@@ -59,91 +59,96 @@ onMounted(async () => {
 </script>
 
 <template>
-    <USlideover :key="rerender" v-model:model-value="isOpen">
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-        />
-        <div>
-            <div class="w-full h-11 flex justify-center items-center">
-                <UButton
-                    color="gray"
-                    @click="
-                        () => {
-                            isOpen = false;
-                            getCurrentWindow().setFullscreen(false);
-                            navigateTo(useRoute().redirectedFrom);
-                        }
-                    "
-                    icon="heroicons:home"
-                />
-                <div class="p-2 gap-1 flex flex-row rounded-lg">
+    <USlideover :key="rerender" v-model:open="isOpen">
+        <template #content>
+            <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+            />
+            <div>
+                <div class="w-full h-11 flex justify-center items-center">
                     <UButton
-                        icon="heroicons:arrow-left-solid"
-                        color="gray"
-                        @click="readChapterNextOrPrev('prev')"
+                        size="xl"
+                        color="neutral"
+                        @click="
+                            () => {
+                                isOpen = false;
+                                getCurrentWindow().setFullscreen(false);
+                                navigateTo(useRoute().redirectedFrom);
+                            }
+                        "
+                        icon="heroicons:home"
                     />
-                    <UButton
-                        icon="heroicons:arrow-right-solid"
-                        color="gray"
-                        @click="readChapterNextOrPrev('next')"
-                    />
+                    <div class="p-2 gap-1 flex flex-row rounded-lg">
+                        <UButton
+                            size="xl"
+                            icon="heroicons:arrow-left-solid"
+                            color="neutral"
+                            @click="readChapterNextOrPrev('prev')"
+                        />
+                        <UButton
+                            size="xl"
+                            icon="heroicons:arrow-right-solid"
+                            color="neutral"
+                            @click="readChapterNextOrPrev('next')"
+                        />
+                    </div>
                 </div>
-            </div>
-            <UDivider class="w-full h-1" />
-            <div
-                class="h-[calc(100vh-3rem)] bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
-            >
+                <USeparator class="w-full h-1" />
                 <div
-                    class="m-0.5 flex flex-col items-center"
-                    v-for="chapter in chapters"
-                    :key="chapter.chapter_id"
+                    class="h-[calc(100vh-3rem)] bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
                 >
-                    <!-- Uses nested components to better performance :) -->
                     <div
-                        class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
+                        class="m-0.5 flex flex-col items-center"
+                        v-for="chapter in chapters"
+                        :key="chapter.chapter_id"
                     >
-                        <p
-                            v-if="
-                                chapter.chapter_id.includes(
-                                    currentlyChapter.chapter_id,
-                                )
-                            "
+                        <!-- Uses nested components to better performance :) -->
+                        <div
+                            class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
                         >
-                            ~
-                        </p>
-                        <button
-                            class="w-52 p-0.5 flex justify-start bg-slate-800 font-medium text-white hover:bg-transparent"
-                            @click="
-                                () =>
-                                    navigateTo(
-                                        `/reader/${favorite.id}/${chapter.chapter_id}`,
+                            <p
+                                v-if="
+                                    chapter.chapter_id.includes(
+                                        currentlyChapter.chapter_id,
                                     )
-                            "
-                        >
-                            {{ chapter.number }}
-                        </button>
-                        <button
-                            class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
-                            @click="console.log('nada')"
-                        >
-                            <i class="fa fa-download"></i>
-                        </button>
-                        <button
-                            class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
-                            @click="() => addReaded(chapter)"
-                        >
-                            <i
-                                :class="
-                                    isReadedHere(chapter)
-                                        ? 'fa fa-check'
-                                        : 'fa fa-minus'
                                 "
-                            />
-                        </button>
+                            >
+                                ~
+                            </p>
+                            <button
+                                class="w-52 p-0.5 flex justify-start bg-slate-800 font-medium text-white hover:bg-transparent"
+                                @click="
+                                    () =>
+                                        navigateTo(
+                                            `/reader/${favorite.id}/${chapter.chapter_id}`,
+                                        )
+                                "
+                            >
+                                {{ chapter.number }}
+                            </button>
+                            <button
+                                class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
+                                @click="console.log('nada')"
+                            >
+                                <i class="fa fa-download"></i>
+                            </button>
+                            <button
+                                class="w-7 bg-slate-800 font-medium text-white hover:bg-transparent"
+                                @click="() => addReaded(chapter)"
+                            >
+                                <i
+                                    :class="
+                                        isReadedHere(chapter)
+                                            ? 'fa fa-check'
+                                            : 'fa fa-minus'
+                                    "
+                                />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </USlideover>
 </template>

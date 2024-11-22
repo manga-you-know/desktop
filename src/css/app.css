@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+    --ui-radius: 0.25rem;
+    --ui-bg: #000000;
+}
+

@@ -22,17 +22,26 @@ const orders = [
 <template>
     <UButtonGroup>
         <USelectMenu
-            class="w-16"
+            class="w-[0px]"
+            :icon="order.icon"
+            :search-input="false"
             v-model="order"
-            :options="orders"
-            color="white"
+            :content="{
+                align: 'center',
+                side: 'bottom',
+            }"
+            :items="orders"
+            color="neutral"
+            variant="outline"
         >
             <template #label>
                 <UIcon :name="order.icon" class="w-5 h-5" />
             </template>
         </USelectMenu>
         <UButton
-            color="white"
+            size="xl"
+            color="neutral"
+            variant="outline"
             :icon="isAsc ? 'typcn:arrow-sorted-up' : 'typcn:arrow-sorted-down'"
             @click="
                 async () => {

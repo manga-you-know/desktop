@@ -5,7 +5,7 @@
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../.output/public",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:3050",
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun generate"
   },

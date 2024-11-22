@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { FavoriteRepository } from "~/database";
+import { FavoriteRepository } from "~/repositories";
 import { addSelected } from "~/hooks";
 import type { Favorite, User } from "~/models";
 const { favorite } = defineProps<{
     favorite: Favorite;
 }>();
-const user = useState<User>("user");
 const isFavoriteOpen = useState<boolean>("isFavoriteOpen", () => false);
 const isEditFavoriteOpen = useState<boolean>("isEditFavoriteOpen", () => false);
 const favoriteOpen = useState<Favorite>("favorite");
@@ -44,6 +43,7 @@ watch(isSelecting, () => {
 </script>
 
 <template>
+    <FavoriteContextMenu :favorite="favorite" >
     <div
         :class="{
             'relative rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none': true,
@@ -60,11 +60,11 @@ watch(isSelecting, () => {
         @mouseleave="openPopover = false"
         tabindex="1"
     >
-        <UTooltip :prevent="favorite.name.length < 17" :text="favorite.name">
+        <UTooltip :disabled="favorite.name.length < 17" :text="favorite.name">
             <UBadge
                 class="w-36 m-1 flex justify-center cursor-default"
-                color="white"
-                variant="solid"
+                color="neutral"
+                variant="outline"
             >
                 {{
                     favorite.name.substring(0, 16) +
@@ -84,17 +84,19 @@ watch(isSelecting, () => {
             class="w-full h-10 flex justify-center"
         >
             <UButton
+                size="xl"
                 @click="openFavorite"
                 class="h-10 hover:bg-gray-900"
-                color="gray"
+                color="neutral"
                 variant="ghost"
                 icon="heroicons:book-open-solid"
                 tabindex="-1"
             />
             <UButton
+                size="xl"
                 @click.stop
                 @click="openEditFavorite"
-                color="gray"
+                color="neutral"
                 class="hover:bg-gray-900"
                 variant="ghost"
                 icon="heroicons:pencil-square-solid"
@@ -105,10 +107,11 @@ watch(isSelecting, () => {
                 :popper="{ arrow: true, placement: 'left' }"
             >
                 <UButton
+                    size="xl"
                     class="h-10 hover:bg-gray-900"
                     @click.stop
                     @click="openPopover = true"
-                    color="gray"
+                    color="neutral"
                     variant="ghost"
                     icon="heroicons:x-circle-solid"
                     tabindex="-1"
@@ -118,26 +121,27 @@ watch(isSelecting, () => {
                         class="p-2 flex flex-row rounded-lg hover:cursor-auto z-50"
                         @click.stop
                     >
-                        <UBadge class="rounded-xl" color="white"
+                        <UBadge class="rounded-xl" color="neutral"
                             >Delete?</UBadge
                         >
                         <UButton
+                            size="xl"
                             @click="deleteFavorite"
                             color="primary"
                             class="m-0.5 rounded-xl"
-                        >
-                            Yes
-                        </UButton>
+                            label="Yes"
+                        />
                         <UButton
+                            size="xl"
                             @click="openPopover = false"
-                            color="red"
+                            color="warning"
                             class="m-0.5 rounded-xl"
-                        >
-                            No
-                        </UButton>
+                            label="No"
+                        />
                     </div>
                 </template>
             </UPopover>
         </UButtonGroup>
     </div>
+</FavoriteContextMenu>
 </template>
