@@ -1,3 +1,15 @@
+## [0.2.31](https://github.com/manga-you-know/desktop/compare/v0.2.30...v0.2.31) (2024-11-22)
+
+
+### New Features
+
+* Fix a lot and add contextmenu ([6a6fa94](https://github.com/manga-you-know/desktop/commit/6a6fa9423d7da03d6cb0ea2615fb06cb70a7a344))
+
+
+### Code Refactoring
+
+* for trying the nuxt ui v3 ([b3b1e3b](https://github.com/manga-you-know/desktop/commit/b3b1e3b482d4bf74f07dbf2c891ae2161e7f9b1b))
+
 ## [0.2.30](https://github.com/manga-you-know/desktop/compare/v0.2.29...v0.2.30) (2024-11-17)
 
 
@@ -10,6 +22,11 @@
 ### Bug Fixes
 
 * small fixes and changes ([58ddbb5](https://github.com/manga-you-know/desktop/commit/58ddbb5c83d454d906dfdd9ad0bc02aaa4350fb4))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.30 [skip ci] ([bfdaa14](https://github.com/manga-you-know/desktop/commit/bfdaa141480baee7b0ec07c188c56901c14ebfca))
 
 ## [0.2.29](https://github.com/manga-you-know/desktop/compare/v0.2.28...v0.2.29) (2024-11-16)
 
@@ -69,16 +86,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.27 [skip ci] ([d304502](https://github.com/manga-you-know/desktop/commit/d304502aac978e9f33314533165206cd228de8ad))
-
-## [0.2.26](https://github.com/manga-you-know/desktop/compare/v0.2.25...v0.2.26) (2024-11-15)
-
-
-### Styles
-
-* Improve updater to let the user choose to not update ([114eba3](https://github.com/manga-you-know/desktop/commit/114eba31edfdcba1c0fb85579c46f346c47cbae6))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.26 [skip ci] ([1c80db4](https://github.com/manga-you-know/desktop/commit/1c80db48cc2e8745361f1101505524a6e2adc431))
 
