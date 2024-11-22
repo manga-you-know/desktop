@@ -6,6 +6,16 @@
 * Fix a lot and add contextmenu ([6a6fa94](https://github.com/manga-you-know/desktop/commit/6a6fa9423d7da03d6cb0ea2615fb06cb70a7a344))
 
 
+### Bug Fixes
+
+* Using useState outside of a component ([d606e4a](https://github.com/manga-you-know/desktop/commit/d606e4adee791b6510523a73ecce11973a7aa7f9))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.31 [skip ci] ([edd9853](https://github.com/manga-you-know/desktop/commit/edd9853f5ab747365ce7742d77e4c2a490a0c5c3))
+
+
 ### Code Refactoring
 
 * for trying the nuxt ui v3 ([b3b1e3b](https://github.com/manga-you-know/desktop/commit/b3b1e3b482d4bf74f07dbf2c891ae2161e7f9b1b))
