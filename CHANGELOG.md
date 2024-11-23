@@ -1,9 +1,35 @@
+## [0.2.33](https://github.com/manga-you-know/desktop/compare/v0.2.32...v0.2.33) (2024-11-23)
+
+
+### Bug Fixes
+
+* button to pass chapters not working ([5cd4dd0](https://github.com/manga-you-know/desktop/commit/5cd4dd0b3ef2eddf73c5fa743bb9f8bd66c39336))
+* chapters icons and space ([e52bfc3](https://github.com/manga-you-know/desktop/commit/e52bfc3a643a3a17dcc7248d0d7ff1209ec74607))
+* instead of a broken object with all leanguages now mangadex will give a random title for the manga in some language ([a2471cd](https://github.com/manga-you-know/desktop/commit/a2471cd8d74bb209883ac0568385d1b0d1407ee6))
+* long names breaking the search and add scroll to top for better user experience ([843cc2a](https://github.com/manga-you-know/desktop/commit/843cc2aebc0329aa34f7c71155cf154b7ebfa6a8))
+* not highlighting the currently chapter after changing it ([0d9fa8c](https://github.com/manga-you-know/desktop/commit/0d9fa8ce51ff2c5bbc6a75311795211fe8b5b3f1))
+
+
+### Documentation
+
+* update README.md ([26012ed](https://github.com/manga-you-know/desktop/commit/26012ed2596529e6483bfccd8de37e6fc8e15720))
+
+
+### Miscellaneous Chores
+
+* update Nuxt UI lib, great work! ([083ba30](https://github.com/manga-you-know/desktop/commit/083ba30d3b74abe38aeff1da736a257b31785455))
+
 ## [0.2.32](https://github.com/manga-you-know/desktop/compare/v0.2.31...v0.2.32) (2024-11-23)
 
 
 ### Bug Fixes
 
 * context menu and some tooltips ([41db1d4](https://github.com/manga-you-know/desktop/commit/41db1d42ee3e656ee4eb045fe076a273df1b45d5))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.32 [skip ci] ([45aff4f](https://github.com/manga-you-know/desktop/commit/45aff4f0c349211cb9dc14cf515e3ea96399c8b3))
 
 ## [0.2.31](https://github.com/manga-you-know/desktop/compare/v0.2.30...v0.2.31) (2024-11-22)
 
@@ -63,21 +89,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.29 [skip ci] ([ae4cab0](https://github.com/manga-you-know/desktop/commit/ae4cab0f52787b79caaf0c8f6608b1b7be0406d1))
-
-## [0.2.28](https://github.com/manga-you-know/desktop/compare/v0.2.27...v0.2.28) (2024-11-16)
-
-
-### New Features
-
-* Improve updater  and add it in settings ([62cc0b5](https://github.com/manga-you-know/desktop/commit/62cc0b5606a46be788d25f66cd703d6637b4397d))
-
-
-### Bug Fixes
-
-* now the app wont open new broken windows ([a03c6af](https://github.com/manga-you-know/desktop/commit/a03c6af64abcb577138267a2efd7660a62798a05))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.28 [skip ci] ([37ffb48](https://github.com/manga-you-know/desktop/commit/37ffb48ceb2226264b36e16be371ee065f2e03da))
 
