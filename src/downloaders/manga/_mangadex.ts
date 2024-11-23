@@ -32,7 +32,9 @@ export class MangaDexDl implements MangaDl {
           name: titleName,
           folder_name: encodeURIComponent(titleName),
           link: `https://mangadex.org/title/${manga.id}`,
-          extra_name: manga.attributes.altTitles,
+          extra_name: manga.attributes.altTitles?.length 
+          ? Object.values(manga.attributes.altTitles[Math.floor(Math.random() * manga.attributes.altTitles.length)])[0] ?? ''
+          : '',
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
           source: 'MangaDex',
