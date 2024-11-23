@@ -107,14 +107,8 @@ onMounted(async () => {
                         <div
                             class="inline-flex -space-x-px overflow-hidden rounded-md border border-gray-500 bg-slate-700 shadow-sm"
                         >
-                            <p
-                                v-if="
-                                    chapter.chapter_id.includes(
-                                        currentlyChapter.chapter_id,
-                                    )
-                                "
-                            >
-                                ~
+                            <p>
+                                {{ chapter.chapter_id == currentlyChapter.chapter_id ? '~' : '' }}
                             </p>
                             <button
                                 class="w-52 p-0.5 flex justify-start bg-slate-800 font-medium text-white hover:bg-transparent"
