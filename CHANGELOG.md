@@ -1,3 +1,10 @@
+## [0.2.32](https://github.com/manga-you-know/desktop/compare/v0.2.31...v0.2.32) (2024-11-23)
+
+
+### Bug Fixes
+
+* context menu and some tooltips ([41db1d4](https://github.com/manga-you-know/desktop/commit/41db1d42ee3e656ee4eb045fe076a273df1b45d5))
+
 ## [0.2.31](https://github.com/manga-you-know/desktop/compare/v0.2.30...v0.2.31) (2024-11-22)
 
 
@@ -13,6 +20,7 @@
 
 ### Miscellaneous Chores
 
+* **release:** v0.2.31 [skip ci] ([4a1dd26](https://github.com/manga-you-know/desktop/commit/4a1dd2645f05f3e382c3b2de0dfd8984673de046))
 * **release:** v0.2.31 [skip ci] ([edd9853](https://github.com/manga-you-know/desktop/commit/edd9853f5ab747365ce7742d77e4c2a490a0c5c3))
 
 
@@ -72,28 +80,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.28 [skip ci] ([37ffb48](https://github.com/manga-you-know/desktop/commit/37ffb48ceb2226264b36e16be371ee065f2e03da))
-
-## [0.2.27](https://github.com/manga-you-know/desktop/compare/v0.2.26...v0.2.27) (2024-11-15)
-
-
-### New Features
-
-* start working in settings instead of configs ([1b7070f](https://github.com/manga-you-know/desktop/commit/1b7070f153208d028d5e5e05bb21b39ed7602f8e))
-* the app'll search for new updates if the user let choose it. ([5f3dd1f](https://github.com/manga-you-know/desktop/commit/5f3dd1f9b615d44b647dd4aa2dae948b15ea3d79))
-
-
-### Bug Fixes
-
-* SearchModal wasn't focused in the input ([b4c090b](https://github.com/manga-you-know/desktop/commit/b4c090bf29c38d1418036f4502f77783f0b2bc75))
-* updater wasn't working ([3e529dd](https://github.com/manga-you-know/desktop/commit/3e529dd12662295ffd7c156abc006ad64c28463e))
-
-
-### Styles
-
-* make sidebar icons reactive in which page you are ([d971c69](https://github.com/manga-you-know/desktop/commit/d971c69230a696d21ab083ed7a787d952e591c9f))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.27 [skip ci] ([d304502](https://github.com/manga-you-know/desktop/commit/d304502aac978e9f33314533165206cd228de8ad))
 
