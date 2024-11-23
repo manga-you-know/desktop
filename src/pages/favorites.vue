@@ -15,6 +15,7 @@ const order = useState<{ type: string; icon: string }>("order");
 const isLoading = ref(false);
 const isImportModalOpen = ref(false);
 const isMarkModalOpen = ref(false);
+const divFavorites = ref<HTMLDivElement>();
 const page = ref(1);
 const itemsPerPage = 28;
 const isMarkSelectedModalOpen = useState<boolean>(
@@ -33,6 +34,8 @@ async function search() {
             resolve(true);
         }, 10);
     });
+    // @ts-ignore
+    divFavorites.value.scrollTop = 0;
     if (query.value === "") {
         isLoading.value = true;
         favorites.value = await FavoriteRepository.getFavorites();
@@ -184,7 +187,8 @@ watch(favorites, async () => {
             </div>
         </div>
         <div
-            class="w-full h-[calc(100vh-3rem)] pb-5 overflow-y-auto overflow-x-hidden flex flex-row justify-start gap-2 flex-wrap"
+            ref="divFavorites"
+            class="w-full h-[calc(100vh-3rem)] pb-5 scroll-smooth overflow-y-auto overflow-x-hidden flex flex-row justify-start gap-2 flex-wrap"
         >
         <div class="" v-for="favorite in favoritesDisplayed" :key="favorite.id">
             <FavoriteCard :favorite="favorite" />

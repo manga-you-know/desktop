@@ -8,12 +8,14 @@ import type { Favorite, Readed, User } from "~/models";
 const store = await load("config.json");
 const user = useState<User>("user");
 const query = ref("");
+const divSearch = ref<HTMLDivElement>();
 const dlManager = useState<DownloadManager>("dlManager");
 const isLoading = ref(false);
 const isFavoriteOpen = ref(false);
 const favoriteView = ref<Favorite>();
 const results = ref<Favorite[]>([]);
-const favorites = useState<Favorite[]>("favorites");
+const globalFavorites = useState<Favorite[]>("favorites");
+const favorites = ref<Favorite[]>([]);
 const isSearchOpen = useState<boolean>("isSearchOpen");
 const sourceSearch = useState<string>("sourceSearch", () => MANGASOURCES[0]);
 const sourceResult = await store.get<string>("source_search");
@@ -45,10 +47,11 @@ async function search() {
         return;
     }
     try {
-        favorites.value = await FavoriteRepository.getFavorites();
         results.value = (
             await dlManager.value.search(query.value, sourceSearch.value)
         ).slice(0, 20);
+        // @ts-ignore
+        divSearch.value.scrollTop = 0;
     } catch (error) {
         finished.value = error;
     } finally {
@@ -67,15 +70,19 @@ function isFavorite(favorite: Favorite) {
     );
 }
 
+onMounted(async () => {
+    favorites.value = await FavoriteRepository.getRawFavorites();
+});
+
 async function favorite(favorite: Favorite) {
     const isFavoriteh = isFavorite(favorite);
     if (isFavoriteh) {
         await FavoriteRepository.deleteFavorite(isFavoriteh);
-        favorites.value = await FavoriteRepository.getFavorites();
-        return;
+    } else {
+        await FavoriteRepository.createFavorite(favorite, user.value.id);
     }
-    await FavoriteRepository.createFavorite(favorite, user.value.id);
-    favorites.value = await FavoriteRepository.getFavorites();
+    favorites.value = await FavoriteRepository.getRawFavorites();
+    globalFavorites.value = await FavoriteRepository.getFavorites();
 }
 watch(isSearchOpen, () => {
     if (isSearchOpen.value) {
@@ -109,7 +116,6 @@ watch(isSearchOpen, () => {
                             leading
                             autocomplete="off"
                             :autofocus="true"
-                            :ui="{ icon: { trailing: { pointer: '' } } }"
                         >
                             <template #trailing>
                                 <div class="flex gap-2">
@@ -137,7 +143,7 @@ watch(isSearchOpen, () => {
                         </UInput>
                     </div>
                     <USeparator class="w-full h-1" />
-                    <div class="w-full h-48 flex flex-col overflow-y-scroll">
+                    <div ref="divSearch" class="w-full h-48 flex flex-col overflow-y-scroll overflow-x-hidden">
                         <div v-for="(result, i) in results" :key="result.name">
                             <div
                                 :tabindex="i + 1"
@@ -157,10 +163,10 @@ watch(isSearchOpen, () => {
                                         "
                                         color="neutral"
                                         variant="ghost"
-                                        class="w-[93%] h-10 m-0.5 flex justify-between"
+                                        class="w-[93%] max-w-[93%] h-10 m-0.5 flex justify-between"
                                         :label="
-                                            result.name.substring(0, 60) +
-                                            (result.name.length > 60
+                                            result.name.substring(0, 55) +
+                                            (result.name.length > 55
                                                 ? '...'
                                                 : '')
                                         "
@@ -226,7 +232,8 @@ watch(isSearchOpen, () => {
                                         favoriteView.extra_name
                                     "
                                     class="text-center"
-                                    color="white"
+                                    color="neutral"
+                                    variant="soft"
                                 >
                                     {{ favoriteView.extra_name }}
                                 </UBadge>
