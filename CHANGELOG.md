@@ -1,3 +1,10 @@
+## [0.2.34](https://github.com/manga-you-know/desktop/compare/v0.2.33...v0.2.34) (2024-11-23)
+
+
+### Documentation
+
+* Update README.md ([adae931](https://github.com/manga-you-know/desktop/commit/adae931a5129fb16dc7406f5c7fd07049f942def))
+
 ## [0.2.33](https://github.com/manga-you-know/desktop/compare/v0.2.32...v0.2.33) (2024-11-23)
 
 
@@ -17,6 +24,7 @@
 
 ### Miscellaneous Chores
 
+* **release:** v0.2.33 [skip ci] ([b809a18](https://github.com/manga-you-know/desktop/commit/b809a1871d1c51d5bdac40fd5c19ec7161034b80))
 * update Nuxt UI lib, great work! ([083ba30](https://github.com/manga-you-know/desktop/commit/083ba30d3b74abe38aeff1da736a257b31785455))
 
 ## [0.2.32](https://github.com/manga-you-know/desktop/compare/v0.2.31...v0.2.32) (2024-11-23)
@@ -71,22 +79,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.30 [skip ci] ([bfdaa14](https://github.com/manga-you-know/desktop/commit/bfdaa141480baee7b0ec07c188c56901c14ebfca))
-
-## [0.2.29](https://github.com/manga-you-know/desktop/compare/v0.2.28...v0.2.29) (2024-11-16)
-
-
-### New Features
-
-* now you can disable auto enter fullscreen ([67a865d](https://github.com/manga-you-know/desktop/commit/67a865d1f5ed9f77e0e82f35c3babac38c0e6014))
-* Now you can share, export and import favorites!! ([2ab73e9](https://github.com/manga-you-know/desktop/commit/2ab73e99f140e5ae92872da7a62fcfd47d6c84d4))
-
-
-### Bug Fixes
-
-* for the last time, auto update is fixed ([2b5f31d](https://github.com/manga-you-know/desktop/commit/2b5f31dcf80d57f1652b7aedb22479f507ff3a1e))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.29 [skip ci] ([ae4cab0](https://github.com/manga-you-know/desktop/commit/ae4cab0f52787b79caaf0c8f6608b1b7be0406d1))
 
