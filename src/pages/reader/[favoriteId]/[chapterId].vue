@@ -213,27 +213,29 @@ watch(zoomPlusDown, async () => {
             />
             <UPopover
                 mode="hover"
-                :popper="{ arrow: true, placement: 'left-start' }"
-                class="pointer-events-auto"
+                arrow
             >
                 <UButton
+                    class="pointer-events-auto"
                     size="xl"
                     icon="nimbus:arrows-horizontal"
                     color="neutral"
                     variant="outline"
                 />
-                <template #panel>
+                <template #content>
                     <div class="p-2 gap-1 flex flex-row rounded-lg">
                         <UButton
                             size="xl"
-                            icon="heroicons:arrow-left-solid"
+                            icon="i-lucide-arrow-left"
                             color="neutral"
+                            variant="outline"
                             @click="readNextOrPrevChapter('prev')"
                         />
                         <UButton
                             size="xl"
-                            icon="heroicons:arrow-right-solid"
+                            icon="i-lucide-arrow-right"
                             color="neutral"
+                            variant="outline"
                             @click="readNextOrPrevChapter('next')"
                         />
                     </div>
