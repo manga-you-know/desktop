@@ -73,12 +73,6 @@ function getLastReaded() {
 function getNextForRead() {
     return chapters.value.filter((chapter) => !isReaded(chapter)).reverse()[0];
 }
-async function onClose() {
-    ultraFavorites.value = await FavoriteRepository.getUltraFavorites(
-        user.value.id,
-    );
-    rerenderIndex.value++;
-}
 async function updateLanguage() {
     await new Promise((resolve) => {
         setTimeout(() => {
@@ -131,17 +125,20 @@ watch(isFavoriteOpen, async () => {
     if (isFavoriteOpen.value) {
         readeds.value = await ReadedRepository.getReadeds(favorite.value);
         currentChapter.value = getNextForRead();
+    } else {
+        ultraFavorites.value = await FavoriteRepository.getUltraFavorites();
+        rerenderIndex.value++;
     }
 });
 </script>
 
 <template>
-    <UModal :title="favorite.name" @close="onClose">
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-        />
+    <UModal :title="favorite.name" >
         <template #body>
+            <link
+                    rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+                />
             <div
                 v-if="favorite"
                 class="flex flex-col justify-center items-center"
@@ -245,7 +242,6 @@ watch(isFavoriteOpen, async () => {
                             icon="heroicons:magnifying-glass-solid"
                             class="w-50 m-0.5"
                             autocomplete="off"
-                            :ui="{ icon: { trailing: { pointer: '' } } }"
                         >
                             <template #trailing>
                                 <UButton
@@ -260,7 +256,7 @@ watch(isFavoriteOpen, async () => {
                             </template>
                         </UInput>
                         <div
-                            class="h-72 bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
+                            class="h-72 w-48 bg-gray-800 rounded-xl m-1 p-1 flex flex-col overflow-y-scroll"
                         >
                             <div
                                 class="m-0.5 flex flex-col items-center"
