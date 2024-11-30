@@ -1,14 +1,15 @@
-import { memoize } from 'lodash' 
+import { memoize } from "lodash";
 import {
   MangaDexDl,
   MangaReaderToDl,
   MangaSeeDl,
   TCBScansDl,
-} from '~/downloaders/manga';
-import type { AnimeDl, ChaptersResponse, MangaDl } from '~/interfaces';
-import type { Chapter, Favorite } from '~/models';
-import { memoizeExpiring } from '~/utils/memoizedWithTime';
-import type { Episode } from '../models/_episode';
+  TaosectDl,
+} from "~/downloaders/manga";
+import type { AnimeDl, ChaptersResponse, MangaDl } from "~/interfaces";
+import type { Chapter, Favorite } from "~/models";
+import { memoizeExpiring } from "~/utils/memoizedWithTime";
+import type { Episode } from "../models/_episode";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
@@ -20,6 +21,7 @@ export class DownloadManager {
       MangaDex: new MangaDexDl(),
       TCB: new TCBScansDl(),
       MangaReaderTo: new MangaReaderToDl(),
+      Taosect: new TaosectDl(),
     };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
