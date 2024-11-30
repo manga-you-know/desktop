@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../.output/public",
@@ -45,7 +45,10 @@
     },
     "active": true,
     "targets": "all",
-    "icon": ["icons/icon.ico", "icons/icon.png"]
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ]
   },
   "plugins": {
     "updater": {
