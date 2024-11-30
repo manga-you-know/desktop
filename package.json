@@ -49,7 +49,6 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@iconify-json/heroicons": "^1.2.1",
     "@iconify-json/ic": "^1.2.1",
     "@iconify-json/mdi": "^1.2.1",
