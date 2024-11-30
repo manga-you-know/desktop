@@ -33,11 +33,7 @@ const orders = [
             :items="orders"
             color="neutral"
             variant="outline"
-        >
-            <template #label>
-                <UIcon :name="order.icon" class="w-5 h-5" />
-            </template>
-        </USelectMenu>
+        />
         <UButton
             size="xl"
             color="neutral"

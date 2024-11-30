@@ -108,6 +108,7 @@ watch(isSearchOpen, () => {
                             v-on:update:model-value="search"
                             name="query"
                             :loading="isLoading"
+                            color="neutral"
                             variant="none"
                             :padded="false"
                             class="w-[97%]"
@@ -180,7 +181,7 @@ watch(isSearchOpen, () => {
                                                 : 'heroicons:star'
                                         "
                                         color="neutral"
-                                        variant="link"
+                                        variant="ghost"
                                         class="h-10 m-0.5"
                                         @click="() => favorite(result)"
                                     />
