@@ -59,7 +59,7 @@
     const nextChapter =
       chapters.value[chapters.value.indexOf(chapter.value) + 1];
     chapters.value.splice(0, 1);
-    // ultraChapters.value[chapter.value.favorite.id ?? 0].chapters.splice(0, 1);
+    ultraChapters.value[chapter.value.favorite.id ?? 0].chapters.splice(0, 1);
     chapter.value = nextChapter;
     toast.add({
       title: `Chapter ${chapter.value.chapter.number}`,
@@ -72,13 +72,13 @@
       },
     });
     pages.value = await dlManager.value.getChapterImages(chapter.value.chapter);
-    // await addReadedBelow(
-    //   chapter.value.chapter,
-    //   chapter.value.allChapters,
-    //   chapter.value.favorite,
-    //   undefined,
-    //   true
-    // );
+    await addReadedBelow(
+      chapter.value.chapter,
+      chapter.value.allChapters,
+      chapter.value.favorite,
+      undefined,
+      true
+    );
     totalPage.value = pages.value.length;
     currentlyPage.value = pages.value[0];
     currentlyCount.value = 1;
@@ -145,13 +145,13 @@
       },
     });
     pages.value = await dlManager.value.getChapterImages(chapter.value.chapter);
-    // await addReadedBelow(
-    //   chapter.value.chapter,
-    //   chapter.value.allChapters,
-    //   chapter.value.favorite,
-    //   undefined,
-    //   true
-    // );
+    await addReadedBelow(
+      chapter.value.chapter,
+      chapter.value.allChapters,
+      chapter.value.favorite,
+      undefined,
+      true
+    );
     totalPage.value = pages.value.length;
     currentlyPage.value = pages.value[0];
     currentlyCount.value = 1;
@@ -229,10 +229,10 @@
       <UButton
         size="xl"
         class="pointer-events-auto"
-        icon="i-lucide-menu"
+        icon="i-lucide-home"
         color="neutral"
         variant="outline"
-        @click="openMenuChapters = true"
+        @click="navigateTo('/')"
       />
       <UButton
         size="xl"

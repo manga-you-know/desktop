@@ -209,6 +209,9 @@
               icon="i-lucide-arrow-left"
               color="neutral"
               variant="outline"
+              :disabled="
+                chapter.number === chapters[chapters.length - 1].number
+              "
               @click="readNextOrPrevChapter('prev')"
             />
             <UButton
@@ -216,6 +219,7 @@
               icon="i-lucide-arrow-right"
               color="neutral"
               variant="outline"
+              :disabled="isTheLastChapter"
               @click="readNextOrPrevChapter('next')"
             />
           </div>
