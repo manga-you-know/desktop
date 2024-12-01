@@ -1,3 +1,15 @@
+## [0.2.35](https://github.com/manga-you-know/desktop/compare/v0.2.34...v0.2.35) (2024-12-01)
+
+
+### New Features
+
+* improve a bit both readers. ([384e512](https://github.com/manga-you-know/desktop/commit/384e5124cf9eb9e7844c4954852da707af97e18f))
+
+
+### Bug Fixes
+
+* Image not appearing and fullscreen in reader ([618ada4](https://github.com/manga-you-know/desktop/commit/618ada49c4cca6666da716bc1ce4d1c1c7efd723))
+
 ## [0.2.34](https://github.com/manga-you-know/desktop/compare/v0.2.33...v0.2.34) (2024-11-30)
 
 
@@ -21,6 +33,7 @@
 
 * change app icon ([98f21b6](https://github.com/manga-you-know/desktop/commit/98f21b6c5ceab9228ea1ac077afeba8e39bbcf16))
 * Create components to better code comprehension ([21e20be](https://github.com/manga-you-know/desktop/commit/21e20be50a4b923dfb9d235a7a73de6e8e629486))
+* **release:** v0.2.34 [skip ci] ([31629af](https://github.com/manga-you-know/desktop/commit/31629af5cc60306f4d57bbfbbc3281580acfb0b7))
 * **release:** v0.2.34 [skip ci] ([8eb7473](https://github.com/manga-you-know/desktop/commit/8eb747314d01b45ff5c76ee9d0cf48d54b46cc72))
 * remove BiomeJs ([0e5209f](https://github.com/manga-you-know/desktop/commit/0e5209fae95f6a887515e27e90ac5da8967a6975))
 * small changes ([1b5c32b](https://github.com/manga-you-know/desktop/commit/1b5c32b4dd78202496d9be2af1b0217f44e5bed9))
@@ -82,22 +95,4 @@
 ### Code Refactoring
 
 * for trying the nuxt ui v3 ([b3b1e3b](https://github.com/manga-you-know/desktop/commit/b3b1e3b482d4bf74f07dbf2c891ae2161e7f9b1b))
-
-## [0.2.30](https://github.com/manga-you-know/desktop/compare/v0.2.29...v0.2.30) (2024-11-17)
-
-
-### New Features
-
-* now you can click and see the favorite when searching ([72d2974](https://github.com/manga-you-know/desktop/commit/72d29748d22fb03730bb1b681bdffbc13fb2be69))
-* Zoom in reader! it sucks! ([ad1ef6c](https://github.com/manga-you-know/desktop/commit/ad1ef6c0e60daf2e14db9abfdf160256e6c8ac1c))
-
-
-### Bug Fixes
-
-* small fixes and changes ([58ddbb5](https://github.com/manga-you-know/desktop/commit/58ddbb5c83d454d906dfdd9ad0bc02aaa4350fb4))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.30 [skip ci] ([bfdaa14](https://github.com/manga-you-know/desktop/commit/bfdaa141480baee7b0ec07c188c56901c14ebfca))
 
