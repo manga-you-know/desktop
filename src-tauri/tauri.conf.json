@@ -4,7 +4,7 @@
   "version": "0.2.34",
   "identifier": "com.mangayouknow.dev",
   "build": {
-    "frontendDist": "../.output/public",
+    "frontendDist": "dist/",
     "devUrl": "http://localhost:3050",
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun generate"
@@ -46,6 +46,10 @@
     "active": true,
     "targets": "all",
     "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
       "icons/icon.ico",
       "icons/icon.png"
     ]
