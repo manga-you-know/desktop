@@ -4,7 +4,7 @@
   "version": "0.2.36",
   "identifier": "com.mangayouknow.dev",
   "build": {
-    "frontendDist": ".output/public",
+    "frontendDist": "../.output/public",
     "devUrl": "http://localhost:3050",
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun generate"
