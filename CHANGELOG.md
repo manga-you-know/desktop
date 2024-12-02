@@ -1,3 +1,10 @@
+## [0.2.36](https://github.com/manga-you-know/desktop/compare/v0.2.35...v0.2.36) (2024-12-02)
+
+
+### Bug Fixes
+
+* build didnt load ([ecacdc3](https://github.com/manga-you-know/desktop/commit/ecacdc36962e40c7441b241132d9a2f5e141c75f))
+
 ## [0.2.35](https://github.com/manga-you-know/desktop/compare/v0.2.34...v0.2.35) (2024-12-01)
 
 
@@ -9,6 +16,11 @@
 ### Bug Fixes
 
 * Image not appearing and fullscreen in reader ([618ada4](https://github.com/manga-you-know/desktop/commit/618ada49c4cca6666da716bc1ce4d1c1c7efd723))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.35 [skip ci] ([7b14fde](https://github.com/manga-you-know/desktop/commit/7b14fde1903be76597548539b7e8842d53e5df4f))
 
 ## [0.2.34](https://github.com/manga-you-know/desktop/compare/v0.2.33...v0.2.34) (2024-11-30)
 
@@ -72,27 +84,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.32 [skip ci] ([45aff4f](https://github.com/manga-you-know/desktop/commit/45aff4f0c349211cb9dc14cf515e3ea96399c8b3))
-
-## [0.2.31](https://github.com/manga-you-know/desktop/compare/v0.2.30...v0.2.31) (2024-11-22)
-
-
-### New Features
-
-* Fix a lot and add contextmenu ([6a6fa94](https://github.com/manga-you-know/desktop/commit/6a6fa9423d7da03d6cb0ea2615fb06cb70a7a344))
-
-
-### Bug Fixes
-
-* Using useState outside of a component ([d606e4a](https://github.com/manga-you-know/desktop/commit/d606e4adee791b6510523a73ecce11973a7aa7f9))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.31 [skip ci] ([4a1dd26](https://github.com/manga-you-know/desktop/commit/4a1dd2645f05f3e382c3b2de0dfd8984673de046))
-* **release:** v0.2.31 [skip ci] ([edd9853](https://github.com/manga-you-know/desktop/commit/edd9853f5ab747365ce7742d77e4c2a490a0c5c3))
-
-
-### Code Refactoring
-
-* for trying the nuxt ui v3 ([b3b1e3b](https://github.com/manga-you-know/desktop/commit/b3b1e3b482d4bf74f07dbf2c891ae2161e7f9b1b))
 
