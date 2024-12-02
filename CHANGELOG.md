@@ -1,9 +1,21 @@
+## [0.2.37](https://github.com/manga-you-know/desktop/compare/v0.2.36...v0.2.37) (2024-12-02)
+
+
+### Bug Fixes
+
+* last fix for this ([a02e159](https://github.com/manga-you-know/desktop/commit/a02e1598c27db153fc121886670b86c224828ccf))
+
 ## [0.2.36](https://github.com/manga-you-know/desktop/compare/v0.2.35...v0.2.36) (2024-12-02)
 
 
 ### Bug Fixes
 
 * build didnt load ([ecacdc3](https://github.com/manga-you-know/desktop/commit/ecacdc36962e40c7441b241132d9a2f5e141c75f))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.36 [skip ci] ([9a4a792](https://github.com/manga-you-know/desktop/commit/9a4a7926475eab9d67d18955d5df9a56bdd65d65))
 
 ## [0.2.35](https://github.com/manga-you-know/desktop/compare/v0.2.34...v0.2.35) (2024-12-01)
 
@@ -72,16 +84,4 @@
 
 * **release:** v0.2.33 [skip ci] ([b809a18](https://github.com/manga-you-know/desktop/commit/b809a1871d1c51d5bdac40fd5c19ec7161034b80))
 * update Nuxt UI lib, great work! ([083ba30](https://github.com/manga-you-know/desktop/commit/083ba30d3b74abe38aeff1da736a257b31785455))
-
-## [0.2.32](https://github.com/manga-you-know/desktop/compare/v0.2.31...v0.2.32) (2024-11-23)
-
-
-### Bug Fixes
-
-* context menu and some tooltips ([41db1d4](https://github.com/manga-you-know/desktop/commit/41db1d42ee3e656ee4eb045fe076a273df1b45d5))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.32 [skip ci] ([45aff4f](https://github.com/manga-you-know/desktop/commit/45aff4f0c349211cb9dc14cf515e3ea96399c8b3))
 
