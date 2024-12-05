@@ -50,7 +50,7 @@
       >
         <template #description>
           <UCheckbox
-            class="my-3"
+            class="my-3 select-none"
             label="Auto search for updates"
             color="neutral"
             v-model:model-value="autoSearchUpdates"
@@ -74,7 +74,7 @@
     <UAlert color="neutral" variant="soft">
       <template #description>
         <UCheckbox
-          class="my-3"
+          class="my-3 select-none"
           label="Auto enter in fullscreen"
           color="neutral"
           v-model:model-value="autoEnterFullscreen"

@@ -6,6 +6,7 @@
   import { Chapter } from "~/models";
 
   const { favoriteId, chapterIndex } = useRoute().params;
+
   const toast = useToast();
   const window = getCurrentWindow();
   const dlManager = useState<DownloadManager>("dlManager");

@@ -66,9 +66,10 @@
           @click="readUltraFavorites"
         />
         <UChip
+          class="select-none"
           size="xl"
           color="neutral"
-          :prevent="Object.keys(ultraChapters).length === 0"
+          :show="Object.keys(ultraChapters).length > 0"
           :text="`+${Object.keys(ultraChapters).length}`"
         >
           <UButton
