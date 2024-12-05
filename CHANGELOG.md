@@ -1,9 +1,26 @@
+## [0.2.38](https://github.com/manga-you-know/desktop/compare/v0.2.37...v0.2.38) (2024-12-05)
+
+
+### Bug Fixes
+
+* little things... ([e000ebf](https://github.com/manga-you-know/desktop/commit/e000ebf17c0333294c639fd9cd809abcc2b0abdc))
+
+
+### Styles
+
+* change icon again ([6067a6a](https://github.com/manga-you-know/desktop/commit/6067a6a7b8d3e143ceeb22c4c1ecbad8882e675f))
+
 ## [0.2.37](https://github.com/manga-you-know/desktop/compare/v0.2.36...v0.2.37) (2024-12-02)
 
 
 ### Bug Fixes
 
 * last fix for this ([a02e159](https://github.com/manga-you-know/desktop/commit/a02e1598c27db153fc121886670b86c224828ccf))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.37 [skip ci] ([36ed2fb](https://github.com/manga-you-know/desktop/commit/36ed2fb6752e7201595d3ce64d40acc137a14aea))
 
 ## [0.2.36](https://github.com/manga-you-know/desktop/compare/v0.2.35...v0.2.36) (2024-12-02)
 
@@ -62,26 +79,4 @@
 * remove BiomeJs ([0e5209f](https://github.com/manga-you-know/desktop/commit/0e5209fae95f6a887515e27e90ac5da8967a6975))
 * small changes ([1b5c32b](https://github.com/manga-you-know/desktop/commit/1b5c32b4dd78202496d9be2af1b0217f44e5bed9))
 * small changes ([500af04](https://github.com/manga-you-know/desktop/commit/500af0451c8c3634fc43f7a336d6fc0d5069e68b))
-
-## [0.2.33](https://github.com/manga-you-know/desktop/compare/v0.2.32...v0.2.33) (2024-11-23)
-
-
-### Bug Fixes
-
-* button to pass chapters not working ([5cd4dd0](https://github.com/manga-you-know/desktop/commit/5cd4dd0b3ef2eddf73c5fa743bb9f8bd66c39336))
-* chapters icons and space ([e52bfc3](https://github.com/manga-you-know/desktop/commit/e52bfc3a643a3a17dcc7248d0d7ff1209ec74607))
-* instead of a broken object with all leanguages now mangadex will give a random title for the manga in some language ([a2471cd](https://github.com/manga-you-know/desktop/commit/a2471cd8d74bb209883ac0568385d1b0d1407ee6))
-* long names breaking the search and add scroll to top for better user experience ([843cc2a](https://github.com/manga-you-know/desktop/commit/843cc2aebc0329aa34f7c71155cf154b7ebfa6a8))
-* not highlighting the currently chapter after changing it ([0d9fa8c](https://github.com/manga-you-know/desktop/commit/0d9fa8ce51ff2c5bbc6a75311795211fe8b5b3f1))
-
-
-### Documentation
-
-* update README.md ([26012ed](https://github.com/manga-you-know/desktop/commit/26012ed2596529e6483bfccd8de37e6fc8e15720))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.33 [skip ci] ([b809a18](https://github.com/manga-you-know/desktop/commit/b809a1871d1c51d5bdac40fd5c19ec7161034b80))
-* update Nuxt UI lib, great work! ([083ba30](https://github.com/manga-you-know/desktop/commit/083ba30d3b74abe38aeff1da736a257b31785455))
 
