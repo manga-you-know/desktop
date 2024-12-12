@@ -41,7 +41,7 @@
 </script>
 
 <template>
-  <div v-once class="w-full h-screen flex flex-col pt-8 pr-4 gap-3">
+  <div class="w-full h-screen flex flex-col pt-8 pr-4 gap-3">
     <USeparator label="Version" size="xl" />
     <div>
       <UAlert
