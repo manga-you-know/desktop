@@ -1,10 +1,18 @@
-import { ReadedRepository } from "~/repositories";
+import { FavoriteRepository, ReadedRepository } from "~/repositories";
 import type { Chapter, Favorite, Readed } from "~/models";
 
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(
     (r) =>
-      r.chapter_id === chapter.chapter_id && r.language === chapter.language,
+      r.chapter_id === chapter.chapter_id && r.language === chapter.language
+  );
+}
+
+export async function isFavorite(favorite: Favorite): Promise<boolean> {
+  const rawFavs = await FavoriteRepository.getRawFavorites();
+  return rawFavs.some(
+    (fav) =>
+      fav.source_id === favorite.source_id || fav.source === favorite.source
   );
 }
 
@@ -13,7 +21,7 @@ export async function addReadedBelow(
   chapters: Chapter[],
   favorite: Favorite,
   readeds?: Readed[],
-  dontDelete?: boolean,
+  dontDelete?: boolean
 ) {
   const localReadeds = readeds ?? (await ReadedRepository.getReadeds(favorite));
   const readed = isReaded(chapter, localReadeds);
@@ -33,7 +41,7 @@ export async function addReadedBelow(
 export async function deleteReadedAbove(
   readed: Readed,
   chapters: Chapter[],
-  readeds: Readed[],
+  readeds: Readed[]
 ) {
   const toDelete: Readed[] = [];
   let isForDelete = false;

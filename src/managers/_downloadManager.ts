@@ -4,6 +4,7 @@ import {
   MangaReaderToDl,
   MangaSeeDl,
   TCBScansDl,
+  MangaPillDl,
   TaosectDl,
 } from "~/downloaders/manga";
 import type { AnimeDl, ChaptersResponse, MangaDl } from "~/interfaces";
@@ -22,6 +23,7 @@ export class DownloadManager {
       TCB: new TCBScansDl(),
       MangaReaderTo: new MangaReaderToDl(),
       Taosect: new TaosectDl(),
+      MangaPill: new MangaPillDl(),
     };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
@@ -42,6 +44,11 @@ export class DownloadManager {
 
   getAnimeSource(source: string): AnimeDl {
     return this.animeSources[source];
+  }
+
+  async getManga(url: string, source: string): Promise<Favorite> {
+    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    return await sourceDl.getManga(url);
   }
 
   async search(query: string, source: string): Promise<Favorite[]> {

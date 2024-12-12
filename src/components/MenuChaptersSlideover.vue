@@ -11,6 +11,7 @@
       currentlyChapter: Chapter;
       readChapterNextOrPrev: (way: "next" | "prev") => void;
       closeMenu: () => void;
+      mode: string;
     }>();
 
   const dlManager = useState<DownloadManager>("dlManager");
@@ -72,12 +73,16 @@
             color="neutral"
             @click="
               () => {
-                isOpen = false;
-                getCurrentWindow().setFullscreen(false);
-                navigateTo(useRoute().redirectedFrom);
+                if (mode !== 'external') {
+                  isOpen = false;
+                  getCurrentWindow().setFullscreen(false);
+                  navigateTo(useRoute().redirectedFrom);
+                } else {
+                  getCurrentWindow().destroy();
+                }
               }
             "
-            icon="heroicons:home"
+            :icon="mode !== 'external' ? 'i-lucide-home' : 'i-lucide-x'"
           />
           <div class="p-2 gap-1 flex flex-row rounded-lg">
             <UButton

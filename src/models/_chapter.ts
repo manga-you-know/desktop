@@ -1,5 +1,5 @@
 export class Chapter {
-  number: number | string;
+  number: string;
   title: string;
   chapter_id: string;
   source: string;
@@ -7,13 +7,13 @@ export class Chapter {
 
   constructor(
     number: number | string,
-    title: string = '',
+    title: string = "",
     chapter_id: string,
     source: string,
-    language = 'default',
+    language = "default"
   ) {
-    this.number = number;
-    this.title = title;
+    this.number = number.toString();
+    this.title = title ?? "";
     this.chapter_id = chapter_id;
     this.source = source;
     this.language = language;

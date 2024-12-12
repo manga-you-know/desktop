@@ -39,7 +39,7 @@
   const pages = ref<string[]>([]);
   const currentlyCount = ref(1);
   const totalPage = ref(0);
-  const currentlyPage = useState<string>("currentlyPage", () => "/myk.svg");
+  const currentlyPage = useState<string>("currentlyPage", () => "/myk.png");
   const openMenuChapters = ref(false);
   const zoom = ref(0);
   const zoomMinusDown = ref(false);
@@ -55,7 +55,7 @@
     currentlyPage.value = pages.value[currentlyCount.value - 1];
   }
   async function readNextChapter() {
-    currentlyPage.value = "/myk.svg";
+    currentlyPage.value = "/myk.png";
     const nextChapter =
       chapters.value[chapters.value.indexOf(chapter.value) + 1];
     chapters.value.splice(0, 1);

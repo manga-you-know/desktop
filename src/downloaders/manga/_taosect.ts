@@ -22,6 +22,15 @@ export class TaosectDl implements MangaDl {
     "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
   };
+  async getManga(url: string): Promise<Favorite> {
+    return new Favorite({
+      name: "",
+      folder_name: "",
+      cover: "",
+      source: "",
+      source_id: "",
+    });
+  }
 
   async search(query: string): Promise<Favorite[]> {
     const response = await fetch(`${this.baseUrl}/?s=${query}`, {

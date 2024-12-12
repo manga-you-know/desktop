@@ -1,22 +1,35 @@
 <script setup lang="ts">
   import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "~/repositories";
   import { addReadedBelow } from "~/functions";
-  import type { DownloadManager } from "~/managers";
+  import { DownloadManager } from "~/managers";
   import { Chapter } from "~/models";
 
-  const { favoriteId, chapterIndex } = useRoute().params;
+  const route = useRoute();
+  const { favoriteId, chapterIndex } = route.params;
+  const mode = (route.query.mode as string) || "internal";
+  const key = (route.query.key as string) || "";
 
+  let data = undefined;
+  if (mode === "external") {
+    data = await invoke("get_data", { key: key });
+    console.log(data);
+  }
   const toast = useToast();
   const window = getCurrentWindow();
-  const dlManager = useState<DownloadManager>("dlManager");
+  const dlManager = useState<DownloadManager>(
+    "dlManager",
+    () => new DownloadManager()
+  );
   const pages = ref<string[]>([]);
   const favorite = await FavoriteRepository.getFavorite(favoriteId);
-  const chapters = useState<Chapter[]>("chapters");
+  //@ts-ignore
+  const chapters = useState<Chapter[]>("chapters", () => data.chapters);
   const chapter = ref<Chapter>(chapters.value[Number(chapterIndex)]);
   const currentlyCount = useState<number>("currentlyCount", () => 1);
   const totalPage = useState<number>("totalPage");
-  const currentlyPage = useState<string>("currentlyPage", () => "/myk.svg");
+  const currentlyPage = useState<string>("currentlyPage", () => "/myk.png");
   const openMenuChapters = ref(false);
   const isTheLastChapter = ref(chapter.value === chapters.value[0]);
   const zoom = ref(0);
@@ -63,7 +76,7 @@
       f4: {
         usingInput: true,
         handler: () => {
-          navigateTo(useRoute().redirectedFrom);
+          if (mode !== "external") navigateTo(useRoute().redirectedFrom);
         },
       },
       arrowleft: {
@@ -149,12 +162,14 @@
 </script>
 
 <template>
+  <!--@vue-ignore-->
   <MenuChaptersSlideover
     v-model:open="openMenuChapters"
     :chapters="chapters"
     :currentlyChapter="chapter"
     :readChapterNextOrPrev="readNextOrPrevChapter"
     :closeMenu="closeMenu"
+    :mode="mode"
   />
   <div
     class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"

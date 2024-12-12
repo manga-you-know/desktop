@@ -3,5 +3,6 @@ export const MANGASOURCES = [
   "MangaDex",
   "MangaReaderTo",
   "TCB",
+  // "MangaPill",
   "Taosect",
 ];

@@ -17,6 +17,7 @@
   async function saveConfig(key: string, value: any) {
     await config.set(key, value);
   }
+
   onBeforeMount(async () => {
     const [
       autoSearchSaved,

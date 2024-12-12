@@ -1,14 +1,26 @@
-import { fetch } from '@tauri-apps/plugin-http';
-import type { ChaptersResponse, MangaDl } from '~/interfaces';
-import { Chapter, Favorite } from '~/models';
+import { fetch } from "@tauri-apps/plugin-http";
+import type { ChaptersResponse, MangaDl } from "~/interfaces";
+import { Chapter, Favorite } from "~/models";
 
 export class MangaDexDl implements MangaDl {
-  async search(query: string, limit = '20'): Promise<Favorite[]> {
+  async getManga(url: string): Promise<Favorite> {
+    return new Favorite({
+      name: "",
+      folder_name: "",
+      cover: "",
+      source: "",
+      source_id: "",
+    });
+  }
+
+  async search(query: string, limit = "20"): Promise<Favorite[]> {
     const response = await fetch(
-      `https://api.mangadex.org/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(query)}&limit=${limit}`,
+      `https://api.mangadex.org/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(
+        query
+      )}&limit=${limit}`,
       {
-        method: 'GET',
-      },
+        method: "GET",
+      }
     );
     if (!response || !response.ok) {
       throw new Error(`Failed to search ${query} ${response.status}`);
@@ -16,9 +28,9 @@ export class MangaDexDl implements MangaDl {
     const responseJson = await response.json();
     const listMangas: Favorite[] = [];
     for (const manga of await responseJson.data) {
-      let idFilename = '';
+      let idFilename = "";
       for (const type of manga.relationships) {
-        if (type.type === 'cover_art') {
+        if (type.type === "cover_art") {
           idFilename = type.attributes.fileName;
         }
       }
@@ -32,13 +44,17 @@ export class MangaDexDl implements MangaDl {
           name: titleName,
           folder_name: encodeURIComponent(titleName),
           link: `https://mangadex.org/title/${manga.id}`,
-          extra_name: manga.attributes.altTitles?.length 
-          ? Object.values(manga.attributes.altTitles[Math.floor(Math.random() * manga.attributes.altTitles.length)])[0] ?? ''
-          : '',
+          extra_name: manga.attributes.altTitles?.length
+            ? Object.values(
+                manga.attributes.altTitles[
+                  Math.floor(Math.random() * manga.attributes.altTitles.length)
+                ]
+              )[0] ?? ""
+            : "",
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
-          source: 'MangaDex',
-        }),
+          source: "MangaDex",
+        })
       );
     }
     return listMangas;
@@ -61,8 +77,8 @@ export class MangaDexDl implements MangaDl {
 
   async getChapters(
     mangaId: string,
-    language = 'en',
-    limit = 500,
+    language = "en",
+    limit = 500
   ): Promise<ChaptersResponse> {
     let offset = 0;
     const chaptersList: any[] = [];
@@ -70,8 +86,8 @@ export class MangaDexDl implements MangaDl {
       const response = await fetch(
         `https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`,
         {
-          method: 'GET',
-        },
+          method: "GET",
+        }
       );
       const responseJson = await response.json();
       if (!response || !response.ok || responseJson.data.length === 0) {
@@ -84,24 +100,21 @@ export class MangaDexDl implements MangaDl {
       offset += limit;
     }
 
-    const formattedList = chaptersList.reduce(
-      (acc, chapter) => {
-        const language = chapter.attributes.translatedLanguage;
-        const formattedChapter = new Chapter(
-          chapter.attributes.chapter,
-          chapter.attributes.title,
-          chapter.id,
-          'MangaDex',
-          language,
-        );
-        if (!acc[language]) {
-          acc[language] = [];
-        }
-        acc[language].push(formattedChapter);
-        return acc;
-      },
-      {} as { [key: string]: Chapter[] },
-    );
+    const formattedList = chaptersList.reduce((acc, chapter) => {
+      const language = chapter.attributes.translatedLanguage;
+      const formattedChapter = new Chapter(
+        chapter.attributes.chapter,
+        chapter.attributes.title,
+        chapter.id,
+        "MangaDex",
+        language
+      );
+      if (!acc[language]) {
+        acc[language] = [];
+      }
+      acc[language].push(formattedChapter);
+      return acc;
+    }, {} as { [key: string]: Chapter[] });
     return {
       ok: true,
       isMultipleLanguage: true,
@@ -113,17 +126,19 @@ export class MangaDexDl implements MangaDl {
     const response = await fetch(
       `https://api.mangadex.org/at-home/server/${chapterId}?forcePort443=false`,
       {
-        method: 'GET',
-      },
+        method: "GET",
+      }
     );
 
     if (response.status !== 200) {
-      throw new Error(`Failed to get chapter images ${chapterId} ${response.status}`);
+      throw new Error(
+        `Failed to get chapter images ${chapterId} ${response.status}`
+      );
     }
 
     const chapter = await response.json();
     const chapterImgs: string[] = chapter.chapter.data.map(
-      (img: string) => `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`,
+      (img: string) => `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`
     );
 
     return chapterImgs;

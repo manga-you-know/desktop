@@ -7,7 +7,8 @@
   const toast = useToast();
   const store = await load("config.json");
   const rerender = useState<number>("rerenderIndex", () => 0);
-  const isOpen = useState<boolean>("isSearchOpen", () => false);
+  const isSearchOpen = useState<boolean>("isSearchOpen", () => false);
+  const isAddOpen = useState<boolean>("isAddOpen", () => false);
   const ultraFavorites = useState<Favorite[]>("ultraFavorites", () => []);
   const sourceSearch = useState<string>("sourceSearch", () => MANGASOURCES[0]);
   const isModalOpen = ref(false);
@@ -83,13 +84,22 @@
       </div>
       <div class="m-5 gap-1 flex">
         <div>
+          <UTooltip text="Add manga" :kbds="['Ctrl', 'O']">
+            <UButton
+              size="xl"
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-plus"
+              @click="isAddOpen = true"
+            />
+          </UTooltip>
           <UTooltip text="Search" :kbds="['Ctrl', 'K']">
             <UButton
               size="xl"
               color="neutral"
               variant="ghost"
               icon="i-lucide-search"
-              @click="isOpen = true"
+              @click="isSearchOpen = true"
             />
           </UTooltip>
           <UTooltip text="Refresh" :shortcuts="['Ctrl', 'R']">
@@ -105,7 +115,7 @@
         <div>
           <USelectMenu
             searchable
-            class="w-[150px]"
+            class="w-[150px] select-none"
             clear-search-on-close
             v-model="sourceSearch"
             v-on:update:model-value="
