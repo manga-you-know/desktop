@@ -1,14 +1,21 @@
-## [0.2.39](https://github.com/manga-you-know/desktop/compare/v0.2.38...v0.2.39) (2024-12-12)
+## [0.2.39](https://github.com/manga-you-know/desktop/compare/v0.2.38...v0.2.39) (2024-12-16)
 
 
 ### New Features
 
 * Add external reading options and a lot of fixes ([1a87e86](https://github.com/manga-you-know/desktop/commit/1a87e8680ea5563b334c259dcf7fa7db2e92023c))
+* opening the next chapter in the ultrafaorite card ([29ec5d2](https://github.com/manga-you-know/desktop/commit/29ec5d2daef3626ab110c321c4c68a961b0e53f6))
 
 
 ### Bug Fixes
 
+* Reader not found chapters and stuck in the reader ([9221edf](https://github.com/manga-you-know/desktop/commit/9221edff5643c7017862ffa352ecdaa20508872b))
 * version not showing ([a613418](https://github.com/manga-you-know/desktop/commit/a613418ff1983d89fb971463bf7bb7b34bd78ca2))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.2.39 [skip ci] ([84ac256](https://github.com/manga-you-know/desktop/commit/84ac256585ec5b4bd43f33ce4198806c44ab192b))
 
 ## [0.2.38](https://github.com/manga-you-know/desktop/compare/v0.2.37...v0.2.38) (2024-12-05)
 
