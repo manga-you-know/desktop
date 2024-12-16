@@ -25,6 +25,9 @@
   const isLoading = ref(false);
   const chaptersToRead = ref();
   const chaptersReaded = ref();
+  const nextChapter = ref<Chapter>();
+  const allChapters = ref<Chapter[]>([]);
+  const globalChapters = useState<Chapter[]>("chapters");
   onMounted(async () => {
     isLoading.value = true;
     const readeds = await ReadedRepository.getReadeds(favorite);
@@ -48,6 +51,9 @@
     }
     if (listChapters.length > 0) {
       listChapters.reverse();
+      nextChapter.value = listChapters[0];
+      //@ts-ignore
+      allChapters.value = chapters.chapters;
       ultraChapters.value[favorite.id ?? ""] = {
         chapters: listChapters,
         //@ts-ignore
@@ -104,6 +110,17 @@
     favoriteOpen.value = favorite;
     isFavoriteOpen.value = true;
   }
+  function openNextChapter() {
+    if (chaptersToRead.value === "All readed" || isLoading.value) {
+      openFavorite();
+      return;
+    }
+    globalChapters.value = allChapters.value;
+    navigateTo(
+      //@ts-ignore
+      `/reader/${favorite.id}/${allChapters.value.indexOf(nextChapter.value)}`
+    );
+  }
 </script>
 
 <template>
@@ -111,7 +128,7 @@
     <div>
       <div
         class="relative bg-gray-900 rounded-xl h-[280px] w-40 flex flex-col !p-0 items-center hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-[1.08] hover:z-10 border border-transparent hover:border-white hover:border-2"
-        @click="openFavorite"
+        @click="openNextChapter"
       >
         <UTooltip
           :prevent="favorite.name.length < 17"
@@ -143,6 +160,7 @@
           <UButton
             size="xl"
             @click="openFavorite"
+            @click.stop
             color="neutral"
             variant="ghost"
             icon="heroicons:book-open-solid"

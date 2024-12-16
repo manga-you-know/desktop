@@ -107,7 +107,7 @@
               size="xl"
               color="neutral"
               variant="ghost"
-              icon="heroicons:arrow-path-solid"
+              icon="i-lucide-refresh-ccw"
               @click="rerender++"
             />
           </UTooltip>
@@ -128,7 +128,7 @@
       </div>
     </div>
     <div
-      class="h-[calc(100vh-4rem)] w-full pb-5 flex flex-row flex-wrap gap-2 overflow-y-auto overflow-x-hidden"
+      class="h-[calc(100vh-4rem)] w-full scroll-smooth pb-5 flex flex-row flex-wrap gap-x-18 gap-y-2 overflow-y-auto overflow-x-hidden"
     >
       <div v-for="favorite in ultraFavorites" :key="favorite.name">
         <UltraFavoriteCard :favorite="favorite" />
