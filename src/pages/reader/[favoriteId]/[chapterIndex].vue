@@ -14,7 +14,6 @@
   let data = undefined;
   if (mode === "external") {
     data = await invoke("get_data", { key: key });
-    console.log(data);
   }
   const toast = useToast();
   const window = getCurrentWindow();
@@ -25,7 +24,16 @@
   const pages = ref<string[]>([]);
   const favorite = await FavoriteRepository.getFavorite(favoriteId);
   //@ts-ignore
-  const chapters = useState<Chapter[]>("chapters", () => data.chapters);
+  const chapters = useState<Chapter[]>("chapters");
+  if (chapters.value === undefined) {
+    if (data !== undefined) {
+      //@ts-ignore
+      chapters.value = data.chapters;
+    }
+    await navigateTo("/");
+    await window.setFullscreen(false);
+    throw new Error("chapters not found");
+  }
   const chapter = ref<Chapter>(chapters.value[Number(chapterIndex)]);
   const currentlyCount = useState<number>("currentlyCount", () => 1);
   const totalPage = useState<number>("totalPage");

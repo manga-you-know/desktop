@@ -12,7 +12,7 @@
   "dependencies": {
     "@nuxt/icon": "^1.7.2",
     "@nuxt/image": "^1.8.1",
-    "@nuxt/ui": "^3.0.0-alpha.9",
+    "@nuxt/ui": "^3.0.0-alpha.10",
     "@tauri-apps/api": "2.0.3",
     "@tauri-apps/plugin-clipboard-manager": "^2.0.0",
     "@tauri-apps/plugin-dialog": "~2",
