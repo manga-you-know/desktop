@@ -1,5 +1,5 @@
-import { FavoriteRepository, ReadedRepository } from "~/repositories";
-import type { Chapter, Favorite, Readed } from "~/models";
+import { FavoriteRepository, ReadedRepository } from "@/repositories";
+import type { Chapter, Favorite, Readed } from "@/models";
 
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(

@@ -1,8 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import type { ChaptersResponse, MangaDl } from "@/interfaces";
+import { Chapter, Favorite } from "@/models";
 
 export class MangaSeeDl implements MangaDl {
   baseUrl = "https://mangasee123.com";

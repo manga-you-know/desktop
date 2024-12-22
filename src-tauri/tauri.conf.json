@@ -4,10 +4,10 @@
   "version": "0.2.39",
   "identifier": "com.mangayouknow.dev",
   "build": {
-    "frontendDist": "../.output/public",
-    "devUrl": "http://localhost:3050",
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:5173",
     "beforeDevCommand": "bun dev",
-    "beforeBuildCommand": "bun generate"
+    "beforeBuildCommand": "bun build"
   },
   "app": {
     "windows": [
@@ -24,7 +24,11 @@
       }
     ],
     "security": {
-      "csp": "default-src ‘self’  connect-src ipc : http://ipc.localhost ; media-src stream : http://stream.localhost asset : http://asset.localhost"
+      "csp": "http://asset.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$DESKTOP/series/**"]
+      }
     }
   },
   "bundle": {

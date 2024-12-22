@@ -1,6 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import type { ChaptersResponse, MangaDl } from "@/interfaces";
+import { Chapter, Favorite } from "@/models";
 
 export class MangaDexDl implements MangaDl {
   async getManga(url: string): Promise<Favorite> {
@@ -45,11 +45,11 @@ export class MangaDexDl implements MangaDl {
           folder_name: encodeURIComponent(titleName),
           link: `https://mangadex.org/title/${manga.id}`,
           extra_name: manga.attributes.altTitles?.length
-            ? Object.values(
+            ? (Object.values(
                 manga.attributes.altTitles[
                   Math.floor(Math.random() * manga.attributes.altTitles.length)
                 ]
-              )[0] ?? ""
+              )[0] ?? "")
             : "",
           description: manga.attributes.description.en,
           cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
@@ -100,21 +100,24 @@ export class MangaDexDl implements MangaDl {
       offset += limit;
     }
 
-    const formattedList = chaptersList.reduce((acc, chapter) => {
-      const language = chapter.attributes.translatedLanguage;
-      const formattedChapter = new Chapter(
-        chapter.attributes.chapter,
-        chapter.attributes.title,
-        chapter.id,
-        "MangaDex",
-        language
-      );
-      if (!acc[language]) {
-        acc[language] = [];
-      }
-      acc[language].push(formattedChapter);
-      return acc;
-    }, {} as { [key: string]: Chapter[] });
+    const formattedList = chaptersList.reduce(
+      (acc, chapter) => {
+        const language = chapter.attributes.translatedLanguage;
+        const formattedChapter = new Chapter(
+          chapter.attributes.chapter,
+          chapter.attributes.title,
+          chapter.id,
+          "MangaDex",
+          language
+        );
+        if (!acc[language]) {
+          acc[language] = [];
+        }
+        acc[language].push(formattedChapter);
+        return acc;
+      },
+      {} as { [key: string]: Chapter[] }
+    );
     return {
       ok: true,
       isMultipleLanguage: true,

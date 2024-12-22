@@ -6,11 +6,10 @@ import {
   TCBScansDl,
   MangaPillDl,
   TaosectDl,
-} from "~/downloaders/manga";
-import type { AnimeDl, ChaptersResponse, MangaDl } from "~/interfaces";
-import type { Chapter, Favorite } from "~/models";
-import { memoizeExpiring } from "~/utils/memoizedWithTime";
-import type { Episode } from "../models/_episode";
+} from "@/downloaders/manga";
+import type { AnimeDl, ChaptersResponse, MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Episode } from "@/models";
+import { memoizeExpiring } from "@/utils/memoizedWithTime";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};

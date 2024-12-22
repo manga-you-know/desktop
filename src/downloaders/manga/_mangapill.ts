@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Favorite, Chapter } from "~/models";
+import type { ChaptersResponse, MangaDl } from "@/interfaces";
+import { Favorite, Chapter } from "@/models";
 
 export class MangaPillDl implements MangaDl {
   baseUrl = "https://mangapill.com";

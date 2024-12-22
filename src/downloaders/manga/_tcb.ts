@@ -1,8 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import { memoize } from "lodash";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import type { ChaptersResponse, MangaDl } from "@/interfaces";
+import { Chapter, Favorite } from "@/models";
 
 export class TCBScansDl implements MangaDl {
   baseUrl = "https://tcbscans.me/";
