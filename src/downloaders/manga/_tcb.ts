@@ -37,7 +37,11 @@ export class TCBScansDl implements MangaDl {
     this.getMangas = memoize(this.getMangas);
   }
 
-  async getManga(url: string): Promise<Favorite> {
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
     return new Favorite({
       name: "",
       folder_name: "",

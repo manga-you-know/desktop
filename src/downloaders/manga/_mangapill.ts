@@ -23,7 +23,11 @@ export class MangaPillDl implements MangaDl {
     TE: "trailers",
   };
 
-  async getManga(url: string): Promise<Favorite> {
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
     const response = await fetch(url, { headers: this.headers });
     if (response.status !== 200) {
       throw new Error(`Failed to found manga in url: ${url}`);

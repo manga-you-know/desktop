@@ -3,6 +3,8 @@ export * as AlertDialog from "./ui/alert-dialog";
 export * as Dialog from "./ui/dialog";
 export * as Pagination from "./ui/pagination";
 export * as Tooltip from "./ui/tooltip";
+export * as Popover from "./ui/popover";
+export * as HoverCard from "./ui/hover-card";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Checkbox } from "./ui/checkbox";

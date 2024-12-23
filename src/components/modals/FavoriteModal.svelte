@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import {
     Dialog,
@@ -8,12 +9,17 @@
     Separator,
   } from "@/lib/components";
   import { ChapterButton } from "@/components";
-  import { dlManager, chapters, readeds } from "@/store";
+  import { downloadManager, chapters, readeds } from "@/store";
   import { ReadedRepository } from "@/repositories";
   import type { Favorite, Chapter } from "@/models";
+  import Badge from "@/lib/components/ui/badge/badge.svelte";
 
-  const dl = dlManager();
-
+  let searchTerm = $state("");
+  let displayedChapters = $derived(
+    $chapters.filter((chapter) =>
+      chapter.number.toString().includes(searchTerm)
+    )
+  );
   interface Props {
     favorite: Favorite;
     open: boolean;
@@ -29,7 +35,10 @@
     if (open) {
       (async () => {
         chapters.set([]);
-        const result = await dl.getChapters(favorite);
+        const result = await $downloadManager.getChapters(favorite);
+        const newReadeds = await ReadedRepository.getReadeds(favorite);
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        readeds.set(newReadeds);
         //@ts-ignore
         chapters.set(result.chapters || []);
       })();
@@ -65,16 +74,20 @@
       </div>
       <div class="w-1/2">
         <div class="w-48 flex flex-col gap-1">
-          <Input placeholder="Chapter..." />
+          <Input placeholder="Chapter..." bind:value={searchTerm} />
           <Separator />
           <ScrollArea class="h-72 w-48 p-1 rounded-md border">
-            {#each $chapters as chapter}
+            {#each displayedChapters as chapter, i}
               <ChapterButton
                 {chapter}
                 isDownloaded={false}
-                isReaded={false}
+                isReaded={$readeds.find(
+                  (r) =>
+                    r.chapter_id === chapter.chapter_id &&
+                    r.language === chapter.language
+                ) !== undefined}
                 onclick={() => {
-                  console.log(chapter.number);
+                  goto(`/reader/${favorite.id}/${i}`);
                 }}
                 ondownloadclick={(e: Event) => {
                   e.stopPropagation();
@@ -85,6 +98,11 @@
                 }}
               />
             {/each}
+            {#if displayedChapters.length === 0}
+              <Badge class="w-full h-6 flex justify-center" variant="outline"
+                >No chapters found</Badge
+              >
+            {/if}
           </ScrollArea>
         </div>
       </div>

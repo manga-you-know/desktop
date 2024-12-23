@@ -26,12 +26,20 @@
   onclick={() => (isOpen = true)}
 >
   <img
+    class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[17px] object-contain rounded-b-md !bg-gray-600"
     src={favorite.cover}
     alt={favorite.name}
-    class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[17px] object-contain rounded-b-md !bg-gray-500"
+    onerror={() => {
+      const coverElement = document.getElementById(
+        favorite.id?.toString() || ""
+      );
+      if (coverElement instanceof HTMLImageElement) {
+        coverElement.src = "/myk.png";
+      }
+    }}
   />
   <div class="w-full h-full fixed flex flex-col justify-between items-center">
-    <Badge class="w-40 flex- justify-center rounded-xl" variant="secondary">
+    <Badge class="w-40 flex justify-center rounded-xl" variant="secondary">
       {favorite.name.length > 16
         ? favorite.name.substring(0, 16) + "..."
         : favorite.name}</Badge
@@ -53,7 +61,7 @@
           <Icon icon="lucide:book-open-text" class="w-4 h-4" />
         </Button>
         <Button
-          class="rounded-none !m-0"
+          class="rounded-none !mx-[-0.7px]"
           variant="secondary"
           size="sm"
           tabindex={-1}

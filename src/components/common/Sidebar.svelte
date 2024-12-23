@@ -7,14 +7,14 @@
 <ul class="w-28 space-y-1 fixed m-1">
   <li class="pt-10">
     <button
-      on:click={() => goto("/main/home")}
+      on:click={() => goto("/home")}
       class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/main/home"}
-      class:!text-gray-200={page.url.pathname === "/main/home"}
+      class:!bg-gray-800={page.url.pathname === "/home"}
+      class:!text-gray-200={page.url.pathname === "/home"}
     >
       <Icon
         class="w-4 h-4"
-        icon={page.url.pathname === "/main/home"
+        icon={page.url.pathname === "/home"
           ? "mingcute:search-3-fill"
           : "mingcute:search-3-line"}
       />
@@ -23,15 +23,15 @@
   </li>
   <li>
     <button
-      on:click={() => goto("/main/favorites")}
+      on:click={() => goto("/favorites")}
       class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/main/favorites"}
-      class:!text-gray-200={page.url.pathname === "/main/favorites"}
+      class:!bg-gray-800={page.url.pathname === "/favorites"}
+      class:!text-gray-200={page.url.pathname === "/favorites"}
     >
       <div class="flex items-center gap-2">
         <Icon
           class="w-4 h-4"
-          icon={page.url.pathname === "/main/favorites"
+          icon={page.url.pathname === "/favorites"
             ? "heroicons:star-solid"
             : "heroicons:star"}
         />
@@ -41,15 +41,15 @@
   </li>
   <li>
     <button
-      on:click={() => goto("/main/library")}
+      on:click={() => goto("/library")}
       class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/main/library"}
-      class:!text-gray-200={page.url.pathname === "/main/library"}
+      class:!bg-gray-800={page.url.pathname === "/library"}
+      class:!text-gray-200={page.url.pathname === "/library"}
     >
       <div class="flex items-center gap-2">
         <Icon
           class="w-4 h-4"
-          icon={page.url.pathname === "/main/library"
+          icon={page.url.pathname === "/library"
             ? "solar:book-2-bold"
             : "solar:book-2-outline"}
         />
@@ -60,14 +60,14 @@
 
   <li>
     <button
-      on:click={() => goto("/main/settings")}
+      on:click={() => goto("/settings")}
       class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/main/settings"}
-      class:!text-gray-200={page.url.pathname === "/main/settings"}
+      class:!bg-gray-800={page.url.pathname === "/settings"}
+      class:!text-gray-200={page.url.pathname === "/settings"}
     >
       <Icon
         class="w-4 h-4"
-        icon={page.url.pathname === "/main/settings"
+        icon={page.url.pathname === "/settings"
           ? "heroicons:cog-6-tooth-solid"
           : "heroicons:cog-6-tooth"}
       />

@@ -35,6 +35,8 @@ export class DownloadManager {
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getChapterImages = memoize(this.getChapterImages);
     this.getEpisodeUrls = memoize(this.getEpisodeUrls);
+    this.getMangaById = memoize(this.getMangaById);
+    this.getMangaByUrl = memoize(this.getMangaByUrl);
   }
 
   getMangaSource(source: string): MangaDl {
@@ -45,9 +47,14 @@ export class DownloadManager {
     return this.animeSources[source];
   }
 
-  async getManga(url: string, source: string): Promise<Favorite> {
+  async getMangaByUrl(url: string, source: string): Promise<Favorite> {
     const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
-    return await sourceDl.getManga(url);
+    return await sourceDl.getMangaByUrl(url);
+  }
+
+  async getMangaById(id: string, source: string): Promise<Favorite> {
+    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    return await sourceDl.getMangaById(id);
   }
 
   async search(query: string, source: string): Promise<Favorite[]> {

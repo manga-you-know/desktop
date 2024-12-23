@@ -1,4 +1,4 @@
-import type { Chapter, Episode, Favorite } from '~/models';
+import type { Chapter, Episode, Favorite } from "@/models";
 
 export interface AnimeDl {
   search(query: string): Promise<Favorite[]>;

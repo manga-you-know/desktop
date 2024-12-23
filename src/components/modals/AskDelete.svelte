@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { AlertDialog, Button } from "@/lib/components";
-  import { favorites } from "@/store";
+  import { libraryFavorites } from "@/store";
   import { FavoriteRepository } from "@/repositories";
   import { Favorite } from "@/models";
 
@@ -30,7 +30,7 @@
         onclick={async () => {
           await FavoriteRepository.deleteFavorite(favorite);
           const newFavorites = await FavoriteRepository.getFavorites();
-          favorites.set(newFavorites);
+          libraryFavorites.set(newFavorites);
           open = false;
         }}>Delete</Button
       >

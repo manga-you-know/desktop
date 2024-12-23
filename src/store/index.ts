@@ -1,9 +1,9 @@
 import { writable, readable, get } from "svelte/store";
 import { DownloadManager } from "@/managers";
-import type { Favorite, Chapter, Readed } from "@/models";
+import { Favorite, type Chapter, type Readed } from "@/models";
 
-const downloadManager = readable<DownloadManager>(new DownloadManager());
-export const dlManager = () => get(downloadManager);
-export const favorites = writable<Favorite[]>([]);
+export const downloadManager = readable<DownloadManager>(new DownloadManager());
+export const libraryFavorites = writable<Favorite[]>([]);
+export const searchTerm = writable<string>("");
 export const chapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);

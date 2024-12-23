@@ -2,6 +2,8 @@
 export { default as Sidebar } from "./common/Sidebar.svelte";
 // Buttons
 export { default as ChapterButton } from "./buttons/ChapterButton.svelte";
+// Inputs
+export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 // Cards
 export { default as FavoriteCard } from "./cards/FavoriteCard.svelte";
 export { default as UltraFavoriteCard } from "./cards/UltraFavoriteCard.svelte";

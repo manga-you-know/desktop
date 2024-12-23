@@ -1,7 +1,9 @@
 import Database from "@tauri-apps/plugin-sql";
-import { DATABASE_NAME } from "../constants";
+import { DATABASE_NAME } from "@/constants";
+import { searchTerm } from "@/store";
 // import { MarkRepository } from "../repositories";
-import type { Favorite, Mark, User } from "../models";
+import type { Favorite, Mark, User } from "@/models";
+import { get } from "svelte/store";
 
 export async function createFavorite(favorite: Favorite): Promise<void> {
   const user = {
@@ -122,25 +124,20 @@ export async function getFavorites(): Promise<Favorite[]> {
     password: "",
     is_authenticated: true,
   };
-  // const favoriteQuery = useState<string>("favoriteQuery", () => "");
-  // const sourceQuery = useState<string>("sourceQuery", () => "-");
-  // const currentlyMark = useState<string>("mark");
-  // const order = useState<{ type: string; icon: string }>("order");
-  // const isAsc = useState<boolean>("isAsc");
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-  // let query = "SELECT * FROM favorite WHERE user_id = ?";
-  // const params: (string | number | boolean)[] = [user.value.id ?? 0];
-
+  let query = "SELECT * FROM favorite WHERE user_id = ?";
+  const params: (string | number | boolean)[] = [user.id ?? 0];
+  const favoriteQuery = get(searchTerm);
   // if (sourceQuery.value !== "-") {
   //   query += " AND source = ?";
   //   params.push(sourceQuery.value);
   // }
 
-  // if (favoriteQuery.value !== "") {
-  //   query +=
-  //     " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
-  //   params.push(favoriteQuery.value, favoriteQuery.value);
-  // }
+  if (favoriteQuery !== "") {
+    query +=
+      " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
+    params.push(favoriteQuery, favoriteQuery);
+  }
 
   // if (currentlyMark.value !== "-") {
   //   const markId = await MarkRepository.getMarkId(currentlyMark.value);
@@ -152,8 +149,7 @@ export async function getFavorites(): Promise<Favorite[]> {
   // query += ` ORDER BY ${order.value.type} ${isAsc.value ? " ASC" : " DESC"}`;
 
   try {
-    // const favorites: Favorite[] = await db.select(query, params);
-    const favorites: Favorite[] = await db.select("SELECT * FROM favorite");
+    const favorites: Favorite[] = await db.select(query, params);
     return favorites;
   } catch (error) {
     console.log(error);
@@ -164,8 +160,19 @@ export async function getFavorites(): Promise<Favorite[]> {
 }
 
 export async function getRawFavorites(): Promise<Favorite[]> {
+  const user = {
+    id: 1,
+    icon: "",
+    username: "",
+    email: "",
+    password: "",
+    is_authenticated: true,
+  };
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-  const favorites: Favorite[] = await db.select("SELECT * FROM favorite");
+  const favorites: Favorite[] = await db.select(
+    "SELECT * FROM favorite WHERE user_id = ?",
+    [user.id]
+  );
   return favorites;
 }
 

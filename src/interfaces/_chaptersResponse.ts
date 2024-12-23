@@ -1,4 +1,4 @@
-import type { Chapter } from '~/models';
+import type { Chapter } from "@/models";
 
 export interface ChaptersResponse {
   ok: boolean;

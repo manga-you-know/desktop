@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
+import * as cheerio from "cheerio";
 import type { ChaptersResponse, MangaDl } from "@/interfaces";
 import { Chapter, Favorite } from "@/models";
 
@@ -26,7 +27,34 @@ export class MangaSeeDl implements MangaDl {
     this.getMangas = memoize(this.getMangas);
   }
 
-  async getManga(url: string): Promise<Favorite> {
+  async getMangaById(id: string): Promise<Favorite> {
+    const response = await fetch(`${this.baseUrl}/manga/${id}`, {
+      headers: this.headers,
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to get manga ${id} ${response.status}`);
+    }
+    const text = await response.text();
+    const $ = cheerio.load(text);
+    const ul = $("ul.list-group.list-group-flush");
+    const name = $(ul).find("h1").text();
+    const description = $(ul).find("div.top-5.Content").text();
+    const author = $(ul).find("a[href^='/search/?author']").text();
+    return new Favorite({
+      name: name,
+      folder_name: name,
+      cover: `https://temp.compsci88.com/cover/${id}.jpg`,
+      source: "MangaSee",
+      source_id: id,
+      extra_name: "",
+      link: `${this.baseUrl}/manga/${id}`,
+      grade: 0,
+      author: author,
+      description: description,
+    });
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
     return new Favorite({
       name: "",
       folder_name: "",

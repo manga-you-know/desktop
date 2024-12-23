@@ -1,28 +1,34 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Pagination } from "@/lib/components";
-  import { FavoriteCard } from "@/components";
+  import { Pagination, Button, Badge, Input } from "@/lib/components";
+  import { FavoriteCard, LibrarySearch } from "@/components";
   import { FavoriteRepository } from "@/repositories";
-  import { favorites } from "@/store";
+  import { libraryFavorites, searchTerm } from "@/store";
   import type { Favorite } from "@/models";
-
   let favoriteDiv: HTMLDivElement;
   let page = $state(1);
   let perPage = 21;
-  const count = $derived($favorites.length);
+  const count = $derived($libraryFavorites.length);
   let displayedFavorites: Favorite[] = $derived(
-    $favorites.slice((page - 1) * perPage, page * perPage)
+    $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
+  searchTerm.subscribe((_) => {
+    page = 1;
+  });
+
   const siblingCount = 1;
   onMount(async () => {
     const newFavorites = await FavoriteRepository.getFavorites();
-    favorites.set(newFavorites);
+    libraryFavorites.set(newFavorites);
   });
 </script>
 
 <div class="p-1 overflow-x-hidden overflow-y-hidden h-screen flex flex-col">
-  <div class="h-14 flex relative top-0">
-    <h1 class="text-white">fodas</h1>
+  <div class="w-full h-14 p-2 gap-2 flex items-center relative top-0">
+    <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="outline"
+      >{count}</Badge
+    >
+    <LibrarySearch />
   </div>
   <div
     bind:this={favoriteDiv}
@@ -33,7 +39,7 @@
     {/each}
   </div>
 
-  {#if $favorites.length > perPage}
+  {#if $libraryFavorites.length > perPage}
     <Pagination.Root
       class="my-2"
       {count}

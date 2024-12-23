@@ -24,7 +24,11 @@ export class MangaReaderToDl implements MangaDl {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
   };
 
-  async getManga(url: string): Promise<Favorite> {
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
     return new Favorite({
       name: "",
       folder_name: "",

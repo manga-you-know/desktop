@@ -3,7 +3,10 @@ import type { ChaptersResponse, MangaDl } from "@/interfaces";
 import { Chapter, Favorite } from "@/models";
 
 export class MangaDexDl implements MangaDl {
-  async getManga(url: string): Promise<Favorite> {
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+  async getMangaByUrl(url: string): Promise<Favorite> {
     return new Favorite({
       name: "",
       folder_name: "",
@@ -44,6 +47,7 @@ export class MangaDexDl implements MangaDl {
           name: titleName,
           folder_name: encodeURIComponent(titleName),
           link: `https://mangadex.org/title/${manga.id}`,
+          //@ts-ignore
           extra_name: manga.attributes.altTitles?.length
             ? (Object.values(
                 manga.attributes.altTitles[

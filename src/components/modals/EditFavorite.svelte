@@ -3,8 +3,8 @@
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { Dialog, Button, Input } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
-  import { favorites } from "@/store";
-  import type { Favorite } from "@/models";
+  import { libraryFavorites, downloadManager } from "@/store";
+  import { Favorite } from "@/models";
   import Icon from "@iconify/svelte";
 
   interface Props {
@@ -15,6 +15,8 @@
   let { favorite, open = $bindable(false) }: Props = $props();
   let name = $state(favorite.name);
   let image = $state(favorite.cover);
+  let isRefreshing = $state(false);
+
   async function pickImage() {
     const file = await openFile({
       title: "Select a cover",
@@ -32,14 +34,36 @@
     }
   }
 
+  async function refreshInfo() {
+    isRefreshing = true;
+    const manga = await $downloadManager.getMangaById(
+      favorite.source_id,
+      favorite.source
+    );
+    console.log(manga);
+    name = manga.name;
+    image = manga.cover;
+    favorite.name = name;
+    favorite.cover = image;
+    favorite.description = manga.description;
+    favorite.author = manga.author;
+    favorite.link = manga.link;
+    isRefreshing = false;
+  }
+
   async function save() {
     favorite.name = name;
     favorite.cover = image;
     await FavoriteRepository.updateFavorite(favorite);
     const newFavorites = await FavoriteRepository.getFavorites();
-    favorites.set(newFavorites);
+    libraryFavorites.set(newFavorites);
     open = false;
   }
+
+  $effect(() => {
+    name = favorite.name;
+    image = favorite.cover;
+  });
 </script>
 
 <Dialog.Root bind:open>
@@ -49,9 +73,9 @@
       <Dialog.Description
         >Change your favorites attributes and save it.</Dialog.Description
       >
-      <Input bind:value={name} />
+      <Input id={`name-${favorite.id}`} bind:value={name} />
       <div class="flex gap-2">
-        <Input bind:value={image} />
+        <Input id={`image-${favorite.id}`} bind:value={image} />
         <Button
           class="w-9 h-9"
           variant="outline"
@@ -63,6 +87,9 @@
       </div>
     </Dialog.Header>
     <Dialog.Footer>
+      <Button effect="ringHover" disabled={isRefreshing} onclick={refreshInfo}>
+        <Icon icon="lucide:refresh-ccw" />
+      </Button>
       <Button effect="ringHover" onclick={save}>
         <Icon icon="lucide:check" />Confirm
       </Button>
