@@ -1,3 +1,5 @@
+import type { Command } from "bits-ui";
+
 // complex ui
 export * as AlertDialog from "./ui/alert-dialog";
 export * as Dialog from "./ui/dialog";
@@ -5,8 +7,13 @@ export * as Pagination from "./ui/pagination";
 export * as Tooltip from "./ui/tooltip";
 export * as Popover from "./ui/popover";
 export * as HoverCard from "./ui/hover-card";
+export * as Carousel from "./ui/carousel";
+export * as Sidebar from "./ui/sidebar";
+export * as Collapsible from "./ui/collapsible";
+export * as Command from "./ui/command";
 //components
 export { Button } from "./ui/enhanced-button";
+export { Label } from "./ui/label";
 export { Checkbox } from "./ui/checkbox";
 export { Input } from "./ui/input";
 export { Select } from "./ui/select";

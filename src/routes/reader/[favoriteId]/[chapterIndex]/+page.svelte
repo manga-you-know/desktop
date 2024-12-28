@@ -18,12 +18,11 @@
   let images: string[] = $state([]);
   let currentlyCount = $state(1);
   let totalPage = $state(0);
-  let isTheLastChapter = Number(chapterIndex) === 0;
-  let isTheFirstChapter = Number(chapterIndex) === $chapters.length - 1;
+  let isTheLastChapter = $state(Number(chapterIndex) === 0);
+  let isTheFirstChapter = $state(Number(chapterIndex) === $chapters.length - 1);
   let currentlyImage = $state("/myk.png");
   const currentWindow = getCurrentWindow();
   onMount(async () => {
-    console.log("on mount");
     currentWindow.setFullscreen(true);
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     const chapterImages = await $downloadManager.getChapterImages(chapter);
@@ -36,9 +35,10 @@
   });
 
   afterNavigate(async () => {
-    console.log("before");
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
+    isTheFirstChapter = Number(chapterIndex) === $chapters.length - 1;
+    isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $chapters[Number(chapterIndex)];
     const chaptersImages = await $downloadManager.getChapterImages(chapter);
     images = chaptersImages;

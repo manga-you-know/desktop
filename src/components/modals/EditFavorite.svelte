@@ -16,6 +16,7 @@
   let name = $state(favorite.name);
   let image = $state(favorite.cover);
   let isRefreshing = $state(false);
+  let isRefreshed = $state(false);
 
   async function pickImage() {
     const file = await openFile({
@@ -40,7 +41,6 @@
       favorite.source_id,
       favorite.source
     );
-    console.log(manga);
     name = manga.name;
     image = manga.cover;
     favorite.name = name;
@@ -49,6 +49,7 @@
     favorite.author = manga.author;
     favorite.link = manga.link;
     isRefreshing = false;
+    isRefreshed = true;
   }
 
   async function save() {
@@ -90,7 +91,15 @@
       <Button effect="ringHover" disabled={isRefreshing} onclick={refreshInfo}>
         <Icon icon="lucide:refresh-ccw" />
       </Button>
-      <Button effect="ringHover" onclick={save}>
+      <Button
+        effect="ringHover"
+        disabled={!(
+          name !== favorite.name ||
+          image !== favorite.cover ||
+          isRefreshed
+        )}
+        onclick={save}
+      >
         <Icon icon="lucide:check" />Confirm
       </Button>
     </Dialog.Footer>

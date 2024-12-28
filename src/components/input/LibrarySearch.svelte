@@ -43,7 +43,7 @@
 </script>
 
 <Button
-  class="rounded-xl h-10 transition duration-200"
+  class="rounded-md h-10 transition duration-200"
   size="sm"
   id="button-search"
   variant="outline"

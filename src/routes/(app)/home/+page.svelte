@@ -1,14 +1,52 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { Carousel, SuggestionCard } from "@/components";
+  import { Label } from "@/lib/components";
+  import { Item } from "@/lib/components/ui/carousel";
+  import { SHOUNENS, SPORTS } from "@/constants";
   import type { Favorite } from "@/models";
   import { FavoriteRepository } from "@/repositories";
 </script>
 
-<div class="overflow-x-hidden h-screen">
-  <div class="h-14 flex relative top-0">
-    <h1 class="text-white">fodas</h1>
-  </div>
+<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
+
+<div
+  class="w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
+>
   <div
-    class="flex flex-wrap gap-3 overflow-auto h-[calc(100vh-3.5rem)] pb-5"
-  ></div>
+    class="w-full h-full flex justify-center items-center pt-[30px] gap-10 mr-20"
+  >
+    <div class="h-full mt-12 flex flex-col justify-center items-center gap-2">
+      <span class="font-[Minecraft] text-xl text-[#88105a]">
+        Welcome to MangaYouKnow!
+      </span>
+      <p class="flex flex-wrap mt-2 font-[Minecraft] text-sm text-white">
+        MangaYouKnow is a manga reader <br />that allows you to read mangas
+        <br />
+        on your computer through your<br /> favorite sites.
+      </p>
+    </div>
+    <img
+      src="/icon.png"
+      alt="MangaYouKnow logo"
+      class="w-40 h-40 rounded-[2rem] mt-10 logo-shadow"
+    />
+  </div>
+  <div class="w-full h-full mt-12">
+    <Label class="text-bold text-xl">Shounen</Label>
+    <Carousel speed={1.2}>
+      {#each Array(20).fill(SHOUNENS.flat()).flat() as suggestion}
+        <Item class="max-w-44 w-44">
+          <SuggestionCard {suggestion} />
+        </Item>
+      {/each}
+    </Carousel>
+    <Label class="text-bold text-xl">Sports</Label>
+    <Carousel reversed={true} speed={1.2}>
+      {#each Array(20).fill(SPORTS.flat()).flat() as suggestion}
+        <Item class="max-w-44 w-44">
+          <SuggestionCard {suggestion} />
+        </Item>
+      {/each}
+    </Carousel>
+  </div>
 </div>

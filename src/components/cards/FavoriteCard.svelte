@@ -1,90 +1,26 @@
 <script lang="ts">
-  import { Button, Badge, Tooltip } from "@/lib/components";
   import Icon from "@iconify/svelte";
-  import { FavoriteModal, EditFavorite, AskDelete } from "@/components";
   import type { Favorite } from "@/models";
-  import { FavoriteRepository } from "@/repositories";
-
-  interface Props {
-    favorite: Favorite;
-  }
-
-  interface Event {
-    stopPropagation: () => void;
-  }
-  let { favorite }: Props = $props();
-  let isOpen = $state(false);
-  let isEdit = $state(false);
-  let isDelete = $state(false);
+  const { favorite }: { favorite: Favorite } = $props();
 </script>
 
-<FavoriteModal {favorite} bind:open={isOpen} />
-<EditFavorite {favorite} bind:open={isEdit} />
-<AskDelete {favorite} bind:open={isDelete} />
-<button
-  class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1"
-  onclick={() => (isOpen = true)}
+<div
+  class="relative rounded-xl h-[260px] w-42 max-w-42 flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1"
 >
   <img
-    class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[17px] object-contain rounded-b-md !bg-gray-600"
     src={favorite.cover}
     alt={favorite.name}
-    onerror={() => {
-      const coverElement = document.getElementById(
-        favorite.id?.toString() || ""
-      );
-      if (coverElement instanceof HTMLImageElement) {
-        coverElement.src = "/myk.png";
-      }
-    }}
+    class="w-40 h-60 min-w-40 max-w-40 min-h-60 max-h-60 mt-3 mb-2 object-contain rounded-b-xl bg-gray-500"
   />
-  <div class="w-full h-full fixed flex flex-col justify-between items-center">
-    <Badge class="w-40 flex justify-center rounded-xl" variant="secondary">
+  <div
+    class="w-full h-full fixed flex flex-col justify-start items-center rounded-b-xl"
+  >
+    <span
+      class="text-sm mt-[-7px] font-semibold text-slate-200 hover:underline"
+    >
       {favorite.name.length > 16
         ? favorite.name.substring(0, 16) + "..."
-        : favorite.name}</Badge
-    >
-    <div
-      class="w-full h-8 flex justify-center mb-2 p-1 transform translate-y-full opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100"
-    >
-      <div class="inline-flex rounded-md shadow-sm" role="group">
-        <Button
-          class="rounded-r-none"
-          variant="secondary"
-          size="sm"
-          tabindex={-1}
-          onclick={(e: Event) => {
-            e.stopPropagation();
-            isOpen = true;
-          }}
-        >
-          <Icon icon="lucide:book-open-text" class="w-4 h-4" />
-        </Button>
-        <Button
-          class="rounded-none !mx-[-0.7px]"
-          variant="secondary"
-          size="sm"
-          tabindex={-1}
-          onclick={(e: Event) => {
-            e.stopPropagation();
-            isEdit = true;
-          }}
-        >
-          <Icon icon="lucide:square-pen" class="w-4 h-4" />
-        </Button>
-        <Button
-          class="rounded-l-none"
-          variant="secondary"
-          size="sm"
-          tabindex={-1}
-          onclick={(e: Event) => {
-            e.stopPropagation();
-            isDelete = true;
-          }}
-        >
-          <Icon icon="lucide:circle-x" class="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
+        : favorite.name}
+    </span>
   </div>
-</button>
+</div>

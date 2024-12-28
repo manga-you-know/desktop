@@ -1,77 +1,88 @@
 <script>
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { Sidebar } from "@/lib/components";
+  import { GroupContent } from "@/lib/components/ui/sidebar";
   import Icon from "@iconify/svelte";
+
+  const items = [
+    {
+      name: "Home",
+      path: "/home",
+      iconActive: "heroicons:home-20-solid",
+      icon: "heroicons:home",
+    },
+    {
+      name: "Favorites",
+      path: "/favorites",
+      iconActive: "heroicons:star-solid",
+      icon: "heroicons:star",
+    },
+    {
+      name: "Library",
+      path: "/library",
+      iconActive: "solar:book-2-bold",
+      icon: "solar:book-2-outline",
+    },
+    {
+      name: "Search",
+      path: "/search",
+      iconActive: "mingcute:search-fill",
+      icon: "mingcute:search-line",
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      iconActive: "heroicons:cog-6-tooth-solid",
+      icon: "heroicons:cog-6-tooth",
+    },
+  ];
 </script>
 
-<ul class="w-28 space-y-1 fixed m-1">
-  <li class="pt-10">
-    <button
-      on:click={() => goto("/home")}
-      class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/home"}
-      class:!text-gray-200={page.url.pathname === "/home"}
-    >
-      <Icon
-        class="w-4 h-4"
-        icon={page.url.pathname === "/home"
-          ? "mingcute:search-3-fill"
-          : "mingcute:search-3-line"}
-      />
-      <span class="text-sm font-bold"> Home </span>
-    </button>
-  </li>
-  <li>
-    <button
-      on:click={() => goto("/favorites")}
-      class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/favorites"}
-      class:!text-gray-200={page.url.pathname === "/favorites"}
-    >
-      <div class="flex items-center gap-2">
-        <Icon
-          class="w-4 h-4"
-          icon={page.url.pathname === "/favorites"
-            ? "heroicons:star-solid"
-            : "heroicons:star"}
-        />
-        <span class="text-sm font-bold"> Favorites </span>
-      </div>
-    </button>
-  </li>
-  <li>
-    <button
-      on:click={() => goto("/library")}
-      class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/library"}
-      class:!text-gray-200={page.url.pathname === "/library"}
-    >
-      <div class="flex items-center gap-2">
-        <Icon
-          class="w-4 h-4"
-          icon={page.url.pathname === "/library"
-            ? "solar:book-2-bold"
-            : "solar:book-2-outline"}
-        />
-        <span class="text-sm font-bold"> Library </span>
-      </div>
-    </button>
-  </li>
+<Sidebar.Root class="!pl-0 hover:bg-sidebar" variant="inset" collapsible="icon">
+  <Sidebar.Header></Sidebar.Header>
+  <Sidebar.Content>
+    <Sidebar.Group>
+      <Sidebar.GroupContent>
+        <Sidebar.Menu>
+          {#each items as item (item.name)}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton onclick={() => goto(item.path)}>
+                <Icon
+                  icon={page.url.pathname === item.path
+                    ? item.iconActive
+                    : item.icon}
+                  class="!w-4 !h-4 "
+                />
+                <span class="text-sm"> {item.name} </span>
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          {/each}
+        </Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+  </Sidebar.Content>
+  <Sidebar.Footer>
+    <Sidebar.Trigger />
+  </Sidebar.Footer>
+  <Sidebar.Rail />
+</Sidebar.Root>
 
-  <li>
-    <button
-      on:click={() => goto("/settings")}
-      class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-      class:!bg-gray-800={page.url.pathname === "/settings"}
-      class:!text-gray-200={page.url.pathname === "/settings"}
-    >
-      <Icon
-        class="w-4 h-4"
-        icon={page.url.pathname === "/settings"
-          ? "heroicons:cog-6-tooth-solid"
-          : "heroicons:cog-6-tooth"}
-      />
-      <span class="text-sm font-bold"> Settings </span>
-    </button>
-  </li>
-</ul>
+<!-- <ul class="w-28 space-y-1 fixed m-1 pt-10">
+  {#each items as item}
+    <li>
+      <button
+        on:click={() => goto(item.path)}
+        class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
+        class:!bg-gray-800={page.url.pathname === item.path}
+        class:!text-gray-200={page.url.pathname === item.path}
+      >
+        <Icon
+          class="w-4 h-4"
+          icon={page.url.pathname === item.path ? item.iconActive : item.icon}
+        />
+        <span class="text-sm font-bold"> {item.name} </span>
+      </button>
+    </li>
+  {/each}
+</ul> -->

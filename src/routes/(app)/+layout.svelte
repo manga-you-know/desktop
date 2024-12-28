@@ -1,9 +1,14 @@
 <script>
+  import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar } from "@/components";
+  let { children } = $props();
 </script>
 
 <div class="w-screen h-screen flex select-none overflow-hidden">
-  <Sidebar />
-  <div class="w-32 min-w-32 h-screen mr-3 -z-10 bg-[#070709]"></div>
-  <slot />
+  <SidebarProv.Provider open={false}>
+    <Sidebar />
+    <SidebarProv.Inset class="p-2">
+      {@render children?.()}
+    </SidebarProv.Inset>
+  </SidebarProv.Provider>
 </div>

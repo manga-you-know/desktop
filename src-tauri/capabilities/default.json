@@ -27,6 +27,8 @@
     "core:webview:allow-webview-show",
     "core:webview:allow-webview-size",
     "core:app:default",
+    "core:path:default",
+    "shell:default",
     "sql:default",
     "sql:allow-close",
     "sql:allow-execute",
