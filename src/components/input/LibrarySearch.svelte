@@ -61,7 +61,8 @@
       bind:value={$searchTerm}
       oninput={updateFavorites}
       onfocusout={handleOut}
-      placeholder="Search"
+      placeholder="Search..."
+      autocomplete="off"
     />
   </div>
 </Button>

@@ -64,7 +64,7 @@
     "@types/lodash": "^4",
     "@types/memoizee": "^0.4.11",
     "autoprefixer": "^10.4.20",
-    "bits-ui": "^1.0.0-next.74",
+    "bits-ui": "^1.0.0-next.77",
     "conventional-changelog-conventionalcommits": "7.0.2",
     "conventional-recommended-bump": "9.0.0",
     "embla-carousel-auto-scroll": "^8.5.1",

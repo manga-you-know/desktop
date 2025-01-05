@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
-import { searchTerm } from "@/store";
+import { searchTerm, orderBy, isAscending } from "@/store";
 // import { MarkRepository } from "../repositories";
 import type { Favorite, Mark, User } from "@/models";
 import { get } from "svelte/store";
@@ -109,7 +109,6 @@ export async function getFavoriteBySource(
     [sourceId, source]
   );
   if (favorite) {
-    console.log(favorite[0]);
     return favorite[0];
   }
   throw new Error("Favorite not found");
@@ -146,7 +145,7 @@ export async function getFavorites(): Promise<Favorite[]> {
   //   params.push(markId);
   // }
 
-  // query += ` ORDER BY ${order.value.type} ${isAsc.value ? " ASC" : " DESC"}`;
+  query += ` ORDER BY ${get(orderBy)} ${get(isAscending) ? " ASC" : " DESC"}`;
 
   try {
     const favorites: Favorite[] = await db.select(query, params);

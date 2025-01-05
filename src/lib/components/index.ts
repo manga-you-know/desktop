@@ -11,12 +11,13 @@ export * as Carousel from "./ui/carousel";
 export * as Sidebar from "./ui/sidebar";
 export * as Collapsible from "./ui/collapsible";
 export * as Command from "./ui/command";
+export * as Card from "./ui/card";
+export * as Select from "./ui/select";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";
 export { Checkbox } from "./ui/checkbox";
 export { Input } from "./ui/input";
-export { Select } from "./ui/select";
 export { Switch } from "./ui/switch";
 export { Separator } from "./ui/separator";
 export { ScrollArea } from "./ui/scroll-area";

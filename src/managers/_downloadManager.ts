@@ -10,8 +10,8 @@ import {
   TaosectDl,
   MangaFireDl,
 } from "@/downloaders/manga";
-import type { AnimeDl, ChaptersResponse, MangaDl } from "@/interfaces";
-import type { Favorite, Chapter, Episode } from "@/models";
+import type { AnimeDl, MangaDl, Chapter, Language } from "@/interfaces";
+import type { Favorite, Episode } from "@/models";
 import { memoizeExpiring } from "@/utils/memoizedWithTime";
 
 export class DownloadManager {
@@ -38,21 +38,23 @@ export class DownloadManager {
 
   constructor() {
     this.mangaSources = {
+      TCB: new TCBScansDl(),
+      Taosect: new TaosectDl(),
       MangaSee: new MangaSeeDl(),
       MangaDex: new MangaDexDl(),
-      TCB: new TCBScansDl(),
-      MangaReaderTo: new MangaReaderToDl(),
-      Taosect: new TaosectDl(),
       MangaPill: new MangaPillDl(),
       MangaFire: new MangaFireDl(),
+      MangaReaderTo: new MangaReaderToDl(),
     };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
     this.getEpisodes = this.getEpisodes.bind(this);
-    this.getChapterImages = this.getChapterImages.bind(this);
     this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
+    this.getChapterImages = this.getChapterImages.bind(this);
+    this.getFavoriteLanguages = this.getFavoriteLanguages.bind(this);
 
     this.search = memoize(this.search, (query, source) => `${query}:${source}`);
+    this.getFavoriteLanguages = memoize(this.getFavoriteLanguages);
     this.getChapters = memoizeExpiring(this.getChapters, 600);
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getChapterImages = memoize(this.getChapterImages);
@@ -67,6 +69,11 @@ export class DownloadManager {
 
   getAnimeSource(source: string): AnimeDl {
     return this.animeSources[source];
+  }
+
+  isMultiLanguage(source: string): boolean {
+    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    return sourceDl.isMultiLanguage;
   }
 
   async getMangaByUrl(url: string, source: string): Promise<Favorite> {
@@ -84,9 +91,19 @@ export class DownloadManager {
     return await sourceDl.search(query);
   }
 
-  async getChapters(favorite: Favorite): Promise<ChaptersResponse> {
+  async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {
     const sourceDl = this.getMangaSource(favorite.source);
-    return await sourceDl.getChapters(favorite.source_id);
+    if (sourceDl.getFavoriteLanguages) {
+      return await sourceDl.getFavoriteLanguages(favorite.source_id);
+    }
+    throw new Error("source not multi language");
+  }
+
+  async getChapters(favorite: Favorite, language?: string): Promise<Chapter[]> {
+    const sourceDl = this.getMangaSource(favorite.source);
+    return language !== undefined
+      ? await sourceDl.getChapters(favorite.source_id, language)
+      : await sourceDl.getChapters(favorite.source_id);
   }
 
   async getEpisodes(anime_id: string, source: string): Promise<Chapter[]> {

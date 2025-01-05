@@ -1,11 +1,16 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Chapter, Favorite } from "@/models";
+import type { MangaDl, Language, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
+import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaDexDl implements MangaDl {
+  baseUrl = "https://mangadex.org";
+  apiUrl = "https://api.mangadex.org";
+  isMultiLanguage = true;
   getMangaById(id: string): Promise<Favorite> {
     throw new Error("Method not implemented.");
   }
+
   async getMangaByUrl(url: string): Promise<Favorite> {
     return new Favorite({
       name: "",
@@ -18,7 +23,7 @@ export class MangaDexDl implements MangaDl {
 
   async search(query: string, limit = "20"): Promise<Favorite[]> {
     const response = await fetch(
-      `https://api.mangadex.org/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(
+      `${this.apiUrl}/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(
         query
       )}&limit=${limit}`,
       {
@@ -64,6 +69,26 @@ export class MangaDexDl implements MangaDl {
     return listMangas;
   }
 
+  async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
+    const response = await fetch(`${this.apiUrl}/manga/${favoriteId}`, {
+      method: "GET",
+    });
+    if (!response || !response.ok) {
+      throw new Error(`Failed to get favorite languages ${favoriteId}`);
+    }
+    const responseJson = await response.json();
+    const languages: Language[] = [];
+    responseJson.data.attributes.availableTranslatedLanguages.forEach(
+      (language: string) => {
+        languages.push({
+          id: language,
+          label: LANGUAGE_LABELS[language] ?? language,
+        });
+      }
+    );
+    return languages;
+  }
+
   // async searchAuthor(entry: string, limit: number = 5): Promise<any | boolean> {
   //   const response = await fetch('https://api.mangadex.org/author', {
   //     method: 'GET',
@@ -83,15 +108,12 @@ export class MangaDexDl implements MangaDl {
     mangaId: string,
     language = "en",
     limit = 500
-  ): Promise<ChaptersResponse> {
+  ): Promise<Chapter[]> {
     let offset = 0;
     const chaptersList: any[] = [];
     while (true) {
       const response = await fetch(
-        `https://api.mangadex.org/manga/${mangaId}/feed?limit=${limit}&order[chapter]=desc&order[volume]=desc&includeExternalUrl=0&offset=${offset}`,
-        {
-          method: "GET",
-        }
+        `${this.apiUrl}/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&includeExternalUrl=0&offset=${offset}`
       );
       const responseJson = await response.json();
       if (!response || !response.ok || responseJson.data.length === 0) {
@@ -103,38 +125,21 @@ export class MangaDexDl implements MangaDl {
       }
       offset += limit;
     }
-
-    const formattedList = chaptersList.reduce(
-      (acc, chapter) => {
-        const language = chapter.attributes.translatedLanguage;
-        const formattedChapter = new Chapter(
-          chapter.attributes.chapter,
-          chapter.attributes.title,
-          chapter.id,
-          "MangaDex",
-          language
-        );
-        if (!acc[language]) {
-          acc[language] = [];
-        }
-        acc[language].push(formattedChapter);
-        return acc;
-      },
-      {} as { [key: string]: Chapter[] }
-    );
-    return {
-      ok: true,
-      isMultipleLanguage: true,
-      chapters: formattedList,
-    };
+    return chaptersList.map((chapter) => {
+      return {
+        number:
+          chapter.attributes.chapter ?? chapter.attributes.title ?? chapter.id,
+        title: chapter.attributes.title,
+        chapter_id: chapter.id,
+        source: "MangaDex",
+        language: language,
+      };
+    });
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(
-      `https://api.mangadex.org/at-home/server/${chapterId}?forcePort443=false`,
-      {
-        method: "GET",
-      }
+      `${this.apiUrl}/at-home/server/${chapterId}?forcePort443=false`
     );
 
     if (response.status !== 200) {
@@ -150,39 +155,4 @@ export class MangaDexDl implements MangaDl {
 
     return chapterImgs;
   }
-
-  //   async downloadChapter(chapterId: string): Promise<boolean> {
-  //     const urls = await this.getChapterImgs(chapterId);
-  //     if (!urls) return false;
-
-  //     const chapterInfo = await fetch(`https://api.mangadex.org/chapter/${chapterId}?includes[]=scanlation_group&includes[]=manga&includes[]=user`, {
-  //       method: 'GET',
-  //     });
-
-  //     if (!chapterInfo) return false;
-
-  //     const chapterPath = new Path(`MangaDex/${chapterInfo.data.attributes.chapter}/`);
-  //     chapterPath.mkdir({ recursive: true });
-
-  //     const hash = urls.hash;
-
-  //     const downloadMangaPage = async (url: string, path: Path) => {
-  //       const image = await fetch(url, { method: 'GET' });
-  //       if (!image) return false;
-
-  //       const file = await image.arrayBuffer();
-  //       const writer = new FileWriter(path);
-  //       await writer.write(file);
-  //     };
-
-  //     const threads = new ThreadManager();
-  //     for (const [i, image] of urls.data.entries()) {
-  //       threads.addThread(async () => {
-  //         await downloadMangaPage(`https://uploads.mangadex.org/data/${hash}/${image}`, chapterPath.join(`${i.toString().padStart(4, '0')}.png`));
-  //       });
-  //     }
-  //     threads.start();
-  //     await threads.join();
-  //     return true;
-  //   }
 }

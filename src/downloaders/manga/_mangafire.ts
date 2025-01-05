@@ -1,10 +1,12 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Favorite, Chapter } from "@/models";
+import type { MangaDl, Language, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
+import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaFireDl implements MangaDl {
   baseUrl = "https://mangafire.to";
+  isMultiLanguage = true;
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
@@ -42,35 +44,70 @@ export class MangaFireDl implements MangaDl {
     if (response.status !== 200) {
       throw new Error(`Failed to search ${response.status}`);
     }
-    const responseJson: { result: { html: string } } = await response.json();
+    const responseJson: { result: { count: number; html: string } } =
+      await response.json();
+    if (responseJson.result.count === 0) {
+      return [];
+    }
     const $ = cheerio.load(responseJson.result.html);
     const mangas: Favorite[] = [];
-    $("a").each((_, a) => {
-      const name = $(a).find("h6").text();
-      const img = $(a).find("img");
-      const link = $(a).attr("href")?.replace("/manga/", "") ?? "";
-      const splitedLink = link.split(".");
-      const sourceId = splitedLink[splitedLink.length - 1];
-      const folderName = splitedLink.slice(0, splitedLink.length - 1).join(".");
-      mangas.push(
-        new Favorite({
-          name: name,
-          folder_name: folderName,
-          cover: img.attr("src") ?? "/myk.png",
-          source: "MangaFire",
-          source_id: sourceId,
-        })
-      );
+    $("a").each((index, a) => {
+      if (index !== responseJson.result.count) {
+        const name = $(a).find("h6").text();
+        const img = $(a).find("img");
+        const link = $(a).attr("href")?.replace("/manga/", "") ?? "";
+        const splitedLink = link.split(".");
+        const folderName = splitedLink
+          .slice(0, splitedLink.length - 1)
+          .join(".");
+        mangas.push(
+          new Favorite({
+            name: name,
+            folder_name: folderName,
+            cover: img.attr("src")?.replace("@100", "") ?? "/myk.png",
+            source: "MangaFire",
+            source_id: link,
+            link: `${this.baseUrl}/manga/${link}`,
+          })
+        );
+      }
     });
     return mangas;
   }
 
+  async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
+    const response = await fetch(`${this.baseUrl}/manga/${favoriteId}`, {
+      headers: this.headers,
+    });
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to get favorite languages ${favoriteId} ${response.status}`
+      );
+    }
+    const text = await response.text();
+    const $ = cheerio.load(text);
+    const languages: Language[] = [];
+    $("div.dropdown-menu")
+      .filter((_, el) => $(el).attr("class") === "dropdown-menu")
+      .first()
+      .find("a")
+      .each((_, a) => {
+        const langID = $(a).attr("data-code")?.toLowerCase() ?? "";
+        languages.push({
+          id: langID,
+          // label: $(a).text(),
+          label: LANGUAGE_LABELS[langID] ?? $(a).attr("data-title") ?? "",
+        });
+      });
+    return languages;
+  }
+
   async getChapters(
     mangaId: string,
-    language: string = "ja"
-  ): Promise<ChaptersResponse> {
+    language: string = "en"
+  ): Promise<Chapter[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/read/${mangaId}/chapter/${language}`,
+      `${this.baseUrl}/ajax/read/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`,
       {
         headers: this.headers,
       }
@@ -88,16 +125,15 @@ export class MangaFireDl implements MangaDl {
         const uriEncodedText = title.replace(/u([\da-fA-F]{4})/g, "%$1");
         title = decodeURIComponent(uriEncodedText);
       }
-      chapters.push(
-        new Chapter(
-          $(a).attr("data-number") ?? "",
-          title,
-          $(a).attr("data-id") ?? "",
-          "MangaFire"
-        )
-      );
+      chapters.push({
+        number: $(a).attr("data-number") ?? "",
+        title: title,
+        chapter_id: $(a).attr("data-id") ?? "",
+        source: "MangaFire",
+        language: language,
+      });
     });
-    return { ok: true, chapters: chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

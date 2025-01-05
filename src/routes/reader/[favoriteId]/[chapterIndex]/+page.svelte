@@ -7,7 +7,12 @@
   import { addReadedBelow } from "@/functions";
   import { Chapter, Favorite } from "@/models";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
-  import { downloadManager, chapters, readeds } from "@/store";
+  import {
+    downloadManager,
+    chapters,
+    readeds,
+    autoEnterFullscreen,
+  } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
@@ -23,7 +28,9 @@
   let currentlyImage = $state("/myk.png");
   const currentWindow = getCurrentWindow();
   onMount(async () => {
-    currentWindow.setFullscreen(true);
+    if ($autoEnterFullscreen) {
+      currentWindow.setFullscreen(true);
+    }
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     const chapterImages = await $downloadManager.getChapterImages(chapter);
     images = chapterImages;

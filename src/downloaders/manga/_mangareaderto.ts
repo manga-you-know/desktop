@@ -1,10 +1,11 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Chapter, Favorite } from "@/models";
+import type { MangaDl, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
 
 export class MangaReaderToDl implements MangaDl {
   baseUrl = "https://mangareader.to";
+  isMultiLanguage = false;
   headers = {
     accept:
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -71,7 +72,7 @@ export class MangaReaderToDl implements MangaDl {
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string, language: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/${mangaId}`, {
       headers: this.headers,
     });
@@ -89,17 +90,15 @@ export class MangaReaderToDl implements MangaDl {
       if (!chapters[language]) {
         chapters[language] = [];
       }
-      chapters[language].push(
-        new Chapter(
-          $(li).attr("data-number") || "",
-          a.attr("title") || "",
-          id || "",
-          "MangaReaderTo",
-          language
-        )
-      );
+      chapters[language].push({
+        number: $(li).attr("data-number") || "",
+        title: a.attr("title") || "",
+        chapter_id: id || "",
+        source: "MangaReaderTo",
+        language: language,
+      });
     });
-    return { ok: true, isMultipleLanguage: true, chapters: chapters };
+    return chapters[language];
   }
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(`${this.baseUrl}/read/${chapterId}`, {

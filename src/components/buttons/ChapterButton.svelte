@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { Tooltip } from "@/components";
   import { Button } from "@/lib/components";
-  import type { Chapter } from "@/models";
+  import type { Chapter } from "@/interfaces";
 
   interface Event {
     stopPropagation: () => void;
@@ -60,7 +60,8 @@
         />
       </Button>
     </Tooltip>
-    <span class="group-hover:underline group-hover:underline-offset-4"
+    <span
+      class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start"
       >{chapter.number}</span
     >
   </div>

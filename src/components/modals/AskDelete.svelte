@@ -26,7 +26,7 @@
     <AlertDialog.Footer>
       <Button
         variant="destructive"
-        effect="shineHover"
+        effect="gooeyLeft"
         onclick={async () => {
           await FavoriteRepository.deleteFavorite(favorite);
           const newFavorites = await FavoriteRepository.getFavorites();

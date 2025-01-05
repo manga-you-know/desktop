@@ -15,13 +15,24 @@
     Button,
     Input,
     Separator,
+    Badge,
   } from "@/lib/components";
-  import { ChapterButton } from "@/components";
-  import { downloadManager, chapters, readeds } from "@/store";
+  import { ChapterButton, Language } from "@/components";
+  import {
+    downloadManager,
+    chapters,
+    readeds,
+    favoriteLanguage,
+  } from "@/store";
   import { ReadedRepository } from "@/repositories";
-  import type { Favorite, Chapter } from "@/models";
-  import Badge from "@/lib/components/ui/badge/badge.svelte";
+  import { addReadedBelow } from "@/functions";
+  import type { Favorite } from "@/models";
+  import type { Language as LanguageType, Chapter } from "@/interfaces";
+  import { MANGASOURCE_LANGUAGE } from "@/constants";
 
+  let isMulti = $state(false);
+  let selectedLanguage = $state($favoriteLanguage);
+  let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
   let displayedChapters = $derived(
@@ -39,6 +50,7 @@
   }
 
   let { favorite, open = $bindable(false) }: Props = $props();
+  let isFetching = $state(false);
   let isDownloading: { [key: string]: boolean } = $state({});
   let isDownloadingAll = $state(false);
   async function refreshDownloadeds() {
@@ -50,13 +62,23 @@
     }
   }
 
+  async function refreshReadeds() {
+    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    readeds.set(newReadeds);
+  }
   async function downloadAll() {
     isDownloadingAll = true;
     const batchSize = 5;
     let index = 0;
     const reversedChapters = $chapters.slice().reverse();
+    let chaptersToDownload: Chapter[] = [];
+    reversedChapters.forEach((chapter) => {
+      if (!downloaded.find((d) => d.name === chapter.number)) {
+        chaptersToDownload.push(chapter);
+      }
+    });
     const downloadBatch = async (): Promise<void> => {
-      const batch = reversedChapters.slice(index, index + batchSize);
+      const batch = chaptersToDownload.slice(index, index + batchSize);
       index += batchSize;
       await Promise.all(
         batch.map(async (chapter) => {
@@ -67,7 +89,7 @@
         })
       );
     };
-    while (index < reversedChapters.length) {
+    while (index < chaptersToDownload.length) {
       await downloadBatch();
     }
     isDownloadingAll = false;
@@ -75,15 +97,30 @@
 
   $effect(() => {
     if (open) {
+      isFetching = true;
       (async () => {
         chapters.set([]);
+        isMulti = $downloadManager.isMultiLanguage(favorite.source);
         await refreshDownloadeds();
-        const result = await $downloadManager.getChapters(favorite);
-        const newReadeds = await ReadedRepository.getReadeds(favorite);
-        await new Promise((resolve) => setTimeout(resolve, 10));
-        readeds.set(newReadeds);
-        //@ts-ignore
-        chapters.set(result.chapters || []);
+        if (isMulti) {
+          selectedLanguage = $favoriteLanguage;
+          languageOptions =
+            await $downloadManager.getFavoriteLanguages(favorite);
+          const result = await $downloadManager.getChapters(
+            favorite,
+            $favoriteLanguage.id
+          );
+          await refreshReadeds();
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          chapters.set(result);
+        } else {
+          selectedLanguage.label = MANGASOURCE_LANGUAGE[favorite.source];
+          const result = await $downloadManager.getChapters(favorite);
+          await refreshReadeds();
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          chapters.set(result);
+        }
+        isFetching = false;
       })();
     }
   });
@@ -108,6 +145,22 @@
           alt={favorite.name}
           class="w-40 h-70 object-contain rounded-xl !bg-gray-950"
         />
+        <Language
+          bind:selectedLanguage
+          {languageOptions}
+          onChange={async () => {
+            isFetching = true;
+            const result = await $downloadManager.getChapters(
+              favorite,
+              selectedLanguage.id
+            );
+            await refreshReadeds();
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            chapters.set(result);
+            isFetching = false;
+          }}
+          disabled={!isMulti || isFetching}
+        />
         <div class="flex gap-2">
           <Button
             class="w-20"
@@ -118,7 +171,6 @@
           >
           <Button
             class="w-20"
-            effect="hoverUnderline"
             onclick={downloadAll}
             disabled={isDownloadingAll}
           >
@@ -136,47 +188,58 @@
           <Input placeholder="Chapter..." bind:value={searchTerm} />
           <Separator />
           <ScrollArea class="h-72 w-48 p-1 rounded-md border">
-            {#each displayedChapters as chapter, i}
-              {@const isDownloaded = downloaded
-                .map((d) => d.name)
-                .includes(chapter.number)}
-              <ChapterButton
-                {chapter}
-                {isDownloaded}
-                bind:isDownloading
-                isReaded={$readeds.find(
-                  (r) =>
-                    r.chapter_id === chapter.chapter_id &&
-                    r.language === chapter.language
-                ) !== undefined}
-                onclick={() => {
-                  goto(`/reader/${favorite.id}/${i}`);
-                }}
-                ondownloadclick={async (e: Event) => {
-                  e.stopPropagation();
-                  if (!isDownloaded) {
-                    isDownloading[chapter.chapter_id] = true;
-                    await $downloadManager.downloadChapter(chapter, favorite);
-                    await refreshDownloadeds();
-                    isDownloading[chapter.chapter_id] = false;
-                  } else {
-                    const path = await join(
-                      await downloadDir(),
-                      "Mangas",
-                      favorite.folder_name,
-                      chapter.number
-                    );
-                    openPath(path);
-                  }
-                }}
-                onreadclick={(e: Event) => {
-                  e.stopPropagation();
-                }}
-              />
-            {/each}
-            {#if displayedChapters.length === 0}
-              <Badge class="w-full h-6 flex justify-center" variant="outline"
-                >No chapters found</Badge
+            {#if isFetching}
+              <div class="flex h-full w-full justify-center items-center">
+                <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5" />
+              </div>
+            {:else}
+              {#each displayedChapters as chapter, i}
+                {@const isDownloaded = downloaded
+                  .map((d) => d.name)
+                  .includes(chapter.number)}
+                {@const isReaded =
+                  $readeds.find(
+                    (r) =>
+                      r.chapter_id === chapter.chapter_id &&
+                      r.language === chapter.language
+                  ) !== undefined}
+                <ChapterButton
+                  {chapter}
+                  {isDownloaded}
+                  {isReaded}
+                  bind:isDownloading
+                  onclick={() => {
+                    goto(`/reader/${favorite.id}/${i}`);
+                  }}
+                  ondownloadclick={async (e: Event) => {
+                    e.stopPropagation();
+                    if (!isDownloaded) {
+                      isDownloading[chapter.chapter_id] = true;
+                      await $downloadManager.downloadChapter(chapter, favorite);
+                      await refreshDownloadeds();
+                      isDownloading[chapter.chapter_id] = false;
+                    } else {
+                      const path = await join(
+                        await downloadDir(),
+                        "Mangas",
+                        favorite.folder_name,
+                        chapter.number
+                      );
+                      openPath(path);
+                    }
+                  }}
+                  onreadclick={async (e: Event) => {
+                    e.stopPropagation();
+                    await addReadedBelow(chapter, $chapters, favorite);
+                    await refreshReadeds();
+                  }}
+                />
+              {/each}
+            {/if}
+            {#if displayedChapters.length === 0 && !isFetching}
+              <Badge
+                class="w-full h-10 flex justify-center text-center"
+                variant="destructive">No chapters found in this language!</Badge
               >
             {/if}
           </ScrollArea>

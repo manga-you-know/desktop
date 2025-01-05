@@ -1,10 +1,11 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Chapter, Favorite } from "@/models";
+import type { MangaDl, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
 
 export class TaosectDl implements MangaDl {
   baseUrl = "https://taosect.com";
+  isMultiLanguage = false;
   headers = {
     authority: "taosect.com",
     accept:
@@ -75,7 +76,7 @@ export class TaosectDl implements MangaDl {
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/projeto/${mangaId}`, {
       headers: this.headers,
     });
@@ -100,13 +101,16 @@ export class TaosectDl implements MangaDl {
         )
       ) {
         const id = href?.split("/").slice(-3, -1).join("/");
-        chapters.push(
-          new Chapter(text.split(" ")[1] ?? "0", text, id, "Taosect")
-        );
+        chapters.push({
+          number: text.split(" ")[1] ?? "0",
+          title: text,
+          chapter_id: id,
+          source: "Taosect",
+        });
       }
     });
     chapters.reverse();
-    return { ok: true, chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

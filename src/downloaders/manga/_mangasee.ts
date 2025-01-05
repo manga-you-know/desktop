@@ -2,11 +2,12 @@ import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Chapter, Favorite } from "@/models";
+import type { MangaDl, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
 
 export class MangaSeeDl implements MangaDl {
   baseUrl = "https://mangasee123.com";
+  isMultiLanguage = false;
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
@@ -131,7 +132,7 @@ export class MangaSeeDl implements MangaDl {
     return sortedMangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers,
     });
@@ -156,16 +157,14 @@ export class MangaSeeDl implements MangaDl {
           : `${Number.parseInt(
               chpt.Chapter.substring(1, lastIndex)
             )}.${chpt.Chapter.charAt(lastIndex)}`;
-      chapters.push(
-        new Chapter(
-          number,
-          chpt.ChapterName,
-          `${mangaId}-chapter-${number}${index}-page-1.html`,
-          "MangaSee"
-        )
-      );
+      chapters.push({
+        number: number,
+        title: chpt.ChapterName,
+        chapter_id: `${mangaId}-chapter-${number}${index}-page-1.html`,
+        source: "MangaSee",
+      });
     });
-    return { ok: true, chapters: chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

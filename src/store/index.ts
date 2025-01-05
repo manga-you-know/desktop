@@ -1,9 +1,24 @@
-import { writable, readable, get } from "svelte/store";
+import { writable, readable } from "svelte/store";
 import { DownloadManager } from "@/managers";
-import { Favorite, type Chapter, type Readed } from "@/models";
+import type { Favorite, Chapter, Readed } from "@/models";
+import { MANGASOURCES } from "@/constants";
+import type { Language } from "@/interfaces";
 
 export const downloadManager = readable<DownloadManager>(new DownloadManager());
 export const libraryFavorites = writable<Favorite[]>([]);
 export const searchTerm = writable<string>("");
 export const chapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
+export const openSearch = writable<boolean>(false);
+export const openSettings = writable<boolean>(false);
+export const selectedSource = writable<string>(MANGASOURCES[2].name);
+export const orderBy = writable<string>("id");
+export const isAscending = writable<boolean>(true);
+export const autoSearchUpdates = writable<boolean>(true);
+export const favoriteLanguage = writable<Language>({
+  id: "en",
+  label: "English",
+});
+export const autoEnterFullscreen = writable<boolean>(true);
+export const theme = writable<string>("dark");
+export const appLanguage = writable<string>("en");

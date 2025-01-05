@@ -5,7 +5,7 @@
   import { FavoriteRepository } from "@/repositories";
   import { libraryFavorites, searchTerm } from "@/store";
   import type { Favorite } from "@/models";
-  import LibraryOrder from "@/components/buttons/LibraryOrder.svelte";
+  import LibraryOrder from "@/components/select/LibraryOrder.svelte";
   let favoriteDiv: HTMLDivElement;
   let page = $state(1);
   let perPage = 21;
@@ -13,7 +13,7 @@
   let displayedFavorites: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
-  searchTerm.subscribe((_) => {
+  libraryFavorites.subscribe((_) => {
     page = 1;
   });
   const siblingCount = 1;

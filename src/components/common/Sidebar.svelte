@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { Sidebar } from "@/lib/components";
-  import { GroupContent } from "@/lib/components/ui/sidebar";
+  import { openSearch, openSettings } from "@/store";
   import Icon from "@iconify/svelte";
 
   const items = [
@@ -24,18 +24,18 @@
       iconActive: "solar:book-2-bold",
       icon: "solar:book-2-outline",
     },
-    {
-      name: "Search",
-      path: "/search",
-      iconActive: "mingcute:search-fill",
-      icon: "mingcute:search-line",
-    },
-    {
-      name: "Settings",
-      path: "/settings",
-      iconActive: "heroicons:cog-6-tooth-solid",
-      icon: "heroicons:cog-6-tooth",
-    },
+    // {
+    //   name: "Search",
+    //   path: "/search",
+    //   iconActive: "mingcute:search-fill",
+    //   icon: "mingcute:search-line",
+    // },
+    // {
+    //   name: "Settings",
+    //   path: "/settings",
+    //   iconActive: "heroicons:cog-6-tooth-solid",
+    //   icon: "heroicons:cog-6-tooth",
+    // },
   ];
 </script>
 
@@ -43,11 +43,12 @@
   <Sidebar.Header></Sidebar.Header>
   <Sidebar.Content>
     <Sidebar.Group>
+      <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
         <Sidebar.Menu>
           {#each items as item (item.name)}
             <Sidebar.MenuItem>
-              <Sidebar.MenuButton onclick={() => goto(item.path)}>
+              <Sidebar.MenuButton onclick={() => goto(item.path)} tabindex={-1}>
                 <Icon
                   icon={page.url.pathname === item.path
                     ? item.iconActive
@@ -58,6 +59,38 @@
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
+        </Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+    <Sidebar.Group>
+      <Sidebar.GroupContent>
+        <Sidebar.Menu>
+          <Sidebar.MenuItem>
+            <Sidebar.MenuButton
+              onclick={() => ($openSearch = true)}
+              tabindex={-1}
+            >
+              <Icon
+                icon={$openSearch
+                  ? "mingcute:search-fill"
+                  : "mingcute:search-line"}
+              />
+              <span class="text-sm"> Search </span>
+            </Sidebar.MenuButton>
+          </Sidebar.MenuItem>
+          <Sidebar.MenuItem>
+            <Sidebar.MenuButton
+              onclick={() => ($openSettings = true)}
+              tabindex={-1}
+            >
+              <Icon
+                icon={$openSettings
+                  ? "heroicons:cog-6-tooth-solid"
+                  : "heroicons:cog-6-tooth"}
+              />
+              <span class="text-sm"> Settings </span>
+            </Sidebar.MenuButton>
+          </Sidebar.MenuItem>
         </Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>

@@ -1,11 +1,12 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import { memoize } from "lodash";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Chapter, Favorite } from "@/models";
+import type { MangaDl, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
 
 export class TCBScansDl implements MangaDl {
   baseUrl = "https://tcbscans.me/";
+  isMultiLanguage = false;
   headers = {
     accept:
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -91,7 +92,7 @@ export class TCBScansDl implements MangaDl {
     return sortedMangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}mangas/${mangaId}`, {
       headers: this.headers,
     });
@@ -104,16 +105,14 @@ export class TCBScansDl implements MangaDl {
 
     $("div.col-span-2 a[href]").each((_, a) => {
       const divs = $(a).find("div");
-      chaptersList.push(
-        new Chapter(
-          divs.eq(0).text().split(" ").pop() || "",
-          divs.eq(1).text() || "",
-          $(a).attr("href")?.replace("/chapters/", "") || "",
-          "TCB"
-        )
-      );
+      chaptersList.push({
+        number: divs.eq(0).text().split(" ").pop() || "",
+        title: divs.eq(1).text() || "",
+        chapter_id: $(a).attr("href")?.replace("/chapters/", "") || "",
+        source: "TCB",
+      });
     });
-    return { ok: true, chapters: chaptersList };
+    return chaptersList;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

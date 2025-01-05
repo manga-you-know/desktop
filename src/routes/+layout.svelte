@@ -1,14 +1,15 @@
 <script lang="ts">
+  import "@/app.css";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { ModeWatcher } from "mode-watcher";
   import { NinjaKeys } from "ninja-keys";
   import { onMount } from "svelte";
-  import "@/app.css";
-  import { Search } from "@/components";
+  import { Search, Settings } from "@/components";
+  import { openSearch } from "@/store";
   import { shortcuts, Shortcuts } from "svelte-keyboard-shortcuts";
+  import { loadSettings } from "@/functions";
   let { children } = $props();
   const currentWindow = getCurrentWindow();
-  let open = $state(false);
 
   interface Event {
     key: string;
@@ -19,21 +20,23 @@
       title: "Open Search",
       hotkey: "ctrl+k",
       handler: () => {
-        open = !open;
+        $openSearch = !$openSearch;
       },
     },
   ];
 
-  onMount(() => {
+  onMount(async () => {
     const ninja = document.querySelector("ninja-keys");
     if (ninja) {
       ninja.data = hotkeys;
     }
+    await loadSettings();
   });
 </script>
 
+<Search />
+<Settings />
 <ModeWatcher defaultMode="dark" />
-<Search bind:open />
 <Shortcuts
   options={{
     generateKbd: false,
@@ -43,7 +46,7 @@
 <button
   class="hidden"
   use:shortcuts={{ keys: ["F9"] }}
-  onclick={async () => (open = !open)}>ok</button
+  onclick={async () => ($openSearch = !$openSearch)}>ok</button
 >
 <button
   class="hidden"
@@ -57,7 +60,7 @@
   use:shortcuts={{ keys: ["Alt", "k"] }}
   onkeyup={(e: Event) => {
     if (e.key !== "k") return;
-    open = !open;
+    $openSearch = !openSearch;
     console.log("foda");
   }}>ok</button
 >

@@ -24,6 +24,7 @@
 <button
   class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:scale-[0.90] hover:cursor-pointer hover:shadow-lg hover:z-50 transform hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 hover:sticky"
   onclick={() => (isOpen = true)}
+  tabindex={-1}
 >
   <img
     class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[17px] object-contain rounded-b-md !bg-gray-600"

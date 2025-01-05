@@ -1,10 +1,11 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "@/interfaces";
-import { Favorite, Chapter } from "@/models";
+import type { MangaDl, Chapter } from "@/interfaces";
+import { Favorite } from "@/models";
 
 export class MangaPillDl implements MangaDl {
   baseUrl = "https://mangapill.com";
+  isMultiLanguage = false;
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
@@ -77,7 +78,7 @@ export class MangaPillDl implements MangaDl {
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers,
     });
@@ -88,21 +89,18 @@ export class MangaPillDl implements MangaDl {
     const text = await response.text();
     const $ = cheerio.load(text);
     const divChapters = $("div#chapters");
-    console.log(divChapters);
     $(divChapters)
       .find("a")
       .each((_, a) => {
-        chapters.push(
-          new Chapter(
-            $(a).text().split(" ")[1],
-            "",
-            $(a).attr("href")?.replace("/chapters/", "") ?? "",
-            "MangaPill"
-          )
-        );
+        chapters.push({
+          number: $(a).text().split(" ")[1],
+          title: "",
+          chapter_id: $(a).attr("href")?.replace("/chapters/", "") ?? "",
+          source: "MangaPill",
+        });
       });
 
-    return { ok: true, chapters: chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

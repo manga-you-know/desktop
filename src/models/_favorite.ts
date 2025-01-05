@@ -1,5 +1,5 @@
-import type { Chapter } from './_chapter';
-import type { Mark } from './_mark';
+import type { Chapter } from "../interfaces/_chapter";
+import type { Mark } from "./_mark";
 
 export class Favorite {
   id?: number;
@@ -24,20 +24,20 @@ export class Favorite {
   constructor({
     id = -1,
     user_id = -1,
-    name = '',
-    folder_name = '',
-    link = '',
-    cover = '',
-    source = '',
-    source_id = '',
-    type = 'manga',
-    extra_name = '',
-    title_color = '',
-    card_color = '',
+    name = "",
+    folder_name = "",
+    link = "",
+    cover = "",
+    source = "",
+    source_id = "",
+    type = "manga",
+    extra_name = "",
+    title_color = "",
+    card_color = "",
     grade = 0.0,
-    author = 'Unknow',
+    author = "Unknow",
     is_ultra_favorite = false,
-    description = '',
+    description = "",
     marks = [],
     readeds = [],
   }: {

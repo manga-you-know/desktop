@@ -22,7 +22,7 @@
 <EditFavorite {favorite} bind:open={isEdit} />
 <AskDelete {favorite} bind:open={isDelete} />
 <button
-  class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:scale-[1.08] focus:border-white focus:border-1"
+  class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1"
   onclick={() => (isOpen = true)}
 >
   <img
@@ -39,17 +39,20 @@
     }}
   />
   <div class="w-full h-full fixed flex flex-col justify-between items-center">
-    <Badge class="w-40 flex justify-center rounded-xl" variant="secondary">
-      {favorite.name.length > 16
-        ? favorite.name.substring(0, 16) + "..."
-        : favorite.name}</Badge
+    <Badge
+      class="w-40 max-w-40 flex justify-center rounded-xl"
+      variant="secondary"
     >
+      <span class="truncate">
+        {favorite.name}
+      </span>
+    </Badge>
     <div
       class="w-full h-8 flex justify-center mb-2 p-1 transform translate-y-full opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100"
     >
       <div class="inline-flex rounded-md shadow-sm" role="group">
         <Button
-          class="rounded-r-none"
+          class="rounded-r-none rounded-l-xl"
           variant="secondary"
           size="sm"
           tabindex={-1}
@@ -73,7 +76,7 @@
           <Icon icon="lucide:square-pen" class="w-4 h-4" />
         </Button>
         <Button
-          class="rounded-l-none"
+          class="rounded-l-none rounded-r-xl"
           variant="secondary"
           size="sm"
           tabindex={-1}
