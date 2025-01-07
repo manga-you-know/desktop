@@ -1,3 +1,14 @@
+## [0.3.1](https://github.com/manga-you-know/desktop/compare/v0.2.39...v0.3.1) (2025-01-07)
+
+
+### New Features
+
+* A LOT OF FUNCTIONALITIES!!! WONT STOP ([8f6d2bf](https://github.com/manga-you-know/desktop/commit/8f6d2bfac4371181b834cff0be3500f94c36a38d))
+* A LOT OF THINGS AND DOWNLOAD!!! ([9ef2f2b](https://github.com/manga-you-know/desktop/commit/9ef2f2bd1f05eb756b82a7802c79001fba16b968))
+* FINALLY READY TO DEPLOY! BUT THE PERFORMANCE SUCKS! maybe ([540dcfa](https://github.com/manga-you-know/desktop/commit/540dcfa5b0f6dc67861fb5cf66dfe97bc9a56735))
+* ITS BECOMING BEAUTIFUL AND MOST OF THINGS WORK ([e3d70e6](https://github.com/manga-you-know/desktop/commit/e3d70e68ba1592d090af84eb038375c0961c7355))
+* reading is here! ([6166df4](https://github.com/manga-you-know/desktop/commit/6166df45a8f73ba3a1d6c6049abc3e043d718371))
+
 ## [0.2.39](https://github.com/manga-you-know/desktop/compare/v0.2.38...v0.2.39) (2024-12-16)
 
 
@@ -15,6 +26,7 @@
 
 ### Miscellaneous Chores
 
+* **release:** v0.2.39 [skip ci] ([3c8f2a1](https://github.com/manga-you-know/desktop/commit/3c8f2a1fa480a95a24c41cf6712785dfa54426de))
 * **release:** v0.2.39 [skip ci] ([84ac256](https://github.com/manga-you-know/desktop/commit/84ac256585ec5b4bd43f33ce4198806c44ab192b))
 
 ## [0.2.38](https://github.com/manga-you-know/desktop/compare/v0.2.37...v0.2.38) (2024-12-05)
@@ -57,21 +69,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.36 [skip ci] ([9a4a792](https://github.com/manga-you-know/desktop/commit/9a4a7926475eab9d67d18955d5df9a56bdd65d65))
-
-## [0.2.35](https://github.com/manga-you-know/desktop/compare/v0.2.34...v0.2.35) (2024-12-01)
-
-
-### New Features
-
-* improve a bit both readers. ([384e512](https://github.com/manga-you-know/desktop/commit/384e5124cf9eb9e7844c4954852da707af97e18f))
-
-
-### Bug Fixes
-
-* Image not appearing and fullscreen in reader ([618ada4](https://github.com/manga-you-know/desktop/commit/618ada49c4cca6666da716bc1ce4d1c1c7efd723))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.35 [skip ci] ([7b14fde](https://github.com/manga-you-know/desktop/commit/7b14fde1903be76597548539b7e8842d53e5df4f))
 
