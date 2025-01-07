@@ -16,11 +16,12 @@
     openSettings,
     autoSearchUpdates,
     autoEnterFullscreen,
-    favoriteLanguage,
+    preferableLanguage,
+    defaultPage,
   } from "@/store";
   import { onMount } from "svelte";
   import { saveSettings } from "@/functions";
-  import { Language } from "@/components";
+  import { DefaultPage, Language } from "@/components";
   import type { Language as LanguageType } from "@/interfaces";
   import Icon from "@iconify/svelte";
   import { LANGUAGE_OPTIONS } from "@/constants";
@@ -30,12 +31,15 @@
   onMount(async () => {
     version = await getVersion();
   });
+  function titleCase(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 </script>
 
 <Dialog.Root bind:open={$openSettings}>
   <Dialog.Content interactOutsideBehavior="close">
     <!-- <Dialog.Header class="font-bold">Settings</Dialog.Header> -->
-    <ScrollArea class="select-none">
+    <ScrollArea class="h-[21rem] mt-6 select-none">
       <div class="border-b-4 my-4 text-center relative rounded-xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black px-4 text-gray-300 font-bold"
@@ -93,11 +97,11 @@
       <Card.Root class="bg-[#0e141e] border-0">
         <Card.Content class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
-            <Label>Favorite language</Label>
+            <Label>Preferable language</Label>
             <Language
               class="bg-[#2d3649] border-0"
               classPopover="!bg-gray-900"
-              bind:selectedLanguage={$favoriteLanguage}
+              bind:selectedLanguage={$preferableLanguage}
               onChange={async () => {
                 await saveSettings();
               }}
@@ -119,7 +123,22 @@
           </div>
         </Card.Content>
       </Card.Root>
+      <div class="border-b-4 my-4 text-center relative rounded-xl">
+        <span
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black px-4 text-gray-300 font-bold"
+        >
+          Others
+        </span>
+      </div>
+      <Card.Root class="bg-[#0e141e] border-0">
+        <Card.Content class="flex flex-col gap-4">
+          <Label>Default page</Label>
+          <div class="flex">
+            <DefaultPage onChange={async () => await saveSettings()} />
+          </div>
+        </Card.Content>
+      </Card.Root>
     </ScrollArea>
-    <Dialog.Footer></Dialog.Footer>
+    <!-- <Dialog.Footer></Dialog.Footer> -->
   </Dialog.Content>
 </Dialog.Root>

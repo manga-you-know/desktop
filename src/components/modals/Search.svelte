@@ -11,7 +11,7 @@
   import { FavoriteRepository } from "@/repositories";
   import { refreshLibrary } from "@/functions";
   import Icon from "@iconify/svelte";
-  import type { Favorite } from "@/models";
+  import type { Favorite } from "@/interfaces";
   import { onMount } from "svelte";
 
   let isSearching = $state(false);

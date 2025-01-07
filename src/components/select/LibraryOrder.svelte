@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Button, Command, Popover } from "@/lib/components";
+  import { Button, Command, Label, Popover } from "@/lib/components";
   import { libraryFavorites, orderBy, isAscending } from "@/store";
   import { saveSettings } from "@/functions";
+  import { titleCase } from "@/utils";
   import { FavoriteRepository } from "@/repositories";
   import Icon from "@iconify/svelte";
 
@@ -33,6 +34,7 @@
           {...props}
           role="combobox"
           aria-expanded={open}
+          tabindex={-1}
         >
           <Icon icon={orderIcon[$orderBy]} />
           <Icon icon="lucide:chevron-down" class="text-gray-500" />
@@ -54,7 +56,7 @@
                   await saveSettings();
                 }}
               >
-                <span class="text-sm ml-[-4px]"> {order}</span>
+                <Label class="text-sm ml-[-4px]">{titleCase(order)}</Label>
                 <Icon icon={orderIcon[order]} />
               </Command.Item>
             {/each}
@@ -71,6 +73,7 @@
       await refreshFavorites();
       await saveSettings();
     }}
+    tabindex={-1}
   >
     <Icon
       icon={$isAscending ? "typcn:arrow-sorted-up" : "typcn:arrow-sorted-down"}

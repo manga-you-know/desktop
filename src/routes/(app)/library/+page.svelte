@@ -1,14 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Pagination, Button, Badge, Input } from "@/lib/components";
-  import { LibraryCard, LibrarySearch } from "@/components";
+  import { LibraryCard, LibraryOrder, LibrarySearch } from "@/components";
   import { FavoriteRepository } from "@/repositories";
   import { libraryFavorites, searchTerm } from "@/store";
-  import type { Favorite } from "@/models";
-  import LibraryOrder from "@/components/select/LibraryOrder.svelte";
+  import type { Favorite } from "@/interfaces";
   let favoriteDiv: HTMLDivElement;
   let page = $state(1);
-  let perPage = 21;
+  let perPage = 16;
   const count = $derived($libraryFavorites.length);
   let displayedFavorites: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
@@ -50,13 +49,13 @@
       onPageChange={() => favoriteDiv.scrollTo({ top: 0 })}
     >
       {#snippet children({ pages, currentPage })}
-        <Pagination.Content>
+        <Pagination.Content tabindex={-1}>
           <Pagination.Item>
-            <Pagination.PrevButton />
+            <Pagination.PrevButton tabindex={-1} />
           </Pagination.Item>
           {#each pages as page (page.key)}
             {#if page.type === "ellipsis"}
-              <Pagination.Item>
+              <Pagination.Item tabindex={-1}>
                 <Pagination.Ellipsis />
               </Pagination.Item>
             {:else}
@@ -67,6 +66,7 @@
                     ? "!bg-white !text-black"
                     : ""}
                   isActive={currentPage === page.value}
+                  tabindex={-1}
                 >
                   {page.value}
                 </Pagination.Link>
@@ -74,7 +74,7 @@
             {/if}
           {/each}
           <Pagination.Item>
-            <Pagination.NextButton />
+            <Pagination.NextButton tabindex={-1} />
           </Pagination.Item>
         </Pagination.Content>
       {/snippet}

@@ -2,7 +2,8 @@ import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
 import { searchTerm, orderBy, isAscending } from "@/store";
 // import { MarkRepository } from "../repositories";
-import type { Favorite, Mark, User } from "@/models";
+import type { Favorite } from "@/interfaces";
+import type { Mark, User } from "@/models";
 import { get } from "svelte/store";
 
 export async function createFavorite(favorite: Favorite): Promise<void> {
@@ -326,7 +327,6 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
 
 export async function setUltraFavorite(favorite: Favorite): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
-  console.log(favorite.is_ultra_favorite);
   try {
     await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [
       favorite.is_ultra_favorite,

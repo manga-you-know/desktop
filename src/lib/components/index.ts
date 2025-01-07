@@ -1,5 +1,3 @@
-import type { Command } from "bits-ui";
-
 // complex ui
 export * as AlertDialog from "./ui/alert-dialog";
 export * as Dialog from "./ui/dialog";
@@ -13,6 +11,7 @@ export * as Collapsible from "./ui/collapsible";
 export * as Command from "./ui/command";
 export * as Card from "./ui/card";
 export * as Select from "./ui/select";
+export * as ContextMenu from "./ui/context-menu";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";

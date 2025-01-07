@@ -2,8 +2,7 @@ import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
 import * as cheerio from "cheerio";
-import type { MangaDl, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class MangaSeeDl implements MangaDl {
   baseUrl = "https://mangasee123.com";
@@ -41,7 +40,7 @@ export class MangaSeeDl implements MangaDl {
     const name = $(ul).find("h1").text();
     const description = $(ul).find("div.top-5.Content").text();
     const author = $(ul).find("a[href^='/search/?author']").text();
-    return new Favorite({
+    return {
       name: name,
       folder_name: name,
       cover: `https://temp.compsci88.com/cover/${id}.jpg`,
@@ -52,17 +51,18 @@ export class MangaSeeDl implements MangaDl {
       grade: 0,
       author: author,
       description: description,
-    });
+    };
   }
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    return new Favorite({
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async getMangas(): Promise<Favorite[]> {
@@ -77,7 +77,7 @@ export class MangaSeeDl implements MangaDl {
       text.split("vm.Directory = ")[1].split(";\r\n")[0]
     );
     return mangaList.map((manga: any) => {
-      var mangaOrdered = new Favorite({
+      return {
         name: manga.s,
         folder_name: manga.i,
         link: `${this.baseUrl}/manga/${manga.i}`,
@@ -88,8 +88,7 @@ export class MangaSeeDl implements MangaDl {
         grade: 0,
         author: manga.a[0] || "",
         description: "",
-      });
-      return mangaOrdered;
+      };
     });
   }
 
@@ -162,6 +161,7 @@ export class MangaSeeDl implements MangaDl {
         title: chpt.ChapterName,
         chapter_id: `${mangaId}-chapter-${number}${index}-page-1.html`,
         source: "MangaSee",
+        language: "default",
       });
     });
     return chapters;

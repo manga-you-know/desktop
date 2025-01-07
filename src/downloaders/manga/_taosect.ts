@@ -1,7 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class TaosectDl implements MangaDl {
   baseUrl = "https://taosect.com";
@@ -28,13 +27,14 @@ export class TaosectDl implements MangaDl {
   }
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    return new Favorite({
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async search(query: string): Promise<Favorite[]> {
@@ -54,23 +54,21 @@ export class TaosectDl implements MangaDl {
     posts.each((_, article) => {
       const a = $(article).find("a");
       const coverStyle = $(article).find("div").attr("style") || "";
-      mangas.push(
-        new Favorite({
-          source_id: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
-          name:
-            a
-              .attr("href")
-              ?.split("/")
-              .slice(-2, -1)[0]
-              .replace(/-/g, " ")
-              .toLowerCase()
-              .replace(/\b\w/g, (char) => char.toUpperCase()) || "",
-          folder_name: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
-          cover: coverStyle.match(/url\((.*?)\)/)?.[1] || "",
-          link: a.attr("href") || "",
-          source: "Taosect",
-        })
-      );
+      mangas.push({
+        source_id: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
+        name:
+          a
+            .attr("href")
+            ?.split("/")
+            .slice(-2, -1)[0]
+            .replace(/-/g, " ")
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase()) || "",
+        folder_name: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
+        cover: coverStyle.match(/url\((.*?)\)/)?.[1] || "",
+        link: a.attr("href") || "",
+        source: "Taosect",
+      });
     });
 
     return mangas;
@@ -106,6 +104,7 @@ export class TaosectDl implements MangaDl {
           title: text,
           chapter_id: id,
           source: "Taosect",
+          language: "default",
         });
       }
     });

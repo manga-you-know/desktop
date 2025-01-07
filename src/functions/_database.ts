@@ -1,6 +1,7 @@
 import { FavoriteRepository, ReadedRepository } from "@/repositories";
-import { libraryFavorites } from "@/store";
-import type { Chapter, Favorite, Readed } from "@/models";
+import { libraryFavorites, ultraFavorites } from "@/store";
+import type { Chapter, Favorite } from "@/interfaces";
+import type { Readed } from "@/models";
 
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(
@@ -61,4 +62,9 @@ export async function deleteReadedAbove(
 export async function refreshLibrary() {
   const favs = await FavoriteRepository.getFavorites();
   libraryFavorites.set(favs);
+}
+
+export async function refreshFavorites() {
+  const favs = await FavoriteRepository.getUltraFavorites();
+  ultraFavorites.set(favs);
 }

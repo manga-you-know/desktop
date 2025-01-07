@@ -10,6 +10,7 @@ export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 export { default as LibraryOrder } from "./select/LibraryOrder.svelte";
 export { default as Source } from "./select/Source.svelte";
 export { default as Language } from "./select/Language.svelte";
+export { default as DefaultPage } from "./select/DefaultPage.svelte";
 // Cards
 export { default as SuggestionCard } from "./cards/SuggestionCard.svelte";
 export { default as FavoriteCard } from "./cards/FavoriteCard.svelte";

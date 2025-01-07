@@ -61,7 +61,6 @@
   onkeyup={(e: Event) => {
     if (e.key !== "k") return;
     $openSearch = !openSearch;
-    console.log("foda");
   }}>ok</button
 >
 {@render children?.()}

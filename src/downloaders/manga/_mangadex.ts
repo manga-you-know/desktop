@@ -1,6 +1,5 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import type { MangaDl, Language, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaDexDl implements MangaDl {
@@ -12,13 +11,14 @@ export class MangaDexDl implements MangaDl {
   }
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    return new Favorite({
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async search(query: string, limit = "20"): Promise<Favorite[]> {
@@ -46,25 +46,23 @@ export class MangaDexDl implements MangaDl {
         ? manga.attributes.title.en
         : manga.attributes.title[Object.keys(manga.attributes.title)[0]];
 
-      listMangas.push(
-        new Favorite({
-          source_id: manga.id,
-          name: titleName,
-          folder_name: encodeURIComponent(titleName),
-          link: `https://mangadex.org/title/${manga.id}`,
-          //@ts-ignore
-          extra_name: manga.attributes.altTitles?.length
-            ? (Object.values(
-                manga.attributes.altTitles[
-                  Math.floor(Math.random() * manga.attributes.altTitles.length)
-                ]
-              )[0] ?? "")
-            : "",
-          description: manga.attributes.description.en,
-          cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
-          source: "MangaDex",
-        })
-      );
+      listMangas.push({
+        source_id: manga.id,
+        name: titleName,
+        folder_name: encodeURIComponent(titleName),
+        link: `https://mangadex.org/title/${manga.id}`,
+        //@ts-ignore
+        extra_name: manga.attributes.altTitles?.length
+          ? (Object.values(
+              manga.attributes.altTitles[
+                Math.floor(Math.random() * manga.attributes.altTitles.length)
+              ]
+            )[0] ?? "")
+          : "",
+        description: manga.attributes.description.en,
+        cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
+        source: "MangaDex",
+      });
     }
     return listMangas;
   }

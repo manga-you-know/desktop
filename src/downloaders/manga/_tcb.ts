@@ -1,8 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import { memoize } from "lodash";
-import type { MangaDl, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class TCBScansDl implements MangaDl {
   baseUrl = "https://tcbscans.me/";
@@ -43,13 +42,14 @@ export class TCBScansDl implements MangaDl {
   }
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    return new Favorite({
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async getMangas(): Promise<Favorite[]> {
@@ -66,16 +66,14 @@ export class TCBScansDl implements MangaDl {
     $('a[href*="/mangas"]').each((_, a) => {
       const img = $(a).find("img");
       if (img.length) {
-        mangas.push(
-          new Favorite({
-            name: img.attr("alt") || "",
-            source_id: $(a).attr("href")?.replace("/mangas/", "") || "",
-            folder_name: $(a).attr("href")?.split("/").pop() || "",
-            link: `${this.baseUrl}${$(a).attr("href")?.slice(1)}`,
-            cover: img.attr("src") || "",
-            source: "TCB",
-          })
-        );
+        mangas.push({
+          name: img.attr("alt") || "",
+          source_id: $(a).attr("href")?.replace("/mangas/", "") || "",
+          folder_name: $(a).attr("href")?.split("/").pop() || "",
+          link: `${this.baseUrl}${$(a).attr("href")?.slice(1)}`,
+          cover: img.attr("src") || "",
+          source: "TCB",
+        });
       }
     });
     return mangas;
@@ -110,6 +108,7 @@ export class TCBScansDl implements MangaDl {
         title: divs.eq(1).text() || "",
         chapter_id: $(a).attr("href")?.replace("/chapters/", "") || "",
         source: "TCB",
+        language: "default",
       });
     });
     return chaptersList;

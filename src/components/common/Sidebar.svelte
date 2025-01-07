@@ -1,7 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { Sidebar } from "@/lib/components";
+  import { Label, Sidebar } from "@/lib/components";
   import { openSearch, openSettings } from "@/store";
   import Icon from "@iconify/svelte";
 
@@ -55,7 +55,7 @@
                     : item.icon}
                   class="!w-4 !h-4 "
                 />
-                <span class="text-sm"> {item.name} </span>
+                <Label>{item.name}</Label>
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
@@ -75,7 +75,7 @@
                   ? "mingcute:search-fill"
                   : "mingcute:search-line"}
               />
-              <span class="text-sm"> Search </span>
+              <Label>Search</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
@@ -88,7 +88,7 @@
                   ? "heroicons:cog-6-tooth-solid"
                   : "heroicons:cog-6-tooth"}
               />
-              <span class="text-sm"> Settings </span>
+              <Label>Settings</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>
@@ -96,7 +96,7 @@
     </Sidebar.Group>
   </Sidebar.Content>
   <Sidebar.Footer>
-    <Sidebar.Trigger />
+    <Sidebar.Trigger tabindex={-1} />
   </Sidebar.Footer>
   <Sidebar.Rail />
 </Sidebar.Root>

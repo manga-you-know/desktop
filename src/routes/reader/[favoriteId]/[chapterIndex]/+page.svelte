@@ -5,26 +5,29 @@
   import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import { addReadedBelow } from "@/functions";
-  import { Chapter, Favorite } from "@/models";
+  import type { Favorite, Chapter } from "@/interfaces";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
   import {
     downloadManager,
-    chapters,
+    globalChapters,
     readeds,
     autoEnterFullscreen,
+    defaultPage,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
 
   let { favoriteId, chapterIndex } = page.params;
-  let chapter = $state($chapters[Number(chapterIndex)]);
+  let chapter = $state($globalChapters[Number(chapterIndex)]);
   let favorite: Favorite | null = $state(null);
   let images: string[] = $state([]);
   let currentlyCount = $state(1);
   let totalPage = $state(0);
   let isTheLastChapter = $state(Number(chapterIndex) === 0);
-  let isTheFirstChapter = $state(Number(chapterIndex) === $chapters.length - 1);
+  let isTheFirstChapter = $state(
+    Number(chapterIndex) === $globalChapters.length - 1
+  );
   let currentlyImage = $state("/myk.png");
   const currentWindow = getCurrentWindow();
   onMount(async () => {
@@ -36,7 +39,7 @@
     images = chapterImages;
     currentlyImage = images[0];
     totalPage = images.length;
-    await addReadedBelow(chapter, $chapters, favorite, $readeds, true);
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
   });
@@ -44,15 +47,15 @@
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
-    isTheFirstChapter = Number(chapterIndex) === $chapters.length - 1;
+    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
-    chapter = $chapters[Number(chapterIndex)];
+    chapter = $globalChapters[Number(chapterIndex)];
     const chaptersImages = await $downloadManager.getChapterImages(chapter);
     images = chaptersImages;
     currentlyImage = chaptersImages[0];
     totalPage = chaptersImages.length;
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
-    await addReadedBelow(chapter, $chapters, favorite, $readeds, true);
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
   });
@@ -71,10 +74,8 @@
     currentlyCount = 1;
     totalPage = 1;
     if (way === "next") {
-      console.log(Number(chapterIndex) - 1);
       await goto(`/reader/${favoriteId}/${Number(chapterIndex) - 1}`);
     } else {
-      console.log(Number(chapterIndex) + 1);
       await goto(`/reader/${favoriteId}/${Number(chapterIndex) + 1}`);
     }
   }
@@ -118,7 +119,7 @@
       color="neutral"
       variant="outline"
       onclick={async () => {
-        goto("/home");
+        goto(`/${$defaultPage}`);
         currentWindow.setFullscreen(false);
       }}><Icon icon="lucide:home" /></Button
     >

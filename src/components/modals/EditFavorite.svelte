@@ -3,8 +3,9 @@
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { Dialog, Button, Input } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
-  import { libraryFavorites, downloadManager } from "@/store";
-  import { Favorite } from "@/models";
+  import { downloadManager } from "@/store";
+  import { refreshLibrary, refreshFavorites } from "@/functions";
+  import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
 
   interface Props {
@@ -56,8 +57,7 @@
     favorite.name = name;
     favorite.cover = image;
     await FavoriteRepository.updateFavorite(favorite);
-    const newFavorites = await FavoriteRepository.getFavorites();
-    libraryFavorites.set(newFavorites);
+    await Promise.all([refreshLibrary(), refreshFavorites()]);
     open = false;
   }
 

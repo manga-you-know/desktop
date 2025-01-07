@@ -50,6 +50,7 @@
   onclick={handleSearch}
   onmouseenter={() => (isHovered = true)}
   onmouseleave={() => (isHovered = false)}
+  tabindex={-1}
 >
   <Icon class="w-3 h-3 mr-[-9px]" icon="lucide:search" />
   <div
@@ -63,6 +64,7 @@
       onfocusout={handleOut}
       placeholder="Search..."
       autocomplete="off"
+      tabindex={-1}
     />
   </div>
 </Button>

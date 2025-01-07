@@ -20,23 +20,26 @@
   import { ChapterButton, Language } from "@/components";
   import {
     downloadManager,
-    chapters,
+    globalChapters,
     readeds,
-    favoriteLanguage,
+    preferableLanguage,
   } from "@/store";
   import { ReadedRepository } from "@/repositories";
-  import { addReadedBelow } from "@/functions";
-  import type { Favorite } from "@/models";
-  import type { Language as LanguageType, Chapter } from "@/interfaces";
-  import { MANGASOURCE_LANGUAGE } from "@/constants";
+  import { addReadedBelow, isReaded } from "@/functions";
+  import type {
+    Favorite,
+    Chapter,
+    Language as LanguageType,
+  } from "@/interfaces";
+  import { LANGUAGE_LABELS, MANGASOURCE_LANGUAGE } from "@/constants";
 
   let isMulti = $state(false);
-  let selectedLanguage = $state($favoriteLanguage);
+  let selectedLanguage2 = $state($preferableLanguage);
   let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
   let displayedChapters = $derived(
-    $chapters.filter((chapter) =>
+    $globalChapters.filter((chapter) =>
       chapter.number.toString().includes(searchTerm)
     )
   );
@@ -70,7 +73,7 @@
     isDownloadingAll = true;
     const batchSize = 5;
     let index = 0;
-    const reversedChapters = $chapters.slice().reverse();
+    const reversedChapters = $globalChapters.slice().reverse();
     let chaptersToDownload: Chapter[] = [];
     reversedChapters.forEach((chapter) => {
       if (!downloaded.find((d) => d.name === chapter.number)) {
@@ -99,34 +102,41 @@
     if (open) {
       isFetching = true;
       (async () => {
-        chapters.set([]);
+        globalChapters.set([]);
         isMulti = $downloadManager.isMultiLanguage(favorite.source);
         await refreshDownloadeds();
         if (isMulti) {
-          selectedLanguage = $favoriteLanguage;
-          languageOptions =
-            await $downloadManager.getFavoriteLanguages(favorite);
-          const result = await $downloadManager.getChapters(
-            favorite,
-            $favoriteLanguage.id
-          );
-          await refreshReadeds();
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          chapters.set(result);
+          const lastReaded = await ReadedRepository.getLastReaded(favorite);
+          let chapters: Chapter[] = [];
+          if (lastReaded?.language) {
+            selectedLanguage2.id = lastReaded.language;
+            selectedLanguage2.label = LANGUAGE_LABELS[lastReaded.language];
+            [chapters, languageOptions] = await Promise.all([
+              $downloadManager.getChapters(favorite, lastReaded.language),
+              $downloadManager.getFavoriteLanguages(favorite),
+            ]);
+          } else {
+            selectedLanguage2 = $preferableLanguage;
+            [chapters, languageOptions] = await Promise.all([
+              $downloadManager.getChapters(favorite, $preferableLanguage.id),
+              $downloadManager.getFavoriteLanguages(favorite),
+            ]);
+          }
+          globalChapters.set(chapters);
         } else {
-          selectedLanguage.label = MANGASOURCE_LANGUAGE[favorite.source];
+          selectedLanguage2.label = MANGASOURCE_LANGUAGE[favorite.source];
           const result = await $downloadManager.getChapters(favorite);
-          await refreshReadeds();
           await new Promise((resolve) => setTimeout(resolve, 10));
-          chapters.set(result);
+          globalChapters.set(result);
         }
+        await refreshReadeds();
         isFetching = false;
       })();
     }
   });
 </script>
 
-<Dialog.Root bind:open onOpenChange={() => chapters.set([])}>
+<Dialog.Root bind:open onOpenChange={() => globalChapters.set([])}>
   <Dialog.Content interactOutsideBehavior="close">
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center"
@@ -146,17 +156,17 @@
           class="w-40 h-70 object-contain rounded-xl !bg-gray-950"
         />
         <Language
-          bind:selectedLanguage
+          bind:selectedLanguage={selectedLanguage2}
           {languageOptions}
           onChange={async () => {
             isFetching = true;
             const result = await $downloadManager.getChapters(
               favorite,
-              selectedLanguage.id
+              selectedLanguage2.id
             );
             await refreshReadeds();
             await new Promise((resolve) => setTimeout(resolve, 10));
-            chapters.set(result);
+            globalChapters.set(result);
             isFetching = false;
           }}
           disabled={!isMulti || isFetching}
@@ -197,16 +207,12 @@
                 {@const isDownloaded = downloaded
                   .map((d) => d.name)
                   .includes(chapter.number)}
-                {@const isReaded =
-                  $readeds.find(
-                    (r) =>
-                      r.chapter_id === chapter.chapter_id &&
-                      r.language === chapter.language
-                  ) !== undefined}
+                {@const isReadedHere =
+                  isReaded(chapter, $readeds) !== undefined}
                 <ChapterButton
                   {chapter}
                   {isDownloaded}
-                  {isReaded}
+                  isReaded={isReadedHere}
                   bind:isDownloading
                   onclick={() => {
                     goto(`/reader/${favorite.id}/${i}`);
@@ -230,7 +236,7 @@
                   }}
                   onreadclick={async (e: Event) => {
                     e.stopPropagation();
-                    await addReadedBelow(chapter, $chapters, favorite);
+                    await addReadedBelow(chapter, $globalChapters, favorite);
                     await refreshReadeds();
                   }}
                 />

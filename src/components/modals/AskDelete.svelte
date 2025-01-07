@@ -1,9 +1,9 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { AlertDialog, Button } from "@/lib/components";
-  import { libraryFavorites } from "@/store";
   import { FavoriteRepository } from "@/repositories";
-  import { Favorite } from "@/models";
+  import { refreshLibrary, refreshFavorites } from "@/functions";
+  import type { Favorite } from "@/interfaces";
 
   interface Props {
     favorite: Favorite;
@@ -29,9 +29,8 @@
         effect="gooeyLeft"
         onclick={async () => {
           await FavoriteRepository.deleteFavorite(favorite);
-          const newFavorites = await FavoriteRepository.getFavorites();
-          libraryFavorites.set(newFavorites);
           open = false;
+          await Promise.all([refreshLibrary(), refreshFavorites()]);
         }}>Delete</Button
       >
       <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>

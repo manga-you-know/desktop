@@ -1,7 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Language, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaFireDl implements MangaDl {
@@ -60,16 +59,14 @@ export class MangaFireDl implements MangaDl {
         const folderName = splitedLink
           .slice(0, splitedLink.length - 1)
           .join(".");
-        mangas.push(
-          new Favorite({
-            name: name,
-            folder_name: folderName,
-            cover: img.attr("src")?.replace("@100", "") ?? "/myk.png",
-            source: "MangaFire",
-            source_id: link,
-            link: `${this.baseUrl}/manga/${link}`,
-          })
-        );
+        mangas.push({
+          name: name,
+          folder_name: folderName,
+          cover: img.attr("src")?.replace("@100", "") ?? "/myk.png",
+          source: "MangaFire",
+          source_id: link,
+          link: `${this.baseUrl}/manga/${link}`,
+        });
       }
     });
     return mangas;

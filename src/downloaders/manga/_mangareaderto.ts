@@ -1,11 +1,10 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Chapter } from "@/interfaces";
-import { Favorite } from "@/models";
+import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
 
 export class MangaReaderToDl implements MangaDl {
   baseUrl = "https://mangareader.to";
-  isMultiLanguage = false;
+  isMultiLanguage = true;
   headers = {
     accept:
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -30,13 +29,14 @@ export class MangaReaderToDl implements MangaDl {
   }
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    return new Favorite({
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async search(query: string): Promise<Favorite[]> {
@@ -57,16 +57,14 @@ export class MangaReaderToDl implements MangaDl {
     chaptersDiv.each((_, div) => {
       const img = $(div).find("img");
       const a = $(div).find("a[title]");
-      mangas.push(
-        new Favorite({
-          source_id: a.attr("href")?.slice(1) || "",
-          name: a.attr("title") || "",
-          folder_name: a.attr("href")?.slice(1) || "",
-          link: `${this.baseUrl}${a.attr("href")}`,
-          cover: img.attr("src") || "",
-          source: "MangaReaderTo",
-        })
-      );
+      mangas.push({
+        source_id: a.attr("href")?.slice(1) || "",
+        name: a.attr("title") || "",
+        folder_name: a.attr("href")?.slice(1) || "",
+        link: `${this.baseUrl}${a.attr("href")}`,
+        cover: img.attr("src") || "",
+        source: "MangaReaderTo",
+      });
     });
 
     return mangas;

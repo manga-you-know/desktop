@@ -1,6 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
-import type { Chapter, Favorite, Readed } from "@/models";
+import type { Favorite, Chapter } from "@/interfaces";
+import type { Readed } from "@/models";
 
 export async function createReaded(readed: Readed): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
@@ -40,6 +41,22 @@ export async function createReadeds(
     console.log(error);
   } finally {
     // db.close()
+  }
+}
+
+export async function getLastReaded(favorite: Favorite): Promise<Readed> {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    const readed: Readed[] = await db.select(
+      "SELECT * FROM readed WHERE favorite_id = ? ORDER BY id DESC LIMIT 1",
+      [favorite.id]
+    );
+    if (readed) {
+      return readed[0];
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
   }
 }
 

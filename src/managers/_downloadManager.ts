@@ -10,8 +10,14 @@ import {
   TaosectDl,
   MangaFireDl,
 } from "@/downloaders/manga";
-import type { AnimeDl, MangaDl, Chapter, Language } from "@/interfaces";
-import type { Favorite, Episode } from "@/models";
+import type {
+  AnimeDl,
+  MangaDl,
+  Favorite,
+  Chapter,
+  Language,
+} from "@/interfaces";
+import type { Episode } from "@/models";
 import { memoizeExpiring } from "@/utils/memoizedWithTime";
 
 export class DownloadManager {

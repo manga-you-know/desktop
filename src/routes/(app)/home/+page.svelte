@@ -3,7 +3,7 @@
   import { Label } from "@/lib/components";
   import { Item } from "@/lib/components/ui/carousel";
   import { SHOUNENS, SPORTS } from "@/constants";
-  import type { Favorite } from "@/models";
+  import type { Favorite } from "@/interfaces";
   import { FavoriteRepository } from "@/repositories";
 </script>
 
