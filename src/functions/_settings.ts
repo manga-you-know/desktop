@@ -15,9 +15,8 @@ import { goto } from "$app/navigation";
 import { checkForAppUpdates } from "@/functions";
 import type { Language } from "@/interfaces";
 
-const loadedSettings = await load("settings.json");
-
 export async function loadSettings() {
+  const loadedSettings = await load("settings.json");
   const [
     lSelectedSource,
     lAutoSearchUpdates,
@@ -58,6 +57,7 @@ export async function loadSettings() {
 }
 
 export async function saveSettings() {
+  const loadedSettings = await load("settings.json");
   await Promise.all([
     loadedSettings.set("selected_source", get(selectedSource)),
     loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),
@@ -72,6 +72,7 @@ export async function saveSettings() {
 }
 
 export async function resetSettings() {
+  const loadedSettings = await load("settings.json");
   await Promise.all([
     loadedSettings.set("selected_source", "MangaSee"),
     loadedSettings.set("auto_search_updates", true),
