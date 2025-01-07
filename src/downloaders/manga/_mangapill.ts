@@ -1,10 +1,10 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Favorite, Chapter } from "~/models";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class MangaPillDl implements MangaDl {
   baseUrl = "https://mangapill.com";
+  isMultiLanguage = false;
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
@@ -23,7 +23,11 @@ export class MangaPillDl implements MangaDl {
     TE: "trailers",
   };
 
-  async getManga(url: string): Promise<Favorite> {
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
     const response = await fetch(url, { headers: this.headers });
     if (response.status !== 200) {
       throw new Error(`Failed to found manga in url: ${url}`);
@@ -32,14 +36,15 @@ export class MangaPillDl implements MangaDl {
     const $ = cheerio.load(text);
     const img = $("img");
     const splitedUrl = url.split("/");
-    return new Favorite({
+    return {
       name: $(img).attr("alt") ?? "",
       folder_name: splitedUrl[splitedUrl.length - 1],
       cover: $(img).attr("data-src") ?? "",
       source: "MangaPill",
       source_id: splitedUrl.slice(-2, -1).join("/"),
       description: $("p.text-sm.text--secondary").text(),
-    });
+      link: url,
+    };
   }
 
   async search(query: string): Promise<Favorite[]> {
@@ -59,21 +64,19 @@ export class MangaPillDl implements MangaDl {
       .children("div")
       .each((_, div) => {
         const a = $(div).find("a.relative.block");
-        mangas.push(
-          new Favorite({
-            name: $(div).find("a.mb-2").find("div").text(),
-            source_id: a.attr("href")?.replace("/manga/", "") ?? "",
-            folder_name: a.attr("href")?.split("/")[2] ?? "",
-            cover: $(a).find("img").attr("data-src") ?? "",
-            link: `${this.baseUrl}${a.attr("href")}`,
-            source: "MangaPill",
-          })
-        );
+        mangas.push({
+          name: $(div).find("a.mb-2").find("div").text(),
+          source_id: a.attr("href")?.replace("/manga/", "") ?? "",
+          folder_name: a.attr("href")?.split("/")[2] ?? "",
+          cover: $(a).find("img").attr("data-src") ?? "",
+          link: `${this.baseUrl}${a.attr("href")}`,
+          source: "MangaPill",
+        });
       });
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers,
     });
@@ -84,21 +87,19 @@ export class MangaPillDl implements MangaDl {
     const text = await response.text();
     const $ = cheerio.load(text);
     const divChapters = $("div#chapters");
-    console.log(divChapters);
     $(divChapters)
       .find("a")
       .each((_, a) => {
-        chapters.push(
-          new Chapter(
-            $(a).text().split(" ")[1],
-            "",
-            $(a).attr("href")?.replace("/chapters/", "") ?? "",
-            "MangaPill"
-          )
-        );
+        chapters.push({
+          number: $(a).text().split(" ")[1],
+          title: "",
+          chapter_id: $(a).attr("href")?.replace("/chapters/", "") ?? "",
+          source: "MangaPill",
+          language: "default",
+        });
       });
 
-    return { ok: true, chapters: chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

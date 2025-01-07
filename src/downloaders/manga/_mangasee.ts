@@ -1,11 +1,12 @@
 import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import * as cheerio from "cheerio";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class MangaSeeDl implements MangaDl {
   baseUrl = "https://mangasee123.com";
+  isMultiLanguage = false;
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
@@ -26,14 +27,42 @@ export class MangaSeeDl implements MangaDl {
     this.getMangas = memoize(this.getMangas);
   }
 
-  async getManga(url: string): Promise<Favorite> {
-    return new Favorite({
+  async getMangaById(id: string): Promise<Favorite> {
+    const response = await fetch(`${this.baseUrl}/manga/${id}`, {
+      headers: this.headers,
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to get manga ${id} ${response.status}`);
+    }
+    const text = await response.text();
+    const $ = cheerio.load(text);
+    const ul = $("ul.list-group.list-group-flush");
+    const name = $(ul).find("h1").text();
+    const description = $(ul).find("div.top-5.Content").text();
+    const author = $(ul).find("a[href^='/search/?author']").text();
+    return {
+      name: name,
+      folder_name: name,
+      cover: `https://temp.compsci88.com/cover/${id}.jpg`,
+      source: "MangaSee",
+      source_id: id,
+      extra_name: "",
+      link: `${this.baseUrl}/manga/${id}`,
+      grade: 0,
+      author: author,
+      description: description,
+    };
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async getMangas(): Promise<Favorite[]> {
@@ -48,7 +77,7 @@ export class MangaSeeDl implements MangaDl {
       text.split("vm.Directory = ")[1].split(";\r\n")[0]
     );
     return mangaList.map((manga: any) => {
-      var mangaOrdered = new Favorite({
+      return {
         name: manga.s,
         folder_name: manga.i,
         link: `${this.baseUrl}/manga/${manga.i}`,
@@ -59,8 +88,7 @@ export class MangaSeeDl implements MangaDl {
         grade: 0,
         author: manga.a[0] || "",
         description: "",
-      });
-      return mangaOrdered;
+      };
     });
   }
 
@@ -103,7 +131,7 @@ export class MangaSeeDl implements MangaDl {
     return sortedMangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
       headers: this.headers,
     });
@@ -128,16 +156,15 @@ export class MangaSeeDl implements MangaDl {
           : `${Number.parseInt(
               chpt.Chapter.substring(1, lastIndex)
             )}.${chpt.Chapter.charAt(lastIndex)}`;
-      chapters.push(
-        new Chapter(
-          number,
-          chpt.ChapterName,
-          `${mangaId}-chapter-${number}${index}-page-1.html`,
-          "MangaSee"
-        )
-      );
+      chapters.push({
+        number: number,
+        title: chpt.ChapterName,
+        chapter_id: `${mangaId}-chapter-${number}${index}-page-1.html`,
+        source: "MangaSee",
+        language: "default",
+      });
     });
-    return { ok: true, chapters: chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

@@ -1,10 +1,10 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class TaosectDl implements MangaDl {
   baseUrl = "https://taosect.com";
+  isMultiLanguage = false;
   headers = {
     authority: "taosect.com",
     accept:
@@ -22,14 +22,19 @@ export class TaosectDl implements MangaDl {
     "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
   };
-  async getManga(url: string): Promise<Favorite> {
-    return new Favorite({
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async search(query: string): Promise<Favorite[]> {
@@ -49,29 +54,27 @@ export class TaosectDl implements MangaDl {
     posts.each((_, article) => {
       const a = $(article).find("a");
       const coverStyle = $(article).find("div").attr("style") || "";
-      mangas.push(
-        new Favorite({
-          source_id: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
-          name:
-            a
-              .attr("href")
-              ?.split("/")
-              .slice(-2, -1)[0]
-              .replace(/-/g, " ")
-              .toLowerCase()
-              .replace(/\b\w/g, (char) => char.toUpperCase()) || "",
-          folder_name: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
-          cover: coverStyle.match(/url\((.*?)\)/)?.[1] || "",
-          link: a.attr("href") || "",
-          source: "Taosect",
-        })
-      );
+      mangas.push({
+        source_id: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
+        name:
+          a
+            .attr("href")
+            ?.split("/")
+            .slice(-2, -1)[0]
+            .replace(/-/g, " ")
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase()) || "",
+        folder_name: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
+        cover: coverStyle.match(/url\((.*?)\)/)?.[1] || "",
+        link: a.attr("href") || "",
+        source: "Taosect",
+      });
     });
 
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/projeto/${mangaId}`, {
       headers: this.headers,
     });
@@ -96,13 +99,17 @@ export class TaosectDl implements MangaDl {
         )
       ) {
         const id = href?.split("/").slice(-3, -1).join("/");
-        chapters.push(
-          new Chapter(text.split(" ")[1] ?? "0", text, id, "Taosect")
-        );
+        chapters.push({
+          number: text.split(" ")[1] ?? "0",
+          title: text,
+          chapter_id: id,
+          source: "Taosect",
+          language: "default",
+        });
       }
     });
     chapters.reverse();
-    return { ok: true, chapters };
+    return chapters;
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {

@@ -1,10 +1,10 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { ChaptersResponse, MangaDl } from "~/interfaces";
-import { Chapter, Favorite } from "~/models";
+import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
 
 export class MangaReaderToDl implements MangaDl {
   baseUrl = "https://mangareader.to";
+  isMultiLanguage = true;
   headers = {
     accept:
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -24,14 +24,19 @@ export class MangaReaderToDl implements MangaDl {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
   };
 
-  async getManga(url: string): Promise<Favorite> {
-    return new Favorite({
+  getMangaById(id: string): Promise<Favorite> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getMangaByUrl(url: string): Promise<Favorite> {
+    return {
       name: "",
       folder_name: "",
       cover: "",
       source: "",
       source_id: "",
-    });
+      link: "",
+    };
   }
 
   async search(query: string): Promise<Favorite[]> {
@@ -52,22 +57,20 @@ export class MangaReaderToDl implements MangaDl {
     chaptersDiv.each((_, div) => {
       const img = $(div).find("img");
       const a = $(div).find("a[title]");
-      mangas.push(
-        new Favorite({
-          source_id: a.attr("href")?.slice(1) || "",
-          name: a.attr("title") || "",
-          folder_name: a.attr("href")?.slice(1) || "",
-          link: `${this.baseUrl}${a.attr("href")}`,
-          cover: img.attr("src") || "",
-          source: "MangaReaderTo",
-        })
-      );
+      mangas.push({
+        source_id: a.attr("href")?.slice(1) || "",
+        name: a.attr("title") || "",
+        folder_name: a.attr("href")?.slice(1) || "",
+        link: `${this.baseUrl}${a.attr("href")}`,
+        cover: img.attr("src") || "",
+        source: "MangaReaderTo",
+      });
     });
 
     return mangas;
   }
 
-  async getChapters(mangaId: string): Promise<ChaptersResponse> {
+  async getChapters(mangaId: string, language: string): Promise<Chapter[]> {
     const response = await fetch(`${this.baseUrl}/${mangaId}`, {
       headers: this.headers,
     });
@@ -85,17 +88,15 @@ export class MangaReaderToDl implements MangaDl {
       if (!chapters[language]) {
         chapters[language] = [];
       }
-      chapters[language].push(
-        new Chapter(
-          $(li).attr("data-number") || "",
-          a.attr("title") || "",
-          id || "",
-          "MangaReaderTo",
-          language
-        )
-      );
+      chapters[language].push({
+        number: $(li).attr("data-number") || "",
+        title: a.attr("title") || "",
+        chapter_id: id || "",
+        source: "MangaReaderTo",
+        language: language,
+      });
     });
-    return { ok: true, isMultipleLanguage: true, chapters: chapters };
+    return chapters[language];
   }
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(`${this.baseUrl}/read/${chapterId}`, {

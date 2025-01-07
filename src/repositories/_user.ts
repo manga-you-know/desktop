@@ -62,8 +62,6 @@ export async function getDefaultUser(): Promise<User> {
         "SELECT * FROM user WHERE username = ?",
         ["default"]
       );
-      console.log(user);
-      console.log("look up");
       return user[0];
     }
     return user[0];
