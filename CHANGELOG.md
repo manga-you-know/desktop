@@ -1,4 +1,16 @@
-## [0.3.1](https://github.com/manga-you-know/desktop/compare/v0.2.39...v0.3.1) (2025-01-07)
+## [0.3.2](https://github.com/manga-you-know/desktop/compare/v0.3.0...v0.3.2) (2025-01-07)
+
+
+### Bug Fixes
+
+* database not initiating for new users ([de79c5e](https://github.com/manga-you-know/desktop/commit/de79c5e6870938e850fc6584ea048248ec4d266d))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.3.1 [skip ci] ([a657d55](https://github.com/manga-you-know/desktop/commit/a657d55e9c65f3855aef4d2720cb7e93a2c2bbd4))
+
+## [0.3.0](https://github.com/manga-you-know/desktop/compare/v0.2.39...v0.3.0) (2025-01-07)
 
 
 ### New Features
@@ -73,16 +85,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.2.37 [skip ci] ([36ed2fb](https://github.com/manga-you-know/desktop/commit/36ed2fb6752e7201595d3ce64d40acc137a14aea))
-
-## [0.2.36](https://github.com/manga-you-know/desktop/compare/v0.2.35...v0.2.36) (2024-12-02)
-
-
-### Bug Fixes
-
-* build didnt load ([ecacdc3](https://github.com/manga-you-know/desktop/commit/ecacdc36962e40c7441b241132d9a2f5e141c75f))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.36 [skip ci] ([9a4a792](https://github.com/manga-you-know/desktop/commit/9a4a7926475eab9d67d18955d5df9a56bdd65d65))
 
