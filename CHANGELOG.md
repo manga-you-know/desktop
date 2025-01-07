@@ -14,10 +14,12 @@
 
 * build not building LMAO ([59affa0](https://github.com/manga-you-know/desktop/commit/59affa0082a4dd8632f3d2390e2efb19bf847e55))
 * hope this works ([dd83965](https://github.com/manga-you-know/desktop/commit/dd8396593955b3002421a722eb2283d360163901))
+* OMG I THINK I DID IT ([d26c3c8](https://github.com/manga-you-know/desktop/commit/d26c3c8637471ef02233a5ab49a011bc288cd67d))
 
 
 ### Miscellaneous Chores
 
+* **release:** v0.3.1 [skip ci] ([7b9b23d](https://github.com/manga-you-know/desktop/commit/7b9b23dead671ace3d1e7dace14a6eb2c5b1a130))
 * **release:** v0.3.1 [skip ci] ([a83f8bf](https://github.com/manga-you-know/desktop/commit/a83f8bfc7f92a782c5f77b0738af19b9e6d3e9e9))
 * **release:** v0.3.1 [skip ci] ([3787170](https://github.com/manga-you-know/desktop/commit/378717076a223e8c805e70abdd5ba451574e3fd7))
 
