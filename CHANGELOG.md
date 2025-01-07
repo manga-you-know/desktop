@@ -9,6 +9,16 @@
 * ITS BECOMING BEAUTIFUL AND MOST OF THINGS WORK ([e3d70e6](https://github.com/manga-you-know/desktop/commit/e3d70e68ba1592d090af84eb038375c0961c7355))
 * reading is here! ([6166df4](https://github.com/manga-you-know/desktop/commit/6166df45a8f73ba3a1d6c6049abc3e043d718371))
 
+
+### Bug Fixes
+
+* build not building LMAO ([59affa0](https://github.com/manga-you-know/desktop/commit/59affa0082a4dd8632f3d2390e2efb19bf847e55))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.3.1 [skip ci] ([3787170](https://github.com/manga-you-know/desktop/commit/378717076a223e8c805e70abdd5ba451574e3fd7))
+
 ## [0.2.39](https://github.com/manga-you-know/desktop/compare/v0.2.38...v0.2.39) (2024-12-16)
 
 
