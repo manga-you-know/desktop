@@ -12,6 +12,17 @@ const config = {
       "@/*": "./path/to/lib/*",
       "@/*": "./src/*",
     },
+    prerender: {
+      entries: [
+        "/reader/0/0",
+        "/reader/2/1",
+        "/reader/4/2",
+        "/favorites",
+        "/library",
+        "/home",
+        "/",
+      ],
+    },
   },
 };
 
