@@ -1,7 +1,24 @@
-import { FavoriteRepository, ReadedRepository } from "@/repositories";
+import {
+  FavoriteRepository,
+  ReadedRepository,
+  migrationQuery,
+} from "@/repositories";
+import { DATABASE_NAME } from "@/constants";
+import Database from "@tauri-apps/plugin-sql";
 import { libraryFavorites, ultraFavorites } from "@/store";
 import type { Chapter, Favorite } from "@/interfaces";
 import type { Readed } from "@/models";
+
+export async function initDatabase() {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    await db.execute(migrationQuery);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    // db.close()
+  }
+}
 
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(

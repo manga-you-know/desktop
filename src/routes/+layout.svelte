@@ -5,9 +5,9 @@
   import { NinjaKeys } from "ninja-keys";
   import { onMount } from "svelte";
   import { Search, Settings } from "@/components";
-  import { openSearch } from "@/store";
+  import { autoSearchUpdates, defaultPage, openSearch } from "@/store";
   import { shortcuts, Shortcuts } from "svelte-keyboard-shortcuts";
-  import { loadSettings } from "@/functions";
+  import { checkForAppUpdates, initDatabase, loadSettings } from "@/functions";
   let { children } = $props();
   const currentWindow = getCurrentWindow();
 
@@ -30,7 +30,11 @@
     if (ninja) {
       ninja.data = hotkeys;
     }
+    await initDatabase();
     await loadSettings();
+    if ($autoSearchUpdates) {
+      await checkForAppUpdates();
+    }
   });
 </script>
 

@@ -81,3 +81,6 @@
     </Pagination.Root>
   {/if}
 </div>
+{#each $libraryFavorites.map((_) => _.cover) as image}
+  <img class="hidden" src={image} alt="Prefetched" data-sveltekit-prefetch />
+{/each}

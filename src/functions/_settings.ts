@@ -47,12 +47,8 @@ export async function loadSettings() {
   orderBy.set(lOrderBy ?? "id");
   isAscending.set(lIsAscending ?? true);
   defaultPage.set(lDefaultPage ?? "home");
-
   if (get(defaultPage) !== "home") {
     goto(`/${get(defaultPage)}`);
-  }
-  if (get(autoSearchUpdates)) {
-    await checkForAppUpdates();
   }
 }
 
