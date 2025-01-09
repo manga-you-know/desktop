@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@/app.css";
   import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { type } from "@tauri-apps/plugin-os";
   import { ModeWatcher } from "mode-watcher";
   import { NinjaKeys } from "ninja-keys";
   import { onMount } from "svelte";
@@ -9,8 +10,10 @@
   import { shortcuts, Shortcuts } from "svelte-keyboard-shortcuts";
   import { checkForAppUpdates, initDatabase, loadSettings } from "@/functions";
   let { children } = $props();
-  const currentWindow = getCurrentWindow();
 
+  const os = type();
+
+  const currentWindow = getCurrentWindow();
   interface Event {
     key: string;
   }
@@ -32,8 +35,10 @@
     }
     await initDatabase();
     await loadSettings();
-    if ($autoSearchUpdates) {
-      await checkForAppUpdates();
+    if (os === "windows" || os === "linux" || os === "macos") {
+      if ($autoSearchUpdates) {
+        await checkForAppUpdates();
+      }
     }
   });
 </script>

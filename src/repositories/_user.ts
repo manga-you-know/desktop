@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
-import { DATABASE_NAME } from "~/constants";
-import type { User } from "~/models";
+import { DATABASE_NAME } from "@/constants";
+import type { User } from "@/models";
 
 export async function createUser(user: User): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);

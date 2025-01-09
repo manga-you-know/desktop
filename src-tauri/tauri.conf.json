@@ -5,7 +5,7 @@
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:5174",
     "beforeDevCommand": "bun dev",
     "beforeBuildCommand": "bun run build"
   },
@@ -27,9 +27,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$DESKTOP/series/**"
-        ]
+        "scope": ["$DESKTOP/series/**"]
       }
     }
   },

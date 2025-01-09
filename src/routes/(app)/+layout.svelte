@@ -1,14 +1,23 @@
 <script>
+  import { type } from "@tauri-apps/plugin-os";
   import { Sidebar as SidebarProv } from "@/lib/components";
-  import { Sidebar } from "@/components";
+  import { Sidebar, BottomNavigation } from "@/components";
   let { children } = $props();
+  const os = type();
 </script>
 
-<div class="w-screen h-screen flex select-none overflow-hidden">
-  <SidebarProv.Provider open={false}>
-    <Sidebar />
-    <SidebarProv.Inset class="p-2">
-      {@render children?.()}
-    </SidebarProv.Inset>
-  </SidebarProv.Provider>
-</div>
+{#if os === "windows" || os === "linux" || os === "macos"}
+  <div class="w-screen h-screen flex select-none overflow-hidden">
+    <SidebarProv.Provider open={false}>
+      <Sidebar />
+      <SidebarProv.Inset class="p-2">
+        {@render children?.()}
+      </SidebarProv.Inset>
+    </SidebarProv.Provider>
+  </div>
+{:else}
+  <div class="w-screen h-screen flex flex-col select-none overflow-hidden">
+    {@render children?.()}
+    <BottomNavigation />
+  </div>
+{/if}

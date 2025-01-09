@@ -2,6 +2,7 @@
 export { default as Carousel } from "./common/Carousel.svelte";
 export { default as Tooltip } from "./common/Tooltip.svelte";
 export { default as Sidebar } from "./common/Sidebar.svelte";
+export { default as BottomNavigation } from "./common/BottomNavigation.svelte";
 // Buttons
 export { default as ChapterButton } from "./buttons/ChapterButton.svelte";
 // Inputs

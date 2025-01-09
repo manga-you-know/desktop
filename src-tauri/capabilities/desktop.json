@@ -1,11 +1,12 @@
 {
-  "identifier": "desktop-capability",
-  "platforms": [
-    "macOS",
-    "windows",
-    "linux"
-  ],
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop",
+  "description": "persmissions just for Desktop",
+  "windows": ["*"],
+  "platforms": ["macOS", "windows", "linux"],
   "permissions": [
-    "updater:default"
+    "updater:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }

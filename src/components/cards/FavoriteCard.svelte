@@ -107,13 +107,10 @@
         </Badge>
 
         <div
-          class="w-full h-full p-2 fixed flex flex-col justify-end items-start"
+          class={`w-full h-full p-2 fixed flex flex-col justify-end items-start ${toReadCount > 0 ? "" : "opacity-40"}`}
         >
           <Tooltip text={`${chapters.length - toReadCount}/${chapters.length}`}>
-            <Badge
-              class="min-w-10 h-10 mb-1 rounded-full text-center"
-              {variant}
-            >
+            <Badge class="min-w-10 h-10 mb-1 rounded-xl text-center" {variant}>
               {#if isLoading}
                 <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5" />
               {:else if toReadCount > 0}

@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Carousel, SuggestionCard } from "@/components";
-  import { Label } from "@/lib/components";
+  import { Button, Label } from "@/lib/components";
   import { Item } from "@/lib/components/ui/carousel";
   import { SHOUNENS, SPORTS } from "@/constants";
   import type { Favorite } from "@/interfaces";
   import { FavoriteRepository } from "@/repositories";
+  import { openSearch } from "@/store";
 </script>
 
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
@@ -13,9 +14,11 @@
   class="w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
 >
   <div
-    class="w-full h-full flex justify-center items-center pt-[30px] gap-10 mr-20"
+    class="w-full h-full flex justify-center flex-col-reverse md:flex-row items-center pt-[30px] gap-10 md:mr-20"
   >
-    <div class="h-full mt-12 flex flex-col justify-center items-center gap-2">
+    <div
+      class="h-full md:mt-12 flex flex-col justify-center items-center gap-2"
+    >
       <span class="font-[Minecraft] text-xl text-[#88105a]">
         Welcome to MangaYouKnow!
       </span>
