@@ -1,20 +1,13 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
 import { searchTerm, orderBy, isAscending } from "@/store";
-// import { MarkRepository } from "../repositories";
+import { UserRepository } from "@/repositories";
 import type { Favorite } from "@/interfaces";
 import type { Mark, User } from "@/models";
 import { get } from "svelte/store";
 
 export async function createFavorite(favorite: Favorite): Promise<void> {
-  const user = {
-    id: 1,
-    icon: "",
-    username: "",
-    email: "",
-    password: "",
-    is_authenticated: true,
-  };
+  const user = await UserRepository.getDefaultUser();
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
