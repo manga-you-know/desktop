@@ -1,8 +1,9 @@
-## [0.3.3](https://github.com/manga-you-know/desktop/compare/v0.3.2...v0.3.3) (2025-01-09)
+## [0.3.4](https://github.com/manga-you-know/desktop/compare/v0.3.2...v0.3.4) (2025-01-15)
 
 
 ### New Features
 
+* ANIME PLAYER!!! ([af277f9](https://github.com/manga-you-know/desktop/commit/af277f9f4431233bc95f8e99fd836b8261fd6593))
 * start working on mobile app! ([3b6e55a](https://github.com/manga-you-know/desktop/commit/3b6e55ac6d496c7f896b69f0735cfadfaad67e3a))
 
 
@@ -10,7 +11,19 @@
 
 * default user missing ([56011c1](https://github.com/manga-you-know/desktop/commit/56011c1f5830959b6c6c9914f842ba666ff8fba0))
 
-## [0.3.2](https://github.com/manga-you-know/desktop/compare/v0.3.0...v0.3.2) (2025-01-07)
+
+### Miscellaneous Chores
+
+* **release:** v0.3.3 [skip ci] ([e570c29](https://github.com/manga-you-know/desktop/commit/e570c29b4b97cb7f4af7bc3ed1fdc475181bab82))
+
+## [0.3.2](https://github.com/manga-you-know/desktop/compare/v0.3.1...v0.3.2) (2025-01-07)
+
+
+### Miscellaneous Chores
+
+* **release:** v0.3.2 [skip ci] ([e6a0ae4](https://github.com/manga-you-know/desktop/commit/e6a0ae4d5cd0423c68e244cc674e8c6273499316))
+
+## [0.3.1](https://github.com/manga-you-know/desktop/compare/v0.3.0...v0.3.1) (2025-01-07)
 
 
 ### Bug Fixes
@@ -21,7 +34,6 @@
 ### Miscellaneous Chores
 
 * **release:** v0.3.1 [skip ci] ([a657d55](https://github.com/manga-you-know/desktop/commit/a657d55e9c65f3855aef4d2720cb7e93a2c2bbd4))
-* **release:** v0.3.2 [skip ci] ([e6a0ae4](https://github.com/manga-you-know/desktop/commit/e6a0ae4d5cd0423c68e244cc674e8c6273499316))
 
 ## [0.3.0](https://github.com/manga-you-know/desktop/compare/v0.2.39...v0.3.0) (2025-01-07)
 
@@ -69,21 +81,4 @@
 
 * **release:** v0.2.39 [skip ci] ([3c8f2a1](https://github.com/manga-you-know/desktop/commit/3c8f2a1fa480a95a24c41cf6712785dfa54426de))
 * **release:** v0.2.39 [skip ci] ([84ac256](https://github.com/manga-you-know/desktop/commit/84ac256585ec5b4bd43f33ce4198806c44ab192b))
-
-## [0.2.38](https://github.com/manga-you-know/desktop/compare/v0.2.37...v0.2.38) (2024-12-05)
-
-
-### Bug Fixes
-
-* little things... ([e000ebf](https://github.com/manga-you-know/desktop/commit/e000ebf17c0333294c639fd9cd809abcc2b0abdc))
-
-
-### Styles
-
-* change icon again ([6067a6a](https://github.com/manga-you-know/desktop/commit/6067a6a7b8d3e143ceeb22c4c1ecbad8882e675f))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.38 [skip ci] ([6b00ec9](https://github.com/manga-you-know/desktop/commit/6b00ec975f515d7aa50db9b5dd486f8d4595d1f6))
 
