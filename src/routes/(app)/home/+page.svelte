@@ -14,10 +14,10 @@
   class="w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
 >
   <div
-    class="w-full h-full flex justify-center flex-col-reverse md:flex-row items-center pt-[30px] gap-10 md:mr-20"
+    class="w-full h-full flex justify-center flex-col-reverse sm:flex-row items-center pt-[30px] gap-10 md:mr-20"
   >
     <div
-      class="h-full md:mt-12 flex flex-col justify-center items-center gap-2"
+      class="h-full sm:mt-12 flex flex-col justify-center items-center gap-2"
     >
       <span class="font-[Minecraft] text-xl text-[#88105a]">
         Welcome to MangaYouKnow!

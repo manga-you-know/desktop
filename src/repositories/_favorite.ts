@@ -11,7 +11,7 @@ export async function createFavorite(favorite: Favorite): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
-      "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         user.id,
         favorite.name,
@@ -20,13 +20,16 @@ export async function createFavorite(favorite: Favorite): Promise<void> {
         favorite.link,
         favorite.source,
         favorite.source_id,
-        favorite.type,
+        favorite.type ?? "manga",
         favorite.extra_name,
         favorite.title_color,
         favorite.card_color,
         favorite.grade,
         favorite.author,
         favorite.description,
+        favorite.status ?? "",
+        favorite.mal_id ?? "",
+        favorite.anilist_id ?? "",
       ]
     );
   } catch (error) {

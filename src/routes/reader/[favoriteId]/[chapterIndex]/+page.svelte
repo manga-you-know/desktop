@@ -1,10 +1,9 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { shortcuts } from "svelte-keyboard-shortcuts";
-  import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
   import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
-  import { addReadedBelow } from "@/functions";
+  import { addReadedBelow, setFullscreen, toggleFullscreen } from "@/functions";
   import type { Favorite, Chapter } from "@/interfaces";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
   import {
@@ -29,21 +28,6 @@
     Number(chapterIndex) === $globalChapters.length - 1
   );
   let currentlyImage = $state("/myk.png");
-  const currentWindow = getCurrentWindow();
-  onMount(async () => {
-    if ($autoEnterFullscreen) {
-      currentWindow.setFullscreen(true);
-    }
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
-    const chapterImages = await $downloadManager.getChapterImages(chapter);
-    images = chapterImages;
-    currentlyImage = images[0];
-    totalPage = images.length;
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
-    readeds.set(newReadeds);
-  });
-
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
@@ -79,6 +63,31 @@
       await goto(`/reader/${favoriteId}/${Number(chapterIndex) + 1}`);
     }
   }
+  onMount(async () => {
+    if ($autoEnterFullscreen) {
+      await setFullscreen(true);
+    }
+    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    const chapterImages = await $downloadManager.getChapterImages(chapter);
+    images = chapterImages;
+    currentlyImage = images[0];
+    totalPage = images.length;
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    readeds.set(newReadeds);
+    await unregister("ArrowLeft");
+    await unregister("ArrowRight");
+    await register("ArrowLeft", async (e) => {
+      if (e.state === "Pressed") {
+        prevPage();
+      }
+    });
+    await register("ArrowRight", async (e) => {
+      if (e.state === "Pressed") {
+        nextPage();
+      }
+    });
+  });
 </script>
 
 <div
@@ -96,14 +105,12 @@
     class="w-[50%] cursor-default outline-none border-none"
     tabindex="-1"
     onclick={prevPage}
-    use:shortcuts={{ keys: ["ArrowLeft"] }}
   ></button>
   <button
     aria-label="Next"
     class="w-[50%] cursor-default outline-none border-none"
     tabindex="-1"
     onclick={nextPage}
-    use:shortcuts={{ keys: ["ArrowRight"] }}
   ></button>
 </div>
 <div
@@ -120,7 +127,7 @@
       variant="outline"
       onclick={async () => {
         goto(`/${$defaultPage}`);
-        currentWindow.setFullscreen(false);
+        setFullscreen(false);
       }}><Icon icon="lucide:home" /></Button
     >
     <HoverCard.Root openDelay={50} closeDelay={100}>
@@ -174,9 +181,7 @@
       class="pointer-events-auto z-50"
       size="sm"
       variant="outline"
-      onclick={async () => {
-        currentWindow.setFullscreen(!(await currentWindow.isFullscreen()));
-      }}
+      onclick={async () => await toggleFullscreen()}
     >
       <Icon icon="lucide:maximize" />
     </Button>

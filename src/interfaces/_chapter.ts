@@ -4,4 +4,5 @@ export interface Chapter {
   chapter_id: string;
   source: string;
   language?: string;
+  thumbnail?: string;
 }

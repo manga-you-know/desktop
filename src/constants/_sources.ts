@@ -29,3 +29,5 @@ export const MANGASOURCE_LANGUAGE: { [key: string]: string } = {
   // MangaPill: "English",
   Taosect: "Português",
 };
+
+export const ANIMESOURCES: Source[] = [{ name: "Aniplay", language: "Multi" }];

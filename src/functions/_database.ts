@@ -1,18 +1,40 @@
 import {
   FavoriteRepository,
   ReadedRepository,
-  migrationQuery,
+  DATABASE_INIT,
+  DATABASE_MIGRATION,
 } from "@/repositories";
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
-import { libraryFavorites, ultraFavorites } from "@/store";
+import { libraryFavorites, readeds, ultraFavorites } from "@/store";
 import type { Chapter, Favorite } from "@/interfaces";
 import type { Readed } from "@/models";
 
 export async function initDatabase() {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
-    await db.execute(migrationQuery);
+    await db.execute(DATABASE_INIT);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    // db.close()
+  }
+}
+
+export async function migrateDatabase() {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    const databaseInfo: { name: string }[] = await db.select(
+      "PRAGMA table_info(favorite);"
+    );
+    const columns = databaseInfo.map((column) => column.name);
+    for (const migration of DATABASE_MIGRATION) {
+      if (columns.includes(migration.name)) continue;
+      await db.execute(
+        `ALTER TABLE favorite ADD COLUMN ${migration.name} ${migration.type} DEFAULT "?";`,
+        [migration.default]
+      );
+    }
   } catch (error) {
     console.log(error);
   } finally {
@@ -23,7 +45,7 @@ export async function initDatabase() {
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(
     (r) =>
-      r.chapter_id === chapter.chapter_id && r.language === chapter.language
+      r.chapter_id === chapter.chapter_id && r?.language == chapter?.language
   );
 }
 
@@ -84,4 +106,9 @@ export async function refreshLibrary() {
 export async function refreshFavorites() {
   const favs = await FavoriteRepository.getUltraFavorites();
   ultraFavorites.set(favs);
+}
+
+export async function refreshReadeds(favorite: Favorite) {
+  const newReadeds = await ReadedRepository.getReadeds(favorite);
+  readeds.set(newReadeds);
 }

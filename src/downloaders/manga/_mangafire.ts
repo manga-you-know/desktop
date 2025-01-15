@@ -35,10 +35,7 @@ export class MangaFireDl implements MangaDl {
 
   async search(query: string): Promise<Favorite[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/manga/search?keyword=${query}`,
-      {
-        headers: this.headers,
-      }
+      `${this.baseUrl}/ajax/manga/search?keyword=${query}`
     );
     if (response.status !== 200) {
       throw new Error(`Failed to search ${response.status}`);
@@ -73,9 +70,7 @@ export class MangaFireDl implements MangaDl {
   }
 
   async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
-    const response = await fetch(`${this.baseUrl}/manga/${favoriteId}`, {
-      headers: this.headers,
-    });
+    const response = await fetch(`${this.baseUrl}/manga/${favoriteId}`, {});
     if (response.status !== 200) {
       throw new Error(
         `Failed to get favorite languages ${favoriteId} ${response.status}`
@@ -104,10 +99,7 @@ export class MangaFireDl implements MangaDl {
     language: string = "en"
   ): Promise<Chapter[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/read/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`,
-      {
-        headers: this.headers,
-      }
+      `${this.baseUrl}/ajax/read/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
@@ -135,10 +127,7 @@ export class MangaFireDl implements MangaDl {
 
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/read/chapter/${chapterId}`,
-      {
-        headers: this.headers,
-      }
+      `${this.baseUrl}/ajax/read/chapter/${chapterId}`
     );
     if (response.status !== 200) {
       throw new Error(

@@ -3,10 +3,11 @@
   import Icon from "@iconify/svelte";
   import { Button, Badge, Label } from "@/lib/components";
   import {
-    FavoriteModal,
+    ReadFavorite,
     EditFavorite,
     AskDelete,
     Tooltip,
+    WatchFavorite,
   } from "@/components";
   import { downloadManager, globalChapters, preferableLanguage } from "@/store";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
@@ -70,7 +71,11 @@
   });
 </script>
 
-<FavoriteModal {favorite} bind:open={isOpen} />
+{#if favorite.type === "anime"}
+  <WatchFavorite {favorite} bind:open={isOpen} />
+{:else}
+  <ReadFavorite {favorite} bind:open={isOpen} />
+{/if}
 <EditFavorite {favorite} bind:open={isEdit} />
 <AskDelete {favorite} bind:open={isDelete} />
 <ContextMenu.Root
@@ -107,7 +112,7 @@
         </Badge>
 
         <div
-          class={`w-full h-full p-2 fixed flex flex-col justify-end items-start ${toReadCount > 0 ? "" : "opacity-40"}`}
+          class={`w-full h-full p-2 fixed flex flex-col justify-end items-start ${toReadCount > 0 ? "" : "opacity-40"} group-hover:opacity-100`}
         >
           <Tooltip text={`${chapters.length - toReadCount}/${chapters.length}`}>
             <Badge class="min-w-10 h-10 mb-1 rounded-xl text-center" {variant}>
@@ -150,7 +155,12 @@
               tabindex={-1}
               {variant}
             >
-              <Icon icon="lucide:book-open-text" class="w-4 h-4" />
+              <Icon
+                icon={favorite.type === "anime"
+                  ? "lucide:tv-minimal-play"
+                  : "lucide:book-open-text"}
+                class="w-4 h-4"
+              />
             </Button>
             <Button
               class="rounded-t-none rounded-b-xl"
@@ -171,7 +181,11 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content class="!w-14 m-0">
     <ContextMenu.Item class="gap-4"
-      ><Icon icon="lucide:book-open-text" />
+      ><Icon
+        icon={favorite.type === "anime"
+          ? "lucide:tv-minimal-play"
+          : "lucide:book-open-text"}
+      />
       <Label>Open</Label>
     </ContextMenu.Item>
     <ContextMenu.Item

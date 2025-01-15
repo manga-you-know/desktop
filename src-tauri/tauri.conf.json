@@ -20,16 +20,17 @@
         "minHeight": 400,
         "minWidth": 640,
         "center": true,
-        "decorations": true
+        "theme": "Dark",
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "backgroundColor": "#18181b"
       }
     ],
     "security": {
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$DESKTOP/series/**"
-        ]
+        "scope": ["$DESKTOP/series/**"]
       }
     }
   },

@@ -1,8 +1,8 @@
-import type { Episode } from "@/models";
-import type { Favorite, Chapter } from "@/interfaces";
+import type { Favorite, Chapter, Episode } from "@/interfaces";
 
 export interface AnimeDl {
+  baseUrl: string;
   search(query: string): Promise<Favorite[]>;
-  getEpisodes(mangaId: string): Promise<Chapter[]>;
-  getEpisodeUrls(chapterId: string): Promise<Episode[]>;
+  getEpisodes(animeId: string): Promise<Chapter[]>;
+  getEpisodeContent(chapterId: string): Promise<Episode>;
 }

@@ -1,4 +1,4 @@
-export const migrationQuery = `
+export const DATABASE_INIT = `
 -- User table
 CREATE TABLE IF NOT EXISTS user (
   id                 INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,10 +20,13 @@ CREATE TABLE IF NOT EXISTS favorite (
   source             TEXT NOT NULL,
   source_id          TEXT NOT NULL,
   type               TEXT DEFAULT 'manga',
+  status             TEXT DEFAULT 'on hold',
   extra_name         TEXT DEFAULT '',
   title_color        TEXT DEFAULT '',
   card_color         TEXT DEFAULT '',
   grade              REAL DEFAULT 0.0,
+  anilist_id         TEXT DEFAULT '',
+  mal_id             TEXT DEFAULT '',
   author             TEXT DEFAULT 'Unknow',
   is_ultra_favorite  BOOLEAN DEFAULT false,
   description        TEXT DEFAULT '',
@@ -59,7 +62,15 @@ CREATE TABLE IF NOT EXISTS mark_favorites (
   FOREIGN KEY (mark_id) REFERENCES mark(id),
   FOREIGN KEY (favorite_id) REFERENCES favorite(id)
 );
-
--- changes
-ALTER TABLE favorite ADD COLUMN link TEXT NOT NULL DEFAULT '';
 `;
+
+export const DATABASE_MIGRATION: {
+  name: string;
+  type: string;
+  default: string | null;
+}[] = [
+  { name: "link", type: "TEXT", default: null },
+  { name: "status", type: "TEXT", default: null },
+  { name: "mal_id", type: "TEXT", default: null },
+  { name: "anilist_id", type: "TEXT", default: null },
+];

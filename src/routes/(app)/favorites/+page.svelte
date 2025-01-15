@@ -14,7 +14,7 @@
   <div class="h-14 flex relative top-0"></div>
 
   <div
-    class="flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
+    class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
   >
     {#each $ultraFavorites as favorite}
       <FavoriteCard {favorite} />

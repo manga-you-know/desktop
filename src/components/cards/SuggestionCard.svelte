@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Badge, Tooltip } from "@/lib/components";
   import Icon from "@iconify/svelte";
-  import { FavoriteModal, EditFavorite, AskDelete } from "@/components";
+  import { ReadFavorite, EditFavorite, AskDelete } from "@/components";
   import type { Suggestion } from "@/interfaces";
   import { FavoriteRepository } from "@/repositories";
 

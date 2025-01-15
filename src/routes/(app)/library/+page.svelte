@@ -32,7 +32,7 @@
   </div>
   <div
     bind:this={favoriteDiv}
-    class="flex flex-wrap content-start gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
+    class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
     {#each displayedFavorites as favorite}
       <LibraryCard {favorite} />

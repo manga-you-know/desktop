@@ -25,7 +25,7 @@
     preferableLanguage,
   } from "@/store";
   import { ReadedRepository } from "@/repositories";
-  import { addReadedBelow, isReaded } from "@/functions";
+  import { addReadedBelow, isReaded, refreshReadeds } from "@/functions";
   import type {
     Favorite,
     Chapter,
@@ -65,10 +65,6 @@
     }
   }
 
-  async function refreshReadeds() {
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
-    readeds.set(newReadeds);
-  }
   async function downloadAll() {
     isDownloadingAll = true;
     const batchSize = 5;
@@ -129,7 +125,7 @@
           await new Promise((resolve) => setTimeout(resolve, 10));
           globalChapters.set(result);
         }
-        await refreshReadeds();
+        await refreshReadeds(favorite);
         isFetching = false;
       })();
     }
@@ -164,7 +160,7 @@
               favorite,
               selectedLanguage2.id
             );
-            await refreshReadeds();
+            await refreshReadeds(favorite);
             await new Promise((resolve) => setTimeout(resolve, 10));
             globalChapters.set(result);
             isFetching = false;
@@ -237,7 +233,7 @@
                   onreadclick={async (e: Event) => {
                     e.stopPropagation();
                     await addReadedBelow(chapter, $globalChapters, favorite);
-                    await refreshReadeds();
+                    await refreshReadeds(favorite);
                   }}
                 />
               {/each}

@@ -7,8 +7,8 @@
 </script>
 
 {#if os === "windows" || os === "linux" || os === "macos"}
-  <div class="w-screen h-screen flex select-none overflow-hidden">
-    <SidebarProv.Provider open={false}>
+  <div class="w-full h-screen flex select-none overflow-hidden">
+    <SidebarProv.Provider class="!h-full" open={false}>
       <Sidebar />
       <SidebarProv.Inset class="p-2">
         {@render children?.()}

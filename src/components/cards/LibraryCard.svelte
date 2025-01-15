@@ -1,7 +1,12 @@
 <script lang="ts">
   import { Button, Badge, Tooltip, Label } from "@/lib/components";
   import Icon from "@iconify/svelte";
-  import { FavoriteModal, EditFavorite, AskDelete } from "@/components";
+  import {
+    ReadFavorite,
+    WatchFavorite,
+    EditFavorite,
+    AskDelete,
+  } from "@/components";
   import type { Favorite } from "@/interfaces";
   import { FavoriteRepository } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
@@ -21,7 +26,11 @@
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
 </script>
 
-<FavoriteModal {favorite} bind:open={isOpen} />
+{#if favorite.type === "anime"}
+  <WatchFavorite {favorite} bind:open={isOpen} />
+{:else}
+  <ReadFavorite {favorite} bind:open={isOpen} />
+{/if}
 <EditFavorite {favorite} bind:open={isEdit} />
 <AskDelete {favorite} bind:open={isDelete} />
 <ContextMenu.Root
@@ -73,7 +82,12 @@
                 isOpen = true;
               }}
             >
-              <Icon icon="lucide:book-open-text" class="w-4 h-4" />
+              <Icon
+                icon={favorite.type === "anime"
+                  ? "lucide:tv-minimal-play"
+                  : "lucide:book-open-text"}
+                class="w-4 h-4"
+              />
             </Button>
             <Button
               class="rounded-none !mx-[-0.7px]"
@@ -106,7 +120,11 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content class="!w-14 m-0">
     <ContextMenu.Item class="gap-4"
-      ><Icon icon="lucide:book-open-text" />
+      ><Icon
+        icon={favorite.type === "anime"
+          ? "lucide:tv-minimal-play"
+          : "lucide:book-open-text"}
+      />
       <Label>Open</Label>
     </ContextMenu.Item>
     <ContextMenu.Item

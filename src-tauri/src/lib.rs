@@ -1,4 +1,5 @@
 use utils::hashmap::{get_data, set_data};
+use utils::request::{get_aniplay_chapters, get_aniplay_episode};
 
 mod utils;
 
@@ -6,8 +7,13 @@ mod utils;
 pub fn run() {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            set_data, 
+            get_data, 
+            get_aniplay_chapters, 
+            get_aniplay_episode
+        ])
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![set_data, get_data])
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
@@ -19,7 +25,14 @@ pub fn run() {
         .plugin(tauri_plugin_http::init());
     #[cfg(desktop)]
     {
-        builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
+        builder = builder
+            .plugin(tauri_plugin_window_state::Builder::default().build())
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_autostart::init(
+                tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+                Some(vec!["--flag1", "--flag2"]),
+            ))
+            .plugin(tauri_plugin_global_shortcut::Builder::new().build());
     }
     builder.run(tauri::generate_context!()).unwrap()
 }

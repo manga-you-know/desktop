@@ -66,9 +66,7 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getMangas(): Promise<Favorite[]> {
-    const response = await fetch(`${this.baseUrl}/search`, {
-      headers: this.headers,
-    });
+    const response = await fetch(`${this.baseUrl}/search`, {});
     if (response.status !== 200) {
       throw new Error(`Failed to get mangas ${response.status}`);
     }
@@ -132,9 +130,7 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
-    const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {
-      headers: this.headers,
-    });
+    const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {});
     //@ts-ignore
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
@@ -168,9 +164,10 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/read-online/${chapterId}`, {
-      headers: this.headers,
-    });
+    const response = await fetch(
+      `${this.baseUrl}/read-online/${chapterId}`,
+      {}
+    );
     if (response.status !== 200) {
       throw new Error(
         `Failed to get chapter images ${chapterId} ${response.status}`

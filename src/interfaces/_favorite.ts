@@ -10,10 +10,13 @@ export interface Favorite {
   cover: string;
   source: string;
   source_id: string;
-  type?: string;
+  type?: "manga" | "comic" | "anime";
   extra_name?: string;
   title_color?: string;
   card_color?: string;
+  mal_id?: string;
+  anilist_id?: string;
+  status?: string;
   grade?: number;
   author?: string;
   is_ultra_favorite?: boolean;

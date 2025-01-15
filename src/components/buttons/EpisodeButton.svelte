@@ -1,0 +1,72 @@
+<script lang="ts">
+  import { Button, Label } from "@/lib/components";
+  import type { Chapter, Favorite } from "@/interfaces";
+  import Icon from "@iconify/svelte";
+  import {
+    addReadedBelow,
+    refreshReadeds,
+    isReaded,
+    openPlayer,
+  } from "@/functions";
+  import { downloadManager, globalChapters, readeds } from "@/store";
+
+  interface Event {
+    stopPropagation: () => void;
+  }
+
+  interface Props {
+    favorite: Favorite;
+    chapter: Chapter;
+    isWatching: boolean;
+  }
+
+  let { favorite, chapter, isWatching = $bindable(false) }: Props = $props();
+
+  async function openEpisode() {
+    isWatching = true;
+    const episode = await $downloadManager.getEpisodeContent(chapter);
+    await openPlayer(episode, chapter.title);
+    await addReadedBelow(chapter, $globalChapters, favorite);
+    await refreshReadeds(favorite);
+    isWatching = false;
+  }
+</script>
+
+<Button
+  class="w-24 h-20 group relative flex justify-between items-center rounded-md group"
+  variant="ghost"
+  size="sm"
+  onclick={openEpisode}
+>
+  <img
+    src={chapter.thumbnail ?? "/myk.png"}
+    alt={chapter.title}
+    class="w-20 h-14 object-cover"
+  />
+  <div
+    class="absolute top-0 left-0 w-full h-full flex flex-col justify-between items-center"
+  >
+    <Label
+      class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start text-xs bg-black"
+    >
+      {chapter.number}: {chapter.title}
+    </Label>
+    <Button
+      class="h-7 w-7 group-hover:bg-gray-700"
+      variant="ghost"
+      size="sm"
+      tabindex={-1}
+      onclick={async (e: Event) => {
+        e.stopPropagation();
+        await addReadedBelow(chapter, $globalChapters, favorite);
+        await refreshReadeds(favorite);
+      }}
+      ><Icon
+        icon={isReaded(chapter, $readeds) !== undefined
+          ? "lucide:check"
+          : "lucide:minus"}
+        class="w-5 h-5"
+      />
+    </Button>
+  </div>
+</Button>

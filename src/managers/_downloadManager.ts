@@ -2,6 +2,7 @@ import { memoize } from "lodash";
 import { fetch } from "@tauri-apps/plugin-http";
 import { mkdir, writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import {
+  // MangaDl
   MangaDexDl,
   MangaReaderToDl,
   MangaSeeDl,
@@ -9,15 +10,17 @@ import {
   MangaPillDl,
   TaosectDl,
   MangaFireDl,
-} from "@/downloaders/manga";
+  // AnimeDl
+  AniplayDl,
+} from "@/downloaders";
 import type {
   AnimeDl,
   MangaDl,
   Favorite,
   Chapter,
+  Episode,
   Language,
 } from "@/interfaces";
-import type { Episode } from "@/models";
 import { memoizeExpiring } from "@/utils/memoizedWithTime";
 
 export class DownloadManager {
@@ -52,10 +55,13 @@ export class DownloadManager {
       MangaFire: new MangaFireDl(),
       MangaReaderTo: new MangaReaderToDl(),
     };
+    this.animeSources = {
+      Aniplay: new AniplayDl(),
+    };
     this.search = this.search.bind(this);
     this.getChapters = this.getChapters.bind(this);
     this.getEpisodes = this.getEpisodes.bind(this);
-    this.getEpisodeUrls = this.getEpisodeUrls.bind(this);
+    this.getEpisodeContent = this.getEpisodeContent.bind(this);
     this.getChapterImages = this.getChapterImages.bind(this);
     this.getFavoriteLanguages = this.getFavoriteLanguages.bind(this);
 
@@ -64,7 +70,7 @@ export class DownloadManager {
     this.getChapters = memoizeExpiring(this.getChapters, 600);
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getChapterImages = memoize(this.getChapterImages);
-    this.getEpisodeUrls = memoize(this.getEpisodeUrls);
+    this.getEpisodeContent = memoize(this.getEpisodeContent);
     this.getMangaById = memoize(this.getMangaById);
     this.getMangaByUrl = memoize(this.getMangaByUrl);
   }
@@ -77,23 +83,27 @@ export class DownloadManager {
     return this.animeSources[source];
   }
 
+  getSource(source: string): MangaDl | AnimeDl {
+    return this.getMangaSource(source) || this.getAnimeSource(source);
+  }
+
   isMultiLanguage(source: string): boolean {
-    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    const sourceDl = this.getMangaSource(source);
     return sourceDl.isMultiLanguage;
   }
 
   async getMangaByUrl(url: string, source: string): Promise<Favorite> {
-    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    const sourceDl = this.getMangaSource(source);
     return await sourceDl.getMangaByUrl(url);
   }
 
   async getMangaById(id: string, source: string): Promise<Favorite> {
-    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    const sourceDl = this.getMangaSource(source);
     return await sourceDl.getMangaById(id);
   }
 
   async search(query: string, source: string): Promise<Favorite[]> {
-    const sourceDl = this.getMangaSource(source) || this.getAnimeSource(source);
+    const sourceDl = this.getSource(source);
     return await sourceDl.search(query);
   }
 
@@ -112,18 +122,19 @@ export class DownloadManager {
       : await sourceDl.getChapters(favorite.source_id);
   }
 
-  async getEpisodes(anime_id: string, source: string): Promise<Chapter[]> {
-    const sourceDl = this.getAnimeSource(source);
-    return await sourceDl.getEpisodes(anime_id);
+  async getEpisodes(favorite: Favorite): Promise<Chapter[]> {
+    const sourceDl = this.getAnimeSource(favorite.source);
+    return await sourceDl.getEpisodes(favorite.source_id);
   }
 
   async getChapterImages(chapter: Chapter): Promise<string[]> {
     const sourceDl = this.getMangaSource(chapter.source);
     return await sourceDl.getChapterImages(chapter.chapter_id);
   }
-  async getEpisodeUrls(episode_id: string, source: string): Promise<Episode[]> {
-    const sourceDl = this.getAnimeSource(source);
-    return await sourceDl.getEpisodeUrls(episode_id);
+
+  async getEpisodeContent(chapter: Chapter): Promise<Episode> {
+    const sourceDl = this.getAnimeSource(chapter.source);
+    return await sourceDl.getEpisodeContent(chapter.chapter_id);
   }
 
   async getImageContent(url: string): Promise<ReadableStream<Uint8Array>> {
