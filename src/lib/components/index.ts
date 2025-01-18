@@ -22,5 +22,7 @@ export { Separator } from "./ui/separator";
 export { ScrollArea } from "./ui/scroll-area";
 export { Progress } from "./ui/progress";
 export { Badge } from "./ui/badge";
+//common
+export { Toaster } from "./ui/sonner";
 //variants
 export { buttonVariants } from "./ui/button";
