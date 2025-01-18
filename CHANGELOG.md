@@ -1,4 +1,22 @@
-## [0.3.4](https://github.com/manga-you-know/desktop/compare/v0.3.2...v0.3.4) (2025-01-15)
+## [0.3.5](https://github.com/manga-you-know/desktop/compare/v0.3.3...v0.3.5) (2025-01-18)
+
+
+### New Features
+
+* add built-in player with Vidstack! ([9e7f822](https://github.com/manga-you-know/desktop/commit/9e7f8225c6ab07612ebbde6c0c26268e45932c18))
+* add notifications for new chapters ([4b452ea](https://github.com/manga-you-know/desktop/commit/4b452ea6cb2380ebea7ce7405a3c95afc850e0a8))
+
+
+### Bug Fixes
+
+* try to fix again version on releases ([9124bc7](https://github.com/manga-you-know/desktop/commit/9124bc74b52dad5c70e39f4c01f3c291962922ea))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.3.4 [skip ci] ([c169c15](https://github.com/manga-you-know/desktop/commit/c169c15302342a12fc890b95903c0ed648104544))
+
+## [0.3.3](https://github.com/manga-you-know/desktop/compare/v0.3.2...v0.3.3) (2025-01-15)
 
 
 ### New Features
@@ -61,24 +79,4 @@
 * **release:** v0.3.1 [skip ci] ([7b9b23d](https://github.com/manga-you-know/desktop/commit/7b9b23dead671ace3d1e7dace14a6eb2c5b1a130))
 * **release:** v0.3.1 [skip ci] ([a83f8bf](https://github.com/manga-you-know/desktop/commit/a83f8bfc7f92a782c5f77b0738af19b9e6d3e9e9))
 * **release:** v0.3.1 [skip ci] ([3787170](https://github.com/manga-you-know/desktop/commit/378717076a223e8c805e70abdd5ba451574e3fd7))
-
-## [0.2.39](https://github.com/manga-you-know/desktop/compare/v0.2.38...v0.2.39) (2024-12-16)
-
-
-### New Features
-
-* Add external reading options and a lot of fixes ([1a87e86](https://github.com/manga-you-know/desktop/commit/1a87e8680ea5563b334c259dcf7fa7db2e92023c))
-* opening the next chapter in the ultrafaorite card ([29ec5d2](https://github.com/manga-you-know/desktop/commit/29ec5d2daef3626ab110c321c4c68a961b0e53f6))
-
-
-### Bug Fixes
-
-* Reader not found chapters and stuck in the reader ([9221edf](https://github.com/manga-you-know/desktop/commit/9221edff5643c7017862ffa352ecdaa20508872b))
-* version not showing ([a613418](https://github.com/manga-you-know/desktop/commit/a613418ff1983d89fb971463bf7bb7b34bd78ca2))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.2.39 [skip ci] ([3c8f2a1](https://github.com/manga-you-know/desktop/commit/3c8f2a1fa480a95a24c41cf6712785dfa54426de))
-* **release:** v0.2.39 [skip ci] ([84ac256](https://github.com/manga-you-know/desktop/commit/84ac256585ec5b4bd43f33ce4198806c44ab192b))
 
