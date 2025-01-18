@@ -18,6 +18,7 @@
     autoEnterFullscreen,
     preferableLanguage,
     defaultPage,
+    useMpv,
   } from "@/store";
   import { onMount } from "svelte";
   import { saveSettings } from "@/functions";
@@ -54,7 +55,7 @@
               v{version}
             </span></Label
           >
-          <div class="flex">
+          <div class="flex items-center">
             <Checkbox
               id="auto-update"
               bind:checked={$autoSearchUpdates}
@@ -108,7 +109,7 @@
               languageOptions={LANGUAGE_OPTIONS}
             />
           </div>
-          <div class="flex">
+          <div class="flex items-center">
             <Checkbox
               id="auto-fullscreen"
               bind:checked={$autoEnterFullscreen}
@@ -119,6 +120,32 @@
             />
             <Label class="cursor-pointer" for="auto-fullscreen"
               >Auto enter in fullscreen</Label
+            >
+          </div>
+        </Card.Content>
+      </Card.Root>
+      <div class="border-b-4 my-4 text-center relative rounded-xl">
+        <span
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black px-4 text-gray-300 font-bold"
+        >
+          Player
+        </span>
+      </div>
+      <Card.Root class="bg-[#0e141e] border-0">
+        <Card.Content class="flex flex-col gap-4">
+          <div class="flex items-center">
+            <Checkbox
+              id="use-mpv"
+              bind:checked={$useMpv}
+              class="flex-shrink-0 mr-2"
+              onCheckedChange={async () => {
+                await saveSettings();
+              }}
+            />
+            <Label class="cursor-pointer" for="auto-fullscreen"
+              >Use MPV player <span class="text-gray-500"
+                >(you'll need to install it first)</span
+              ></Label
             >
           </div>
         </Card.Content>

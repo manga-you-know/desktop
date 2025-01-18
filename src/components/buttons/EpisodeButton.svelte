@@ -8,7 +8,9 @@
     isReaded,
     openPlayer,
   } from "@/functions";
+  import { useMpv } from "@/store";
   import { downloadManager, globalChapters, readeds } from "@/store";
+  import { goto } from "$app/navigation";
 
   interface Event {
     stopPropagation: () => void;
@@ -25,10 +27,14 @@
   async function openEpisode() {
     isWatching = true;
     const episode = await $downloadManager.getEpisodeContent(chapter);
-    await openPlayer(episode, chapter.title);
-    await addReadedBelow(chapter, $globalChapters, favorite);
-    await refreshReadeds(favorite);
-    isWatching = false;
+    if ($useMpv) {
+      await openPlayer(episode, chapter.title);
+      await addReadedBelow(chapter, $globalChapters, favorite);
+      await refreshReadeds(favorite);
+      isWatching = false;
+    } else {
+      goto(`/player/${favorite.id}/${chapter.number}`);
+    }
   }
 </script>
 

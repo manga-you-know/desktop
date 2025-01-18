@@ -14,7 +14,7 @@
 
 <TooltipPrimitive.Provider {disabled}>
   <TooltipPrimitive.Root>
-    <TooltipPrimitive.Trigger>
+    <TooltipPrimitive.Trigger tabindex={-1}>
       {@render children?.()}
     </TooltipPrimitive.Trigger>
     <TooltipPrimitive.Content sideOffset={5}>

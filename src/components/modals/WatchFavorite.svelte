@@ -8,7 +8,7 @@
   import type { Favorite, Episode } from "@/interfaces";
   import { downloadManager, globalChapters, readeds } from "@/store";
   import { EpisodeButton } from "@/components";
-  import { isReaded, refreshReadeds } from "@/functions";
+  import { isReaded, refreshReadeds, rerenderFavorites } from "@/functions";
   import { Dialog } from "@/lib/components";
   import Icon from "@iconify/svelte";
 
@@ -50,7 +50,15 @@
   });
 </script>
 
-<Dialog.Root bind:open onOpenChange={() => globalChapters.set([])}>
+<Dialog.Root
+  bind:open
+  onOpenChange={async (open) => {
+    globalChapters.set([]);
+    if (!open) {
+      await rerenderFavorites();
+    }
+  }}
+>
   <Dialog.Content class="flex justify-center" interactOutsideBehavior="close">
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center"

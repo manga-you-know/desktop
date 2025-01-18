@@ -7,10 +7,12 @@
     EditFavorite,
     AskDelete,
   } from "@/components";
-  import type { Favorite } from "@/interfaces";
-  import { FavoriteRepository } from "@/repositories";
+  import type { Chapter, Favorite } from "@/interfaces";
+  import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
+  import { downloadManager } from "@/store";
+  import type { Readed } from "@/models";
 
   interface Props {
     favorite: Favorite;
@@ -24,6 +26,17 @@
   let isEdit = $state(false);
   let isDelete = $state(false);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let readeds: Readed[] = $state([]);
+  let chapters: Chapter[] = $state([]);
+  async function onHover(e: Event) {
+    e.stopPropagation();
+    const data = await ReadedRepository.getReadeds(favorite);
+    readeds = data;
+    chapters =
+      favorite.type === "manga"
+        ? await $downloadManager.getChapters(favorite)
+        : await $downloadManager.getEpisodes(favorite);
+  }
 </script>
 
 {#if favorite.type === "anime"}
@@ -40,7 +53,7 @@
 >
   <ContextMenu.Trigger>
     <button
-      class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1"
+      class="group relative rounded-lg h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1"
       onclick={() => (isOpen = true)}
     >
       <img
@@ -61,7 +74,7 @@
         class="w-full h-full fixed flex flex-col justify-between items-center"
       >
         <Badge
-          class="w-40 max-w-40 flex justify-center rounded-xl"
+          class="w-40 max-w-40 flex justify-center rounded-sm"
           variant="secondary"
         >
           <Label class="text-sm truncate">

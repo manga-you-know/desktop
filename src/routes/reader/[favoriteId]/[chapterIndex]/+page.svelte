@@ -75,18 +75,16 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
-    await unregister("ArrowLeft");
-    await unregister("ArrowRight");
-    await register("ArrowLeft", async (e) => {
-      if (e.state === "Pressed") {
-        prevPage();
-      }
-    });
-    await register("ArrowRight", async (e) => {
-      if (e.state === "Pressed") {
-        nextPage();
-      }
-    });
+    // await register("ARROWLEFT", async (e) => {
+    //   if (e.state === "Pressed") {
+    //     prevPage();
+    //   }
+    // });
+    // await register("ARROWRIGHT", async (e) => {
+    //   if (e.state === "Pressed") {
+    //     nextPage();
+    //   }
+    // });
   });
 </script>
 
@@ -125,11 +123,14 @@
       size="sm"
       color="neutral"
       variant="outline"
-      onclick={async () => {
-        goto(`/${$defaultPage}`);
+      onclick={() => {
+        currentlyImage = "/myk.png";
         setFullscreen(false);
-      }}><Icon icon="lucide:home" /></Button
+        goto(`/${$defaultPage}`);
+      }}
     >
+      <Icon icon="lucide:home" />
+    </Button>
     <HoverCard.Root openDelay={50} closeDelay={100}>
       <HoverCard.Trigger>
         <Button
@@ -137,7 +138,8 @@
           size="sm"
           color="neutral"
           variant="outline"
-          ><Icon icon="nimbus:arrows-horizontal" />
+        >
+          <Icon icon="nimbus:arrows-horizontal" />
         </Button>
       </HoverCard.Trigger>
       <HoverCard.Content
@@ -150,8 +152,9 @@
           variant="outline"
           effect="gooeyLeft"
           onclick={() => handleGoChapter("prev")}
-          ><Icon icon="lucide:arrow-left" /></Button
         >
+          <Icon icon="lucide:arrow-left" />
+        </Button>
         <Button
           disabled={isTheLastChapter}
           size="sm"
@@ -165,15 +168,16 @@
   </div>
   <div class="flex gap-2">
     <div class="inline-flex pointer-events-auto z-50">
-      <Button class="w-6 rounded-r-none" size="sm" variant="outline"
+      <Button disabled class="w-6 rounded-r-none" size="sm" variant="outline"
         ><Icon icon="lucide:minus" /></Button
       >
       <Button
+        disabled
         class="w-8 p-0 flex justify-center rounded-none"
         size="sm"
         variant="outline">100%</Button
       >
-      <Button class="w-6 rounded-l-none" size="sm" variant="outline"
+      <Button disabled class="w-6 rounded-l-none" size="sm" variant="outline"
         ><Icon icon="lucide:plus" /></Button
       >
     </div>

@@ -10,6 +10,7 @@ import {
   theme,
   appLanguage,
   defaultPage,
+  useMpv,
 } from "@/store";
 import { goto } from "$app/navigation";
 import { checkForAppUpdates } from "@/functions";
@@ -27,6 +28,7 @@ export async function loadSettings() {
     lOrderBy,
     lIsAscending,
     lDefaultPage,
+    lUseMpv,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -37,6 +39,7 @@ export async function loadSettings() {
     loadedSettings.get<string>("order_by"),
     loadedSettings.get<boolean>("is_ascending"),
     loadedSettings.get<string>("default_page"),
+    loadedSettings.get<boolean>("use_mpv"),
   ]);
   selectedSource.set(lSelectedSource ?? "MangaSee");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
@@ -47,6 +50,7 @@ export async function loadSettings() {
   orderBy.set(lOrderBy ?? "id");
   isAscending.set(lIsAscending ?? true);
   defaultPage.set(lDefaultPage ?? "home");
+  useMpv.set(lUseMpv ?? false);
   if (get(defaultPage) !== "home") {
     goto(`/${get(defaultPage)}`);
   }
@@ -64,6 +68,7 @@ export async function saveSettings() {
     loadedSettings.set("order_by", get(orderBy)),
     loadedSettings.set("is_ascending", get(isAscending)),
     loadedSettings.set("default_page", get(defaultPage)),
+    loadedSettings.set("use_mpv", get(useMpv)),
   ]);
 }
 
@@ -79,6 +84,7 @@ export async function resetSettings() {
     loadedSettings.set("order_by", "id"),
     loadedSettings.set("is_ascending", true),
     loadedSettings.set("default_page", "home"),
+    loadedSettings.set("use_mpv", false),
   ]);
   await loadSettings();
 }

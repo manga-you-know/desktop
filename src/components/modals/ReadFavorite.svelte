@@ -25,7 +25,12 @@
     preferableLanguage,
   } from "@/store";
   import { ReadedRepository } from "@/repositories";
-  import { addReadedBelow, isReaded, refreshReadeds } from "@/functions";
+  import {
+    addReadedBelow,
+    isReaded,
+    refreshReadeds,
+    rerenderFavorites,
+  } from "@/functions";
   import type {
     Favorite,
     Chapter,
@@ -132,7 +137,15 @@
   });
 </script>
 
-<Dialog.Root bind:open onOpenChange={() => globalChapters.set([])}>
+<Dialog.Root
+  bind:open
+  onOpenChange={async (open) => {
+    globalChapters.set([]);
+    if (!open) {
+      await rerenderFavorites();
+    }
+  }}
+>
   <Dialog.Content interactOutsideBehavior="close">
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center"

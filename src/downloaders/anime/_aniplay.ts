@@ -75,7 +75,7 @@ export class AniplayDl implements AnimeDl {
           number: episode.number,
           title: episode.title,
           thumbnail: episode.img,
-          chapter_id: `${animeId}<o>${provider}<o>${episode.id}`,
+          chapter_id: `${animeId}<o>${provider}<o>${episode.id}<o>${episode.number}`,
           source: "Aniplay",
         };
       })
@@ -87,6 +87,8 @@ export class AniplayDl implements AnimeDl {
       animeId: params[0],
       providerId: params[1],
       episodeId: params[2],
+      episodeNumber: params[3],
+      episodeType: "sub",
     });
     const splitedResponse = response.split("1:");
     const responseJson = await JSON.parse(splitedResponse[1]);

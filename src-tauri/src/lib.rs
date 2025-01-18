@@ -12,7 +12,7 @@ pub fn run() {
             get_data, 
             get_aniplay_chapters, 
             get_aniplay_episode
-        ])
+        ]) 
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_process::init())

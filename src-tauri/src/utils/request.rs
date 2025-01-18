@@ -11,10 +11,10 @@ pub async fn get_aniplay_chapters(anime_id: &str) -> Result<String, String> {
 		.await.map_err(|e| e.to_string())?; // Handle request error
 	Ok(res.text().await.map_err(|e| e.to_string())?) // Handle response error
 }
-
+ 
 #[tauri::command]
-pub async fn get_aniplay_episode(anime_id: &str, provider_id: &str, episode_id: &str) -> Result<String, String> {
-	let params = [anime_id, provider_id, episode_id, "1", "sub"];
+pub async fn get_aniplay_episode(anime_id: &str, provider_id: &str, episode_id: &str, episode_number: &str, episode_type: &str) -> Result<String, String> {
+	let params = [anime_id, provider_id, episode_id, episode_number, episode_type];
 	let client = reqwest::Client::new();
 	let res = client.post(&format!("https://aniplaynow.live/anime/info/{}", anime_id))
 		.header("Next-Action", "5dbcd21c7c276c4d15f8de29d9ef27aef5ea4a5e")

@@ -24,3 +24,5 @@ export const autoEnterFullscreen = writable<boolean>(true);
 export const defaultPage = writable<string>("home");
 export const theme = writable<string>("dark");
 export const appLanguage = writable<string>("en");
+export const useMpv = writable<boolean>(false);
+export const isFullscreen = writable<boolean>(false);
