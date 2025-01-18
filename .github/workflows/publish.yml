@@ -96,9 +96,9 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: v${{ needs.changelog.outputs.version }}
-          releaseName: v${{ needs.changelog.outputs.version }}
-          appVersion: ${{ needs.changelog.outputs.version }}
+          tagName: v__VERSION__
+          releaseName: v__VERSION__
+          appVersion: __VERSION__
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
           args: ${{ matrix.args }}
