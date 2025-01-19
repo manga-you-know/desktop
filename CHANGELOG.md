@@ -1,4 +1,16 @@
-## [0.3.5](https://github.com/manga-you-know/desktop/compare/v0.3.3...v0.3.5) (2025-01-18)
+## [0.3.6](https://github.com/manga-you-know/desktop/compare/v0.3.4...v0.3.6) (2025-01-19)
+
+
+### Bug Fixes
+
+* stop using global keys lmao ([15dae8b](https://github.com/manga-you-know/desktop/commit/15dae8b1aaa8f8256b80e8be16419bec65438f9f))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.3.5 [skip ci] ([8c63015](https://github.com/manga-you-know/desktop/commit/8c6301599c88a14bc135ed0f5f374b6926b6c14a))
+
+## [0.3.4](https://github.com/manga-you-know/desktop/compare/v0.3.3...v0.3.4) (2025-01-18)
 
 
 ### New Features
@@ -52,31 +64,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.3.1 [skip ci] ([a657d55](https://github.com/manga-you-know/desktop/commit/a657d55e9c65f3855aef4d2720cb7e93a2c2bbd4))
-
-## [0.3.0](https://github.com/manga-you-know/desktop/compare/v0.2.39...v0.3.0) (2025-01-07)
-
-
-### New Features
-
-* A LOT OF FUNCTIONALITIES!!! WONT STOP ([8f6d2bf](https://github.com/manga-you-know/desktop/commit/8f6d2bfac4371181b834cff0be3500f94c36a38d))
-* A LOT OF THINGS AND DOWNLOAD!!! ([9ef2f2b](https://github.com/manga-you-know/desktop/commit/9ef2f2bd1f05eb756b82a7802c79001fba16b968))
-* FINALLY READY TO DEPLOY! BUT THE PERFORMANCE SUCKS! maybe ([540dcfa](https://github.com/manga-you-know/desktop/commit/540dcfa5b0f6dc67861fb5cf66dfe97bc9a56735))
-* ITS BECOMING BEAUTIFUL AND MOST OF THINGS WORK ([e3d70e6](https://github.com/manga-you-know/desktop/commit/e3d70e68ba1592d090af84eb038375c0961c7355))
-* reading is here! ([6166df4](https://github.com/manga-you-know/desktop/commit/6166df45a8f73ba3a1d6c6049abc3e043d718371))
-
-
-### Bug Fixes
-
-* build not building LMAO ([59affa0](https://github.com/manga-you-know/desktop/commit/59affa0082a4dd8632f3d2390e2efb19bf847e55))
-* hope this works ([dd83965](https://github.com/manga-you-know/desktop/commit/dd8396593955b3002421a722eb2283d360163901))
-* OMG I THINK I DID IT ([d26c3c8](https://github.com/manga-you-know/desktop/commit/d26c3c8637471ef02233a5ab49a011bc288cd67d))
-* updater changing version before ([5f4e4ae](https://github.com/manga-you-know/desktop/commit/5f4e4ae9062970cd3feac307a51334a401f1cdff))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.3.1 [skip ci] ([41da933](https://github.com/manga-you-know/desktop/commit/41da9336292908b049f1237e4f09e8996294af1b))
-* **release:** v0.3.1 [skip ci] ([7b9b23d](https://github.com/manga-you-know/desktop/commit/7b9b23dead671ace3d1e7dace14a6eb2c5b1a130))
-* **release:** v0.3.1 [skip ci] ([a83f8bf](https://github.com/manga-you-know/desktop/commit/a83f8bfc7f92a782c5f77b0738af19b9e6d3e9e9))
-* **release:** v0.3.1 [skip ci] ([3787170](https://github.com/manga-you-know/desktop/commit/378717076a223e8c805e70abdd5ba451574e3fd7))
 
