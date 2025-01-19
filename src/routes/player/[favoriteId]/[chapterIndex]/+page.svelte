@@ -3,7 +3,7 @@
   import "vidstack/player";
   import "vidstack/player/ui";
   import "vidstack/player/layouts";
-
+  import { fetch } from "@tauri-apps/plugin-http";
   import {
     defineCustomElement,
     MediaPlayerElement,
@@ -30,6 +30,11 @@
   } from "@/functions";
   import Icon from "@iconify/svelte";
   import { Button } from "@/lib/components";
+  import {
+    isHLSProvider,
+    type MediaProviderAdapter,
+    type MediaProviderChangeEvent,
+  } from "vidstack";
 
   let { favoriteId, chapterIndex } = page.params;
   let player: MediaPlayerElement;
@@ -47,22 +52,37 @@
   let volumeIcon = $state("lucide:volume-2");
   let playIcon = $state("lucide:play");
 
-  afterNavigate(async () => {
-    favoriteId = page.params.favoriteId;
-    chapterIndex = page.params.chapterIndex;
-    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
-    isTheLastChapter = Number(chapterIndex) === 0;
-    chapter = $globalChapters[Number(chapterIndex)];
-    const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
-    episode = chapterEpisode;
-    currentSrc = episode.url;
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
-    readeds.set(newReadeds);
-  });
+  // afterNavigate(async () => {
+  //   favoriteId = page.params.favoriteId;
+  //   chapterIndex = page.params.chapterIndex;
+  //   isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
+  //   isTheLastChapter = Number(chapterIndex) === 0;
+  //   chapter = $globalChapters[Number(chapterIndex)];
+  //   const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
+  //   episode = chapterEpisode;
+  //   currentSrc = episode.url;
+  //   favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+  //   await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+  //   const newReadeds = await ReadedRepository.getReadeds(favorite);
+  //   readeds.set(newReadeds);
+  // });
   onMount(async () => {
     player.enterFullscreen();
+    // player.addEventListener("provider-change", (event) => {
+    //   const provider = event.detail;
+    //   if (provider?.type === "hls") {
+    //     // @ts-ignore
+    //     provider.config = {
+    //       xhrSetup(xhr: XMLHttpRequest) {
+    //         xhr.withCredentials = false;
+    //         xhr.setRequestHeader(
+    //           "User-Agent",
+    //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+    //         );
+    //       },
+    //     };
+    //   }
+    // });
     player.subscribe(({ volume }) => {
       volumeIcon =
         volume > 0.5
@@ -80,7 +100,14 @@
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
     episode = chapterEpisode;
-    currentSrc = episode.url;
+    const response = await fetch(episode.url, {
+      method: "GET",
+    });
+    const blob = new Blob([await response.blob()], {
+      type: "application/vnd.apple.mpegurl",
+    });
+    const url = URL.createObjectURL(blob);
+    currentSrc = url;
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);

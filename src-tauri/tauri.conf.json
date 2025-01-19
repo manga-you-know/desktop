@@ -30,9 +30,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$DESKTOP/series/**"
-        ]
+        "scope": ["$DESKTOP/series/**"]
       }
     }
   },

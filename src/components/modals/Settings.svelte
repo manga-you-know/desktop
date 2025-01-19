@@ -142,11 +142,11 @@
                 await saveSettings();
               }}
             />
-            <Label class="cursor-pointer" for="auto-fullscreen"
-              >Use MPV player <span class="text-gray-500"
-                >(you'll need to install it first)</span
-              ></Label
-            >
+            <Label class="cursor-pointer" for="use-mpv">
+              Use MPV player <span class="text-gray-500">
+                (you'll need to install it first)
+              </span>
+            </Label>
           </div>
         </Card.Content>
       </Card.Root>

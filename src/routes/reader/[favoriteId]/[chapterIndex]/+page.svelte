@@ -85,9 +85,19 @@
     //     nextPage();
     //   }
     // });
+    // create a listener for the "keydown" event
   });
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === "ArrowLeft") {
+      prevPage();
+    }
+    if (event.key === "ArrowRight") {
+      nextPage();
+    }
+  }
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
 <div
   class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
 >

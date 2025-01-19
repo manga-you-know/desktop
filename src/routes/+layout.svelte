@@ -1,6 +1,5 @@
 <script lang="ts">
   import "@/app.css";
-  import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
   import { type } from "@tauri-apps/plugin-os";
   import { Toaster } from "@/lib/components";
   import { ModeWatcher } from "mode-watcher";
@@ -29,28 +28,35 @@
     },
     1000 * 60 * 10
   );
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === "F11") {
+      toggleFullscreen();
+    }
+    if (e.key.toUpperCase() === "K" && (e.metaKey || e.ctrlKey)) {
+      openSearch.set(!$openSearch);
+    }
+  }
+
   onMount(async () => {
     await initDatabase();
     await migrateDatabase();
     await loadSettings();
     if (os === "windows" || os === "linux" || os === "macos") {
-      try {
-        await unregisterAll();
-        await register("CommandOrControl+K", (e) => {
-          if (e.state === "Pressed") {
-            $openSearch = !$openSearch;
-          }
-        });
-        await register("F11", (e) => {
-          if (e.state === "Pressed") toggleFullscreen();
-        });
-      } catch (e) {
-        console.log(e);
-      }
+      // });
+      // await register("F11", (e) => {
+      //   if (e.state === "Pressed") toggleFullscreen();
+      // });
       loadFavoriteChapters();
       if ($autoSearchUpdates) {
         await checkForAppUpdates();
       }
+      // const window = getCurrentWindow();
+      // window.onFocusChanged((e) => {
+      //   // if (e.payload === true) {
+      //   //   loadFavoriteChapters();
+      //   // }
+
+      // });
     }
   });
   onDestroy(() => {
@@ -62,4 +68,5 @@
 <Search />
 <Settings />
 <ModeWatcher defaultMode="dark" />
+<svelte:window onkeydown={handleKeydown} />
 {@render children?.()}
