@@ -12,6 +12,7 @@
     readeds,
     autoEnterFullscreen,
     defaultPage,
+    isFullscreen,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
@@ -197,7 +198,7 @@
       variant="outline"
       onclick={async () => await toggleFullscreen()}
     >
-      <Icon icon="lucide:maximize" />
+      <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
     </Button>
   </div>
   <div class="flex gap-1 z-30">

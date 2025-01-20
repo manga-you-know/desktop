@@ -28,7 +28,6 @@
   import type { Favorite, Chapter } from "@/interfaces";
   import type { Readed } from "@/models";
   import { goto } from "$app/navigation";
-  import { add } from "lodash";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
@@ -82,10 +81,13 @@
     }
     isLoading = false;
   }
-
-  onMount(async () => {
-    await getToRead();
+  $effect.pre(() => {
+    getToRead();
   });
+
+  // onMount(async () => {
+  //   await getToRead();
+  // });
 </script>
 
 {#if favorite.type === "anime"}

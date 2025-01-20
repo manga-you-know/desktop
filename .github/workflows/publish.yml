@@ -40,7 +40,6 @@ jobs:
           git-user-name: "MangaYouKnow Bot"
           git-user-email: "admin@myk.com"
           config-file-path: ./.github/.config.cjs
-          pre-commit: ./.github/.pre-commit.cjs
           version-file: "./src-tauri/tauri.conf.json"
           skip-version-file: false
           skip-git-pull: false

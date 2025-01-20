@@ -59,6 +59,7 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     chaptersToRead.reverse();
     nextChapter = chaptersToRead[0];
     chaptersToRead.reverse();
+    const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
     let valToRead = await getValueToRead(favorite);
     if (valToRead) {
       if (
@@ -67,12 +68,12 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
       ) {
         if (await window.isFocused()) {
           toast.info(
-            `+${chaptersToRead.length - valToRead.chaptersToRead} chapters!`
+            `+${chaptersToRead.length - valToRead.chaptersToRead} ${chaptersType}s!`
           );
         } else {
           await notify(
             favorite.name,
-            `+${chaptersToRead.length - valToRead.chaptersToRead} chapters!`
+            `+${chaptersToRead.length - valToRead.chaptersToRead} ${chaptersType}s!`
           );
         }
       }

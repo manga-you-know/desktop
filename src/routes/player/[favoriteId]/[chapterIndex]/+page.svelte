@@ -100,14 +100,7 @@
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
     episode = chapterEpisode;
-    const response = await fetch(episode.url, {
-      method: "GET",
-    });
-    const blob = new Blob([await response.blob()], {
-      type: "application/vnd.apple.mpegurl",
-    });
-    const url = URL.createObjectURL(blob);
-    currentSrc = url;
+    currentSrc = episode.url;
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
