@@ -17,8 +17,8 @@ jobs:
     outputs:
       tag: ${{ steps.changelog.outputs.tag }}
       skipped: ${{ steps.changelog.outputs.skipped }}
-      changelog: ${{ steps.changelog.outputs.changelog }}
       version: ${{ steps.changelog.outputs.version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
           config-file-path: ./.github/.config.cjs
           version-file: "./src-tauri/tauri.conf.json"
           skip-version-file: false
-          skip-git-pull: false
+          skip-git-pull: true
           pre-release: false
 
       - run: |

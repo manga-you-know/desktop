@@ -1,10 +1,16 @@
 import { writable, readable } from "svelte/store";
 import { DownloadManager } from "@/managers";
-import type { Readed } from "@/models";
 import { MANGASOURCES } from "@/constants";
-import type { Favorite, Chapter, Language } from "@/interfaces";
+import type {
+  Favorite,
+  Chapter,
+  Readed,
+  FavoriteLoaded,
+  Language,
+} from "@/interfaces";
 
 export const downloadManager = readable<DownloadManager>(new DownloadManager());
+export const favoritesLoaded = writable<{ [key: string]: FavoriteLoaded }>({});
 export const libraryFavorites = writable<Favorite[]>([]);
 export const ultraFavorites = writable<Favorite[]>([]);
 export const searchTerm = writable<string>("");

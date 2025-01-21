@@ -1,14 +1,18 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
-import type { Favorite, Chapter } from "@/interfaces";
-import type { Readed } from "@/models";
+import type { Favorite, Chapter, Readed } from "@/interfaces";
 
 export async function createReaded(readed: Readed): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
       "INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?)",
-      [readed.favorite_id, readed.chapter_id, readed.source, readed.language]
+      [
+        readed.favorite_id,
+        readed.chapter_id,
+        readed.source,
+        readed.language ?? "default",
+      ]
     );
   } catch (error) {
     console.log(error);
@@ -44,7 +48,9 @@ export async function createReadeds(
   }
 }
 
-export async function getLastReaded(favorite: Favorite): Promise<Readed> {
+export async function getLastReaded(
+  favorite: Favorite
+): Promise<Readed | undefined> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const readed: Readed[] = await db.select(
@@ -54,9 +60,11 @@ export async function getLastReaded(favorite: Favorite): Promise<Readed> {
     if (readed) {
       return readed[0];
     }
-    return null;
+    return undefined;
   } catch (error) {
     console.log(error);
+  } finally {
+    // db.close()
   }
 }
 

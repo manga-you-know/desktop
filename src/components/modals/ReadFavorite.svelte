@@ -28,8 +28,8 @@
   import {
     addReadedBelow,
     isReaded,
+    loadFavoriteChapter,
     refreshReadeds,
-    rerenderFavorites,
   } from "@/functions";
   import type {
     Favorite,
@@ -139,10 +139,10 @@
 
 <Dialog.Root
   bind:open
-  onOpenChange={async (open) => {
+  onOpenChange={(open) => {
     globalChapters.set([]);
     if (!open) {
-      await rerenderFavorites();
+      loadFavoriteChapter(favorite);
     }
   }}
 >

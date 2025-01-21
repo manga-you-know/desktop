@@ -7,12 +7,11 @@
     EditFavorite,
     AskDelete,
   } from "@/components";
-  import type { Chapter, Favorite } from "@/interfaces";
+  import type { Chapter, Favorite, Readed } from "@/interfaces";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
   import { downloadManager } from "@/store";
-  import type { Readed } from "@/models";
 
   interface Props {
     favorite: Favorite;

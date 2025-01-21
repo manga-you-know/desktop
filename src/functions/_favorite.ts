@@ -1,14 +1,53 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
-import type { Chapter, Favorite } from "@/interfaces";
+import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/interfaces";
 import { FavoriteRepository, ReadedRepository } from "@/repositories";
-import { downloadManager, preferableLanguage, ultraFavorites } from "@/store";
+import {
+  downloadManager,
+  favoritesLoaded,
+  preferableLanguage,
+  ultraFavorites,
+} from "@/store";
 import { isReaded, notify, refreshFavorites } from "@/functions";
-import type { Readed } from "@/models";
 import { toast } from "svelte-sonner";
+import { strNotEmpty } from "@/utils";
+import { update } from "lodash";
 
 const window = getCurrentWindow();
+
+function addFavorite(favorite: Favorite) {
+  favoritesLoaded.update((currentFavorites) => {
+    return {
+      ...currentFavorites,
+      [favorite.id?.toString() ?? ""]: {
+        isLoaded: false,
+        isLoading: false,
+        chapters: [],
+        readeds: [],
+        toReadCount: 0,
+        startLoading: () => loadFavoriteChapter(favorite),
+        nextChapter: null,
+      },
+    };
+  });
+}
+
+function updateFavoriteProperty(
+  favoriteId: string,
+  property: keyof FavoriteLoaded,
+  value: any
+) {
+  favoritesLoaded.update((currentFavorites) => {
+    return {
+      ...currentFavorites,
+      [favoriteId]: {
+        ...currentFavorites[favoriteId],
+        [property]: value,
+      },
+    };
+  });
+}
 
 export async function rerenderFavorites(): Promise<void> {
   ultraFavorites.set([]);
@@ -27,6 +66,14 @@ export async function loadFavoriteChapters(
 }
 
 export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
+  const loadedFavorite = get(favoritesLoaded)[strNotEmpty(favorite.id)];
+  if (!loadedFavorite) {
+    addFavorite(favorite);
+  }
+  if (loadedFavorite.isLoading) {
+    return;
+  }
+  updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", true);
   const dl = get(downloadManager);
   let chapters: Chapter[] = [];
   let readeds: Readed[] = [];
@@ -55,9 +102,23 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     }
     chaptersToRead.push(chapter);
   }
+  updateFavoriteProperty(
+    strNotEmpty(favorite.id),
+    "toReadCount",
+    chaptersToRead.length
+  );
+  updateFavoriteProperty(strNotEmpty(favorite.id), "chapters", chapters);
+  updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
+  updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);
+  updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
   if (chaptersToRead.length > 0) {
     chaptersToRead.reverse();
     nextChapter = chaptersToRead[0];
+    updateFavoriteProperty(
+      strNotEmpty(favorite.id),
+      "nextChapter",
+      nextChapter
+    );
     chaptersToRead.reverse();
     const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
     let valToRead = await getValueToRead(favorite);
@@ -78,6 +139,8 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
         }
       }
     }
+  } else {
+    updateFavoriteProperty(strNotEmpty(favorite.id), "nextChapter", null);
   }
   await setValueToRead(
     favorite,

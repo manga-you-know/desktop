@@ -8,7 +8,7 @@
   import type { Favorite, Episode } from "@/interfaces";
   import { downloadManager, globalChapters, readeds } from "@/store";
   import { EpisodeButton } from "@/components";
-  import { isReaded, refreshReadeds, rerenderFavorites } from "@/functions";
+  import { isReaded, loadFavoriteChapter, refreshReadeds } from "@/functions";
   import { Dialog } from "@/lib/components";
   import Icon from "@iconify/svelte";
 
@@ -55,7 +55,7 @@
   onOpenChange={async (open) => {
     globalChapters.set([]);
     if (!open) {
-      await rerenderFavorites();
+      await loadFavoriteChapter(favorite);
     }
   }}
 >

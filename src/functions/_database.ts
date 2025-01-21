@@ -7,8 +7,7 @@ import {
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
 import { libraryFavorites, readeds, ultraFavorites } from "@/store";
-import type { Chapter, Favorite } from "@/interfaces";
-import type { Readed } from "@/models";
+import type { Chapter, Favorite, Readed } from "@/interfaces";
 
 export async function initDatabase() {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);

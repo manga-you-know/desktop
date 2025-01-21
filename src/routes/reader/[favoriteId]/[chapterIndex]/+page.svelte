@@ -3,7 +3,12 @@
   import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
   import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
-  import { addReadedBelow, setFullscreen, toggleFullscreen } from "@/functions";
+  import {
+    addReadedBelow,
+    loadFavoriteChapter,
+    setFullscreen,
+    toggleFullscreen,
+  } from "@/functions";
   import type { Favorite, Chapter } from "@/interfaces";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
   import {
@@ -137,6 +142,9 @@
       onclick={() => {
         currentlyImage = "/myk.png";
         setFullscreen(false);
+        if (favorite) {
+          loadFavoriteChapter(favorite);
+        }
         goto(`/${$defaultPage}`);
       }}
     >
