@@ -33,7 +33,7 @@
       await refreshReadeds(favorite);
       isWatching = false;
     } else {
-      goto(`/player/${favorite.id}/${chapter.number}`);
+      goto(`/player/${favorite.id}/${$globalChapters.indexOf(chapter)}`);
     }
   }
 </script>

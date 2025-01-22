@@ -25,11 +25,12 @@
   import {
     addReadedBelow,
     goDefaultPage,
+    loadFavoriteChapter,
     setFullscreen,
     toggleFullscreen,
   } from "@/functions";
   import Icon from "@iconify/svelte";
-  import { Button } from "@/lib/components";
+  import { Button, Label } from "@/lib/components";
   import {
     isHLSProvider,
     type MediaProviderAdapter,
@@ -52,20 +53,26 @@
   let volumeIcon = $state("lucide:volume-2");
   let playIcon = $state("lucide:play");
 
-  // afterNavigate(async () => {
-  //   favoriteId = page.params.favoriteId;
-  //   chapterIndex = page.params.chapterIndex;
-  //   isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
-  //   isTheLastChapter = Number(chapterIndex) === 0;
-  //   chapter = $globalChapters[Number(chapterIndex)];
-  //   const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
-  //   episode = chapterEpisode;
-  //   currentSrc = episode.url;
-  //   favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
-  //   await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-  //   const newReadeds = await ReadedRepository.getReadeds(favorite);
-  //   readeds.set(newReadeds);
-  // });
+  afterNavigate(async () => {
+    favoriteId = page.params.favoriteId;
+    chapterIndex = page.params.chapterIndex;
+    console.log(chapterIndex);
+    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
+    isTheLastChapter = Number(chapterIndex) === 0;
+    chapter = $globalChapters[Number(chapterIndex)];
+    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
+    episode = chapterEpisode;
+    currentSrc = episode.url;
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    readeds.set(newReadeds);
+  });
+  function handleGoChapter(way: "next" | "prev") {
+    goto(
+      `/player/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
+    );
+  }
   onMount(async () => {
     player.enterFullscreen();
     // player.addEventListener("provider-change", (event) => {
@@ -114,6 +121,7 @@
     class="flex flex-col items-center"
     bind:this={player}
     src={currentSrc}
+    autoplay
   >
     <media-provider>
       <media-poster
@@ -141,7 +149,7 @@
         <div class="vds-controls-spacer"></div>
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <media-controls-group
-          class={`vds-controls-group w-full flex-col bg-black bg-opacity-50 flex ${showControls ? "" : "opacity-0"}`}
+          class={`vds-controls-group w-full flex-col p-4 bg-black bg-opacity-50 flex ${showControls ? "" : "opacity-0"}`}
           onmouseenter={() => {
             showControls = true;
           }}
@@ -149,68 +157,116 @@
             showControls = false;
           }}
         >
-          <div class="flex justify-between">
-            <div class="flex">
-              <media-play-button class="vds-button mx-2">
-                <Icon icon={playIcon} class="w-5 h-5" />
-              </media-play-button>
-              <div class="vds-time-group">
-                <media-time class="vds-time" type="current"></media-time>
-                <div class="vds-time-divider">/</div>
-                <media-time class="vds-time" type="duration"></media-time>
+          <div class="flex flex-col">
+            <div class="flex justify-between">
+              <div class="flex gap-10">
+                <Label class="text-lg ">
+                  <span class="text-gray-400">
+                    {chapter?.number} -
+                  </span>
+                  {chapter?.title ?? ""}
+                </Label>
+                <div class="flex">
+                  <Button
+                    class="vds-button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={isTheFirstChapter}
+                    onclick={() => handleGoChapter("prev")}
+                  >
+                    <Icon icon="lucide:arrow-left" class="w-4 h-4" />
+                  </Button>
+                  <Button
+                    class="vds-button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={isTheLastChapter}
+                    onclick={() => handleGoChapter("next")}
+                  >
+                    <Icon icon="lucide:arrow-right" class="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="ghost"
-                class="vds-button w-24 ml-2 p-2 flex justify-center "
-              >
-                <Icon icon={volumeIcon} class="w-5 h-5 ml-2" />
-                <media-volume-slider class="vds-slider">
-                  <div class="vds-slider-track"></div>
+              <Label class="text-lg text-gray-300 truncate">
+                {favorite?.name}
+              </Label>
+            </div>
+            <div class="flex justify-between">
+              <div class="flex">
+                <media-play-button class="vds-button mx-2">
+                  <Icon icon={playIcon} class="w-5 h-5" />
+                </media-play-button>
+                <div class="vds-time-group">
+                  <media-time class="vds-time" type="current"></media-time>
+                  <div class="vds-time-divider">/</div>
+                  <media-time class="vds-time" type="duration"></media-time>
+                </div>
+                <Button
+                  variant="ghost"
+                  class="vds-button w-24 ml-2 p-2 flex justify-center "
+                >
+                  <Icon icon={volumeIcon} class="w-5 h-5 ml-2" />
+                  <media-volume-slider class="vds-slider">
+                    <div class="vds-slider-track"></div>
+                    <div class="vds-slider-track-fill vds-slider-track"></div>
+                    <div class="vds-slider-thumb"></div>
+                  </media-volume-slider>
+                </Button>
+              </div>
+              <div class="w-full mx-8 flex justify-center">
+                <media-time-slider class="vds-time-slider vds-slider h-10">
+                  <div class="vds-slider-track p-3"></div>
                   <div class="vds-slider-track-fill vds-slider-track"></div>
-                  <div class="vds-slider-thumb"></div>
-                </media-volume-slider>
-              </Button>
+                  <div class="vds-slider-progress vds-slider-track p-3"></div>
+                  <div class="vds-slider-thumb py-3 px-1 rounded-sm"></div>
+                </media-time-slider>
+              </div>
+              <div class="flex">
+                <media-menu class="vds-menu">
+                  <media-menu-button
+                    class="vds-menu-button vds-button"
+                    aria-label="Settings"
+                  >
+                    <media-icon
+                      type="subtitles"
+                      class="vds-rotate-icon vds-icon"
+                    ></media-icon>
+                  </media-menu-button>
+                  <media-menu-items class="vds-menu-items" placement="top">
+                    <media-captions-radio-group
+                      class="vds-captions-radio-group"
+                    >
+                      <template>
+                        <media-radio class="vds-radio w-20">
+                          <span data-part="label"></span>
+                        </media-radio>
+                      </template>
+                    </media-captions-radio-group>
+                  </media-menu-items>
+                </media-menu>
+                <Button
+                  class="vds-button"
+                  variant="ghost"
+                  onclick={() => {
+                    if (favorite) loadFavoriteChapter(favorite);
+                    goDefaultPage();
+                  }}
+                >
+                  <Icon icon="lucide:home" />
+                </Button>
+                <Button
+                  class="vds-button"
+                  variant="ghost"
+                  onclick={async () => {
+                    await toggleFullscreen();
+                  }}
+                >
+                  <Icon
+                    icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"}
+                  />
+                </Button>
+              </div>
             </div>
-            <div class="flex mr-2">
-              <media-menu>
-                <!-- ... -->
-                <media-menu-items>
-                  <media-captions-radio-group>
-                    <template>
-                      <media-radio>
-                        <span data-part="label"></span>
-                      </media-radio>
-                    </template>
-                  </media-captions-radio-group>
-                </media-menu-items>
-              </media-menu>
-              <Button
-                class="vds-button"
-                variant="ghost"
-                onclick={goDefaultPage}
-              >
-                <Icon icon="lucide:home" />
-              </Button>
-              <Button
-                class="vds-button"
-                variant="ghost"
-                onclick={async () => {
-                  await toggleFullscreen();
-                }}
-              >
-                <Icon
-                  icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"}
-                />
-              </Button>
-            </div>
-          </div>
-          <div class="w-full flex justify-center">
-            <media-time-slider class="vds-time-slider vds-slider h-10">
-              <div class="vds-slider-track"></div>
-              <div class="vds-slider-track-fill vds-slider-track"></div>
-              <div class="vds-slider-progress vds-slider-track"></div>
-              <div class="vds-slider-thumb"></div>
-            </media-time-slider>
           </div>
         </media-controls-group>
       </media-controls>

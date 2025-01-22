@@ -12,7 +12,6 @@ import {
 import { isReaded, notify, refreshFavorites } from "@/functions";
 import { toast } from "svelte-sonner";
 import { strNotEmpty } from "@/utils";
-import { update } from "lodash";
 
 const window = getCurrentWindow();
 
@@ -90,6 +89,10 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
         chapters = await dl.getChapters(favorite, lastReaded.language);
       } else {
         chapters = await dl.getChapters(favorite, get(preferableLanguage).id);
+      }
+      if (chapters.length === 0) {
+        const languages = await dl.getFavoriteLanguages(favorite);
+        chapters = await dl.getChapters(favorite, languages[0].id);
       }
     } else {
       chapters = await dl.getChapters(favorite);

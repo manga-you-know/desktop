@@ -80,7 +80,7 @@
 >
   <ContextMenu.Trigger>
     <button
-      class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-* duration-200 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 hover:opacity-100 ${favoriteLoad.toReadCount > 0 ? "hover:!border-red-500" : "opacity-60"}`}
+      class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-900 hover:bg-gray-800 hover:shadow-lg hover:z-30 transform hover:scale-[1.08]   focus:bg-gray-800 focus:shadow-lg hover:opacity-100 ${favoriteLoad.toReadCount > 0 ? "opacity-[1.5]" : "opacity-60"}`}
       onclick={() => (isOpen = true)}
       tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
     >

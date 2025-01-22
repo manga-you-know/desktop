@@ -63,11 +63,9 @@
     currentlyImage = "/myk.png";
     currentlyCount = 1;
     totalPage = 1;
-    if (way === "next") {
-      await goto(`/reader/${favoriteId}/${Number(chapterIndex) - 1}`);
-    } else {
-      await goto(`/reader/${favoriteId}/${Number(chapterIndex) + 1}`);
-    }
+    await goto(
+      `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
+    );
   }
   onMount(async () => {
     if ($autoEnterFullscreen) {

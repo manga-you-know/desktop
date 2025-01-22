@@ -86,3 +86,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+media-radio[aria-checked="true"] {
+  background-color: gray;
+}

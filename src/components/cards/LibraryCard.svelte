@@ -27,6 +27,7 @@
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
   let readeds: Readed[] = $state([]);
   let chapters: Chapter[] = $state([]);
+
   async function onHover(e: Event) {
     e.stopPropagation();
     const data = await ReadedRepository.getReadeds(favorite);

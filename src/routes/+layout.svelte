@@ -21,7 +21,7 @@
   const interval = setInterval(
     async () => {
       try {
-        await loadFavoriteChapters(true);
+        await loadFavoriteChapters();
       } catch (e) {
         console.log(e);
       }

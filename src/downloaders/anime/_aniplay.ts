@@ -90,12 +90,16 @@ export class AniplayDl implements AnimeDl {
       episodeNumber: params[3],
       episodeType: "sub",
     });
+    console.log(response);
     const splitedResponse = response.split("1:");
     const responseJson = await JSON.parse(splitedResponse[1]);
     return {
       url: responseJson.sources[0].url,
       subtitles: responseJson.tracks,
-      headers: { Referer: "https://animez.org" },
+      headers: {
+        Referer: "https://animez.org",
+        Origin: "https://aniplaynow.live",
+      },
     };
   }
 }
