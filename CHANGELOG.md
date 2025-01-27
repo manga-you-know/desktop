@@ -1,7 +1,7 @@
-## 0.3.9 (2025-01-22)
+## 0.1.0 (2025-01-27)
 
 
 ### New Features
 
-* improved the built-in player!! ([897a4c3](https://github.com/manga-you-know/desktop/commit/897a4c3d8f100a73a512749afd916758198e21b0))
+* add new mangasee site, WeebCentral ([183996f](https://github.com/manga-you-know/desktop/commit/183996f6febd1e2ed5cada89eb31732b3ce99f9e))
 
