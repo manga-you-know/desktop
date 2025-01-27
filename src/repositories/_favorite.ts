@@ -1,6 +1,11 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
-import { searchTerm, orderBy, isAscending } from "@/store";
+import {
+  libraryQuery,
+  libraryOrder,
+  isAscending,
+  librarySource,
+} from "@/store";
 import { UserRepository } from "@/repositories";
 import type { Favorite } from "@/interfaces";
 import type { Mark, User } from "@/models";
@@ -111,7 +116,7 @@ export async function getFavoriteBySource(
   throw new Error("Favorite not found");
 }
 
-export async function getFavorites(): Promise<Favorite[]> {
+export async function getLibraryFavorites(): Promise<Favorite[]> {
   const user = {
     id: 1,
     icon: "",
@@ -123,11 +128,7 @@ export async function getFavorites(): Promise<Favorite[]> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   let query = "SELECT * FROM favorite WHERE user_id = ?";
   const params: (string | number | boolean)[] = [user.id ?? 0];
-  const favoriteQuery = get(searchTerm);
-  // if (sourceQuery.value !== "-") {
-  //   query += " AND source = ?";
-  //   params.push(sourceQuery.value);
-  // }
+  const favoriteQuery = get(libraryQuery);
 
   if (favoriteQuery !== "") {
     query +=
@@ -141,8 +142,12 @@ export async function getFavorites(): Promise<Favorite[]> {
   //     " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
   //   params.push(markId);
   // }
+  if (get(librarySource) !== "") {
+    query += " AND source = ?";
+    params.push(get(librarySource));
+  }
 
-  query += ` ORDER BY ${get(orderBy)} ${get(isAscending) ? " ASC" : " DESC"}`;
+  query += ` ORDER BY ${get(libraryOrder)} ${get(isAscending) ? " ASC" : " DESC"}`;
 
   try {
     const favorites: Favorite[] = await db.select(query, params);

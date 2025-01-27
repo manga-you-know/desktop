@@ -1,9 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Pagination, Button, Badge, Input } from "@/lib/components";
-  import { LibraryCard, LibraryOrder, LibrarySearch } from "@/components";
+  import {
+    LibraryCard,
+    LibraryOrder,
+    LibrarySearch,
+    LibrarySource,
+  } from "@/components";
   import { FavoriteRepository } from "@/repositories";
-  import { libraryFavorites, searchTerm } from "@/store";
+  import { libraryFavorites } from "@/store";
   import type { Favorite } from "@/interfaces";
   let favoriteDiv: HTMLDivElement;
   let page = $state(1);
@@ -17,7 +22,7 @@
   });
   const siblingCount = 1;
   onMount(async () => {
-    const newFavorites = await FavoriteRepository.getFavorites();
+    const newFavorites = await FavoriteRepository.getLibraryFavorites();
     libraryFavorites.set(newFavorites);
   });
 </script>
@@ -29,6 +34,7 @@
     >
     <LibraryOrder />
     <LibrarySearch />
+    <LibrarySource />
   </div>
   <div
     bind:this={favoriteDiv}

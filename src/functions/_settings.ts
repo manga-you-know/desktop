@@ -2,7 +2,7 @@ import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import {
   selectedSource,
-  orderBy,
+  libraryOrder,
   isAscending,
   autoSearchUpdates,
   preferableLanguage,
@@ -46,7 +46,7 @@ export async function loadSettings() {
   autoEnterFullscreen.set(lAutoOpenFullscreen ?? true);
   theme.set(lTheme ?? "dark");
   appLanguage.set(lLanguage ?? "en");
-  orderBy.set(lOrderBy ?? "id");
+  libraryOrder.set(lOrderBy ?? "id");
   isAscending.set(lIsAscending ?? true);
   defaultPage.set(lDefaultPage ?? "home");
   useMpv.set(lUseMpv ?? false);
@@ -65,7 +65,7 @@ export async function saveSettings() {
     loadedSettings.set("auto_open_fullscreen", get(autoEnterFullscreen)),
     loadedSettings.set("theme", get(theme)),
     loadedSettings.set("language", get(appLanguage)),
-    loadedSettings.set("order_by", get(orderBy)),
+    loadedSettings.set("order_by", get(libraryOrder)),
     loadedSettings.set("is_ascending", get(isAscending)),
     loadedSettings.set("default_page", get(defaultPage)),
     loadedSettings.set("use_mpv", get(useMpv)),

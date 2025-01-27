@@ -10,6 +10,5 @@
   "html.customData": ["./node_modules/vidstack/vscode.html-data.json"],
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  },
-  "cmake.sourceDirectory": "C:/Users/ReiLoko4/Documents/GitHub/desktop/node_modules/nan"
+  }
 }

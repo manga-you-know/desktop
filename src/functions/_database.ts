@@ -98,7 +98,7 @@ export async function deleteReadedAbove(
 }
 
 export async function refreshLibrary() {
-  const favs = await FavoriteRepository.getFavorites();
+  const favs = await FavoriteRepository.getLibraryFavorites();
   libraryFavorites.set(favs);
 }
 

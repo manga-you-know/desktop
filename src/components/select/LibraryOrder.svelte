@@ -1,9 +1,8 @@
 <script lang="ts">
   import { Button, Command, Label, Popover } from "@/lib/components";
-  import { libraryFavorites, orderBy, isAscending } from "@/store";
-  import { saveSettings } from "@/functions";
+  import { libraryOrder, isAscending } from "@/store";
+  import { saveSettings, refreshLibrary } from "@/functions";
   import { titleCase } from "@/utils";
-  import { FavoriteRepository } from "@/repositories";
   import Icon from "@iconify/svelte";
 
   let open = $state(false);
@@ -13,15 +12,6 @@
     name: "mdi:sort-alphabetical-variant",
   };
   const orders = ["id", "name"];
-  async function refreshFavorites() {
-    libraryFavorites.set(await FavoriteRepository.getFavorites());
-  }
-  orderBy.subscribe((_) => {
-    refreshFavorites();
-  });
-  isAscending.subscribe((_) => {
-    refreshFavorites();
-  });
 </script>
 
 <div class="inline-flex">
@@ -36,7 +26,7 @@
           aria-expanded={open}
           tabindex={-1}
         >
-          <Icon icon={orderIcon[$orderBy]} />
+          <Icon icon={orderIcon[$libraryOrder]} />
           <Icon icon="lucide:chevron-down" class="text-gray-500" />
         </Button>
       {/snippet}
@@ -47,12 +37,12 @@
           <Command.Group>
             {#each orders as order}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-800 ${order === $orderBy ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
+                class={`w-full flex justify-between hover:!bg-slate-800 ${order === $libraryOrder ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
                 value={order}
                 onSelect={async () => {
-                  orderBy.set(order);
+                  libraryOrder.set(order);
                   open = false;
-                  await refreshFavorites();
+                  await refreshLibrary();
                   await saveSettings();
                 }}
               >
@@ -66,11 +56,11 @@
     </Popover.Content>
   </Popover.Root>
   <Button
-    class="w-[20px] ml-[-1px] rounded-l-none rounded-r-md"
+    class="w-[20px] ml-[-1px] rounded-l-none"
     variant="outline"
     onclick={async () => {
       isAscending.set(!$isAscending);
-      await refreshFavorites();
+      await refreshLibrary();
       await saveSettings();
     }}
     tabindex={-1}

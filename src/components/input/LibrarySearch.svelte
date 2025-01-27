@@ -1,13 +1,13 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { FavoriteRepository } from "@/repositories";
-  import { libraryFavorites, searchTerm } from "@/store";
+  import { libraryFavorites, libraryQuery } from "@/store";
   import { Button, Input } from "@/lib/components";
 
   interface Props {
     showInput?: boolean;
   }
-  let { showInput = $bindable($searchTerm !== "") }: Props = $props();
+  let { showInput = $bindable($libraryQuery !== "") }: Props = $props();
 
   let isHovered = false;
 
@@ -17,10 +17,10 @@
     if (inputElement && document.activeElement === inputElement) {
       return;
     }
-    if ($searchTerm.length > 0) {
+    if ($libraryQuery.length > 0) {
       showInput = false;
-      searchTerm.set("");
-      FavoriteRepository.getFavorites().then((favorites) => {
+      libraryQuery.set("");
+      FavoriteRepository.getLibraryFavorites().then((favorites) => {
         libraryFavorites.set(favorites);
       });
       return;
@@ -33,10 +33,10 @@
   function handleOut(e: Event) {
     e.stopPropagation();
     if (isHovered) return;
-    if ($searchTerm.length === 0) showInput = false;
+    if ($libraryQuery.length === 0) showInput = false;
   }
   function updateFavorites() {
-    FavoriteRepository.getFavorites().then((favorites) => {
+    FavoriteRepository.getLibraryFavorites().then((favorites) => {
       libraryFavorites.set(favorites);
     });
   }
@@ -59,7 +59,7 @@
     <Input
       class="!border-none focus-visible:ring-0 rounded-none !outline-none ring-0 !bg-transparent !text-white"
       id="favorite-search"
-      bind:value={$searchTerm}
+      bind:value={$libraryQuery}
       oninput={updateFavorites}
       onfocusout={handleOut}
       placeholder="Search..."
