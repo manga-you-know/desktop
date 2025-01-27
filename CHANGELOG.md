@@ -1,7 +1,7 @@
-## 0.1.0 (2025-01-27)
+## 0.3.10 (2025-01-27)
 
 
-### New Features
+### Bug Fixes
 
-* add new mangasee site, WeebCentral ([183996f](https://github.com/manga-you-know/desktop/commit/183996f6febd1e2ed5cada89eb31732b3ce99f9e))
+* publish didnt work lmao ([f846bff](https://github.com/manga-you-know/desktop/commit/f846bff608b0b2a7f2165e6229c41346bd4695ab))
 
