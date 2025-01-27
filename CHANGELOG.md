@@ -1,7 +1,7 @@
-## 0.3.10 (2025-01-27)
+## 0.3.11 (2025-01-27)
 
 
-### Bug Fixes
+### New Features
 
-* publish didnt work lmao ([f846bff](https://github.com/manga-you-know/desktop/commit/f846bff608b0b2a7f2165e6229c41346bd4695ab))
+* Add source filter in library ([3a8a4dc](https://github.com/manga-you-know/desktop/commit/3a8a4dc2fc1dba96b6aa44b09b712fc209b5c83a))
 
