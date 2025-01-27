@@ -136,7 +136,6 @@ export class WeebCentralDl implements MangaDl {
         headers: this.headers,
       }
     );
-    console.log(`${this.baseUrl}/series/${mangaId}/full-chapter-list`);
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
     }

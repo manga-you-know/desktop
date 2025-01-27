@@ -119,9 +119,14 @@ export class DownloadManager {
 
   async getChapters(favorite: Favorite, language?: string): Promise<Chapter[]> {
     const sourceDl = this.getMangaSource(favorite.source);
-    return language !== undefined
-      ? await sourceDl.getChapters(favorite.source_id, language)
-      : await sourceDl.getChapters(favorite.source_id);
+    try {
+      return language !== undefined
+        ? await sourceDl.getChapters(favorite.source_id, language)
+        : await sourceDl.getChapters(favorite.source_id);
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
   }
 
   async getEpisodes(favorite: Favorite): Promise<Chapter[]> {

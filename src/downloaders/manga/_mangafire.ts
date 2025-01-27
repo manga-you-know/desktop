@@ -70,7 +70,10 @@ export class MangaFireDl implements MangaDl {
   }
 
   async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
-    const response = await fetch(`${this.baseUrl}/manga/${favoriteId}`, {});
+    const response = await fetch(
+      `${this.baseUrl}/manga/${encodeURI(favoriteId)}`,
+      {}
+    );
     if (response.status !== 200) {
       throw new Error(
         `Failed to get favorite languages ${favoriteId} ${response.status}`

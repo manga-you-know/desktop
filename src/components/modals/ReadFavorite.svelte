@@ -186,8 +186,11 @@
             variant="outline"
             effect="hoverUnderline"
             onclick={() => window.open(favorite.link, "_blank")}
-            >Open site</Button
           >
+            <span class="truncate">
+              {favorite.source ?? "Open"}
+            </span>
+          </Button>
           <Button
             class="w-20"
             onclick={downloadAll}

@@ -5,6 +5,7 @@
   import { selectedSource } from "@/store";
   import type { Source } from "@/interfaces";
   import Icon from "@iconify/svelte";
+  import { saveSettings } from "@/functions";
   const mangaSourceNames = MANGASOURCES.map((source) => source.name);
   const animeSourceNames = ANIMESOURCES.map((source) => source.name);
   const mangaSources: { [languageKey: string]: Source[] } = {};
@@ -35,6 +36,9 @@
   //     triggerRef.focus();
   //   });
   // }
+  selectedSource.subscribe(async (value) => {
+    await saveSettings();
+  });
 </script>
 
 <div class="inline-flex">

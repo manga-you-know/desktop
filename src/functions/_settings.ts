@@ -13,7 +13,6 @@ import {
   useMpv,
 } from "@/store";
 import { goto } from "$app/navigation";
-import { checkForAppUpdates } from "@/functions";
 import type { Language } from "@/interfaces";
 
 export async function loadSettings() {
@@ -41,7 +40,7 @@ export async function loadSettings() {
     loadedSettings.get<string>("default_page"),
     loadedSettings.get<boolean>("use_mpv"),
   ]);
-  selectedSource.set(lSelectedSource ?? "MangaSee");
+  selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
   preferableLanguage.set(lPreferableLanguage ?? { id: "en", label: "English" });
   autoEnterFullscreen.set(lAutoOpenFullscreen ?? true);
@@ -58,6 +57,7 @@ export async function loadSettings() {
 
 export async function saveSettings() {
   const loadedSettings = await load("settings.json");
+  console.log(get(selectedSource));
   await Promise.all([
     loadedSettings.set("selected_source", get(selectedSource)),
     loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),
@@ -75,7 +75,7 @@ export async function saveSettings() {
 export async function resetSettings() {
   const loadedSettings = await load("settings.json");
   await Promise.all([
-    loadedSettings.set("selected_source", "MangaSee"),
+    loadedSettings.set("selected_source", "WeebCentral"),
     loadedSettings.set("auto_search_updates", true),
     loadedSettings.set("preferable_language", { id: "en", label: "English" }),
     loadedSettings.set("auto_open_fullscreen", true),

@@ -41,9 +41,10 @@ jobs:
           git-user-email: "admin@myk.com"
           config-file-path: ./.github/.config.cjs
           version-file: "./src-tauri/tauri.conf.json"
-          skip-version-file: true
+          skip-version-file: false
           skip-git-pull: true
           pre-release: false
+          skip-commit: true
 
       - run: |
           rm -rf node_modules
@@ -78,6 +79,8 @@ jobs:
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
