@@ -10,6 +10,7 @@ import {
   MangaPillDl,
   TaosectDl,
   MangaFireDl,
+  WeebCentralDl,
   // AnimeDl
   AniplayDl,
 } from "@/downloaders";
@@ -54,6 +55,7 @@ export class DownloadManager {
       MangaPill: new MangaPillDl(),
       MangaFire: new MangaFireDl(),
       MangaReaderTo: new MangaReaderToDl(),
+      WeebCentral: new WeebCentralDl(),
     };
     this.animeSources = {
       Aniplay: new AniplayDl(),

@@ -80,14 +80,14 @@
 >
   <ContextMenu.Trigger>
     <button
-      class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-900 hover:bg-gray-800 hover:shadow-lg hover:z-30 transform hover:scale-[1.08]   focus:bg-gray-800 focus:shadow-lg hover:opacity-100 ${favoriteLoad.toReadCount > 0 ? "opacity-[1.5]" : "opacity-60"}`}
+      class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-900 hover:bg-gray-800 hover:shadow-lg hover:z-30 transform hover:scale-[1.08]   focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
       onclick={() => (isOpen = true)}
       tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
     >
       <img
         src={favorite.cover}
         alt={favorite.name}
-        class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-md !bg-transparent"
+        class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-xl !bg-transparent"
         id={strNotEmpty(favorite.id)}
         onerror={() => {
           const coverElement = document.getElementById(

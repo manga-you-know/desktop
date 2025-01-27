@@ -41,7 +41,7 @@ jobs:
           git-user-email: "admin@myk.com"
           config-file-path: ./.github/.config.cjs
           version-file: "./src-tauri/tauri.conf.json"
-          skip-version-file: false
+          skip-version-file: true
           skip-git-pull: true
           pre-release: false
 

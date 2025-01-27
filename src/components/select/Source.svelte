@@ -62,7 +62,7 @@
             <Command.Group heading={language}>
               {#each displayedSources[language] as source}
                 <Command.Item
-                  class={`hover:!bg-slate-800 ${source.name === $selectedSource ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
+                  class={`flex justify-between hover:!bg-slate-800 ${source.name === $selectedSource ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
                   value={source.name}
                   onSelect={() => {
                     selectedSource.set(source.name);
@@ -71,6 +71,15 @@
                   }}
                 >
                   {source.name}
+                  {#if source.isRecommended}
+                    <Icon
+                      icon="lucide:circle-check"
+                      class="w-4 h-4 text-green-500"
+                    />
+                  {/if}
+                  {#if source.isProblem}
+                    <Icon icon="lucide:circle-x" class="w-4 h-4 text-red-500" />
+                  {/if}
                 </Command.Item>
               {/each}
             </Command.Group>
