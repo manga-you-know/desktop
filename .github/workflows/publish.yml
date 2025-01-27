@@ -44,7 +44,6 @@ jobs:
           skip-version-file: false
           skip-git-pull: true
           pre-release: false
-          skip-commit: true
 
       - run: |
           rm -rf node_modules
