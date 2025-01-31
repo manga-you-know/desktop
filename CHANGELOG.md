@@ -1,7 +1,7 @@
-## 0.3.11 (2025-01-27)
+## 0.3.12 (2025-01-31)
 
 
 ### New Features
 
-* Add source filter in library ([3a8a4dc](https://github.com/manga-you-know/desktop/commit/3a8a4dc2fc1dba96b6aa44b09b712fc209b5c83a))
+* Add "start with system" option ([290ce43](https://github.com/manga-you-know/desktop/commit/290ce43bdfc9fd0a32b59a260a21ff1fd6fe09a6))
 
