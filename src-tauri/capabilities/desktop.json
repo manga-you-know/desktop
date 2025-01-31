@@ -24,6 +24,9 @@
     "shell:allow-execute",
     "shell:allow-kill",
     "shell:allow-open",
+    "autostart:allow-disable",
+    "autostart:allow-enable",
+    "autostart:allow-is-enabled",
     {
       "identifier": "shell:allow-execute",
       "allow": [

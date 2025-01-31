@@ -1,5 +1,7 @@
 <script lang="ts">
   import { getVersion } from "@tauri-apps/api/app";
+  import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
+  import { load, Store } from "@tauri-apps/plugin-store";
   import { checkForAppUpdates } from "@/functions";
   import {
     Card,
@@ -11,6 +13,7 @@
     Select,
     ScrollArea,
     Checkbox,
+    Switch,
   } from "@/lib/components";
   import {
     openSettings,
@@ -29,8 +32,18 @@
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
+  let autoStart = $state(false)
+  let store: Store | null =  null
   onMount(async () => {
     version = await getVersion();
+    store = await load("settings.json")
+    autoStart = await store.get<boolean>("auto_start") ?? false
+    if (autoStart) {
+      const isAutoStartEnabled = await isEnabled();
+      if (!isAutoStartEnabled) {
+        await enable();
+      }
+    }
   });
   function titleCase(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -45,7 +58,7 @@
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black px-4 text-gray-300 font-bold"
         >
-          Version
+          App
         </span>
       </div>
       <Card.Root class="bg-[#0e141e] border-0">
@@ -55,19 +68,6 @@
               v{version}
             </span></Label
           >
-          <div class="flex items-center">
-            <Checkbox
-              id="auto-update"
-              bind:checked={$autoSearchUpdates}
-              class="flex-shrink-0 mr-2"
-              onCheckedChange={async () => {
-                await saveSettings();
-              }}
-            />
-            <Label class="cursor-pointer" for="auto-update"
-              >Auto check for updates</Label
-            >
-          </div>
           <Button
             class="w-44 bg-[#2d3649] "
             variant="ghost"
@@ -86,6 +86,32 @@
             />
             Search for updates
           </Button>
+          <div class="flex items-center">
+            <Checkbox
+              id="auto-update"
+              bind:checked={$autoSearchUpdates}
+              class="flex-shrink-0 mr-2"
+              onCheckedChange={async () => {
+                await saveSettings();
+              }}
+            />
+            <Label class="cursor-pointer" for="auto-update"
+              >Auto check for updates</Label
+            >
+          </div>
+          <div class="flex gap-2 items-center">
+            <Checkbox
+              id="auto-start"
+              bind:checked={autoStart}
+              onCheckedChange={async (value) => {
+                value ? await enable() : await disable();
+                await store?.set("auto_start", value);
+              }}
+            />
+            <Label for="auto-start">
+              Start app with system
+            </Label>
+          </div>
         </Card.Content>
       </Card.Root>
       <div class="border-b-4 my-4 text-center relative rounded-xl">

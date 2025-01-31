@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Command, Label, Popover } from "@/lib/components";
+  import { Button, Command, Label, Popover, ScrollArea } from "@/lib/components";
   import { libraryFavorites, librarySource } from "@/store";
   import { refreshLibrary } from "@/functions";
   import { FavoriteRepository } from "@/repositories";
@@ -43,7 +43,9 @@
     </Popover.Trigger>
     <Popover.Content class="w-36 p-0">
       <Command.Root class="bg-black">
-        <Command.List>
+        <Command.Input placeholder="Search source..." class="h-9" />
+        <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
+        <ScrollArea class="h-36">
           <Command.Group>
             {#each sources as source}
               <Command.Item
@@ -61,7 +63,7 @@
               </Command.Item>
             {/each}
           </Command.Group>
-        </Command.List>
+        </ScrollArea>
       </Command.Root>
     </Popover.Content>
   </Popover.Root>
