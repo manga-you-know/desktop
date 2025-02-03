@@ -1,7 +1,7 @@
-## 0.3.13 (2025-02-03)
+## 0.3.14 (2025-02-03)
 
 
 ### New Features
 
-* add option to start window in tray ([cc27abd](https://github.com/manga-you-know/desktop/commit/cc27abd7ebb083419cb29a9999d385160179993c))
+* make the app a single instance. ([d1e4e3c](https://github.com/manga-you-know/desktop/commit/d1e4e3ce607f2678847b00f1c988680e4dc0fe42))
 
