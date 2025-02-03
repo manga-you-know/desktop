@@ -1,7 +1,7 @@
-## 0.3.14 (2025-02-03)
+## 0.3.15 (2025-02-03)
 
 
-### New Features
+### Bug Fixes
 
-* make the app a single instance. ([d1e4e3c](https://github.com/manga-you-know/desktop/commit/d1e4e3ce607f2678847b00f1c988680e4dc0fe42))
+* try to show window when hide etc ([18b3d9b](https://github.com/manga-you-know/desktop/commit/18b3d9b460f14d82d42cb011d4fdf4459710e1bb))
 
