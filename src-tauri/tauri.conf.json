@@ -15,14 +15,11 @@
         "title": "MangaYouKnow",
         "width": 800,
         "height": 600,
-        "resizable": true,
-        "maximizable": true,
         "minHeight": 400,
         "minWidth": 640,
         "center": true,
         "theme": "Dark",
-        "decorations": true,
-        "titleBarStyle": "Overlay",
+        "visible": false,
         "backgroundColor": "#18181b"
       }
     ],
@@ -30,9 +27,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$DESKTOP/series/**"
-        ]
+        "scope": ["$DESKTOP/series/**"]
       }
     }
   },
@@ -69,6 +64,20 @@
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEwMkVBODg2RjBGNDEzQjEKUldTeEUvVHdocWd1b1BaV0FhWnN5WEJOVGVPVCtyRklQNmw2SVpYRFF2SDIzMTJjd0lBSnk3QlUK",
       "endpoints": [
         "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json"
+      ]
+    },
+    "cli": {
+      "args": [
+        {
+          "name": "flag1",
+          "short": "f",
+          "takesValue": false
+        },
+        {
+          "name": "autostart",
+          "short": "a",
+          "takesValue": false
+        }
       ]
     }
   }

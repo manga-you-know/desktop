@@ -130,16 +130,22 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
         chaptersToRead.length > valToRead.chaptersToRead &&
         chapters.length !== valToRead.chapters
       ) {
-        if (await window.isFocused()) {
-          toast.info(
-            `+${chaptersToRead.length - valToRead.chaptersToRead} ${chaptersType}s!`
-          );
-        } else {
-          await notify(
-            favorite.name,
-            `+${chaptersToRead.length - valToRead.chaptersToRead} ${chaptersType}s!`
-          );
-        }
+        // if (await window.isFocused()) {
+        //   toast.info(
+        //     `+${
+        //       chaptersToRead.length - valToRead.chaptersToRead
+        //     } ${chaptersType}${pluralText}!`
+        //   );
+        // } else {
+        const newToRead =
+          chaptersToRead.length - Number(valToRead.chaptersToRead);
+        await notify(
+          favorite.name,
+          newToRead === 1
+            ? `New ${chaptersType} available!`
+            : `+${newToRead} ${chaptersType}s!`
+        );
+        // }
       }
     }
   } else {

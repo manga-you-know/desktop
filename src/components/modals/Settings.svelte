@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getVersion } from "@tauri-apps/api/app";
-  import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
+  import { enable, isEnabled, disable } from "@tauri-apps/plugin-autostart";
   import { load, Store } from "@tauri-apps/plugin-store";
   import { checkForAppUpdates } from "@/functions";
   import {
@@ -32,12 +32,14 @@
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
-  let autoStart = $state(false)
-  let store: Store | null =  null
+  let autoStart = $state(false);
+  let startInTray = $state(false);
+  let store: Store | null = null;
   onMount(async () => {
     version = await getVersion();
-    store = await load("settings.json")
-    autoStart = await store.get<boolean>("auto_start") ?? false
+    store = await load("settings.json");
+    autoStart = (await store.get<boolean>("auto_start")) ?? false;
+    startInTray = (await store.get<boolean>("start_in_tray")) ?? false;
     if (autoStart) {
       const isAutoStartEnabled = await isEnabled();
       if (!isAutoStartEnabled) {
@@ -45,9 +47,6 @@
       }
     }
   });
-  function titleCase(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
 </script>
 
 <Dialog.Root bind:open={$openSettings}>
@@ -106,11 +105,24 @@
               onCheckedChange={async (value) => {
                 value ? await enable() : await disable();
                 await store?.set("auto_start", value);
+                if (!value) {
+                  await store?.set("start_in_tray", false);
+                  startInTray = false;
+                }
               }}
             />
-            <Label for="auto-start">
-              Start app with system
-            </Label>
+            <Label for="auto-start">Start app with system</Label>
+          </div>
+          <div class="flex gap-2 items-center">
+            <Checkbox
+              id="start-in-tray"
+              disabled={!autoStart}
+              bind:checked={startInTray}
+              onCheckedChange={async (value) => {
+                await store?.set("start_in_tray", value);
+              }}
+            />
+            <Label for="start-in-tray">Start in tray apps</Label>
           </div>
         </Card.Content>
       </Card.Root>

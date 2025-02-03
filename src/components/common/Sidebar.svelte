@@ -47,13 +47,13 @@
       <Sidebar.GroupContent>
         <Sidebar.Menu>
           {#each items as item (item.name)}
-            <Sidebar.MenuItem>
+            <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton onclick={() => goto(item.path)} tabindex={-1}>
                 <Icon
                   icon={page.url.pathname === item.path
                     ? item.iconActive
                     : item.icon}
-                  class="!w-4 !h-4 "
+                  class="!w-5 !h-5 ml-[-2px]"
                 />
                 <Label>{item.name}</Label>
               </Sidebar.MenuButton>
@@ -74,6 +74,7 @@
                 icon={$openSearch
                   ? "mingcute:search-fill"
                   : "mingcute:search-line"}
+                class="!w-5 !h-5 ml-[-2px]"
               />
               <Label>Search</Label>
             </Sidebar.MenuButton>
@@ -87,6 +88,7 @@
                 icon={$openSettings
                   ? "heroicons:cog-6-tooth-solid"
                   : "heroicons:cog-6-tooth"}
+                class="!w-5 !h-5 ml-[-2px]"
               />
               <Label>Settings</Label>
             </Sidebar.MenuButton>

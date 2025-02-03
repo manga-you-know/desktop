@@ -1,3 +1,4 @@
+use tauri::Manager;
 use utils::hashmap::{get_data, set_data};
 use utils::request::{get_aniplay_chapters, get_aniplay_episode};
 
@@ -7,12 +8,21 @@ mod utils;
 pub fn run() {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
+        .setup(|app| {
+            let window = app.get_webview_window("main").unwrap();
+            let args: Vec<String> = std::env::args().collect();
+            if args.contains(&"--flag1".to_string()) {
+                window.hide().unwrap();
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
-            set_data, 
-            get_data, 
-            get_aniplay_chapters, 
+            set_data,
+            get_data,
+            get_aniplay_chapters,
             get_aniplay_episode
-        ]) 
+            ])
+        .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_process::init())

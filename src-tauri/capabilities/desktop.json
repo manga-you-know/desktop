@@ -2,14 +2,27 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop",
   "description": "persmissions just for Desktop",
-  "windows": ["*"],
-  "platforms": ["macOS", "windows", "linux"],
+  "windows": [
+    "*"
+  ],
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
   "permissions": [
+    "core:window:default",
     "core:window:allow-start-dragging",
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-minimize",
     "core:window:allow-close",
+    "core:window:allow-set-title",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-focus",
+    "core:window:allow-destroy",
+    "core:window:allow-show",
+    "core:window:allow-hide",
     "updater:default",
     "updater:allow-check",
     "updater:allow-download-and-install",
@@ -27,6 +40,10 @@
     "autostart:allow-disable",
     "autostart:allow-enable",
     "autostart:allow-is-enabled",
+    "core:app:allow-default-window-icon",
+    "core:tray:default",
+    "core:menu:default",
+    "core:resources:default",
     {
       "identifier": "shell:allow-execute",
       "allow": [
@@ -36,6 +53,7 @@
           "args": true
         }
       ]
-    }
+    },
+    "cli:default"
   ]
 }

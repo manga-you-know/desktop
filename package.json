@@ -12,6 +12,7 @@
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/plugin-autostart": "~2",
+    "@tauri-apps/plugin-cli": "~2",
     "@tauri-apps/plugin-clipboard-manager": "^2.0.0",
     "@tauri-apps/plugin-dialog": "~2.2.0",
     "@tauri-apps/plugin-fs": "~2.2.0",

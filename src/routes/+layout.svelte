@@ -3,8 +3,6 @@
   import { type } from "@tauri-apps/plugin-os";
   import { Toaster } from "@/lib/components";
   import { ModeWatcher } from "mode-watcher";
-  // import { NinjaKeys } from "ninja-keys";
-  // import { shortcuts, Shortcuts } from "svelte-keyboard-shortcuts";
   import { onMount, onDestroy } from "svelte";
   import { Search, Settings } from "@/components";
   import { autoSearchUpdates, openSearch } from "@/store";
@@ -15,6 +13,7 @@
     loadSettings,
     toggleFullscreen,
     loadFavoriteChapters,
+    createTray,
   } from "@/functions";
   let { children } = $props();
   const os = type();
@@ -41,22 +40,12 @@
     await initDatabase();
     await migrateDatabase();
     await loadSettings();
+    await createTray();
     if (os === "windows" || os === "linux" || os === "macos") {
-      // });
-      // await register("F11", (e) => {
-      //   if (e.state === "Pressed") toggleFullscreen();
-      // });
       loadFavoriteChapters();
       if ($autoSearchUpdates) {
         await checkForAppUpdates();
       }
-      // const window = getCurrentWindow();
-      // window.onFocusChanged((e) => {
-      //   // if (e.payload === true) {
-      //   //   loadFavoriteChapters();
-      //   // }
-
-      // });
     }
   });
   onDestroy(() => {
