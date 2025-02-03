@@ -114,6 +114,10 @@
             <Label for="auto-start">Start app with system</Label>
           </div>
           <div class="flex gap-2 items-center">
+            <Separator
+              class="border-y-[12px] border-x-2"
+              orientation="vertical"
+            />
             <Checkbox
               id="start-in-tray"
               disabled={!autoStart}

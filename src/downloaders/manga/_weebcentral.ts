@@ -98,7 +98,9 @@ export class WeebCentralDl implements MangaDl {
 
   async search(query: string): Promise<Favorite[]> {
     const response = await fetch(
-      `${this.baseUrl}/search/data?author&text=${encodeURI(query)}&sort=Best%20Match&order=Ascending&official=Any&display_mode=Full%20Display`,
+      `${this.baseUrl}/search/data?author&text=${encodeURI(
+        query
+      )}&sort=Best%20Match&order=Ascending&official=Any&display_mode=Full%20Display`,
       {
         headers: this.headers,
       }
@@ -110,7 +112,6 @@ export class WeebCentralDl implements MangaDl {
     const text = await response.text();
     const $ = cheerio.load(text);
     $("article.bg-base-300").each((_, article) => {
-      console.log(article);
       const aList = $(article).find("a");
       const a = aList.eq(1);
       const href = $(a).attr("href") ?? "";

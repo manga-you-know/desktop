@@ -56,7 +56,6 @@
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
-    console.log(chapterIndex);
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $globalChapters[Number(chapterIndex)];

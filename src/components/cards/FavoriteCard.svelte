@@ -122,9 +122,10 @@
           >
             <div
               class={`${favoriteLoad.toReadCount > 0 ? "transition-all duration-500 group-hover:rotate-[720deg]" : ""}`}
+              role="group"
             >
               <Badge
-                class="min-w-10 h-10 mb-1 rounded-xl text-center"
+                class="min-w-10 h-10 mb-1 rounded-xl text-center cursor-default"
                 {variant}
                 tabindex={-1}
               >

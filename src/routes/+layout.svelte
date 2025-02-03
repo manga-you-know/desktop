@@ -6,6 +6,7 @@
   import { onMount, onDestroy } from "svelte";
   import { Search, Settings } from "@/components";
   import { autoSearchUpdates, openSearch } from "@/store";
+  import { Tooltip as TooltipPrimitive } from "@/lib/components";
   import {
     checkForAppUpdates,
     initDatabase,
@@ -58,4 +59,6 @@
 <Settings />
 <ModeWatcher defaultMode="dark" />
 <svelte:window onkeydown={handleKeydown} />
-{@render children?.()}
+<TooltipPrimitive.Provider>
+  {@render children?.()}
+</TooltipPrimitive.Provider>

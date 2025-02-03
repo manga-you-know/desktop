@@ -57,7 +57,6 @@ export async function loadSettings() {
 
 export async function saveSettings() {
   const loadedSettings = await load("settings.json");
-  console.log(get(selectedSource));
   await Promise.all([
     loadedSettings.set("selected_source", get(selectedSource)),
     loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),

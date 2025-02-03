@@ -12,13 +12,11 @@
   let { text, disabled = $bindable(false), children }: Props = $props();
 </script>
 
-<TooltipPrimitive.Provider {disabled}>
-  <TooltipPrimitive.Root>
-    <TooltipPrimitive.Trigger tabindex={-1}>
-      {@render children?.()}
-    </TooltipPrimitive.Trigger>
-    <TooltipPrimitive.Content sideOffset={5}>
-      {text}
-    </TooltipPrimitive.Content>
-  </TooltipPrimitive.Root>
-</TooltipPrimitive.Provider>
+<TooltipPrimitive.Root delayDuration={200} {disabled}>
+  <TooltipPrimitive.Trigger tabindex={-1}>
+    {@render children?.()}
+  </TooltipPrimitive.Trigger>
+  <TooltipPrimitive.Content sideOffset={5}>
+    {text}
+  </TooltipPrimitive.Content>
+</TooltipPrimitive.Root>
