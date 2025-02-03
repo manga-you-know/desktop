@@ -1,7 +1,7 @@
-## 0.3.12 (2025-01-31)
+## 0.3.13 (2025-02-03)
 
 
 ### New Features
 
-* Add "start with system" option ([290ce43](https://github.com/manga-you-know/desktop/commit/290ce43bdfc9fd0a32b59a260a21ff1fd6fe09a6))
+* add option to start window in tray ([cc27abd](https://github.com/manga-you-know/desktop/commit/cc27abd7ebb083419cb29a9999d385160179993c))
 
