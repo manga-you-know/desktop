@@ -147,8 +147,7 @@ export class WeebCentralDl implements MangaDl {
       .find("a")
       .each((_, a) => {
         chapters.push({
-          number:
-            $(a).find("span").eq(2).text().replace("Chapter", "").trim() ?? "",
+          number: $(a).find("span").eq(2).text().split(" ").pop() ?? "",
           chapter_id: $(a).attr("href")?.split("/").pop() ?? "",
           source: "WeebCentral",
           language: "default",
