@@ -4,7 +4,12 @@
   import { Dialog, Button, Input } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
   import { downloadManager } from "@/store";
-  import { refreshLibrary, refreshFavorites } from "@/functions";
+  import {
+    refreshLibrary,
+    refreshFavorites,
+    setDiscordActivity,
+    setDefaultDiscordActivity,
+  } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
 
@@ -64,6 +69,11 @@
   $effect(() => {
     name = favorite.name;
     image = favorite.cover;
+    if (open) {
+      setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
+    } else {
+      setDefaultDiscordActivity();
+    }
   });
 </script>
 

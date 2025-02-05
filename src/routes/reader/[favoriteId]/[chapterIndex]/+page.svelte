@@ -1,11 +1,12 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
   import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import {
     addReadedBelow,
     loadFavoriteChapter,
+    setDefaultDiscordActivity,
+    setDiscordActivity,
     setFullscreen,
     toggleFullscreen,
   } from "@/functions";
@@ -22,6 +23,7 @@
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
+  import { floor } from "lodash";
 
   let { favoriteId, chapterIndex } = page.params;
   let chapter = $state($globalChapters[Number(chapterIndex)]);
@@ -34,9 +36,28 @@
     Number(chapterIndex) === $globalChapters.length - 1
   );
   let currentlyImage = $state("/myk.png");
+  function setChapterActivity(name: string) {
+    const percentageReaded: number =
+      (($globalChapters.length - Number(chapterIndex)) /
+        $globalChapters.length) *
+      100;
+    let percentageText = percentageReaded.toFixed(2);
+    if (floor(percentageReaded) === 100) {
+      percentageText = "100";
+    } else if (isTheFirstChapter) {
+      percentageText = "0";
+    }
+
+    setDiscordActivity(
+      `Readind [${name}]`,
+      `Chapter: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+    );
+  }
+
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
+
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $globalChapters[Number(chapterIndex)];
@@ -45,6 +66,7 @@
     currentlyImage = chaptersImages[0];
     totalPage = chaptersImages.length;
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    setChapterActivity(favorite.name);
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
@@ -59,6 +81,17 @@
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
   }
+
+  function goHome() {
+    currentlyImage = "/myk.png";
+    setFullscreen(false);
+    if (favorite) {
+      loadFavoriteChapter(favorite);
+    }
+    goto(`/${$defaultPage}`);
+    setDefaultDiscordActivity();
+  }
+
   async function handleGoChapter(way: "next" | "prev") {
     currentlyImage = "/myk.png";
     currentlyCount = 1;
@@ -72,6 +105,7 @@
       await setFullscreen(true);
     }
     favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    setChapterActivity(favorite.name);
     const chapterImages = await $downloadManager.getChapterImages(chapter);
     images = chapterImages;
     currentlyImage = images[0];
@@ -97,6 +131,9 @@
     }
     if (event.key === "ArrowRight") {
       nextPage();
+    }
+    if (event.key === "F4") {
+      goHome();
     }
   }
 </script>
@@ -137,14 +174,7 @@
       size="sm"
       color="neutral"
       variant="outline"
-      onclick={() => {
-        currentlyImage = "/myk.png";
-        setFullscreen(false);
-        if (favorite) {
-          loadFavoriteChapter(favorite);
-        }
-        goto(`/${$defaultPage}`);
-      }}
+      onclick={goHome}
     >
       <Icon icon="lucide:home" />
     </Button>

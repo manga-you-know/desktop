@@ -1,4 +1,6 @@
 import { isFullscreen, defaultPage, autoEnterFullscreen } from "@/store";
+import { start, setActivity, destory } from "tauri-plugin-drpc";
+import { Activity, Assets } from "tauri-plugin-drpc/activity";
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
@@ -25,6 +27,26 @@ export async function goDefaultPage() {
     await setFullscreen(false);
   }
   goto(`/${defaultPag}`);
+}
+
+export async function startDiscordPresence() {
+  await start("1336775889366552597");
+}
+
+export async function stopDiscordPresence() {
+  await destory();
+}
+export async function setDiscordActivity(details: string, state?: string) {
+  const activity = new Activity().setDetails(details);
+  if (state) {
+    activity.setState(state);
+  }
+  await setActivity(activity);
+}
+
+export async function setDefaultDiscordActivity() {
+  const activity = new Activity().setDetails("Slacking off...");
+  await setActivity(activity);
 }
 
 export async function createTray() {

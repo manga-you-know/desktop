@@ -15,6 +15,8 @@
     toggleFullscreen,
     loadFavoriteChapters,
     createTray,
+    setDefaultDiscordActivity,
+    startDiscordPresence,
   } from "@/functions";
   let { children } = $props();
   const os = type();
@@ -42,6 +44,8 @@
     await migrateDatabase();
     await loadSettings();
     await createTray();
+    await startDiscordPresence();
+    await setDefaultDiscordActivity();
     if (os === "windows" || os === "linux" || os === "macos") {
       loadFavoriteChapters();
       if ($autoSearchUpdates) {

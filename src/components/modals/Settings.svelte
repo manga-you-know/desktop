@@ -2,7 +2,12 @@
   import { getVersion } from "@tauri-apps/api/app";
   import { enable, isEnabled, disable } from "@tauri-apps/plugin-autostart";
   import { load, Store } from "@tauri-apps/plugin-store";
-  import { checkForAppUpdates } from "@/functions";
+  import {
+    checkForAppUpdates,
+    saveSettings,
+    setDefaultDiscordActivity,
+    setDiscordActivity,
+  } from "@/functions";
   import {
     Card,
     Label,
@@ -22,9 +27,9 @@
     preferableLanguage,
     defaultPage,
     useMpv,
+    openSearch,
   } from "@/store";
   import { onMount } from "svelte";
-  import { saveSettings } from "@/functions";
   import { DefaultPage, Language } from "@/components";
   import type { Language as LanguageType } from "@/interfaces";
   import Icon from "@iconify/svelte";
@@ -46,6 +51,11 @@
         await enable();
       }
     }
+  });
+  openSettings.subscribe(async (open) => {
+    open
+      ? await setDiscordActivity("Changing settings...")
+      : await setDefaultDiscordActivity();
   });
 </script>
 

@@ -30,6 +30,8 @@
     isReaded,
     loadFavoriteChapter,
     refreshReadeds,
+    setDefaultDiscordActivity,
+    setDiscordActivity,
   } from "@/functions";
   import type {
     Favorite,
@@ -102,6 +104,7 @@
   $effect(() => {
     if (open) {
       isFetching = true;
+      setDiscordActivity("Selecting a chapter:", favorite.name);
       (async () => {
         globalChapters.set([]);
         isMulti = $downloadManager.isMultiLanguage(favorite.source);
@@ -133,6 +136,8 @@
         await refreshReadeds(favorite);
         isFetching = false;
       })();
+    } else {
+      setDefaultDiscordActivity();
     }
   });
 </script>

@@ -8,7 +8,13 @@
   import type { Favorite, Episode } from "@/interfaces";
   import { downloadManager, globalChapters, readeds } from "@/store";
   import { EpisodeButton } from "@/components";
-  import { isReaded, loadFavoriteChapter, refreshReadeds } from "@/functions";
+  import {
+    isReaded,
+    loadFavoriteChapter,
+    refreshReadeds,
+    setDefaultDiscordActivity,
+    setDiscordActivity,
+  } from "@/functions";
   import { Dialog } from "@/lib/components";
   import Icon from "@iconify/svelte";
 
@@ -38,6 +44,7 @@
   $effect(() => {
     if (open) {
       isFetching = true;
+      setDiscordActivity("Selecting a episode:", favorite.name);
       (async () => {
         globalChapters.set([]);
         await new Promise((resolve) => setTimeout(resolve, 10));
@@ -46,6 +53,8 @@
         await refreshReadeds(favorite);
         isFetching = false;
       })();
+    } else {
+      setDefaultDiscordActivity();
     }
   });
 </script>

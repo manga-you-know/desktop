@@ -9,7 +9,11 @@
   import { Source } from "@/components";
   import { openSearch, downloadManager, selectedSource } from "@/store";
   import { FavoriteRepository } from "@/repositories";
-  import { refreshLibrary } from "@/functions";
+  import {
+    refreshLibrary,
+    setDefaultDiscordActivity,
+    setDiscordActivity,
+  } from "@/functions";
   import Icon from "@iconify/svelte";
   import type { Favorite } from "@/interfaces";
   import { onMount } from "svelte";
@@ -41,6 +45,11 @@
   selectedSource.subscribe((_) => {
     results = [];
     search();
+  });
+  openSearch.subscribe(async (open) => {
+    open
+      ? await setDiscordActivity("Searching mangas...")
+      : await setDefaultDiscordActivity();
   });
   onMount(async () => {
     await refreshFavorites();

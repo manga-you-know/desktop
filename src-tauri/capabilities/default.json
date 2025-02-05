@@ -339,6 +339,7 @@
     "notification:default",
     "fs:default",
     "store:default",
-    "dialog:default"
+    "dialog:default",
+    "drpc:default"
   ]
 }
