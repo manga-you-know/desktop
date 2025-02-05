@@ -1,7 +1,7 @@
-## 0.3.15 (2025-02-03)
+## 0.3.16 (2025-02-05)
 
 
-### Bug Fixes
+### New Features
 
-* try to show window when hide etc ([18b3d9b](https://github.com/manga-you-know/desktop/commit/18b3d9b460f14d82d42cb011d4fdf4459710e1bb))
+* add discord presence to the app! ([e47d7d4](https://github.com/manga-you-know/desktop/commit/e47d7d48e444e04c23364ef4f58e695cc65fdec6))
 
