@@ -1,7 +1,7 @@
 ## 0.3.16 (2025-02-05)
 
 
-### New Features
+### Bug Fixes
 
-* add discord presence to the app! ([e47d7d4](https://github.com/manga-you-know/desktop/commit/e47d7d48e444e04c23364ef4f58e695cc65fdec6))
+* number chapter not showing ([60df312](https://github.com/manga-you-know/desktop/commit/60df312379bccc474fc89e563de1eaa197c32e10))
 
