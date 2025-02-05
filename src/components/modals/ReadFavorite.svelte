@@ -104,7 +104,7 @@
   $effect(() => {
     if (open) {
       isFetching = true;
-      setDiscordActivity("Selecting a chapter:", favorite.name);
+      setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
       (async () => {
         globalChapters.set([]);
         isMulti = $downloadManager.isMultiLanguage(favorite.source);

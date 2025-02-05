@@ -50,7 +50,7 @@
 
     setDiscordActivity(
       `Readind [${name}]`,
-      `Chapter: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+      `Chapter ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
 
