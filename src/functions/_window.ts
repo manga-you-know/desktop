@@ -1,6 +1,11 @@
 import { isFullscreen, defaultPage, autoEnterFullscreen } from "@/store";
 import { start, setActivity, destory } from "tauri-plugin-drpc";
-import { Activity, Assets } from "tauri-plugin-drpc/activity";
+import {
+  Activity,
+  Button,
+  Assets,
+  ActivityType,
+} from "tauri-plugin-drpc/activity";
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
@@ -37,7 +42,14 @@ export async function stopDiscordPresence() {
   await destory();
 }
 export async function setDiscordActivity(details: string, state?: string) {
-  const activity = new Activity().setDetails(details);
+  const button = new Button(
+    "Download app",
+    "https://github.com/manga-you-know/desktop/releases/latest/"
+  );
+  const activity = new Activity()
+    .setButton([button])
+    .setActivity(ActivityType.Watching)
+    .setDetails(details);
   if (state) {
     activity.setState(state);
   }
@@ -45,7 +57,14 @@ export async function setDiscordActivity(details: string, state?: string) {
 }
 
 export async function setDefaultDiscordActivity() {
-  const activity = new Activity().setDetails("Slacking off...");
+  const button = new Button(
+    "Download app",
+    "https://github.com/manga-you-know/desktop/releases/latest/"
+  );
+  const activity = new Activity()
+    .setButton([button])
+    .setActivity(ActivityType.Watching)
+    .setDetails("Slacking off...");
   await setActivity(activity);
 }
 
