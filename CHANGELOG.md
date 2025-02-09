@@ -1,7 +1,7 @@
 ## 0.3.17 (2025-02-09)
 
 
-### New Features
+### Bug Fixes
 
-* add button to download app in discord activity ([17e1a8c](https://github.com/manga-you-know/desktop/commit/17e1a8c4d94932a377f9eab4f5735c4253f99281))
+* FUCKKKKKK ([a9dbb7e](https://github.com/manga-you-know/desktop/commit/a9dbb7e4c86fdbd3abb9ecc7bdda7f59e496b506))
 
