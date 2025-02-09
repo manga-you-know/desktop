@@ -49,7 +49,7 @@
     }
 
     setDiscordActivity(
-      `Readind [${name}]`,
+      `Reading [${name}]`,
       `Chapter ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
