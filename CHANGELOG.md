@@ -1,7 +1,7 @@
-## 0.3.16 (2025-02-05)
+## 0.3.17 (2025-02-09)
 
 
-### Bug Fixes
+### New Features
 
-* number chapter not showing ([60df312](https://github.com/manga-you-know/desktop/commit/60df312379bccc474fc89e563de1eaa197c32e10))
+* add button to download app in discord activity ([17e1a8c](https://github.com/manga-you-know/desktop/commit/17e1a8c4d94932a377f9eab4f5735c4253f99281))
 
