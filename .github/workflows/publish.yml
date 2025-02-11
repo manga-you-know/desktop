@@ -79,7 +79,7 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-apple-darwin
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
@@ -102,6 +102,7 @@ jobs:
           appVersion: __VERSION__
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
+          android: true
           args: ${{ matrix.args }}
 
       - name: Update Cargo.toml
