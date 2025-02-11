@@ -1,7 +1,7 @@
-## 0.3.17 (2025-02-09)
+## 0.3.18 (2025-02-11)
 
 
-### Bug Fixes
+### New Features
 
-* FUCKKKKKK ([a9dbb7e](https://github.com/manga-you-know/desktop/commit/a9dbb7e4c86fdbd3abb9ecc7bdda7f59e496b506))
+* try mobile build (shouldn't work) ([2352fa4](https://github.com/manga-you-know/desktop/commit/2352fa49101228add0e43f91129e283f45d959df))
 
