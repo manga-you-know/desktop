@@ -102,7 +102,7 @@ jobs:
           appVersion: __VERSION__
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
-          android: true
+          mobile: true
           args: ${{ matrix.args }}
 
       - name: Update Cargo.toml
