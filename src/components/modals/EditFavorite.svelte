@@ -52,6 +52,7 @@
     favorite.name = name;
     favorite.cover = image;
     favorite.description = manga.description;
+    favorite.extra_name = manga.extra_name;
     favorite.author = manga.author;
     favorite.link = manga.link;
     isRefreshing = false;

@@ -132,6 +132,15 @@
     if (event.key === "ArrowRight") {
       nextPage();
     }
+    if (event.key === " ") {
+      nextPage();
+    }
+    if (event.key === "Enter") {
+      nextPage();
+    }
+    if (event.key === "Backspace") {
+      prevPage();
+    }
     if (event.key === "F4") {
       goHome();
     }
@@ -153,13 +162,19 @@
     aria-label="Previous"
     class="w-[50%] cursor-default outline-none border-none"
     tabindex="-1"
-    onclick={prevPage}
+    onclick={(e) => {
+      prevPage();
+      e.currentTarget.blur();
+    }}
   ></button>
   <button
     aria-label="Next"
     class="w-[50%] cursor-default outline-none border-none"
     tabindex="-1"
-    onclick={nextPage}
+    onclick={(e) => {
+      nextPage();
+      e.currentTarget.blur();
+    }}
   ></button>
 </div>
 <div
