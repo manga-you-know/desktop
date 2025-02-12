@@ -17,6 +17,7 @@
     createTray,
     setDefaultDiscordActivity,
     startDiscordPresence,
+    setFullscreen,
   } from "@/functions";
   let { children } = $props();
   const os = type();
@@ -33,6 +34,9 @@
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "F11") {
       toggleFullscreen();
+    }
+    if (e.key === "Escape") {
+      setFullscreen(false);
     }
     if (e.key.toUpperCase() === "K" && (e.metaKey || e.ctrlKey)) {
       openSearch.set(!$openSearch);
