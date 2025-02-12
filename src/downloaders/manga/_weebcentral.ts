@@ -23,39 +23,27 @@ export class WeebCentralDl implements MangaDl {
     "Sec-Fetch-User": "?1",
   };
 
-  async getMangaById(id: string): Promise<Favorite> {
-    // const response = await fetch(`${this.baseUrl}/manga/${id}`, {
-    //   headers: this.headers,
-    // });
-    // if (response.status !== 200) {
-    //   throw new Error(`Failed to get manga ${id} ${response.status}`);
-    // }
-    // const text = await response.text();
-    // const $ = cheerio.load(text);
-    // const ul = $("ul.list-group.list-group-flush");
-    // const name = $(ul).find("h1").text();
-    // const description = $(ul).find("div.top-5.Content").text();
-    // const author = $(ul).find("a[href^='/search/?author']").text();
-    // return {
-    //   name: name,
-    //   folder_name: name,
-    //   cover: `https://temp.compsci88.com/cover/${id}.jpg`,
-    //   source: "MangaSee",
-    //   source_id: id,
-    //   extra_name: "",
-    //   link: `${this.baseUrl}/manga/${id}`,
-    //   grade: 0,
-    //   author: author,
-    //   description: description,
-    // };
+  async getMangaById(mangaId: string): Promise<Favorite> {
+    const response = await fetch(`${this.baseUrl}/series/${mangaId}`, {
+      headers: this.headers,
+    });
+    if (response.status !== 200) {
+      throw new Error(`Failed to get manga info ${mangaId} ${response.status}`);
+    }
+    const text = await response.text();
+    const $ = cheerio.load(text);
+    const href = $("link[rel=canonical]").attr("href") ?? "";
+    const uls = $("ul.flex.flex-col.gap-4");
     return {
-      name: "test",
-      folder_name: "test",
-      cover: "https://temp.compsci88.com/cover/test.jpg",
+      name: $("h1").first().text(),
       source: "WeebCentral",
-      source_id: "test",
-      extra_name: "",
-      link: `${this.baseUrl}/manga/test`,
+      source_id: mangaId,
+      cover: $("source").attr("srcset") || "",
+      folder_name: href.split("/").pop()?.toLowerCase() || "",
+      extra_name: uls.eq(1).find("ul").find("li").text(),
+      description: uls.eq(1).find("p").text(),
+      author: uls.eq(0).find("a").first().text(),
+      link: href,
       grade: 0,
     };
   }
@@ -70,31 +58,6 @@ export class WeebCentralDl implements MangaDl {
       link: "",
     };
   }
-
-  // async getMangas(): Promise<Favorite[]> {
-  //   const response = await fetch(`${this.baseUrl}/search`, {});
-  //   if (response.status !== 200) {
-  //     throw new Error(`Failed to get mangas ${response.status}`);
-  //   }
-  //   const text = await response.text();
-  //   var mangaList = JSON.parse(
-  //     text.split("vm.Directory = ")[1].split(";\r\n")[0]
-  //   );
-  //   return mangaList.map((manga: any) => {
-  //     return {
-  //       name: manga.s,
-  //       folder_name: manga.i,
-  //       link: `${this.baseUrl}/manga/${manga.i}`,
-  //       cover: `https://temp.compsci88.com/cover/${manga.i}.jpg`,
-  //       source: "MangaSee",
-  //       source_id: manga.i,
-  //       extra_name: manga.al[0] || "",
-  //       grade: 0,
-  //       author: manga.a[0] || "",
-  //       description: "",
-  //     };
-  //   });
-  // }
 
   async search(query: string): Promise<Favorite[]> {
     const response = await fetch(
@@ -121,7 +84,7 @@ export class WeebCentralDl implements MangaDl {
         source_id: href.split("/").slice(-2, -1)[0],
         cover: $(article).find("source").attr("srcset") || "",
         folder_name: href.split("/").pop()?.toLowerCase() || "",
-        extra_name: href.split("/").pop(),
+        extra_name: href.split("/").pop()?.replace("-", " "),
         author: aList.eq(2).text(),
         link: href,
         grade: 0,
