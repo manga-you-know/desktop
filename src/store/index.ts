@@ -12,6 +12,7 @@ import type {
 export const downloadManager = readable<DownloadManager>(new DownloadManager());
 export const favoritesLoaded = writable<{ [key: string]: FavoriteLoaded }>({});
 export const showOnlyNew = writable<boolean>(false);
+export const closeTray = writable<boolean>(false);
 export const libraryFavorites = writable<Favorite[]>([]);
 export const ultraFavorites = writable<Favorite[]>([]);
 export const libraryQuery = writable<string>("");

@@ -11,6 +11,7 @@ import {
   appLanguage,
   defaultPage,
   useMpv,
+  closeTray,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
@@ -28,6 +29,7 @@ export async function loadSettings() {
     lIsAscending,
     lDefaultPage,
     lUseMpv,
+    lCloseTray,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -39,11 +41,13 @@ export async function loadSettings() {
     loadedSettings.get<boolean>("is_ascending"),
     loadedSettings.get<string>("default_page"),
     loadedSettings.get<boolean>("use_mpv"),
+    loadedSettings.get<boolean>("close_tray"),
   ]);
   selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
   preferableLanguage.set(lPreferableLanguage ?? { id: "en", label: "English" });
   autoEnterFullscreen.set(lAutoOpenFullscreen ?? true);
+  closeTray.set(lCloseTray ?? false);
   theme.set(lTheme ?? "dark");
   appLanguage.set(lLanguage ?? "en");
   libraryOrder.set(lOrderBy ?? "id");
@@ -68,6 +72,7 @@ export async function saveSettings() {
     loadedSettings.set("is_ascending", get(isAscending)),
     loadedSettings.set("default_page", get(defaultPage)),
     loadedSettings.set("use_mpv", get(useMpv)),
+    loadedSettings.set("close_tray", get(closeTray)),
   ]);
 }
 
@@ -84,6 +89,7 @@ export async function resetSettings() {
     loadedSettings.set("is_ascending", true),
     loadedSettings.set("default_page", "home"),
     loadedSettings.set("use_mpv", false),
+    loadedSettings.set("close_tray", false),
   ]);
   await loadSettings();
 }

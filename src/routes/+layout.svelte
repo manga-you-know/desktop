@@ -5,7 +5,7 @@
   import { ModeWatcher } from "mode-watcher";
   import { onMount, onDestroy } from "svelte";
   import { Search, Settings } from "@/components";
-  import { autoSearchUpdates, openSearch } from "@/store";
+  import { autoSearchUpdates, closeTray, openSearch } from "@/store";
   import { Tooltip as TooltipPrimitive } from "@/lib/components";
   import {
     checkForAppUpdates,
@@ -19,8 +19,10 @@
     startDiscordPresence,
     setFullscreen,
   } from "@/functions";
+  import { getCurrentWindow } from "@tauri-apps/api/window";
   let { children } = $props();
   const os = type();
+  const window = getCurrentWindow();
   const interval = setInterval(
     async () => {
       try {
@@ -42,6 +44,13 @@
       openSearch.set(!$openSearch);
     }
   }
+
+  window.onCloseRequested((e) => {
+    if (closeTray) {
+      e.preventDefault();
+      window.hide();
+    }
+  });
 
   onMount(async () => {
     await initDatabase();

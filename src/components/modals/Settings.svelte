@@ -28,6 +28,7 @@
     defaultPage,
     useMpv,
     openSearch,
+    closeTray,
   } from "@/store";
   import { onMount } from "svelte";
   import { DefaultPage, Language } from "@/components";
@@ -106,6 +107,18 @@
             />
             <Label class="cursor-pointer" for="auto-update"
               >Auto check for updates</Label
+            >
+          </div>
+          <div class="flex gap-2 items-center">
+            <Checkbox
+              id="auto-start"
+              bind:checked={$closeTray}
+              onCheckedChange={async (value) => {
+                await saveSettings();
+              }}
+            />
+            <Label for="auto-start"
+              >Minize to tray apps instead of closing</Label
             >
           </div>
           <div class="flex gap-2 items-center">
