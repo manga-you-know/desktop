@@ -1,7 +1,7 @@
-## 0.3.18 (2025-02-12)
+## 0.3.19 (2025-02-13)
 
 
 ### New Features
 
-* more keys to changing the page ([658ac25](https://github.com/manga-you-know/desktop/commit/658ac25d2b31aaa95a8d9fc1295cfb79f86b2139))
+* Improve installers for windows ([3c87f02](https://github.com/manga-you-know/desktop/commit/3c87f0231235720b091ba31f82ddd6fdc9eb42f6))
 
