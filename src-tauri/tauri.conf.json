@@ -27,9 +27,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "**/*"
-        ]
+        "scope": ["**/*"]
       }
     }
   },
@@ -39,15 +37,24 @@
       "allowDowngrades": true,
       "certificateThumbprint": null,
       "digestAlgorithm": null,
-      "nsis": null,
+      "nsis": {
+        "installMode": "both",
+        "installerIcon": "./icons/icon.ico",
+        "sidebarImage": "./icons/sidebar-banner.png",
+        "headerImage": "./icons/banner.png"
+      },
+      "wix": {
+        "language": "en-US",
+        "bannerPath": "./icons/large-banner.png",
+        "dialogImagePath": "./icons/small-banner.png"
+      },
       "signCommand": null,
       "timestampUrl": null,
       "tsp": false,
       "webviewInstallMode": {
         "silent": true,
         "type": "downloadBootstrapper"
-      },
-      "wix": null
+      }
     },
     "active": true,
     "targets": "all",
