@@ -15,7 +15,7 @@
   <div class="h-14 flex relative top-0">
     <div class="flex items-center gap-2">
       <Switch id="showOnlyNew" bind:checked={$showOnlyNew} />
-      <Label for="showOnlyNew">Only new chapters</Label>
+      <Label class="dark:text-white" for="showOnlyNew">Only new chapters</Label>
     </div>
   </div>
 

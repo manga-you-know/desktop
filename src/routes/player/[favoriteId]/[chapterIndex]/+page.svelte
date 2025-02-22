@@ -114,7 +114,7 @@
 </script>
 
 <div
-  class="w-screen h-screen max-w-screen max-h-screen flex items-center overflow-hidden"
+  class="dark:bg-black w-screen h-screen max-w-screen max-h-screen flex items-center overflow-hidden"
 >
   <media-player
     class="flex flex-col items-center"
