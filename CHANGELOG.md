@@ -1,7 +1,7 @@
-## 0.3.19 (2025-02-13)
+## 0.3.19 (2025-02-22)
 
 
 ### New Features
 
-* Improve installers for windows ([3c87f02](https://github.com/manga-you-know/desktop/commit/3c87f0231235720b091ba31f82ddd6fdc9eb42f6))
+* Light mode, new icon, preload chapters ([e9ed4be](https://github.com/manga-you-know/desktop/commit/e9ed4be37ecea5d7c977f0a6b45bf4afe9c0f34a))
 
