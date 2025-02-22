@@ -51,3 +51,4 @@ vite.config.ts.timestamp-*
 allow_list.txt
 get_allow.py
 get_valids.py
+src-tauri/gen/android/keystore.properties

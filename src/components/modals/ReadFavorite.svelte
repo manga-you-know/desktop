@@ -153,7 +153,7 @@
 >
   <Dialog.Content interactOutsideBehavior="close">
     <Dialog.Header>
-      <Dialog.Title class="w-full flex justify-center"
+      <Dialog.Title class="w-full flex justify-center dark:text-white"
         >{favorite.name.length > 40
           ? favorite.name.substring(0, 40) + "..."
           : favorite.name}</Dialog.Title

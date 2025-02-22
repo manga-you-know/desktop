@@ -1,10 +1,12 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import { swipe, type SwipeCustomEvent } from "svelte-gestures";
   import { invoke } from "@tauri-apps/api/core";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import {
     addReadedBelow,
     loadFavoriteChapter,
+    preloadNextChapter,
     setDefaultDiscordActivity,
     setDiscordActivity,
     setFullscreen,
@@ -19,12 +21,14 @@
     autoEnterFullscreen,
     defaultPage,
     isFullscreen,
+    isMobile,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
 
+  let openHoverChapter = $state(false);
   let { favoriteId, chapterIndex } = page.params;
   let chapter = $state($globalChapters[Number(chapterIndex)]);
   let favorite: Favorite | null = $state(null);
@@ -70,6 +74,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
+    preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
   function prevPage() {
     if (currentlyCount === 1) return;
@@ -113,17 +118,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
-    // await register("ARROWLEFT", async (e) => {
-    //   if (e.state === "Pressed") {
-    //     prevPage();
-    //   }
-    // });
-    // await register("ARROWRIGHT", async (e) => {
-    //   if (e.state === "Pressed") {
-    //     nextPage();
-    //   }
-    // });
-    // create a listener for the "keydown" event
+    preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "ArrowLeft") {
@@ -145,6 +140,14 @@
       goHome();
     }
   }
+  function handleSwipe(e: SwipeCustomEvent) {
+    if (e.detail.direction === "right") {
+      prevPage();
+    }
+    if (e.detail.direction === "left") {
+      nextPage();
+    }
+  }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -157,7 +160,11 @@
     >
   {/if}
 </div>
-<div class="fixed w-screen h-screen flex">
+<div
+  class="fixed w-screen h-screen flex"
+  use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+  onswipe={handleSwipe}
+>
   <button
     aria-label="Previous"
     class="w-[50%] cursor-default outline-none border-none"
@@ -193,13 +200,18 @@
     >
       <Icon icon="lucide:home" />
     </Button>
-    <HoverCard.Root openDelay={50} closeDelay={100}>
+    <HoverCard.Root
+      openDelay={50}
+      closeDelay={100}
+      bind:open={openHoverChapter}
+    >
       <HoverCard.Trigger>
         <Button
           class="pointer-events-auto"
           size="sm"
           color="neutral"
           variant="outline"
+          onclick={() => (openHoverChapter = true)}
         >
           <Icon icon="nimbus:arrows-horizontal" />
         </Button>
@@ -228,30 +240,32 @@
       </HoverCard.Content>
     </HoverCard.Root>
   </div>
-  <div class="flex gap-2">
-    <div class="inline-flex pointer-events-auto z-50">
-      <Button disabled class="w-6 rounded-r-none" size="sm" variant="outline"
-        ><Icon icon="lucide:minus" /></Button
-      >
+  {#if !$isMobile}
+    <div class="flex gap-2">
+      <div class="inline-flex pointer-events-auto z-50">
+        <Button disabled class="w-6 rounded-r-none" size="sm" variant="outline"
+          ><Icon icon="lucide:minus" /></Button
+        >
+        <Button
+          disabled
+          class="w-8 p-0 flex justify-center rounded-none"
+          size="sm"
+          variant="outline">100%</Button
+        >
+        <Button disabled class="w-6 rounded-l-none" size="sm" variant="outline"
+          ><Icon icon="lucide:plus" /></Button
+        >
+      </div>
       <Button
-        disabled
-        class="w-8 p-0 flex justify-center rounded-none"
+        class="pointer-events-auto z-50"
         size="sm"
-        variant="outline">100%</Button
+        variant="outline"
+        onclick={async () => await toggleFullscreen()}
       >
-      <Button disabled class="w-6 rounded-l-none" size="sm" variant="outline"
-        ><Icon icon="lucide:plus" /></Button
-      >
+        <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
+      </Button>
     </div>
-    <Button
-      class="pointer-events-auto z-50"
-      size="sm"
-      variant="outline"
-      onclick={async () => await toggleFullscreen()}
-    >
-      <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
-    </Button>
-  </div>
+  {/if}
   <div class="flex gap-1 z-30">
     <Tooltip.Provider>
       <Tooltip.Root>

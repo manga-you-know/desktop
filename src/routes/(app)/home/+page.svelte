@@ -22,7 +22,7 @@
       <span class="font-[Minecraft] text-xl text-[#88105a]">
         Welcome to MangaYouKnow!
       </span>
-      <p class="flex flex-wrap mt-2 font-[Minecraft] text-sm text-white">
+      <p class="flex flex-wrap mt-2 font-[Minecraft] text-sm dark:text-white">
         MangaYouKnow is a manga reader <br />that allows you to read mangas
         <br />
         on your computer through your<br /> favorite sites.

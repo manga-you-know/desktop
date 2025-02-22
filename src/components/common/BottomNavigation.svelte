@@ -42,7 +42,7 @@
 <div class="flex">
   {#each items as item}
     <Button
-      class="flex-1 h-24 first:rounded-tl-[3rem]"
+      class="flex-1 h-24 rounded-none"
       variant="secondary"
       onclick={() => goto(item.path)}
     >
@@ -53,7 +53,7 @@
     </Button>
   {/each}
   <Button
-    class="flex-1 h-24"
+    class="flex-1 h-24 rounded-none"
     variant="secondary"
     onclick={() => ($openSearch = true)}
   >
@@ -63,7 +63,7 @@
     />
   </Button>
   <Button
-    class="flex-1 h-24 rounded-tr-[3rem]"
+    class="flex-1 h-24 rounded-none"
     variant="secondary"
     onclick={() => ($openSettings = true)}
   >

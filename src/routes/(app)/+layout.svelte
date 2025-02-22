@@ -1,12 +1,11 @@
 <script>
-  import { type } from "@tauri-apps/plugin-os";
   import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar, BottomNavigation } from "@/components";
+  import { isMobile } from "@/store";
   let { children } = $props();
-  const os = type();
 </script>
 
-{#if os === "windows" || os === "linux" || os === "macos"}
+{#if !$isMobile}
   <div class="w-full h-screen flex select-none overflow-hidden">
     <SidebarProv.Provider class="!h-full" open={false}>
       <Sidebar />

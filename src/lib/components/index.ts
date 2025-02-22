@@ -12,6 +12,8 @@ export * as Command from "./ui/command";
 export * as Card from "./ui/card";
 export * as Select from "./ui/select";
 export * as ContextMenu from "./ui/context-menu";
+export * as ToggleGroup from "./ui/toggle-group";
+export * as RadioGroup from "./ui/radio-group";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";
@@ -22,6 +24,7 @@ export { Separator } from "./ui/separator";
 export { ScrollArea } from "./ui/scroll-area";
 export { Progress } from "./ui/progress";
 export { Badge } from "./ui/badge";
+export { Avatar } from "./ui/avatar";
 //common
 export { Toaster } from "./ui/sonner";
 //variants

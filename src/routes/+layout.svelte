@@ -1,11 +1,16 @@
 <script lang="ts">
   import "@/app.css";
-  import { type } from "@tauri-apps/plugin-os";
   import { Toaster } from "@/lib/components";
   import { ModeWatcher } from "mode-watcher";
   import { onMount, onDestroy } from "svelte";
   import { Search, Settings } from "@/components";
-  import { autoSearchUpdates, closeTray, openSearch } from "@/store";
+  import {
+    autoSearchUpdates,
+    closeTray,
+    openSearch,
+    isMobile,
+    theme,
+  } from "@/store";
   import { Tooltip as TooltipPrimitive } from "@/lib/components";
   import {
     checkForAppUpdates,
@@ -20,8 +25,8 @@
     setFullscreen,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { twMerge } from "tailwind-merge";
   let { children } = $props();
-  const os = type();
   const window = getCurrentWindow();
   const interval = setInterval(
     async () => {
@@ -59,7 +64,7 @@
     await createTray();
     await startDiscordPresence();
     await setDefaultDiscordActivity();
-    if (os === "windows" || os === "linux" || os === "macos") {
+    if ($isMobile) {
       loadFavoriteChapters();
       if ($autoSearchUpdates) {
         await checkForAppUpdates();
@@ -71,11 +76,17 @@
   });
 </script>
 
-<Toaster richColors />
-<Search />
-<Settings />
-<ModeWatcher defaultMode="dark" />
 <svelte:window onkeydown={handleKeydown} />
-<TooltipPrimitive.Provider>
-  {@render children?.()}
-</TooltipPrimitive.Provider>
+<div
+  class={twMerge(
+    "dark:bg-black text-black dark:text-white",
+    $theme === "dark" ? "dark" : ""
+  )}
+>
+  <Toaster richColors />
+  <Search />
+  <Settings />
+  <TooltipPrimitive.Provider>
+    {@render children?.()}
+  </TooltipPrimitive.Provider>
+</div>

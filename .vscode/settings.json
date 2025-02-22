@@ -8,6 +8,12 @@
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "html.customData": ["./node_modules/vidstack/vscode.html-data.json"],
+  "[kotlin]": {
+    "editor.defaultFormatter": "fwcd.kotlin"
+  },
+  "[kotlinscript]": {
+    "editor.defaultFormatter": "fwcd.kotlin"
+  },
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   }

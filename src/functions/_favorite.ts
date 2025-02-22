@@ -12,8 +12,14 @@ import {
 import { isReaded, notify, refreshFavorites } from "@/functions";
 import { toast } from "svelte-sonner";
 import { strNotEmpty } from "@/utils";
+import type { DownloadManager } from "@/managers";
 
 const window = getCurrentWindow();
+
+let dl: DownloadManager;
+downloadManager.subscribe((value) => {
+  dl = value;
+});
 
 function addFavorite(favorite: Favorite) {
   favoritesLoaded.update((currentFavorites) => {
@@ -54,6 +60,18 @@ export async function rerenderFavorites(): Promise<void> {
   await refreshFavorites();
 }
 
+export async function preloadChapter(chapter: Chapter): Promise<void> {
+  await dl.getChapterImages(chapter);
+}
+
+export async function preloadNextChapter(
+  currentlyChapterIndex: number,
+  chapters: Chapter[]
+): Promise<void> {
+  if (currentlyChapterIndex === 0) return;
+  preloadChapter(chapters[currentlyChapterIndex - 1]);
+}
+
 export async function loadFavoriteChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
@@ -73,7 +91,6 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     return;
   }
   updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", true);
-  const dl = get(downloadManager);
   let chapters: Chapter[] = [];
   let readeds: Readed[] = [];
   let chaptersToRead: Chapter[] = [];
@@ -110,6 +127,9 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     "toReadCount",
     chaptersToRead.length
   );
+  // if (favorite.type !== "anime" && nextChapter) {
+  //   preloadChapter(nextChapter);
+  // }
   updateFavoriteProperty(strNotEmpty(favorite.id), "chapters", chapters);
   updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
   updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);

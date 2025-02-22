@@ -58,7 +58,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[165px] p-0">
-      <Command.Root class="bg-black">
+      <Command.Root class="dark:bg-black">
         <Command.Input placeholder="Search source..." class="h-9" />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
@@ -66,7 +66,7 @@
             <Command.Group heading={language}>
               {#each displayedSources[language] as source}
                 <Command.Item
-                  class={`flex justify-between hover:!bg-slate-800 ${source.name === $selectedSource ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
+                  class={`flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 ${source.name === $selectedSource ? "!bg-gray-300 dark:!bg-gray-900" : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"}`}
                   value={source.name}
                   onSelect={() => {
                     selectedSource.set(source.name);

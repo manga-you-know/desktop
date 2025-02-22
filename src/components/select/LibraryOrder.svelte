@@ -32,12 +32,12 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[80px] p-0">
-      <Command.Root class="bg-black">
+      <Command.Root class="dark:bg-black">
         <Command.List>
           <Command.Group>
             {#each orders as order}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-800 ${order === $libraryOrder ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
+                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${order === $libraryOrder ? "bg-slate-400 dark:!bg-gray-900" : " dark:aria-selected:bg-inherit"}`}
                 value={order}
                 onSelect={async () => {
                   libraryOrder.set(order);

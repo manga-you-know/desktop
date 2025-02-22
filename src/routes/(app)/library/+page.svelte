@@ -57,12 +57,12 @@
       {#snippet children({ pages, currentPage })}
         <Pagination.Content tabindex={-1}>
           <Pagination.Item>
-            <Pagination.PrevButton tabindex={-1} />
+            <Pagination.PrevButton class="dark:text-white" tabindex={-1} />
           </Pagination.Item>
           {#each pages as page (page.key)}
             {#if page.type === "ellipsis"}
               <Pagination.Item tabindex={-1}>
-                <Pagination.Ellipsis />
+                <Pagination.Ellipsis class="dark:text-white" />
               </Pagination.Item>
             {:else}
               <Pagination.Item>
@@ -70,7 +70,7 @@
                   {page}
                   class={currentPage === page.value
                     ? "!bg-white !text-black"
-                    : ""}
+                    : "dark:text-white"}
                   isActive={currentPage === page.value}
                   tabindex={-1}
                 >
@@ -80,7 +80,7 @@
             {/if}
           {/each}
           <Pagination.Item>
-            <Pagination.NextButton tabindex={-1} />
+            <Pagination.NextButton class="dark:text-white" tabindex={-1} />
           </Pagination.Item>
         </Pagination.Content>
       {/snippet}

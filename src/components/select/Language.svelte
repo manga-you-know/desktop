@@ -1,6 +1,12 @@
 <script lang="ts">
   import type { Language } from "@/interfaces";
-  import { Button, Command, Popover, ScrollArea } from "@/lib/components";
+  import {
+    Button,
+    Command,
+    Label,
+    Popover,
+    ScrollArea,
+  } from "@/lib/components";
   import { ChevronsUpDown } from "lucide-svelte";
   import { cn } from "$lib/utils";
 
@@ -32,7 +38,10 @@
   <Popover.Trigger>
     {#snippet child({ props })}
       <Button
-        class={cn("min-w-[165px] max-w-[165px] justify-between", className)}
+        class={cn(
+          "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-[#2d3649] dark:text-white",
+          className
+        )}
         variant="outline"
         {...props}
         role="combobox"
@@ -45,15 +54,16 @@
     {/snippet}
   </Popover.Trigger>
   <Popover.Content class="w-[165px] p-0">
-    <Command.Root class={cn("bg-black", classPopover)}>
-      <Command.Input placeholder="Search language..." class="h-9" />
-      <Command.Empty class="mb-[-68px]">No language found.</Command.Empty>
+    <Command.Root class={cn("bg-slate-300 dark:bg-[#2d3649]", classPopover)}>
       <ScrollArea class="h-36">
         <Command.Group>
           {#each options as language}
             <Command.Item
               class={cn(
-                `hover:!bg-slate-700 ${language.id === selectedLanguage.id ? "!bg-gray-800" : "aria-selected:bg-inherit"}`,
+                "hover:!bg-gray-400 dark:hover:!bg-slate-700 ",
+                language.id === selectedLanguage.id
+                  ? "!bg-white dark:!bg-gray-800 "
+                  : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
                 itemClass
               )}
               value={language.id}
@@ -63,7 +73,7 @@
                 onChange?.();
               }}
             >
-              {language.label}
+              <Label>{language.label}</Label>
             </Command.Item>
           {/each}
         </Command.Group>

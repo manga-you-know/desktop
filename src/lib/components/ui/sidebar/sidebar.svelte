@@ -54,6 +54,7 @@
     </Sheet.Content>
   </Sheet.Root>
 {:else}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={ref}
     class="text-sidebar-foreground group peer hidden md:block"
@@ -61,6 +62,8 @@
     data-collapsible={sidebar.state === "collapsed" ? collapsible : ""}
     data-variant={variant}
     data-side={side}
+    onmouseenter={sidebar.handleMouseEnter}
+    onmouseleave={sidebar.handleMouseLeave}
   >
     <!-- This is what handles the sidebar gap on desktop -->
     <div

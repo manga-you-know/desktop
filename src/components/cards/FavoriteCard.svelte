@@ -36,6 +36,7 @@
   let isEdit = $state(false);
   let isDelete = $state(false);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);
   let variant: "destructive" | "secondary" | "default" | "outline" | undefined =
     $derived(favoriteLoad.toReadCount > 0 ? "destructive" : "secondary");
@@ -61,7 +62,18 @@
       favoriteLoad.startLoading();
     }
     updateReaded();
+    preloadChapter();
   });
+  async function preloadChapter(): Promise<void> {
+    if (favorite.type === "anime") return;
+    while (!favoriteLoad.isLoaded) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    const chapter = favoriteLoad.nextChapter;
+    if (chapter) {
+      nextChaptersImages = await $downloadManager.getChapterImages(chapter);
+    }
+  }
   // onMount(async () => {
   //   await getToRead();
   // });
@@ -82,7 +94,7 @@
   >
     <ContextMenu.Trigger>
       <button
-        class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-900 hover:bg-gray-800 hover:shadow-lg hover:z-30 transform hover:scale-[1.08]   focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
+        class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
         onclick={() => (isOpen = true)}
         tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
       >
@@ -108,9 +120,11 @@
             {variant}
           > -->
           <div
-            class="h-52 w-[168px] max-w-[168px] flex justify-center from-black bg-gradient-to-b to-50% to-transparent"
+            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-black bg-gradient-to-b to-50% to-transparent"
           >
-            <Label class="max-w-[150px] mt-[7px] text-sm truncate opacity-100">
+            <Label
+              class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-white"
+            >
               {favorite.name}
             </Label>
           </div>
@@ -278,3 +292,6 @@
     </ContextMenu.Content>
   </ContextMenu.Root>
 {/if}
+{#each nextChaptersImages as image}
+  <img class="hidden" src={image} alt="Prefetched" data-sveltekit-prefetch />
+{/each}

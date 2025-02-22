@@ -32,7 +32,7 @@
     {#snippet child({ props })}
       <Button
         class={cn(
-          "min-w-[165px] max-w-[165px] justify-between bg-[#2d3649] border-0",
+          "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-[#2d3649] border-0",
           className
         )}
         variant="outline"
@@ -46,16 +46,14 @@
       </Button>
     {/snippet}
   </Popover.Trigger>
-  <Popover.Content class="w-[165px] h-36 p-0">
-    <Command.Root class={cn("bg-gray-900", classPopover)}>
-      <Command.Input placeholder="Search page..." class="h-9" />
-      <Command.Empty class="mb-[-68px]">No page found.</Command.Empty>
-      <ScrollArea class="h-36">
+  <Popover.Content class="w-[165px] h-28 p-0">
+    <Command.Root class={cn("dark:bg-gray-900", classPopover)}>
+      <ScrollArea class="h-28">
         <Command.Group>
           {#each options as page}
             <Command.Item
               class={cn(
-                `hover:!bg-slate-700 ${page === $defaultPage ? "!bg-gray-800" : "aria-selected:bg-inherit"}`,
+                `hover:!bg-slate-400 dark:hover:!bg-slate-700 ${page === $defaultPage ? "!bg-slate-300 dark:!bg-gray-800" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`,
                 itemClass
               )}
               value={page}

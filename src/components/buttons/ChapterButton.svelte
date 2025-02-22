@@ -30,7 +30,7 @@
 </script>
 
 <Button
-  class="w-full flex justify-between items-center rounded-md group"
+  class="chapter-button w-full flex justify-between items-center rounded-md group"
   variant="ghost"
   size="sm"
   bind:onclick

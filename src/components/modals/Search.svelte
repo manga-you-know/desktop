@@ -47,9 +47,13 @@
     search();
   });
   openSearch.subscribe(async (open) => {
-    open
-      ? await setDiscordActivity("Searching mangas...")
-      : await setDefaultDiscordActivity();
+    searchTerm = "";
+    results = [];
+    if (open) {
+      await setDiscordActivity("Searching mangas...");
+    } else {
+      await setDefaultDiscordActivity();
+    }
   });
   onMount(async () => {
     await refreshFavorites();
@@ -83,12 +87,7 @@
           variant="link"
           size="sm"
           onclick={() => {
-            if (searchTerm.length > 0) {
-              searchTerm = "";
-              results = [];
-            } else {
-              $openSearch = false;
-            }
+            $openSearch = false;
           }}
         >
           <Icon icon="lucide:x" color="gray" />

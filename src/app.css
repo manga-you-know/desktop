@@ -65,17 +65,18 @@
   }
 }
 
+.chapter-button {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
 .group:has(button:hover) {
   background: rgb(56, 50, 50) !important;
 }
 
 .logo-shadow {
-  box-shadow:
-    #fef08a 0px 15px 60px,
-    #fef08a 0px -12px 30px,
-    #fef08a 0px 4px 6px,
-    #fef08a 0px 8px 13px,
-    #fef08a 0px -3px 5px;
+  box-shadow: #fef08a 0px 15px 60px, #fef08a 0px -12px 30px, #fef08a 0px 4px 6px,
+    #fef08a 0px 8px 13px, #fef08a 0px -3px 5px;
 }
 
 @layer base {

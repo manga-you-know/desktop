@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { Button, Command, Label, Popover, ScrollArea } from "@/lib/components";
+  import {
+    Button,
+    Command,
+    Label,
+    Popover,
+    ScrollArea,
+  } from "@/lib/components";
   import { libraryFavorites, librarySource } from "@/store";
   import { refreshLibrary } from "@/functions";
   import { FavoriteRepository } from "@/repositories";
@@ -26,7 +32,7 @@
       {#snippet child({ props })}
         <Button
           variant="outline"
-          class="w-36 rounded-r-none justify-between focus:none"
+          class="w-36 justify-between focus:none"
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -34,7 +40,7 @@
           tabindex={-1}
         >
           <Label
-            class={`w-full text-sm text-center ml-[-4px] ${$librarySource === "" ? "text-gray-400" : ""}`}
+            class={`w-full text-sm text-center ml-[-4px] ${$librarySource === "" ? "dark:text-gray-400" : ""}`}
           >
             {$librarySource || "Filter by source..."}
           </Label>
@@ -42,14 +48,27 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-36 p-0">
-      <Command.Root class="bg-black">
-        <Command.Input placeholder="Search source..." class="h-9" />
+      <Command.Root class="dark:bg-black">
+        <div class="flex">
+          <Command.Input placeholder="Search source..." class="h-9" />
+          <Command.Item
+            class="hover:bg-slate-300 dark:hover:bg-slate-700"
+            disabled={$librarySource === ""}
+            onSelect={() => {
+              open = false;
+              librarySource.set("");
+              refreshLibrary();
+            }}
+          >
+            <Icon icon="lucide:x" />
+          </Command.Item>
+        </div>
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
             {#each sources as source}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-800 ${source === $librarySource ? "!bg-gray-900" : "aria-selected:bg-inherit"}`}
+                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${source === $librarySource ? "!bg-slate-400 dark:!bg-gray-900" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`}
                 value={source}
                 onSelect={async () => {
                   librarySource.set(source);
@@ -57,9 +76,7 @@
                   await refreshLibrary();
                 }}
               >
-                <Label class="w-full text-center text-sm ml-[-4px]"
-                  >{source}</Label
-                >
+                <Label class="w-full text-center text-sm">{source}</Label>
               </Command.Item>
             {/each}
           </Command.Group>
@@ -67,16 +84,4 @@
       </Command.Root>
     </Popover.Content>
   </Popover.Root>
-  <Button
-    class="w-[20px] ml-[-1px] rounded-l-none"
-    variant="outline"
-    disabled={$librarySource === ""}
-    onclick={async () => {
-      librarySource.set("");
-      await refreshLibrary();
-    }}
-    tabindex={-1}
-  >
-    <Icon icon="lucide:circle-x" />
-  </Button>
 </div>

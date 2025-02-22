@@ -4,6 +4,7 @@
   "description": "enables the default permissions",
   "windows": ["*"],
   "permissions": [
+    "core:app:allow-set-app-theme",
     "core:event:default",
     "core:window:default",
     "core:window:allow-is-fullscreen",
@@ -340,7 +341,6 @@
     "notification:default",
     "fs:default",
     "store:default",
-    "dialog:default",
-    "drpc:default"
+    "dialog:default"
   ]
 }

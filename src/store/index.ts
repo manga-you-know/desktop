@@ -1,4 +1,5 @@
 import { writable, readable } from "svelte/store";
+import { type } from "@tauri-apps/plugin-os";
 import { DownloadManager } from "@/managers";
 import { MANGASOURCES } from "@/constants";
 import type {
@@ -8,8 +9,10 @@ import type {
   FavoriteLoaded,
   Language,
 } from "@/interfaces";
+const os = type();
 
-export const downloadManager = readable<DownloadManager>(new DownloadManager());
+export const downloadManager = writable<DownloadManager>(new DownloadManager());
+export const isMobile = writable<boolean>(os === "android" || os === "ios");
 export const favoritesLoaded = writable<{ [key: string]: FavoriteLoaded }>({});
 export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
@@ -31,7 +34,7 @@ export const preferableLanguage = writable<Language>({
 });
 export const autoEnterFullscreen = writable<boolean>(true);
 export const defaultPage = writable<string>("home");
-export const theme = writable<string>("dark");
+export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);
 export const isFullscreen = writable<boolean>(false);

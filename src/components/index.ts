@@ -7,6 +7,8 @@ export { default as Sidebar } from "./common/Sidebar.svelte";
 // Buttons
 export { default as ChapterButton } from "./buttons/ChapterButton.svelte";
 export { default as EpisodeButton } from "./buttons/EpisodeButton.svelte";
+// Toggle Buttons
+export { default as Theme } from "./toggleButtons/Theme.svelte";
 // Inputs
 export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 // Selects

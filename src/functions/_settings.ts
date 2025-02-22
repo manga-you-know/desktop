@@ -15,6 +15,7 @@ import {
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
+import { setTheme } from "@tauri-apps/api/app";
 
 export async function loadSettings() {
   const loadedSettings = await load("settings.json");
@@ -35,7 +36,7 @@ export async function loadSettings() {
     loadedSettings.get<boolean>("auto_search_updates"),
     loadedSettings.get<Language>("preferable_language"),
     loadedSettings.get<boolean>("auto_open_fullscreen"),
-    loadedSettings.get<string>("theme"),
+    loadedSettings.get<"dark" | "light" | undefined>("theme"),
     loadedSettings.get<string>("language"),
     loadedSettings.get<string>("order_by"),
     loadedSettings.get<boolean>("is_ascending"),
@@ -61,6 +62,7 @@ export async function loadSettings() {
 
 export async function saveSettings() {
   const loadedSettings = await load("settings.json");
+  console.log(get(theme));
   await Promise.all([
     loadedSettings.set("selected_source", get(selectedSource)),
     loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),

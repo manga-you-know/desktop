@@ -1,6 +1,4 @@
 import { fetch } from "@tauri-apps/plugin-http";
-// import axios from 'axios';
-import { memoize } from "lodash";
 import * as cheerio from "cheerio";
 import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
@@ -64,9 +62,7 @@ export class WeebCentralDl implements MangaDl {
       `${this.baseUrl}/search/data?author&text=${encodeURI(
         query
       )}&sort=Best%20Match&order=Ascending&official=Any&display_mode=Full%20Display`,
-      {
-        headers: this.headers,
-      }
+      { headers: this.headers }
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get mangas ${response.status}`);
@@ -96,9 +92,7 @@ export class WeebCentralDl implements MangaDl {
   async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(
       `${this.baseUrl}/series/${mangaId}/full-chapter-list`,
-      {
-        headers: this.headers,
-      }
+      { headers: this.headers }
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
@@ -122,9 +116,10 @@ export class WeebCentralDl implements MangaDl {
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(
       `${this.baseUrl}/chapters/${chapterId}/images?is_prev=False&current_page=1&reading_style=long_strip`,
-      {}
+      { headers: this.headers }
     );
     if (response.status !== 200) {
+      console.log(response.url);
       throw new Error(
         `Failed to get chapter images ${chapterId} ${response.status}`
       );

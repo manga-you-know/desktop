@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-  "version": "0.3.19",
+  "version": "0.3.18",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
@@ -18,7 +18,6 @@
         "minHeight": 400,
         "minWidth": 640,
         "center": true,
-        "theme": "Dark",
         "visible": false,
         "backgroundColor": "#18181b"
       }
@@ -27,9 +26,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "**/*"
-        ]
+        "scope": ["**/*"]
       }
     }
   },
@@ -42,21 +39,16 @@
       "nsis": {
         "installMode": "both",
         "installerIcon": "./icons/icon.ico",
-        "sidebarImage": "./icons/sidebar-banner.png",
-        "headerImage": "./icons/banner.png"
+        "sidebarImage": "./icons/banner@164x314.png",
+        "headerImage": "./icons/banner@150x57.png"
       },
       "wix": {
         "language": "en-US",
-        "bannerPath": "./icons/large-banner.png",
-        "dialogImagePath": "./icons/small-banner.png"
+        "bannerPath": "./icons/banner@513x58.png"
       },
       "signCommand": null,
       "timestampUrl": null,
-      "tsp": false,
-      "webviewInstallMode": {
-        "silent": true,
-        "type": "downloadBootstrapper"
-      }
+      "tsp": false
     },
     "active": true,
     "targets": "all",

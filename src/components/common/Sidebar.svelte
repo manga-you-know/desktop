@@ -1,7 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { Label, Sidebar } from "@/lib/components";
+  import { Sidebar, Label, Avatar } from "@/lib/components";
   import { openSearch, openSettings } from "@/store";
   import Icon from "@iconify/svelte";
 
@@ -39,16 +39,28 @@
   ];
 </script>
 
-<Sidebar.Root class="!pl-0 hover:bg-sidebar" variant="inset" collapsible="icon">
+<Sidebar.Root
+  class="pl-[2.5px] hover:bg-sidebar "
+  variant="inset"
+  collapsible="icon"
+  onmouseenter={() => {}}
+  onmouseleave={() => {}}
+>
   <Sidebar.Header></Sidebar.Header>
-  <Sidebar.Content>
+  <Sidebar.Content class="!overflow-hidden">
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
         <Sidebar.Menu>
           {#each items as item (item.name)}
             <Sidebar.MenuItem class="!min-w-16">
-              <Sidebar.MenuButton onclick={() => goto(item.path)} tabindex={-1}>
+              <Sidebar.MenuButton
+                onclick={(e) => {
+                  e.currentTarget.blur();
+                  goto(item.path);
+                }}
+                tabindex={-1}
+              >
                 <Icon
                   icon={page.url.pathname === item.path
                     ? item.iconActive
@@ -67,7 +79,10 @@
         <Sidebar.Menu>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              onclick={() => ($openSearch = true)}
+              onclick={(e) => {
+                e.currentTarget.blur();
+                $openSearch = true;
+              }}
               tabindex={-1}
             >
               <Icon
@@ -81,7 +96,10 @@
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              onclick={() => ($openSettings = true)}
+              onclick={(e) => {
+                e.currentTarget.blur();
+                $openSettings = true;
+              }}
               tabindex={-1}
             >
               <Icon
@@ -97,10 +115,9 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  <Sidebar.Footer>
-    <Sidebar.Trigger tabindex={-1} />
+  <Sidebar.Footer class="flex items-start !ml-[-5px]">
+    <Avatar src="/icon.png" fallbackText="MYK" />
   </Sidebar.Footer>
-  <Sidebar.Rail />
 </Sidebar.Root>
 
 <!-- <ul class="w-28 space-y-1 fixed m-1 pt-10">
