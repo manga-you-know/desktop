@@ -1,7 +1,7 @@
-## 0.3.19 (2025-02-22)
+## 0.3.20 (2025-02-22)
 
 
-### New Features
+### Bug Fixes
 
-* Light mode, new icon, preload chapters ([e9ed4be](https://github.com/manga-you-know/desktop/commit/e9ed4be37ecea5d7c977f0a6b45bf4afe9c0f34a))
+* the last update was with the number wrong. sad ([a1129bd](https://github.com/manga-you-know/desktop/commit/a1129bd9e8fa88a91267c761fdd081e3b066f928))
 
