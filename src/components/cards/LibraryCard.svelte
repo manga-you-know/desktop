@@ -11,7 +11,8 @@
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
-  import { downloadManager } from "@/store";
+  import { downloadManager, theme } from "@/store";
+  import { twMerge } from "tailwind-merge";
 
   interface Props {
     favorite: Favorite;
@@ -131,7 +132,9 @@
       </div>
     </button>
   </ContextMenu.Trigger>
-  <ContextMenu.Content class="!w-14 m-0">
+  <ContextMenu.Content
+    class={twMerge("!w-14 m-0 dark:bg-black", $theme === "dark" ? "dark" : "")}
+  >
     <ContextMenu.Item class="gap-4"
       ><Icon
         icon={favorite.type === "anime"

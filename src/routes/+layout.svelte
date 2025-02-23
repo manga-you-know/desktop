@@ -3,7 +3,7 @@
   import { Toaster } from "@/lib/components";
   import { ModeWatcher } from "mode-watcher";
   import { onMount, onDestroy } from "svelte";
-  import { Search, Settings } from "@/components";
+  import { AddCustom, Search, Settings } from "@/components";
   import {
     autoSearchUpdates,
     closeTray,
@@ -86,6 +86,7 @@
   <Toaster richColors />
   <Search />
   <Settings />
+  <AddCustom />
   <TooltipPrimitive.Provider>
     {@render children?.()}
   </TooltipPrimitive.Provider>

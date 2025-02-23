@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { Sidebar, Label, Avatar } from "@/lib/components";
-  import { openSearch, openSettings } from "@/store";
+  import { openSearch, openSettings, openAdd } from "@/store";
   import Icon from "@iconify/svelte";
 
   const items = [
@@ -109,6 +109,21 @@
                 class="!w-5 !h-5 ml-[-2px]"
               />
               <Label>Settings</Label>
+            </Sidebar.MenuButton>
+          </Sidebar.MenuItem>
+          <Sidebar.MenuItem class="hidden">
+            <Sidebar.MenuButton
+              onclick={(e) => {
+                e.currentTarget.blur();
+                $openAdd = true;
+              }}
+              tabindex={-1}
+            >
+              <Icon
+                icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
+                class="!w-5 !h-5 ml-[-2px] "
+              />
+              <Label>Add</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>

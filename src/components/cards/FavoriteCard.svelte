@@ -17,6 +17,7 @@
     preferableLanguage,
     showOnlyNew,
     useMpv,
+    theme,
   } from "@/store";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
@@ -30,6 +31,7 @@
   import type { Favorite, Chapter, Readed } from "@/interfaces";
   import { goto } from "$app/navigation";
   import { strNotEmpty } from "@/utils";
+  import { twMerge } from "tailwind-merge";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
@@ -247,7 +249,12 @@
         </div>
       </button>
     </ContextMenu.Trigger>
-    <ContextMenu.Content class="!w-14 m-0">
+    <ContextMenu.Content
+      class={twMerge(
+        "!w-14 m-0 dark:bg-black",
+        $theme === "dark" ? "dark" : ""
+      )}
+    >
       <ContextMenu.Item class="gap-4"
         ><Icon
           icon={favorite.type === "anime"

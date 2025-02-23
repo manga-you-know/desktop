@@ -19,6 +19,10 @@
           ghost:
             "hover:bg-accent hover:text-accent-foreground dark:text-slate-200",
           link: "text-primary underline-offset-4 hover:underline",
+          elevated:
+            "bg-background shadow-md -translate-y-[3px] shadow-accent transition-all duration-200 border border-border/50 bg-accent text-accent-foreground text-slate-200",
+          elevatedHover:
+            "bg-background shadow-none hover:shadow-md hover:shadow-accent  hover:-translate-y-[3px] transition-all duration-200 border border-border/50 hover:bg-accent hover:text-accent-foreground dark:text-slate-200",
         },
         effect: {
           expandIcon: "group gap-0 relative",
@@ -36,6 +40,10 @@
             "relative !no-underline after:absolute after:bg-primary after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-left after:scale-x-100 hover:after:origin-bottom-right hover:after:scale-x-0 after:transition-transform after:ease-in-out after:duration-300",
           hoverUnderline:
             "relative !no-underline after:absolute after:bg-primary after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:ease-in-out after:duration-300",
+          elevated:
+            "shadow-lg hover:shadow-none hover:-translate-y-[1px] transition-all duration-200",
+          elevatedHover:
+            "shadow-none hover:shadow-lg hover:-translate-y-[1px] transition-all duration-200",
         },
         size: {
           default: "h-10 px-4 py-2",
