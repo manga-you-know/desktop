@@ -82,6 +82,8 @@
               onclick={(e) => {
                 e.currentTarget.blur();
                 $openSearch = true;
+                $openSettings = false;
+                $openAdd = false;
               }}
               tabindex={-1}
             >

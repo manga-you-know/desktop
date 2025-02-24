@@ -31,7 +31,10 @@
   const interval = setInterval(
     async () => {
       try {
-        await loadFavoriteChapters();
+        loadFavoriteChapters();
+        if (!$isMobile && $autoSearchUpdates) {
+          checkForAppUpdates();
+        }
       } catch (e) {
         console.log(e);
       }
@@ -56,19 +59,22 @@
       window.hide();
     }
   });
-
-  onMount(async () => {
+  async function loadDatabase() {
     await initDatabase();
     await migrateDatabase();
-    await loadSettings();
-    await createTray();
+  }
+  async function loadDiscordPresence() {
     await startDiscordPresence();
     await setDefaultDiscordActivity();
-    if ($isMobile) {
-      loadFavoriteChapters();
-      if ($autoSearchUpdates) {
-        await checkForAppUpdates();
-      }
+  }
+  onMount(() => {
+    loadDatabase();
+    loadSettings();
+    createTray();
+    loadDiscordPresence();
+    loadFavoriteChapters();
+    if (!$isMobile && $autoSearchUpdates) {
+      checkForAppUpdates();
     }
   });
   onDestroy(() => {

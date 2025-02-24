@@ -22,11 +22,13 @@
     defaultPage,
     isFullscreen,
     isMobile,
+    openMenuChapters,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
+  import { ChaptersMenu } from "@/components";
 
   let openHoverChapter = $state(false);
   let { favoriteId, chapterIndex } = page.params;
@@ -148,9 +150,22 @@
       nextPage();
     }
   }
+
+  function gotoPage(page: string) {
+    currentlyCount = 1;
+    totalPage = 1;
+    currentlyImage = "/myk.png";
+    goto(page);
+  }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
+<ChaptersMenu
+  favorite={favorite ?? undefined}
+  {goHome}
+  {gotoPage}
+  {handleGoChapter}
+/>
 <div class="dark:bg-black">
   <div
     class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
@@ -192,9 +207,6 @@
     class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end pointer-events-none"
   >
     <div class="flex gap-1 z-30">
-      <Badge class="rounded-md m-1" color="neutral" variant="outline"
-        >{currentlyCount} / {totalPage}
-      </Badge>
       <Button
         class="pointer-events-auto"
         size="sm"
@@ -221,7 +233,7 @@
           </Button>
         </HoverCard.Trigger>
         <HoverCard.Content
-          class="w-24 h-12 !p-1 flex flex-row gap-0.5"
+          class="w-24 h-12 !p-1 flex flex-row gap-0.5 "
           sideOffset={-5}
         >
           <Button
@@ -243,10 +255,22 @@
           >
         </HoverCard.Content>
       </HoverCard.Root>
+      <Button
+        class="pointer-events-auto"
+        size="sm"
+        color="neutral"
+        variant="outline"
+        onclick={() => openMenuChapters.set(true)}
+      >
+        <Icon icon="lucide:menu" />
+      </Button>
     </div>
-    {#if !$isMobile}
-      <div class="flex gap-2">
-        <div class="inline-flex pointer-events-auto z-50">
+    <div class="flex gap-1">
+      <Badge class="rounded-md m-1" color="neutral" variant="outline"
+        >{currentlyCount} / {totalPage}
+      </Badge>
+      {#if !$isMobile}
+        <!-- <div class="inline-flex pointer-events-auto z-50">
           <Button
             disabled
             class="w-6 rounded-r-none"
@@ -265,7 +289,7 @@
             size="sm"
             variant="outline"><Icon icon="lucide:plus" /></Button
           >
-        </div>
+        </div> -->
         <Button
           class="pointer-events-auto z-50"
           size="sm"
@@ -274,8 +298,8 @@
         >
           <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
         </Button>
-      </div>
-    {/if}
+      {/if}
+    </div>
     <div class="flex gap-1 z-30">
       <Tooltip.Provider>
         <Tooltip.Root>

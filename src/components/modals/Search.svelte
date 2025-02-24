@@ -77,7 +77,7 @@
           />
         </div>
         <Input
-          class="p-0 m-0 !border-none !outline-none !ring-0"
+          class="p-0 m-0 !border-none !outline-none !ring-0 shadow-none"
           bind:value={searchTerm}
           placeholder="Search..."
           oninput={search}

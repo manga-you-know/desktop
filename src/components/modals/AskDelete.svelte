@@ -33,7 +33,7 @@
           await Promise.all([refreshLibrary(), refreshFavorites()]);
         }}>Delete</Button
       >
-      <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Cancel class="dark:text-white">Cancel</AlertDialog.Cancel>
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

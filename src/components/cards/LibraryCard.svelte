@@ -135,7 +135,12 @@
   <ContextMenu.Content
     class={twMerge("!w-14 m-0 dark:bg-black", $theme === "dark" ? "dark" : "")}
   >
-    <ContextMenu.Item class="gap-4"
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isOpen = true;
+      }}
       ><Icon
         icon={favorite.type === "anime"
           ? "lucide:tv-minimal-play"

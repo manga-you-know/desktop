@@ -14,6 +14,8 @@ export * as Select from "./ui/select";
 export * as ContextMenu from "./ui/context-menu";
 export * as ToggleGroup from "./ui/toggle-group";
 export * as RadioGroup from "./ui/radio-group";
+export * as Drawer from "./ui/drawer";
+export * as Sheet from "./ui/sheet";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";

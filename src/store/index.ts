@@ -23,6 +23,7 @@ export const librarySource = writable<string>("");
 export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
+export const openMenuChapters = writable<boolean>(false);
 export const openSearch = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
