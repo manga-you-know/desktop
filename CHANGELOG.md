@@ -1,7 +1,7 @@
-## 0.3.22 (2025-02-23)
+## 0.3.23 (2025-02-24)
 
 
 ### New Features
 
-* improve dark mode ([aa78e90](https://github.com/manga-you-know/desktop/commit/aa78e90070ad1001bf946312411f7dd569fc718f))
+* Add chapters menu and improve reader UI ([bb73e34](https://github.com/manga-you-know/desktop/commit/bb73e340a76f9184365a8182d4aa6d7aae715f3d))
 
