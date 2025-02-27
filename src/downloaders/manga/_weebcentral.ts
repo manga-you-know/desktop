@@ -7,18 +7,20 @@ export class WeebCentralDl implements MangaDl {
   isMultiLanguage = false;
   headers = {
     "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
-    Accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language": "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3",
-    // "Accept-Encoding": "gzip, deflate, br",
-    "Alt-Used": "www.weebcentral.com",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+    Accept: "*/*",
+    "Accept-Language": "en-US,en;q=0.5",
+    Referer:
+      "https://weebcentral.com/series/01J76XYDNXNEJ72V8B63390CNT/Monster-8",
+    "HX-Request": "true",
+    "HX-Target": "chapter-list",
+    "HX-Current-URL":
+      "https://weebcentral.com/series/01J76XYDNXNEJ72V8B63390CNT/Monster-8",
+    "Sec-GPC": "1",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
     Connection: "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "none",
-    "Sec-Fetch-User": "?1",
   };
 
   async getMangaById(mangaId: string): Promise<Favorite> {

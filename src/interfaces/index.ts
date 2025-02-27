@@ -8,3 +8,4 @@ export type { Source } from "./_source";
 export type { Language } from "./_language";
 export type { Suggestion } from "./_suggestion";
 export type { FavoriteLoaded } from "./_favoriteLoaded";
+export type { UpdateInfo } from "./_updateInfo";

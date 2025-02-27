@@ -32,3 +32,4 @@ export { default as AddCustom } from "./modals/AddCustom.svelte";
 export { default as AskDelete } from "./modals/AskDelete.svelte";
 export { default as Settings } from "./modals/Settings.svelte";
 export { default as Search } from "./modals/Search.svelte";
+export { default as Update } from "./modals/Update.svelte";

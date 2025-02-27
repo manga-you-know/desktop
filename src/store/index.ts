@@ -8,6 +8,7 @@ import type {
   Readed,
   FavoriteLoaded,
   Language,
+  UpdateInfo,
 } from "@/interfaces";
 const os = type();
 
@@ -23,6 +24,14 @@ export const librarySource = writable<string>("");
 export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
+export const updateInfo = writable<UpdateInfo>({
+  updateAvaible: false,
+  version: "",
+  changelog: "",
+  url: "",
+  fetchUpdate: () => Promise.resolve(),
+});
+export const openUpdate = writable<boolean>(false);
 export const openMenuChapters = writable<boolean>(false);
 export const openSearch = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
