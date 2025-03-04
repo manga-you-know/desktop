@@ -76,6 +76,9 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
+    if (favorite) {
+      loadFavoriteChapter(favorite);
+    }
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
   function prevPage() {
@@ -120,6 +123,9 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
     readeds.set(newReadeds);
+    if (favorite) {
+      loadFavoriteChapter(favorite);
+    }
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
   function handleKeydown(event: KeyboardEvent) {

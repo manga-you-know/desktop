@@ -113,11 +113,10 @@ export async function deleteReadeds(readeds: Readed[]): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const placeholders = readeds.map(() => "?").join(", ");
+    const values = readeds.map((readed) => readed.id);
     await db.execute(
       `DELETE FROM readed WHERE id IN (${placeholders})`,
-      readeds.map((readed: Readed) => {
-        return readed.id;
-      })
+      values
     );
   } catch (error) {
     console.log(error);

@@ -94,6 +94,7 @@ export async function deleteReadedAbove(
       if (read) toDelete.push(read);
     }
   }
+  console.log(toDelete);
   await ReadedRepository.deleteReadeds(toDelete);
 }
 
