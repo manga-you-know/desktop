@@ -1,7 +1,7 @@
-## 0.3.24 (2025-02-27)
+## 0.3.25 (2025-03-04)
 
 
-### New Features
+### Bug Fixes
 
-* Add in-app update modal and improve update handling ([b18ac22](https://github.com/manga-you-know/desktop/commit/b18ac2292420d697c93d6c775998f51506558b48))
+* try to fix smthg lmao ([19d4a30](https://github.com/manga-you-know/desktop/commit/19d4a30cfd9f72e05826e4dc89111177661ea15b))
 
