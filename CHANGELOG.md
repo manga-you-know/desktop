@@ -1,7 +1,7 @@
-## 0.3.25 (2025-03-04)
+## 0.3.26 (2025-03-09)
 
 
-### Bug Fixes
+### New Features
 
-* try to fix smthg lmao ([19d4a30](https://github.com/manga-you-know/desktop/commit/19d4a30cfd9f72e05826e4dc89111177661ea15b))
+* Enhance Discord presence and settings management ([a5166a3](https://github.com/manga-you-know/desktop/commit/a5166a3aff124ba40c7a4824e7006ba9571d2a2d))
 
