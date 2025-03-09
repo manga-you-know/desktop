@@ -62,6 +62,15 @@ CREATE TABLE IF NOT EXISTS mark_favorites (
   FOREIGN KEY (mark_id) REFERENCES mark(id),
   FOREIGN KEY (favorite_id) REFERENCES favorite(id)
 );
+
+-- Indexes for foreign keys and frequently queried columns
+CREATE INDEX IF NOT EXISTS idx_favorite_user_id ON favorite(user_id);
+CREATE INDEX IF NOT EXISTS idx_readed_favorite_id ON readed(favorite_id);
+CREATE INDEX IF NOT EXISTS idx_mark_favorites_mark_id ON mark_favorites(mark_id);
+CREATE INDEX IF NOT EXISTS idx_mark_favorites_favorite_id ON mark_favorites(favorite_id);
+
+-- Composite index for readed table's unique constraint
+CREATE INDEX IF NOT EXISTS idx_readed_composite ON readed(chapter_id, source, language, favorite_id);
 `;
 
 export const DATABASE_MIGRATION: {

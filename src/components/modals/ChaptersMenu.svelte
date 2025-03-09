@@ -2,7 +2,7 @@
   import {
     loadFavoriteChapter,
     saveSettings,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
     setFullscreen,
   } from "@/functions";
   import type { Chapter, Favorite } from "@/interfaces";

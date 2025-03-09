@@ -20,12 +20,11 @@
     toggleFullscreen,
     loadFavoriteChapters,
     createTray,
-    setDefaultDiscordActivity,
-    startDiscordPresence,
     setFullscreen,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
+  import { get } from "svelte/store";
   let { children } = $props();
   const window = getCurrentWindow();
   const interval = setInterval(
@@ -54,7 +53,7 @@
   }
 
   window.onCloseRequested((e) => {
-    if (closeTray) {
+    if (get(closeTray)) {
       e.preventDefault();
       window.hide();
     }
@@ -63,15 +62,10 @@
     await initDatabase();
     await migrateDatabase();
   }
-  async function loadDiscordPresence() {
-    await startDiscordPresence();
-    await setDefaultDiscordActivity();
-  }
   onMount(() => {
     loadDatabase();
     loadSettings();
     createTray();
-    loadDiscordPresence();
     loadFavoriteChapters();
     if (!$isMobile && $autoSearchUpdates) {
       checkForAppUpdates();

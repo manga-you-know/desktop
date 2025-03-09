@@ -4,7 +4,7 @@
   import { Label, Switch } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
   import { showOnlyNew, ultraFavorites } from "@/store";
-  import { refreshFavorites } from "@/functions";
+  import { refreshFavorites, saveSettings } from "@/functions";
 
   onMount(async () => {
     await refreshFavorites();
@@ -14,7 +14,11 @@
 <div class="h-full flex flex-col overflow-hidden">
   <div class="h-14 flex relative top-0">
     <div class="flex items-center gap-2">
-      <Switch id="showOnlyNew" bind:checked={$showOnlyNew} />
+      <Switch
+        id="showOnlyNew"
+        bind:checked={$showOnlyNew}
+        onCheckedChange={saveSettings}
+      />
       <Label class="dark:text-white" for="showOnlyNew">Only new chapters</Label>
     </div>
   </div>

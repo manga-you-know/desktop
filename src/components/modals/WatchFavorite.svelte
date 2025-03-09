@@ -12,7 +12,7 @@
     isReaded,
     loadFavoriteChapter,
     refreshReadeds,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
     setDiscordActivity,
   } from "@/functions";
   import { Dialog } from "@/lib/components";
@@ -54,7 +54,7 @@
         isFetching = false;
       })();
     } else {
-      setDefaultDiscordActivity();
+      stopDiscordPresence();
     }
   });
 </script>

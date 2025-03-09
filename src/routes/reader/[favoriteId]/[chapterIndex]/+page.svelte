@@ -7,7 +7,7 @@
     addReadedBelow,
     loadFavoriteChapter,
     preloadNextChapter,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
     setDiscordActivity,
     setFullscreen,
     toggleFullscreen,
@@ -99,7 +99,7 @@
       loadFavoriteChapter(favorite);
     }
     goto(`/${$defaultPage}`);
-    setDefaultDiscordActivity();
+    stopDiscordPresence();
   }
 
   async function handleGoChapter(way: "next" | "prev") {

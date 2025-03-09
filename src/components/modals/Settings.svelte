@@ -5,7 +5,7 @@
   import {
     checkForAppUpdates,
     saveSettings,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
     setDiscordActivity,
   } from "@/functions";
   import {
@@ -57,7 +57,7 @@
   openSettings.subscribe(async (open) => {
     open
       ? await setDiscordActivity("Changing settings...")
-      : await setDefaultDiscordActivity();
+      : await stopDiscordPresence();
   });
 </script>
 

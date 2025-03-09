@@ -11,7 +11,7 @@
   import { FavoriteRepository } from "@/repositories";
   import {
     refreshLibrary,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
     setDiscordActivity,
   } from "@/functions";
   import Icon from "@iconify/svelte";
@@ -52,7 +52,7 @@
     if (open) {
       await setDiscordActivity("Searching mangas...");
     } else {
-      await setDefaultDiscordActivity();
+      await stopDiscordPresence();
     }
   });
   onMount(async () => {
@@ -78,6 +78,7 @@
         </div>
         <Input
           class="p-0 m-0 !border-none !outline-none !ring-0 shadow-none"
+          autofocus
           bind:value={searchTerm}
           placeholder="Search..."
           oninput={search}

@@ -8,7 +8,7 @@
     refreshLibrary,
     refreshFavorites,
     setDiscordActivity,
-    setDefaultDiscordActivity,
+    stopDiscordPresence,
   } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
@@ -73,7 +73,7 @@
     if (open) {
       setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
     } else {
-      setDefaultDiscordActivity();
+      stopDiscordPresence();
     }
   });
 </script>
