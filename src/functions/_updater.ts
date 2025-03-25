@@ -23,7 +23,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
         version: update.version,
         updateAvaible: true,
         changelog: update.body,
-        url: `https://github.com/manga-you-know/desktop/releases/tag/${update.version}`,
+        url: `https://github.com/manga-you-know/desktop/releases/tag/v${update.version}`,
         fetchUpdate: async () => {
           let downloaded = 0;
           let contentLength = 0;

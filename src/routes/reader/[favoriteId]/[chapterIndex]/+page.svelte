@@ -10,6 +10,7 @@
     setDiscordActivity,
     setFullscreen,
     toggleFullscreen,
+    saveSettings,
   } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
@@ -22,6 +23,9 @@
     isFullscreen,
     isMobile,
     openMenuChapters,
+    zoomLevel,
+    fitMode,
+    viewMode,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import { goto, afterNavigate } from "$app/navigation";
@@ -41,11 +45,9 @@
     Number(chapterIndex) === $globalChapters.length - 1
   );
   let currentlyImage = $state("/myk.png");
-  let viewMode = $state('scroll');
-  let zoomLevel = $state(100);
 
   function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleScroll(event: Event) {
@@ -53,9 +55,10 @@
     const scrollTop = container.scrollTop;
     const scrollHeight = container.scrollHeight;
     const clientHeight = container.clientHeight;
-    
-    if (viewMode === 'scroll') {
-      const scrollPercentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
+
+    if ($viewMode === "scroll") {
+      const scrollPercentage =
+        (scrollTop / (scrollHeight - clientHeight)) * 100;
       const estimatedPage = Math.ceil((scrollPercentage / 100) * totalPage);
       currentlyCount = Math.max(1, Math.min(estimatedPage, totalPage));
     }
@@ -105,14 +108,14 @@
     if (currentlyCount === 1) return;
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
-    if (viewMode === 'single') scrollToTop();
+    if ($viewMode === "single") scrollToTop();
   }
 
   function nextPage() {
     if (currentlyCount === totalPage) return;
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
-    if (viewMode === 'single') scrollToTop();
+    if ($viewMode === "single") scrollToTop();
   }
 
   function goHome() {
@@ -150,11 +153,16 @@
     if (favorite) {
       loadFavoriteChapter(favorite);
     }
+    images = await $downloadManager.getFetchedImages(
+      images,
+      $downloadManager.getBaseUrl(favorite.source)
+    );
+    currentlyImage = images[0];
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
 
   function handleKeydown(event: KeyboardEvent) {
-    if (viewMode === 'single') {
+    if ($viewMode === "single") {
       if (event.key === "ArrowLeft") {
         prevPage();
       }
@@ -173,14 +181,14 @@
     }
 
     if (event.key === "+" || (event.ctrlKey && event.key === "=")) {
-      zoomLevel = Math.min(200, zoomLevel + 10);
+      $zoomLevel = Math.min(200, $zoomLevel + 10);
     }
     if (event.key === "-" || (event.ctrlKey && event.key === "-")) {
-      zoomLevel = Math.max(50, zoomLevel - 10);
+      $zoomLevel = Math.max(50, $zoomLevel - 10);
     }
 
     if (event.key === "v") {
-      viewMode = viewMode === 'scroll' ? 'single' : 'scroll';
+      $viewMode = $viewMode === "scroll" ? "single" : "scroll";
     }
 
     if (event.key === "F4") {
@@ -213,24 +221,10 @@
   {handleGoChapter}
 />
 <div class="dark:bg-black min-h-screen">
-  <div class="fixed bottom-0 left-0 w-full h-2 bg-zinc-800 z-50">
-    <div
-      class="h-full transition-all duration-200 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 dark:from-pink-500 dark:via-red-500 dark:to-yellow-500"
-      style="width: {(currentlyCount / totalPage) * 100}%"
-    ></div>
-  </div>
-
-  <div class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end z-50 mb-3">
+  <div
+    class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end z-50"
+  >
     <div class="flex gap-1 z-30">
-      <Button
-        class="pointer-events-auto"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        onclick={() => viewMode = viewMode === 'scroll' ? 'single' : 'scroll'}
-      >
-        <Icon icon={viewMode === 'scroll' ? "lucide:scroll" : "lucide:book-open"} />
-      </Button>
       <Button
         class="pointer-events-auto"
         size="sm"
@@ -255,7 +249,11 @@
             class="w-6 rounded-r-none"
             size="sm"
             variant="outline"
-            onclick={() => zoomLevel = Math.max(50, zoomLevel - 10)}
+            disabled={$fitMode !== ""}
+            onclick={() => {
+              $zoomLevel = Math.max(50, $zoomLevel - 10);
+              saveSettings();
+            }}
           >
             <Icon icon="lucide:minus" />
           </Button>
@@ -263,14 +261,23 @@
             class="w-16 p-0 flex justify-center rounded-none"
             size="sm"
             variant="outline"
+            disabled={$fitMode !== ""}
+            onclick={() => {
+              $zoomLevel = 100;
+              saveSettings();
+            }}
           >
-            {zoomLevel}%
+            {$zoomLevel}%
           </Button>
           <Button
             class="w-6 rounded-l-none"
             size="sm"
             variant="outline"
-            onclick={() => zoomLevel = Math.min(200, zoomLevel + 10)}
+            disabled={$fitMode !== ""}
+            onclick={() => {
+              $zoomLevel = Math.min(200, $zoomLevel + 10);
+              saveSettings();
+            }}
           >
             <Icon icon="lucide:plus" />
           </Button>
@@ -280,20 +287,65 @@
 
     <div class="flex gap-1">
       <div class="flex items-center gap-2">
-        <Badge class="rounded-md" color="neutral" variant="outline">
-          {currentlyCount} de {totalPage}
-        </Badge>
-        <Badge class="rounded-md" color={Math.round((currentlyCount / totalPage) * 100) === 100 ? "success" : "neutral"} variant="outline">
+        <Badge
+          class="w-12 rounded-md bg-slate-700 place-content-center"
+          color={Math.round((currentlyCount / totalPage) * 100) === 100
+            ? "success"
+            : "neutral"}
+          variant="outline"
+        >
           {Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
+        <Badge
+          class="w-12 mr-0.5 rounded-md bg-slate-700 place-content-center"
+          color="neutral"
+          variant="outline"
+        >
+          {currentlyCount}/{totalPage}
+        </Badge>
+        <Button
+          class="pointer-events-auto"
+          size="sm"
+          color="neutral"
+          variant="outline"
+          disabled={$viewMode === "scroll"}
+          onclick={() => {
+            if ($fitMode === "") {
+              $fitMode = "fit-width";
+            } else {
+              $fitMode = "";
+            }
+            saveSettings();
+          }}
+        >
+          <Icon
+            icon={$fitMode === "fit-width"
+              ? "tabler:arrow-autofit-content-filled"
+              : "tabler:arrow-autofit-content"}
+          />
+        </Button>
+        <Button
+          class="pointer-events-auto"
+          size="sm"
+          color="neutral"
+          variant="outline"
+          onclick={() => {
+            $viewMode = $viewMode === "scroll" ? "single" : "scroll";
+            saveSettings();
+          }}
+        >
+          <Icon
+            icon={$viewMode === "scroll" ? "lucide:scroll" : "lucide:book-open"}
+          />
+        </Button>
       </div>
     </div>
   </div>
 
-  {#if viewMode === 'scroll'}
-    <div 
-      class="w-full overflow-y-auto" 
-      style="height: calc(100vh - 2rem);"
+  {#if $viewMode === "scroll"}
+    <div
+      class="w-full overflow-y-auto"
+      style="height: 100vh ;"
       onscroll={handleScroll}
     >
       <div class="flex flex-col items-center">
@@ -301,16 +353,21 @@
           <img
             src={image}
             alt="Page {index + 1}"
-            class="w-full max-w-full"
+            class="w-full max-w-full select-none"
             style="width: {zoomLevel}%; margin: 0 auto;"
           />
         {/each}
       </div>
     </div>
   {:else}
-    <div class="fixed inset-0 flex" style="z-index: 40;" use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })} onswipe={handleSwipe}>
+    <div
+      class="fixed inset-0 flex"
+      style="z-index: 40;"
+      use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+      onswipe={handleSwipe}
+    >
       <button
-        aria-label="Anterior"
+        aria-label="Forward"
         class="w-[50%] cursor-default outline-none border-none bg-transparent"
         tabindex="-1"
         onclick={(e) => {
@@ -319,7 +376,7 @@
         }}
       ></button>
       <button
-        aria-label="Próximo"
+        aria-label="Backward"
         class="w-[50%] cursor-default outline-none border-none bg-transparent"
         tabindex="-1"
         onclick={(e) => {
@@ -328,20 +385,33 @@
         }}
       ></button>
     </div>
-
-    <div class="h-full w-full overflow-auto">
-      <div class="min-h-full w-full flex items-center justify-center">
-        <img
-          src={currentlyImage}
-          alt="manga"
-          class="object-contain transition-all duration-200"
-          style="width: {zoomLevel}%;"
-        />
+    {#if $fitMode === "fit-width"}
+      <div class="h-full w-full overflow-auto">
+        <div class="min-h-full w-full flex items-center justify-center">
+          <img
+            src={currentlyImage}
+            alt="manga"
+            class="object-contain h-screen transition-all duration-200"
+          />
+        </div>
       </div>
-    </div>
+    {:else}
+      <div class="h-full w-full overflow-auto">
+        <div class="min-h-full w-full flex items-center justify-center">
+          <img
+            src={currentlyImage}
+            alt="manga"
+            class="object-contain select-none transition-all duration-200"
+            style="width: {zoomLevel}%;"
+          />
+        </div>
+      </div>
+    {/if}
   {/if}
 
-  <div class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center">
+  <div
+    class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
+  >
     {#if currentlyCount === totalPage && !isTheLastChapter}
       <Button
         class="pointer-events-auto"

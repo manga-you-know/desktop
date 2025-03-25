@@ -49,3 +49,6 @@ export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);
 export const isFullscreen = writable<boolean>(false);
+export const fitMode = writable<string>("");
+export const viewMode = writable<string>("single");
+export const zoomLevel = writable<number>(100);

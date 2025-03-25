@@ -13,6 +13,9 @@ import {
   useMpv,
   closeTray,
   showOnlyNew,
+  fitMode,
+  viewMode,
+  zoomLevel,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
@@ -33,6 +36,9 @@ export async function loadSettings() {
     lUseMpv,
     lCloseTray,
     lShowOnlyNew,
+    lViewMode,
+    lFitMode,
+    lZoomLevel,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -46,6 +52,9 @@ export async function loadSettings() {
     loadedSettings.get<boolean>("use_mpv"),
     loadedSettings.get<boolean>("close_tray"),
     loadedSettings.get<boolean>("show_only_new"),
+    loadedSettings.get<string>("view_mode"),
+    loadedSettings.get<string>("fit_mode"),
+    loadedSettings.get<number>("zoom_level"),
   ]);
   selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
@@ -59,6 +68,9 @@ export async function loadSettings() {
   defaultPage.set(lDefaultPage ?? "home");
   useMpv.set(lUseMpv ?? false);
   showOnlyNew.set(lShowOnlyNew ?? false);
+  viewMode.set(lViewMode ?? "single");
+  fitMode.set(lFitMode ?? "");
+  zoomLevel.set(lZoomLevel ?? 100);
   if (get(defaultPage) !== "home") {
     goto(`/${get(defaultPage)}`);
   }
@@ -79,6 +91,9 @@ export async function saveSettings() {
     loadedSettings.set("use_mpv", get(useMpv)),
     loadedSettings.set("close_tray", get(closeTray)),
     loadedSettings.set("show_only_new", get(showOnlyNew)),
+    loadedSettings.set("view_mode", get(viewMode)),
+    loadedSettings.set("fit_mode", get(fitMode)),
+    loadedSettings.set("zoom_level", get(zoomLevel)),
   ]);
 }
 
@@ -97,6 +112,9 @@ export async function resetSettings() {
     loadedSettings.set("use_mpv", false),
     loadedSettings.set("close_tray", false),
     loadedSettings.set("show_only_new", false),
+    loadedSettings.set("view_mode", "single"),
+    loadedSettings.set("fit_mode", ""),
+    loadedSettings.set("zoom_level", 100),
   ]);
   await loadSettings();
 }
