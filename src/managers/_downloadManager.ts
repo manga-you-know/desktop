@@ -28,8 +28,7 @@ export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
   private animeSources: { [key: string]: AnimeDl } = {};
   private headers = {
-    accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    accept: "*/*",
     "accept-language": "en-US,en;q=0.9",
     dnt: "1",
     priority: "u=0, i",
@@ -89,6 +88,10 @@ export class DownloadManager {
     return this.getMangaSource(source) || this.getAnimeSource(source);
   }
 
+  getBaseUrl(source: string): string {
+    return this.getSource(source).baseUrl;
+  }
+
   isMultiLanguage(source: string): boolean {
     const sourceDl = this.getMangaSource(source);
     return sourceDl.isMultiLanguage;
@@ -144,12 +147,43 @@ export class DownloadManager {
     return await sourceDl.getEpisodeContent(chapter.chapter_id);
   }
 
-  async getImageContent(url: string): Promise<ReadableStream<Uint8Array>> {
-    const response = await fetch(url, { headers: this.headers });
+  async getImageContent(
+    url: string,
+    referer: string
+  ): Promise<ReadableStream<Uint8Array>> {
+    const response = await fetch(url, {
+      headers: {
+        ...this.headers,
+        Referer: referer,
+      },
+    });
     if (response.status !== 200 || response.body === null) {
-      throw new Error(`Failed to get chapter images ${url} ${response.status}`);
+      throw new Error(`Failed to get image content ${url} ${response.status}`);
     }
     return response.body;
+  }
+
+  async getImageBlob(url: string, referer: string): Promise<Blob> {
+    const response = await fetch(url, {
+      headers: {
+        ...this.headers,
+        Referer: referer,
+      },
+    });
+    if (response.status !== 200 || response.body === null) {
+      throw new Error(`Failed to get image blob ${url} ${response.status}`);
+    }
+    return await response.blob();
+  }
+
+  async blobToUrl(url: string, referer: string): Promise<string> {
+    return URL.createObjectURL(await this.getImageBlob(url, referer));
+  }
+
+  async getFetchedImages(images: string[], referer: string): Promise<string[]> {
+    return await Promise.all(
+      images.map((image) => this.blobToUrl(image, referer))
+    );
   }
 
   async streamToUint8Array(
@@ -179,7 +213,9 @@ export class DownloadManager {
   async downloadChapter(chapter: Chapter, favorite: Favorite): Promise<void> {
     const images = await this.getChapterImages(chapter);
     const imagesContent: ReadableStream<Uint8Array>[] = await Promise.all(
-      images.map((image) => this.getImageContent(image))
+      images.map((image) =>
+        this.getImageContent(image, this.getBaseUrl(chapter.source))
+      )
     );
     const chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
     await mkdir(chapterPath, {
