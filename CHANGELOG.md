@@ -1,7 +1,7 @@
-## 0.3.26 (2025-03-09)
+## 0.3.27 (2025-03-25)
 
 
-### New Features
+### Bug Fixes
 
-* Enhance Discord presence and settings management ([a5166a3](https://github.com/manga-you-know/desktop/commit/a5166a3aff124ba40c7a4824e7006ba9571d2a2d))
+* WeebCentral not loading images ([6eee589](https://github.com/manga-you-know/desktop/commit/6eee589955aa18eae1b2af2a3d472a210effee06))
 
