@@ -101,6 +101,11 @@
     if (favorite) {
       loadFavoriteChapter(favorite);
     }
+    images = await $downloadManager.getBase64Images(
+      images,
+      $downloadManager.getBaseUrl(favorite.source)
+    );
+    currentlyImage = images[0];
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
 
@@ -130,8 +135,10 @@
 
   async function handleGoChapter(way: "next" | "prev") {
     currentlyImage = "/myk.png";
+    images = ["/myk.png"];
     currentlyCount = 1;
     totalPage = 1;
+    scrollToTop();
     await goto(
       `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
     );
@@ -153,7 +160,7 @@
     if (favorite) {
       loadFavoriteChapter(favorite);
     }
-    images = await $downloadManager.getFetchedImages(
+    images = await $downloadManager.getBase64Images(
       images,
       $downloadManager.getBaseUrl(favorite.source)
     );
@@ -209,6 +216,8 @@
     currentlyCount = 1;
     totalPage = 1;
     currentlyImage = "/myk.png";
+    images = ["/myk.png"];
+    scrollToTop();
     goto(page);
   }
 </script>
@@ -216,13 +225,26 @@
 <svelte:window onkeydown={handleKeydown} />
 <ChaptersMenu
   favorite={favorite ?? undefined}
+  currentlyChapter={chapter}
   {goHome}
   {gotoPage}
   {handleGoChapter}
 />
 <div class="dark:bg-black min-h-screen">
   <div
-    class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end z-50"
+    class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
+  >
+    {#if currentlyCount === totalPage && !isTheLastChapter}
+      <Button
+        class="pointer-events-auto"
+        onclick={() => handleGoChapter("next")}
+      >
+        <Icon icon="lucide:arrow-right" /></Button
+      >
+    {/if}
+  </div>
+  <div
+    class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end z-50 pointer-events-none"
   >
     <div class="flex gap-1 z-30">
       <Button
@@ -249,7 +271,7 @@
             class="w-6 rounded-r-none"
             size="sm"
             variant="outline"
-            disabled={$fitMode !== ""}
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
             onclick={() => {
               $zoomLevel = Math.max(50, $zoomLevel - 10);
               saveSettings();
@@ -261,7 +283,7 @@
             class="w-16 p-0 flex justify-center rounded-none"
             size="sm"
             variant="outline"
-            disabled={$fitMode !== ""}
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
             onclick={() => {
               $zoomLevel = 100;
               saveSettings();
@@ -273,7 +295,7 @@
             class="w-6 rounded-l-none"
             size="sm"
             variant="outline"
-            disabled={$fitMode !== ""}
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
             onclick={() => {
               $zoomLevel = Math.min(200, $zoomLevel + 10);
               saveSettings();
@@ -286,7 +308,7 @@
     </div>
 
     <div class="flex gap-1">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 pointer-events-none">
         <Badge
           class="w-12 rounded-md bg-slate-700 place-content-center"
           color={Math.round((currentlyCount / totalPage) * 100) === 100
@@ -294,14 +316,16 @@
             : "neutral"}
           variant="outline"
         >
-          {Math.round((currentlyCount / totalPage) * 100)}%
+          {isNaN(Math.round((currentlyCount / totalPage) * 100))
+            ? 0
+            : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
         <Badge
           class="w-12 mr-0.5 rounded-md bg-slate-700 place-content-center"
           color="neutral"
           variant="outline"
         >
-          {currentlyCount}/{totalPage}
+          {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
         </Badge>
         <Button
           class="pointer-events-auto"
@@ -353,8 +377,8 @@
           <img
             src={image}
             alt="Page {index + 1}"
-            class="w-full max-w-full select-none"
-            style="width: {zoomLevel}%; margin: 0 auto;"
+            class="select-none"
+            style="width: {$zoomLevel - 20}%; margin: 0 auto;"
           />
         {/each}
       </div>
@@ -397,12 +421,14 @@
       </div>
     {:else}
       <div class="h-full w-full overflow-auto">
-        <div class="min-h-full w-full flex items-center justify-center">
+        <div
+          class="min-h-full w-full flex items-center content-center place-content-center justify-center"
+        >
           <img
             src={currentlyImage}
             alt="manga"
-            class="object-contain select-none transition-all duration-200"
-            style="width: {zoomLevel}%;"
+            class="select-none transition-all duration-200"
+            style="width: {$zoomLevel - 20}%;"
           />
         </div>
       </div>

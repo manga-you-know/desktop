@@ -66,7 +66,10 @@
     >
       {#each $globalChapters as chapter, i}
         <Button
-          class="w-full flex justify-between"
+          class="w-full flex justify-between {currentlyChapter?.chapter_id ===
+          chapter.chapter_id
+            ? 'bg-slate-800'
+            : ''}"
           variant="ghost"
           onclick={() => {
             if (closeOnChange) openMenuChapters.set(false);

@@ -1,6 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
+import { LANGUAGE_LABELS } from "@/constants";
+import { memoizeExpiring } from "@/utils";
 
 export class MangaReaderToDl implements MangaDl {
   baseUrl = "https://mangareader.to";
@@ -23,6 +25,10 @@ export class MangaReaderToDl implements MangaDl {
     "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
   };
+  constructor() {
+    this.getPageChaptersText = this.getPageChaptersText.bind(this);
+    this.getPageChaptersText = memoizeExpiring(this.getPageChaptersText, 600);
+  }
 
   getMangaById(id: string): Promise<Favorite> {
     throw new Error("Method not implemented.");
@@ -70,15 +76,42 @@ export class MangaReaderToDl implements MangaDl {
     return mangas;
   }
 
-  async getChapters(mangaId: string, language: string): Promise<Chapter[]> {
+  async getPageChaptersText(mangaId: string): Promise<string> {
     const response = await fetch(`${this.baseUrl}/${mangaId}`, {
       headers: this.headers,
     });
     if (response.status !== 200) {
-      throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
+      throw new Error(
+        `Error fetching Mangareader.to with id: ${mangaId} & status: ${response.status}`
+      );
     }
+    return await response.text();
+  }
+
+  async getFavoriteLanguages(mangaId: string): Promise<Language[]> {
+    const text = await this.getPageChaptersText(mangaId);
+    const languages: Language[] = [];
+    const $ = cheerio.load(text);
+    $("div.dropdown-menu.dropdown-menu-model")
+      .find("a")
+      .each((_, a) => {
+        const language = $(a).attr("data-code") ?? "";
+        languages.push({
+          id: language ?? "en",
+          label:
+            LANGUAGE_LABELS[language] ??
+            $(a).text().split(" ").slice(0, -2).join(" "),
+        });
+      });
+    return languages;
+  }
+
+  async getChapters(
+    mangaId: string,
+    language: string = "en"
+  ): Promise<Chapter[]> {
+    const text = await this.getPageChaptersText(mangaId);
     const chapters: { [key: string]: Chapter[] } = {};
-    const text = await response.text();
     const $ = cheerio.load(text);
     const chaptersDiv = $("div.chapters-list-ul").eq(0);
     chaptersDiv.find("li.item.reading-item.chapter-item").each((_, li) => {

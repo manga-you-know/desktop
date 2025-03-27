@@ -62,7 +62,7 @@ export async function rerenderFavorites(): Promise<void> {
 
 export async function preloadChapter(chapter: Chapter): Promise<void> {
   var images = await dl.getChapterImages(chapter);
-  images = await dl.getFetchedImages(images, dl.getBaseUrl(chapter.source));
+  images = await dl.getBase64Images(images, dl.getBaseUrl(chapter.source));
 }
 
 export async function preloadNextChapter(

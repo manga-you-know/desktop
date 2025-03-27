@@ -68,7 +68,7 @@ export class MangaPillDl implements MangaDl {
           name: $(div).find("a.mb-2").find("div").text(),
           source_id: a.attr("href")?.replace("/manga/", "") ?? "",
           folder_name: a.attr("href")?.split("/")[2] ?? "",
-          cover: $(a).find("img").attr("data-src") ?? "",
+          cover: a.find("img").attr("data-src") ?? "",
           link: `${this.baseUrl}${a.attr("href")}`,
           source: "MangaPill",
         });
