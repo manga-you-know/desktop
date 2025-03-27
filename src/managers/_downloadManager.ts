@@ -23,6 +23,7 @@ import type {
   Language,
 } from "@/interfaces";
 import { memoizeExpiring } from "@/utils/memoizedWithTime";
+import { invoke } from "@tauri-apps/api/core";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
@@ -163,26 +164,16 @@ export class DownloadManager {
     return response.body;
   }
 
-  async getImageBlob(url: string, referer: string): Promise<Blob> {
-    const response = await fetch(url, {
-      headers: {
-        ...this.headers,
-        Referer: referer,
-      },
-    });
-    if (response.status !== 200 || response.body === null) {
-      throw new Error(`Failed to get image blob ${url} ${response.status}`);
-    }
-    return await response.blob();
+  async getBase64Image(url: string, referer: string): Promise<string> {
+    return (
+      "data:image/png;base64," +
+      (await invoke("get_base64_image", { url: url, referer: referer }))
+    );
   }
 
-  async blobToUrl(url: string, referer: string): Promise<string> {
-    return URL.createObjectURL(await this.getImageBlob(url, referer));
-  }
-
-  async getFetchedImages(images: string[], referer: string): Promise<string[]> {
+  async getBase64Images(images: string[], referer: string): Promise<string[]> {
     return await Promise.all(
-      images.map((image) => this.blobToUrl(image, referer))
+      images.map((image) => this.getBase64Image(image, referer))
     );
   }
 
@@ -212,9 +203,9 @@ export class DownloadManager {
 
   async downloadChapter(chapter: Chapter, favorite: Favorite): Promise<void> {
     const images = await this.getChapterImages(chapter);
-    const imagesContent: ReadableStream<Uint8Array>[] = await Promise.all(
+    const imagesBase64: string[] = await Promise.all(
       images.map((image) =>
-        this.getImageContent(image, this.getBaseUrl(chapter.source))
+        this.getBase64Image(image, this.getBaseUrl(chapter.source))
       )
     );
     const chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
@@ -222,8 +213,13 @@ export class DownloadManager {
       baseDir: BaseDirectory.Download,
       recursive: true,
     });
-    imagesContent.forEach(async (imageContent, i) => {
-      const bytes = await this.streamToUint8Array(imageContent);
+    imagesBase64.forEach(async (imageBase64, i) => {
+      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+      const binaryStr = atob(base64Data);
+      const bytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
       await writeFile(
         `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
         bytes,

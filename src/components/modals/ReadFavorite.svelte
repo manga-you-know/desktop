@@ -74,8 +74,8 @@
 
   async function downloadAll() {
     isDownloadingAll = true;
-    const batchSize = 5;
-    let index = 0;
+    const maxCurrently = 5;
+    let downloadingNow = 0;
     const reversedChapters = $globalChapters.slice().reverse();
     let chaptersToDownload: Chapter[] = [];
     reversedChapters.forEach((chapter) => {
@@ -83,21 +83,34 @@
         chaptersToDownload.push(chapter);
       }
     });
-    const downloadBatch = async (): Promise<void> => {
-      const batch = chaptersToDownload.slice(index, index + batchSize);
-      index += batchSize;
-      await Promise.all(
-        batch.map(async (chapter) => {
-          isDownloading[chapter.chapter_id] = true;
-          await $downloadManager.downloadChapter(chapter, favorite);
-          isDownloading[chapter.chapter_id] = false;
-          await refreshDownloadeds();
-        })
-      );
+    const downloadChapter = async (chapter: Chapter) => {
+      downloadingNow += 1;
+      isDownloading[chapter.chapter_id] = true;
+      try {
+        await $downloadManager.downloadChapter(chapter, favorite);
+      } catch (e) {
+        console.log(e);
+      }
+      await refreshDownloadeds();
+      isDownloading[chapter.chapter_id] = false;
+      downloadingNow -= 1;
     };
-    while (index < chaptersToDownload.length) {
-      await downloadBatch();
+    const downloadQueue = chaptersToDownload.map((chapter) => {
+      return async () => downloadChapter(chapter);
+    });
+    while (true) {
+      if (downloadingNow < maxCurrently) {
+        const toRun = downloadQueue.shift();
+        if (!toRun) continue;
+        if (downloadQueue.length === 0) {
+          await toRun();
+          break;
+        }
+        toRun();
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
+    console.log(downloadQueue.length, downloadingNow);
     isDownloadingAll = false;
   }
 
