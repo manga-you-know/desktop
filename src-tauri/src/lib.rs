@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 use tauri:: Manager;
 use utils::hashmap::{get_data, set_data};
-use utils::request::{get_aniplay_chapters, get_aniplay_episode};
+use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
 
 mod utils;
 
@@ -13,7 +13,8 @@ pub fn run() {
             set_data,
             get_data,
             get_aniplay_chapters,
-            get_aniplay_episode
+            get_aniplay_episode,
+            get_base64_image
         ])
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())

@@ -6,6 +6,7 @@ version = 4
 name = "MangaYouKnow"
 version = "0.3.18"
 dependencies = [
+ "base64 0.21.7",
  "lazy_static",
  "once_cell",
  "serde",
