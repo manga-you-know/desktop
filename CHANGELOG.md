@@ -1,7 +1,7 @@
-## 0.3.27 (2025-03-25)
+## 0.3.28 (2025-03-27)
 
 
-### Bug Fixes
+### New Features
 
-* WeebCentral not loading images ([6eee589](https://github.com/manga-you-know/desktop/commit/6eee589955aa18eae1b2af2a3d472a210effee06))
+* improve reader interface and fix some errors ([d3bbaea](https://github.com/manga-you-know/desktop/commit/d3bbaeadb18dadb127f53c8918211172ab7a3889))
 
