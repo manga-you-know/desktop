@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { open as openPath } from "@tauri-apps/plugin-shell";
   import { downloadDir, join } from "@tauri-apps/api/path";
+  import { VList } from "virtua/svelte";
   import {
     exists,
     readDir,
@@ -198,42 +199,49 @@
           }}
           disabled={!isMulti || isFetching}
         />
-        <div class="flex gap-2">
-          <Button
-            class="w-20"
-            variant="outline"
-            effect="hoverUnderline"
-            onclick={() => window.open(favorite.link, "_blank")}
-          >
-            <span class="truncate">
-              {favorite.source ?? "Open"}
-            </span>
-          </Button>
-          <Button
-            class="w-20"
-            onclick={downloadAll}
-            disabled={isDownloadingAll}
-          >
-            <Icon
-              icon={isDownloadingAll
-                ? "line-md:loading-twotone-loop"
-                : "lucide:download"}
-            />
-            All
-          </Button>
-        </div>
+        <Button
+          class="w-[165px]"
+          variant="outline"
+          effect="hoverUnderline"
+          onclick={() => window.open(favorite.link, "_blank")}
+        >
+          <span class="truncate">
+            {favorite.source ?? "Open"}
+          </span>
+        </Button>
+        <Button
+          class="w-[165px]"
+          onclick={downloadAll}
+          disabled={isDownloadingAll}
+        >
+          <Icon
+            icon={isDownloadingAll
+              ? "line-md:loading-twotone-loop"
+              : "lucide:download"}
+          />
+          All
+        </Button>
       </div>
       <div class="w-1/2">
         <div class="w-48 flex flex-col gap-1">
           <Input placeholder="Chapter..." bind:value={searchTerm} />
           <Separator />
-          <ScrollArea class="h-72 w-48 p-1 rounded-md border">
-            {#if isFetching}
-              <div class="flex h-full w-full justify-center items-center">
-                <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5" />
-              </div>
-            {:else}
-              {#each displayedChapters as chapter, i}
+          {#if isFetching}
+            <div class="flex !h-[22rem] w-full justify-center items-center">
+              <Icon
+                icon="line-md:loading-twotone-loop"
+                color="white"
+                class="w-10 h-10 "
+              />
+            </div>
+          {:else}
+            <VList
+              class="scrollbar !h-[22rem] !w-48 overflow-x-hidden scroll-smooth"
+              data={displayedChapters}
+              itemSize={40}
+              getKey={(_, i) => i}
+            >
+              {#snippet children(chapter, i)}
                 {@const isDownloaded = downloaded
                   .map((d) => d.name)
                   .includes(chapter.number)}
@@ -270,15 +278,14 @@
                     await refreshReadeds(favorite);
                   }}
                 />
-              {/each}
-            {/if}
-            {#if displayedChapters.length === 0 && !isFetching}
-              <Badge
-                class="w-full h-10 flex justify-center text-center"
-                variant="destructive">No chapters found in this language!</Badge
-              >
-            {/if}
-          </ScrollArea>
+              {/snippet}
+            </VList>
+          {/if}{#if displayedChapters.length === 0 && !isFetching}
+            <Badge
+              class="w-full h-10 flex justify-center text-center"
+              variant="destructive">No chapters found in this language!</Badge
+            >
+          {/if}
         </div>
       </div>
     </div>

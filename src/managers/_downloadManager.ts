@@ -11,6 +11,7 @@ import {
   TaosectDl,
   MangaFireDl,
   WeebCentralDl,
+  MangaLivreDl,
   // AnimeDl
   AniplayDl,
 } from "@/downloaders";
@@ -56,6 +57,7 @@ export class DownloadManager {
       MangaFire: new MangaFireDl(),
       MangaReaderTo: new MangaReaderToDl(),
       WeebCentral: new WeebCentralDl(),
+      MangaLivre: new MangaLivreDl(),
     };
     this.animeSources = {
       Aniplay: new AniplayDl(),
@@ -110,7 +112,7 @@ export class DownloadManager {
 
   async search(query: string, source: string): Promise<Favorite[]> {
     const sourceDl = this.getSource(source);
-    return await sourceDl.search(query);
+    return (await sourceDl.search(query)).slice(0, 20);
   }
 
   async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {

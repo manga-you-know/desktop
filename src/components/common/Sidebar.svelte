@@ -132,8 +132,9 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  <Sidebar.Footer class="flex items-start !ml-[-5px]">
-    <Avatar src="/icon.png" fallbackText="MYK" />
+  <Sidebar.Footer class="flex items-center ">
+    <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
+    <img class="w-12" src="/icon.png" alt="icon" />
   </Sidebar.Footer>
 </Sidebar.Root>
 

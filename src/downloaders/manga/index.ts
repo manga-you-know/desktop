@@ -6,3 +6,4 @@ export { TaosectDl } from "./_taosect";
 export { MangaPillDl } from "./_mangapill";
 export { MangaFireDl } from "./_mangafire";
 export { WeebCentralDl } from "./_weebcentral";
+export { MangaLivreDl } from "./_mangalivre";
