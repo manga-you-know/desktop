@@ -96,7 +96,7 @@
   >
     <ContextMenu.Trigger>
       <button
-        class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
+        class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
         onclick={() => (isOpen = true)}
         tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
       >

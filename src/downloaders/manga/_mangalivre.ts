@@ -4,7 +4,7 @@ import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaLivreDl implements MangaDl {
-  baseUrl: string = "https://mangalivre.ru";
+  baseUrl: string = "https://mangalivre.tv";
   isMultiLanguage: boolean = false;
   headers = {
     "User-Agent":
@@ -78,6 +78,7 @@ export class MangaLivreDl implements MangaDl {
         headers: this.headers,
       }
     );
+    console.log(response.url);
     if (response.status !== 200) {
       throw new Error("Failed getting manga with id: " + favoriteID);
     }

@@ -111,7 +111,6 @@
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
-    console.log(downloadQueue.length, downloadingNow);
     isDownloadingAll = false;
   }
 
@@ -219,7 +218,7 @@
               ? "line-md:loading-twotone-loop"
               : "lucide:download"}
           />
-          All
+          Download all
         </Button>
       </div>
       <div class="w-1/2">
@@ -281,10 +280,12 @@
               {/snippet}
             </VList>
           {/if}{#if displayedChapters.length === 0 && !isFetching}
-            <Badge
-              class="w-full h-10 flex justify-center text-center"
-              variant="destructive">No chapters found in this language!</Badge
-            >
+            <div class="flex !h-[22rem] w-full justify-center items-center">
+              <Badge
+                class="w-full h-10 flex justify-center text-center"
+                variant="destructive">No chapters found in this language!</Badge
+              >
+            </div>
           {/if}
         </div>
       </div>

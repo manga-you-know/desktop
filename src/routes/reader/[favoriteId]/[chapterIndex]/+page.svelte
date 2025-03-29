@@ -105,7 +105,7 @@
       images,
       $downloadManager.getBaseUrl(favorite.source)
     );
-    currentlyImage = images[0];
+    currentlyImage = images[currentlyCount - 1];
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
 
@@ -164,7 +164,7 @@
       images,
       $downloadManager.getBaseUrl(favorite.source)
     );
-    currentlyImage = images[0];
+    currentlyImage = images[currentlyCount - 1];
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
 

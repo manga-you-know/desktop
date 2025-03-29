@@ -134,7 +134,7 @@
   </Sidebar.Content>
   <Sidebar.Footer class="flex items-center ">
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
-    <img class="w-12" src="/icon.png" alt="icon" />
+    <img class="w-16 min-w-10 ml-[8px]" src="/icon.png" alt="icon" />
   </Sidebar.Footer>
 </Sidebar.Root>
 

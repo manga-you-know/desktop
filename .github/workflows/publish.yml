@@ -87,6 +87,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
+      - name: Fix Python dependencies (MacOS only)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          brew install python@3.11
+          echo "export PATH=\"/opt/homebrew/opt/python@3.11/bin:$PATH\"" >> ~/.bashrc
+          echo "export PATH=\"/opt/homebrew/opt/python@3.11/bin:$PATH\"" >> ~/.zshrc
+          source ~/.bashrc || source ~/.zshrc
+          python3 --version
+          python3 -m ensurepip
+          pip install --upgrade pip setuptools
+
       - name: Install front-end dependencies
         run: bun install
 
