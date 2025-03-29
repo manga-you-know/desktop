@@ -1,7 +1,7 @@
-## 0.3.29 (2025-03-28)
+## 0.3.30 (2025-03-29)
 
 
-### New Features
+### Bug Fixes
 
-* add MangaLivre and improve performance ([795b194](https://github.com/manga-you-know/desktop/commit/795b194a5174be8a30d155ff019cfebdb3738b67))
+* MangaLivre and maybe Mac building ([a99ce69](https://github.com/manga-you-know/desktop/commit/a99ce69b1857cf0ee5650a1253ab387b8a36deb3))
 
