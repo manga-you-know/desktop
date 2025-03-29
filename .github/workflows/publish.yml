@@ -91,12 +91,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           brew install python@3.11
-          echo "export PATH=\"/opt/homebrew/opt/python@3.11/bin:$PATH\"" >> ~/.bashrc
-          echo "export PATH=\"/opt/homebrew/opt/python@3.11/bin:$PATH\"" >> ~/.zshrc
-          source ~/.bashrc || source ~/.zshrc
-          python3 --version
-          python3 -m ensurepip
-          pip install --upgrade pip setuptools
+          echo 'export PATH="/opt/homebrew/opt/python@3.11/libexec/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Install front-end dependencies
         run: bun install

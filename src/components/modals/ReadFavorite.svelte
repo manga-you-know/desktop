@@ -233,6 +233,13 @@
                 class="w-10 h-10 "
               />
             </div>
+          {:else if displayedChapters.length === 0 && !isFetching}
+            <div class="flex !h-[12rem] w-full justify-center items-center">
+              <Badge
+                class="w-full h-10 flex justify-center text-center"
+                variant="destructive">No chapters found in this language!</Badge
+              >
+            </div>
           {:else}
             <VList
               class="scrollbar !h-[22rem] !w-48 overflow-x-hidden scroll-smooth"
@@ -279,13 +286,6 @@
                 />
               {/snippet}
             </VList>
-          {/if}{#if displayedChapters.length === 0 && !isFetching}
-            <div class="flex !h-[22rem] w-full justify-center items-center">
-              <Badge
-                class="w-full h-10 flex justify-center text-center"
-                variant="destructive">No chapters found in this language!</Badge
-              >
-            </div>
           {/if}
         </div>
       </div>

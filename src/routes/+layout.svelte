@@ -57,6 +57,7 @@
       e.preventDefault();
       window.hide();
     }
+    interval.unref();
   });
   async function loadDatabase() {
     await initDatabase();
