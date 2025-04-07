@@ -1,7 +1,7 @@
-## 0.3.31 (2025-03-29)
+## 0.3.32 (2025-04-07)
 
 
-### Bug Fixes
+### New Features
 
-* minor issue in UI and macos again ([3290bbf](https://github.com/manga-you-know/desktop/commit/3290bbf21dd8d42c35f4575f443c1867f691d70f))
+* improve reader and favorites page ([1afaf43](https://github.com/manga-you-know/desktop/commit/1afaf43eb4b33ec035a6da5032709de7cd3f22e9))
 
