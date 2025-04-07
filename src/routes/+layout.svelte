@@ -84,7 +84,7 @@
     $theme === "dark" ? "dark" : ""
   )}
 >
-  <Toaster richColors />
+  <Toaster richColors duration={2700} />
   <Search />
   <Settings />
   <AddCustom />

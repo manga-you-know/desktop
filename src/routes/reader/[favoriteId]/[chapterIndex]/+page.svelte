@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { swipe, type SwipeCustomEvent } from "svelte-gestures";
+  import { toast } from "svelte-sonner";
   import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import {
     addReadedBelow,
@@ -89,6 +90,7 @@
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $globalChapters[Number(chapterIndex)];
+    toast.loading("Loading chapter " + chapter.number);
     const chaptersImages = await $downloadManager.getChapterImages(chapter);
     images = chaptersImages;
     currentlyImage = chaptersImages[0];
@@ -318,7 +320,9 @@
         >
           {isNaN(Math.round((currentlyCount / totalPage) * 100))
             ? 0
-            : Math.round((currentlyCount / totalPage) * 100)}%
+            : currentlyCount === 1 && totalPage === 1
+              ? 100
+              : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
         <Badge
           class="w-12 mr-0.5 rounded-md bg-slate-700 place-content-center"
@@ -363,6 +367,36 @@
           />
         </Button>
       </div>
+    </div>
+    <div class="flex gap-2 pointer-events-auto cursor-default">
+      <div class="inline-flex">
+        <Badge
+          class="w-[120px]  flex justify-center rounded-xl rounded-r-none"
+          color="neutral"
+          variant="outline"
+        >
+          {favorite?.name
+            ? favorite.name.length > 17
+              ? favorite.name.substring(0, 17) + "..."
+              : favorite.name
+            : ""}
+        </Badge>
+        <Badge
+          class="w-10 rounded-xl rounded-l-none flex justify-center items-center px-2"
+          color="neutral"
+          variant="outline"
+        >
+          {chapter.number.toString()}
+        </Badge>
+      </div>
+      <Button
+        class="pointer-events-auto z-50"
+        size="sm"
+        variant="outline"
+        onclick={async () => await toggleFullscreen()}
+      >
+        <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
+      </Button>
     </div>
   </div>
 

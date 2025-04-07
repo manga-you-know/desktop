@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { Sidebar, Label, Avatar } from "@/lib/components";
@@ -37,6 +37,36 @@
     //   icon: "heroicons:cog-6-tooth",
     // },
   ];
+
+  let rotation: number = 0;
+  let imgElement: HTMLImageElement | null = null;
+  let isAnimating: boolean = false;
+
+  function rotateImage(): void {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    let start: number | null = null;
+
+    function animate(timestamp: number): void {
+      if (start === null) start = timestamp;
+      let progress: number = timestamp - start;
+
+      let degrees: number = Math.min((progress / 500) * 360, 360);
+      if (imgElement) {
+        imgElement.style.transform = `rotate(${rotation + degrees}deg)`;
+      }
+
+      if (degrees < 360) {
+        requestAnimationFrame(animate);
+      } else {
+        rotation += 360;
+        isAnimating = false;
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
 </script>
 
 <Sidebar.Root
@@ -67,7 +97,7 @@
                     : item.icon}
                   class="!w-5 !h-5 ml-[-2px]"
                 />
-                <Label>{item.name}</Label>
+                <Label class="cursor-pointer">{item.name}</Label>
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
@@ -93,7 +123,7 @@
                   : "mingcute:search-line"}
                 class="!w-5 !h-5 ml-[-2px]"
               />
-              <Label>Search</Label>
+              <Label class="cursor-pointer">Search</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
@@ -125,7 +155,7 @@
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
                 class="!w-5 !h-5 ml-[-2px] "
               />
-              <Label>Add</Label>
+              <Label class="cursor-pointer">Add</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>
@@ -134,7 +164,15 @@
   </Sidebar.Content>
   <Sidebar.Footer class="flex items-center ">
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
-    <img class="w-16 min-w-10 ml-[8px]" src="/icon.png" alt="icon" />
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <img
+      bind:this={imgElement}
+      onclick={rotateImage}
+      class="w-16 min-w-10 ml-[12px]"
+      src="/icon.png"
+      alt="icon"
+    />
   </Sidebar.Footer>
 </Sidebar.Root>
 
