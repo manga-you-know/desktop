@@ -119,8 +119,8 @@
             >
               <Icon
                 icon={$openSearch
-                  ? "mingcute:search-fill"
-                  : "mingcute:search-line"}
+                  ? "mingcute:search-3-fill"
+                  : "mingcute:search-3-line"}
                 class="!w-5 !h-5 ml-[-2px]"
               />
               <Label class="cursor-pointer">Search</Label>

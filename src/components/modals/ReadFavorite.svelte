@@ -42,7 +42,7 @@
   import { LANGUAGE_LABELS, MANGASOURCE_LANGUAGE } from "@/constants";
 
   let isMulti = $state(false);
-  let selectedLanguage2 = $state($preferableLanguage);
+  let localSelectedLanguage = $state($preferableLanguage);
   let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
@@ -126,14 +126,14 @@
           const lastReaded = await ReadedRepository.getLastReaded(favorite);
           let chapters: Chapter[] = [];
           if (lastReaded?.language) {
-            selectedLanguage2.id = lastReaded.language;
-            selectedLanguage2.label = LANGUAGE_LABELS[lastReaded.language];
+            localSelectedLanguage.id = lastReaded.language;
+            localSelectedLanguage.label = LANGUAGE_LABELS[lastReaded.language];
             [chapters, languageOptions] = await Promise.all([
               $downloadManager.getChapters(favorite, lastReaded.language),
               $downloadManager.getFavoriteLanguages(favorite),
             ]);
           } else {
-            selectedLanguage2 = $preferableLanguage;
+            localSelectedLanguage = $preferableLanguage;
             [chapters, languageOptions] = await Promise.all([
               $downloadManager.getChapters(favorite, $preferableLanguage.id),
               $downloadManager.getFavoriteLanguages(favorite),
@@ -141,7 +141,7 @@
           }
           globalChapters.set(chapters);
         } else {
-          selectedLanguage2.label = MANGASOURCE_LANGUAGE[favorite.source];
+          localSelectedLanguage.label = MANGASOURCE_LANGUAGE[favorite.source];
           const result = await $downloadManager.getChapters(favorite);
           await new Promise((resolve) => setTimeout(resolve, 10));
           globalChapters.set(result);
@@ -183,13 +183,13 @@
           class="w-40 h-70 object-contain rounded-xl !bg-gray-950"
         />
         <Language
-          bind:selectedLanguage={selectedLanguage2}
+          bind:selectedLanguage={localSelectedLanguage}
           {languageOptions}
           onChange={async () => {
             isFetching = true;
             const result = await $downloadManager.getChapters(
               favorite,
-              selectedLanguage2.id
+              localSelectedLanguage.id
             );
             await refreshReadeds(favorite);
             await new Promise((resolve) => setTimeout(resolve, 10));
@@ -228,7 +228,7 @@
           {#if isFetching}
             <div class="flex !h-[22rem] w-full justify-center items-center">
               <Icon
-                icon="line-md:loading-twotone-loop"
+                icon="line-md:loading-loop"
                 color="white"
                 class="w-10 h-10 "
               />

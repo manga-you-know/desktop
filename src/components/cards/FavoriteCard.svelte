@@ -148,7 +148,7 @@
                   tabindex={-1}
                 >
                   {#if favoriteLoad.isLoading}
-                    <Icon icon="line-md:loading-twotone-loop" class="w-5 h-5" />
+                    <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
                   {:else if favoriteLoad.toReadCount > 0}
                     <Label tabindex={-1}>+{favoriteLoad.toReadCount}</Label>
                   {:else}

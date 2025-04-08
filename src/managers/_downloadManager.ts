@@ -23,7 +23,7 @@ import type {
   Episode,
   Language,
 } from "@/interfaces";
-import { memoizeExpiring } from "@/utils/memoizedWithTime";
+import { memoizeExpiring, retry } from "@/utils";
 import { invoke } from "@tauri-apps/api/core";
 
 export class DownloadManager {
@@ -46,7 +46,7 @@ export class DownloadManager {
     "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
   };
-
+  getChapters;
   constructor() {
     this.mangaSources = {
       TCB: new TCBScansDl(),
@@ -63,7 +63,7 @@ export class DownloadManager {
       Aniplay: new AniplayDl(),
     };
     this.search = this.search.bind(this);
-    this.getChapters = this.getChapters.bind(this);
+    this._getChapters = this._getChapters.bind(this);
     this.getEpisodes = this.getEpisodes.bind(this);
     this.getEpisodeContent = this.getEpisodeContent.bind(this);
     this.getChapterImages = this.getChapterImages.bind(this);
@@ -71,7 +71,7 @@ export class DownloadManager {
 
     this.search = memoize(this.search, (query, source) => `${query}:${source}`);
     this.getFavoriteLanguages = memoize(this.getFavoriteLanguages);
-    this.getChapters = memoizeExpiring(this.getChapters, 600);
+    this.getChapters = memoizeExpiring(this._getChapters, 600);
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getChapterImages = memoize(this.getChapterImages);
     this.getEpisodeContent = memoize(this.getEpisodeContent);
@@ -123,7 +123,10 @@ export class DownloadManager {
     throw new Error("source not multi language");
   }
 
-  async getChapters(favorite: Favorite, language?: string): Promise<Chapter[]> {
+  async _getChapters(
+    favorite: Favorite,
+    language?: string
+  ): Promise<Chapter[]> {
     const sourceDl = this.getMangaSource(favorite.source);
     try {
       return language !== undefined
@@ -133,6 +136,10 @@ export class DownloadManager {
       console.log(e);
       return [];
     }
+  }
+
+  clearChaptersCache() {
+    this.getChapters.clear();
   }
 
   async getEpisodes(favorite: Favorite): Promise<Chapter[]> {
@@ -166,16 +173,26 @@ export class DownloadManager {
     return response.body;
   }
 
+  isValidBase64Image(base64: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = base64;
+    });
+  }
+
   async getBase64Image(url: string, referer: string): Promise<string> {
-    return (
+    const img =
       "data:image/png;base64," +
-      (await invoke("get_base64_image", { url: url, referer: referer }))
-    );
+      (await invoke("get_base64_image", { url: url, referer: referer }));
+    if (await this.isValidBase64Image(img)) return img;
+    throw Error("Invalid base64 image.");
   }
 
   async getBase64Images(images: string[], referer: string): Promise<string[]> {
     return await Promise.all(
-      images.map((image) => this.getBase64Image(image, referer))
+      images.map((image) => retry(() => this.getBase64Image(image, referer)))
     );
   }
 
@@ -205,10 +222,9 @@ export class DownloadManager {
 
   async downloadChapter(chapter: Chapter, favorite: Favorite): Promise<void> {
     const images = await this.getChapterImages(chapter);
-    const imagesBase64: string[] = await Promise.all(
-      images.map((image) =>
-        this.getBase64Image(image, this.getBaseUrl(chapter.source))
-      )
+    const imagesBase64: string[] = await this.getBase64Images(
+      images,
+      this.getBaseUrl(chapter.source)
     );
     const chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
     await mkdir(chapterPath, {

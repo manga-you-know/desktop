@@ -77,6 +77,7 @@ export async function loadFavoriteChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
   const favorites = await FavoriteRepository.getUltraFavorites();
+  dl.clearChaptersCache();
   await Promise.all(favorites.map(loadFavoriteChapter));
   if (rerenderFavoritesOption) {
     await rerenderFavorites();

@@ -2,11 +2,15 @@ import { fetch } from "@tauri-apps/plugin-http";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { message } from "@tauri-apps/plugin-dialog";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isMobile, updateInfo, openUpdate } from "@/store";
+import { notify } from "@/functions";
 import { get } from "svelte/store";
 
 const UPDATE_URL =
   "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json";
+
+const window = getCurrentWindow();
 
 export async function checkForAppUpdates(isUserClick: boolean = false) {
   if (!get(isMobile)) {
@@ -19,6 +23,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       });
       return;
     } else if (update?.available) {
+      const isFocus = await window.isFocused();
       updateInfo.set({
         version: update.version,
         updateAvaible: true,
@@ -48,6 +53,12 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
         },
       });
       openUpdate.set(true);
+      if (!isFocus) {
+        notify(
+          `Update v${update.version} avaible!`,
+          "Open the app to update it"
+        );
+      }
     } else if (isUserClick) {
       updateInfo.set({
         updateAvaible: false,
