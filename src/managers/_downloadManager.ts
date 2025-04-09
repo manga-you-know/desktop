@@ -220,6 +220,22 @@ export class DownloadManager {
     return result;
   }
 
+  async writePageBase64(imageBase64: string, fileName: string) {
+    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+    const binaryStr = atob(base64Data);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+    await mkdir("favorite-panels", {
+      baseDir: BaseDirectory.Document,
+      recursive: true,
+    });
+    await writeFile("favorite-panels\\" + fileName, bytes, {
+      baseDir: BaseDirectory.Document,
+    });
+  }
+
   async downloadChapter(chapter: Chapter, favorite: Favorite): Promise<void> {
     const images = await this.getChapterImages(chapter);
     const imagesBase64: string[] = await this.getBase64Images(
@@ -241,9 +257,7 @@ export class DownloadManager {
       await writeFile(
         `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
         bytes,
-        {
-          baseDir: BaseDirectory.Download,
-        }
+        { baseDir: BaseDirectory.Download }
       );
     });
   }

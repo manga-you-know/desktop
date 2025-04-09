@@ -24,6 +24,12 @@
       iconActive: "solar:book-2-bold",
       icon: "solar:book-2-outline",
     },
+    {
+      name: "Panels",
+      path: "/panels",
+      iconActive: "ion:images",
+      icon: "ion:images-outline",
+    },
     // {
     //   name: "Search",
     //   path: "/search",

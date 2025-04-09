@@ -29,15 +29,29 @@
     viewMode,
   } from "@/store";
   import Icon from "@iconify/svelte";
+  import {
+    exists,
+    readDir,
+    BaseDirectory,
+    type DirEntry,
+  } from "@tauri-apps/plugin-fs";
+  import { open as openPath } from "@tauri-apps/plugin-shell";
   import { goto, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
   import { ChaptersMenu } from "@/components";
+  import { join, documentDir } from "@tauri-apps/api/path";
 
-  let openHoverChapter = $state(false);
   let { favoriteId, chapterIndex } = page.params;
   let chapter = $state($globalChapters[Number(chapterIndex)]);
-  let favorite: Favorite | null = $state(null);
+  let favorite: Favorite = $state({
+    name: "",
+    link: "",
+    cover: "",
+    source: "",
+    source_id: "",
+    folder_name: "",
+  });
   let images: string[] = $state([]);
   let currentlyCount = $state(1);
   let totalPage = $state(0);
@@ -46,9 +60,22 @@
     Number(chapterIndex) === $globalChapters.length - 1
   );
   let currentlyImage = $state("/myk.png");
-
+  let currentlyImagePath = $derived(
+    `${favorite.id}~${favorite.folder_name}~${chapter.number}~${currentlyCount}.png`
+  );
+  let downloadedImages: DirEntry[] = $state([]);
+  // svelte-ignore non_reactive_update
+  let pagesDiv: HTMLDivElement;
   function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  async function refreshDownloadeds() {
+    const path = "favorite-panels";
+    if (await exists(path, { baseDir: BaseDirectory.Document })) {
+      downloadedImages = await readDir(path, {
+        baseDir: BaseDirectory.Document,
+      });
+    }
   }
 
   function handleScroll(event: Event) {
@@ -167,6 +194,7 @@
       $downloadManager.getBaseUrl(favorite.source)
     );
     currentlyImage = images[currentlyCount - 1];
+    refreshDownloadeds();
     preloadNextChapter(Number(chapterIndex), $globalChapters);
   });
 
@@ -267,6 +295,40 @@
       >
         <Icon icon="lucide:menu" />
       </Button>
+      <Button
+        class="pointer-events-auto"
+        size="sm"
+        color="neutral"
+        variant="outline"
+        onclick={async () => {
+          if (
+            downloadedImages.map((img) => img.name).includes(currentlyImagePath)
+          ) {
+            const docPath = await documentDir();
+            const path = await join(
+              docPath,
+              "favorite-panels",
+              currentlyImagePath
+            );
+            openPath(path);
+          } else {
+            await $downloadManager.writePageBase64(
+              currentlyImage,
+              currentlyImagePath
+            );
+            refreshDownloadeds();
+          }
+        }}
+      >
+        <Icon
+          icon={downloadedImages
+            .map((img) => img.name)
+            .includes(currentlyImagePath)
+            ? "tabler:photo-check"
+            : "tabler:photo-star"}
+          class="!w-5 !h-5 text-gray-400"
+        />
+      </Button>
       {#if !$isMobile}
         <div class="inline-flex pointer-events-auto z-50">
           <Button
@@ -282,7 +344,7 @@
             <Icon icon="lucide:minus" />
           </Button>
           <Button
-            class="w-16 p-0 flex justify-center rounded-none"
+            class="w-10 p-0 flex justify-center rounded-none"
             size="sm"
             variant="outline"
             disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -403,6 +465,7 @@
   {#if $viewMode === "scroll"}
     <div
       class="w-full overflow-y-auto"
+      bind:this={pagesDiv}
       style="height: 100vh ;"
       onscroll={handleScroll}
     >
@@ -418,13 +481,18 @@
       </div>
     </div>
   {:else}
-    <div
-      class="fixed inset-0 flex"
+    <button
+      class="fixed inset-0 flex cursor-default"
       style="z-index: 40;"
       use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
       onswipe={handleSwipe}
+      onclick={nextPage}
+      oncontextmenu={(e) => {
+        e.preventDefault();
+        prevPage();
+      }}
     >
-      <button
+      <!-- <button
         aria-label="Forward"
         class="w-[50%] cursor-default outline-none border-none bg-transparent"
         tabindex="-1"
@@ -441,8 +509,8 @@
           nextPage();
           e.currentTarget.blur();
         }}
-      ></button>
-    </div>
+      ></button> -->
+    </button>
     {#if $fitMode === "fit-width"}
       <div class="h-full w-full overflow-auto">
         <div class="min-h-full w-full flex items-center justify-center">

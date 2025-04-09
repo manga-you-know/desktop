@@ -22,12 +22,14 @@ export { default as Source } from "./select/Source.svelte";
 export { default as SuggestionCard } from "./cards/SuggestionCard.svelte";
 export { default as FavoriteCard } from "./cards/FavoriteCard.svelte";
 export { default as LibraryCard } from "./cards/LibraryCard.svelte";
+export { default as FavoritePanel } from "./cards/FavoritePanel.svelte";
 // Modals
 export { default as SuggestionModal } from "./modals/SuggestionModal.svelte";
 export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";
 export { default as ChaptersMenu } from "./modals/ChaptersMenu.svelte";
 export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";
 export { default as EditFavorite } from "./modals/EditFavorite.svelte";
+export { default as PanelModal } from "./modals/PanelModal.svelte";
 export { default as AddCustom } from "./modals/AddCustom.svelte";
 export { default as AskDelete } from "./modals/AskDelete.svelte";
 export { default as Settings } from "./modals/Settings.svelte";
