@@ -1,7 +1,7 @@
-## 0.3.33 (2025-04-08)
+## 0.3.34 (2025-04-09)
 
 
 ### New Features
 
-* fix smth in mangadex and change smth ([fd71eb9](https://github.com/manga-you-know/desktop/commit/fd71eb9ce56d5e4866e0d1494780902c57be1846))
+* favorite panels! ([5319cbb](https://github.com/manga-you-know/desktop/commit/5319cbb83a623ed7a0f54c5f952cae7fb901cf01))
 
