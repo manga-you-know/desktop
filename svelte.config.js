@@ -18,6 +18,7 @@ const config = {
         "/home",
         "/favorites",
         "/library",
+        "/panels",
         "/reader/0/0",
         "/reader/2/1",
         "/reader/4/2",
