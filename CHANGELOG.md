@@ -1,7 +1,7 @@
 ## 0.3.34 (2025-04-09)
 
 
-### New Features
+### Bug Fixes
 
-* favorite panels! ([5319cbb](https://github.com/manga-you-know/desktop/commit/5319cbb83a623ed7a0f54c5f952cae7fb901cf01))
+* panels ([86cb273](https://github.com/manga-you-know/desktop/commit/86cb2732614bc26fd1385901f96a6b85c0f9a53a))
 
