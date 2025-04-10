@@ -36,6 +36,22 @@
     "sql:allow-execute",
     "sql:allow-load",
     "sql:allow-select",
+    "http:allow-fetch",
+    "http:allow-fetch-cancel",
+    "http:allow-fetch-read-body",
+    "http:allow-fetch-send",
+    "http:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "http://*"
+        },
+        {
+          "url": "https://*"
+        }
+      ]
+    },
     "notification:allow-batch",
     "notification:allow-cancel",
     "notification:allow-check-permissions",
@@ -315,28 +331,9 @@
     "fs:scope",
     "fs:write-all",
     "fs:write-files",
-    "http:allow-fetch",
-    "http:allow-fetch-cancel",
-    "http:allow-fetch-read-body",
-    "http:allow-fetch-send",
-    "http:default",
-    {
-      "identifier": "http:default",
-      "allow": [
-        {
-          "url": "http://*"
-        },
-        {
-          "url": "https://*"
-        }
-      ]
-    },
-    "clipboard-manager:allow-clear",
-    "clipboard-manager:allow-read-image",
-    "clipboard-manager:allow-read-text",
-    "clipboard-manager:allow-write-html",
-    "clipboard-manager:allow-write-image",
-    "clipboard-manager:allow-write-text",
+    "clipboard:write-all",
+    "clipboard:read-all",
+    "core:image:default",
     "log:default",
     "notification:default",
     "fs:default",

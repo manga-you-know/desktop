@@ -1,5 +1,6 @@
 import { isFullscreen, defaultPage, autoEnterFullscreen } from "@/store";
 import { start, setActivity, destroy } from "tauri-plugin-drpc";
+import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import {
   Activity,
   Button,
@@ -10,9 +11,12 @@ import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import { goto } from "$app/navigation";
+import { toast } from "svelte-sonner";
+import { writeImageBase64, writeImageBinary } from "tauri-plugin-clipboard-api";
 
 const currentWindow = getCurrentWindow();
 
@@ -24,6 +28,23 @@ export async function toggleFullscreen() {
 export async function setFullscreen(value: boolean) {
   await currentWindow.setFullscreen(value);
   isFullscreen.set(await currentWindow.isFullscreen());
+}
+
+export async function copyImageFromPath(path: string) {
+  const file = await readFile(path);
+  let binary = "";
+  const chunkSize = 0x8000; // 32KB chunks
+  for (let i = 0; i < file.length; i += chunkSize) {
+    const chunk = file.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, Array.from(chunk));
+  }
+  const b64 = "data:image/png;base64," + btoa(binary);
+  await copyImageBase64(b64);
+}
+
+export async function copyImageBase64(imageBase64: string) {
+  await writeImageBase64(imageBase64.replace(/^data:image\/\w+;base64,/, ""));
+  toast.success("Image copied!");
 }
 
 export async function goDefaultPage() {

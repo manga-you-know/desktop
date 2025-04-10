@@ -1,11 +1,11 @@
 <script lang="ts">
   import { PanelModal } from "@/components";
 
-  let { src } = $props();
+  let { src, path } = $props();
   let open = $state(false);
 </script>
 
-<PanelModal bind:open {src} />
+<PanelModal bind:open {src} {path} />
 
 <button
   class="p-2 hover:scale-[1.12] transition-* duration-200 ease-in-out"

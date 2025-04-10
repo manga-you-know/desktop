@@ -12,6 +12,7 @@
     setFullscreen,
     toggleFullscreen,
     saveSettings,
+    copyImageBase64,
   } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
@@ -36,11 +37,13 @@
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
   import { open as openPath } from "@tauri-apps/plugin-shell";
+  import { writeImageBase64 } from "tauri-plugin-clipboard-api";
   import { goto, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
   import { ChaptersMenu } from "@/components";
   import { join, documentDir } from "@tauri-apps/api/path";
+  import { Image, transformImage } from "@tauri-apps/api/image";
 
   let { favoriteId, chapterIndex } = page.params;
   let chapter = $state($globalChapters[Number(chapterIndex)]);
@@ -215,6 +218,9 @@
       if (event.key === "Backspace") {
         prevPage();
       }
+      if (event.key.toUpperCase() === "C" && (event.metaKey || event.ctrlKey)) {
+        copyImageBase64(images[currentlyCount - 1]);
+      }
     }
 
     if (event.key === "+" || (event.ctrlKey && event.key === "=")) {
@@ -222,6 +228,13 @@
     }
     if (event.key === "-" || (event.ctrlKey && event.key === "-")) {
       $zoomLevel = Math.max(50, $zoomLevel - 10);
+    }
+
+    if (event.key === ">") {
+      handleGoChapter("next");
+    }
+    if (event.key === "<") {
+      handleGoChapter("prev");
     }
 
     if (event.key === "v") {

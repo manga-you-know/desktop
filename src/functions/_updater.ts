@@ -54,10 +54,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       });
       openUpdate.set(true);
       if (!isFocus) {
-        notify(
-          `Update v${update.version} avaible!`,
-          "Open the app to update it"
-        );
+        notify(`Update v${update.version} avaible!`, "Open the app to update");
       }
     } else if (isUserClick) {
       updateInfo.set({

@@ -10,7 +10,7 @@
   import { documentDir, join } from "@tauri-apps/api/path";
   import { onMount } from "svelte";
   let downloaded: DirEntry[] = $state([]);
-  let panels: string[] = $state([]);
+  let panels: { src: string; path: string }[] = $state([]);
 
   async function refreshPanels() {
     const path = "favorite-panels";
@@ -23,7 +23,7 @@
     const docDir = await documentDir();
     for (const panel of downloaded) {
       const path = await join(docDir, "favorite-panels", panel.name);
-      panels.push(convertFileSrc(path));
+      panels.push({ src: convertFileSrc(path), path });
     }
   }
 
@@ -36,6 +36,6 @@
   class="h-full flex flex-wrap content-start gap-10 scroll-smooth overflow-y-auto overflow-x-hidden p-5"
 >
   {#each panels as panel}
-    <FavoritePanel src={panel} />
+    <FavoritePanel src={panel.src} path={panel.path} />
   {/each}
 </div>
