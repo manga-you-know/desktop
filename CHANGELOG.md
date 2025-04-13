@@ -1,7 +1,7 @@
-## 0.3.35 (2025-04-10)
+## 0.4.1 (2025-04-13)
 
 
 ### New Features
 
-*  added Ctrl + C to copy in reader, also `<` & `>` to pass chapters ([2d50ce0](https://github.com/manga-you-know/desktop/commit/2d50ce0f217cf2713d27e8051326d5b961007140))
+* Collections and a LOT of improvements, 0.4 IS HERE ([eb41f13](https://github.com/manga-you-know/desktop/commit/eb41f13263e5fefaa62f963580617e0777ba3cfd))
 
