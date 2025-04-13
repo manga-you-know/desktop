@@ -91,7 +91,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           brew install python@3.11
-          pip3 install setuptools
+          brew install python-setuptools
           echo 'export PATH="/opt/homebrew/opt/python@3.11/libexec/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Install front-end dependencies
