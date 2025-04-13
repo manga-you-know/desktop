@@ -1,7 +1,7 @@
-## 0.4.1 (2025-04-13)
+## 0.4.2 (2025-04-13)
 
 
-### New Features
+### Bug Fixes
 
-* Collections and a LOT of improvements, 0.4 IS HERE ([eb41f13](https://github.com/manga-you-know/desktop/commit/eb41f13263e5fefaa62f963580617e0777ba3cfd))
+* solve the problem with updater, sorry! ([bc5ed4b](https://github.com/manga-you-know/desktop/commit/bc5ed4b49c8fd1989f3b7541856baf74f0c09d69))
 
