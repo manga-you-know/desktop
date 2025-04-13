@@ -7,7 +7,7 @@
   } from "@/functions";
   import type { Chapter, Favorite } from "@/interfaces";
   import { Button, Checkbox, Label, Sheet, Switch } from "@/lib/components";
-  import { openMenuChapters, globalChapters, defaultPage } from "@/store";
+  import { openMenuChapters, globalChapters, lastPage } from "@/store";
   import Icon from "@iconify/svelte";
 
   interface Props {
@@ -28,9 +28,9 @@
     <Sheet.Header class="mb-2">
       <Sheet.Title>{favorite?.name}</Sheet.Title>
       <div class="flex gap-2">
-        <Button variant="outline" onclick={goHome}
-          ><Icon icon="lucide:home" /></Button
-        >
+        <Button variant="outline" onclick={goHome}>
+          <Icon icon="lucide:home" />
+        </Button>
         <Button
           variant="outline"
           onclick={() => {

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { saveSettings } from "@/functions";
   import { Sidebar, Label, Avatar } from "@/lib/components";
-  import { openSearch, openSettings, openAdd } from "@/store";
+  import { openSearch, openSettings, openAdd, lastPage } from "@/store";
   import Icon from "@iconify/svelte";
 
   const items = [
@@ -93,6 +94,8 @@
               <Sidebar.MenuButton
                 onclick={(e) => {
                   e.currentTarget.blur();
+                  lastPage.set(item.path);
+                  saveSettings();
                   goto(item.path);
                 }}
                 tabindex={-1}

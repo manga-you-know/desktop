@@ -14,8 +14,8 @@ export { default as CustomType } from "./toggleButtons/CustomType.svelte";
 export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 // Selects
 export { default as LibrarySource } from "./select/LibrarySource.svelte";
+export { default as LibraryCollection } from "./select/LibraryCollection.svelte";
 export { default as LibraryOrder } from "./select/LibraryOrder.svelte";
-export { default as DefaultPage } from "./select/DefaultPage.svelte";
 export { default as Language } from "./select/Language.svelte";
 export { default as Source } from "./select/Source.svelte";
 // Cards
@@ -25,6 +25,8 @@ export { default as LibraryCard } from "./cards/LibraryCard.svelte";
 export { default as FavoritePanel } from "./cards/FavoritePanel.svelte";
 // Modals
 export { default as SuggestionModal } from "./modals/SuggestionModal.svelte";
+export { default as EditCollections } from "./modals/EditCollections.svelte";
+export { default as PickCollection } from "./modals/PickCollection.svelte";
 export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";
 export { default as ChaptersMenu } from "./modals/ChaptersMenu.svelte";
 export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";

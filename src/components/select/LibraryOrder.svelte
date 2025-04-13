@@ -20,7 +20,7 @@
       {#snippet child({ props })}
         <Button
           variant="outline"
-          class="w-[80px] rounded-l-md rounded-r-none justify-between focus:none"
+          class="w-[80px] rounded-r-none justify-between focus:none"
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -31,7 +31,7 @@
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[80px] p-0">
+    <Popover.Content class="w-[110px] ml-7 p-0">
       <Command.Root class="dark:bg-black">
         <Command.List>
           <Command.Group>
@@ -46,7 +46,7 @@
                   await saveSettings();
                 }}
               >
-                <Label class="text-sm ml-[-4px]">{titleCase(order)}</Label>
+                <Label class="w-full text-sm ">{titleCase(order)}</Label>
                 <Icon icon={orderIcon[order]} />
               </Command.Item>
             {/each}
@@ -57,7 +57,7 @@
   </Popover.Root>
   <Button
     class="w-[20px] ml-[-1px] rounded-l-none"
-    variant="outline"
+    variant="secondary"
     onclick={async () => {
       isAscending.set(!$isAscending);
       await refreshLibrary();

@@ -1,4 +1,4 @@
-import { isFullscreen, defaultPage, autoEnterFullscreen } from "@/store";
+import { isFullscreen, lastPage, autoEnterFullscreen } from "@/store";
 import { start, setActivity, destroy } from "tauri-plugin-drpc";
 import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import {
@@ -48,7 +48,7 @@ export async function copyImageBase64(imageBase64: string) {
 }
 
 export async function goDefaultPage() {
-  const defaultPag = get(defaultPage);
+  const defaultPag = get(lastPage);
   if (get(autoEnterFullscreen)) {
     await setFullscreen(false);
   }

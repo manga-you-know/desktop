@@ -43,25 +43,25 @@
 </script>
 
 <Button
-  class="rounded-md h-10 transition duration-200"
-  size="sm"
+  class="transition duration-200"
   id="button-search"
-  variant="outline"
+  variant="secondary"
   onclick={handleSearch}
   onmouseenter={() => (isHovered = true)}
   onmouseleave={() => (isHovered = false)}
   tabindex={-1}
 >
-  <Icon class="w-3 h-3 mr-[-9px]" icon="lucide:search" />
+  <Icon class="!w-5 !h-5 mr-[-10px] mx-[-4px]" icon="uil:search" />
   <div
     class={`relative transition-all duration-500 ease-in-out ${showInput ? "max-w-xs opacity-100 focus:ring-0" : "max-w-[0px] opacity-0 overflow-hidden"}`}
   >
     <Input
-      class="!border-none focus-visible:ring-0 rounded-none !outline-none ring-0 !bg-transparent !text-white"
+      variant="link"
       id="favorite-search"
       bind:value={$libraryQuery}
       oninput={updateFavorites}
       onfocusout={handleOut}
+      floatingLabel
       placeholder="Search..."
       autocomplete="off"
       tabindex={-1}

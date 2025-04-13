@@ -5,8 +5,9 @@ import {
   libraryOrder,
   isAscending,
   librarySource,
+  libraryCollection,
 } from "@/store";
-import { UserRepository } from "@/repositories";
+import { MarkRepository, UserRepository } from "@/repositories";
 import type { Favorite } from "@/interfaces";
 import type { Mark, User } from "@/models";
 import { get } from "svelte/store";
@@ -136,18 +137,20 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
     params.push(favoriteQuery, favoriteQuery);
   }
 
-  // if (currentlyMark.value !== "-") {
-  //   const markId = await MarkRepository.getMarkId(currentlyMark.value);
-  //   query +=
-  //     " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
-  //   params.push(markId);
-  // }
+  if (get(libraryCollection) !== "") {
+    const markId = await MarkRepository.getMarkId(get(libraryCollection));
+    query +=
+      " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
+    params.push(markId);
+  }
   if (get(librarySource) !== "") {
     query += " AND source = ?";
     params.push(get(librarySource));
   }
 
-  query += ` ORDER BY ${get(libraryOrder)} ${get(isAscending) ? " ASC" : " DESC"}`;
+  query += ` ORDER BY ${get(libraryOrder)} ${
+    get(isAscending) ? " ASC" : " DESC"
+  }`;
 
   try {
     const favorites: Favorite[] = await db.select(query, params);

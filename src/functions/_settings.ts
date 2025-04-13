@@ -9,7 +9,7 @@ import {
   autoEnterFullscreen,
   theme,
   appLanguage,
-  defaultPage,
+  lastPage,
   useMpv,
   closeTray,
   showOnlyNew,
@@ -32,7 +32,7 @@ export async function loadSettings() {
     lLanguage,
     lOrderBy,
     lIsAscending,
-    lDefaultPage,
+    lLastPage,
     lUseMpv,
     lCloseTray,
     lShowOnlyNew,
@@ -48,7 +48,7 @@ export async function loadSettings() {
     loadedSettings.get<string>("language"),
     loadedSettings.get<string>("order_by"),
     loadedSettings.get<boolean>("is_ascending"),
-    loadedSettings.get<string>("default_page"),
+    loadedSettings.get<string>("last_page"),
     loadedSettings.get<boolean>("use_mpv"),
     loadedSettings.get<boolean>("close_tray"),
     loadedSettings.get<boolean>("show_only_new"),
@@ -65,14 +65,14 @@ export async function loadSettings() {
   appLanguage.set(lLanguage ?? "en");
   libraryOrder.set(lOrderBy ?? "id");
   isAscending.set(lIsAscending ?? true);
-  defaultPage.set(lDefaultPage ?? "home");
+  lastPage.set(lLastPage ?? "/home");
   useMpv.set(lUseMpv ?? false);
   showOnlyNew.set(lShowOnlyNew ?? false);
   viewMode.set(lViewMode ?? "single");
   fitMode.set(lFitMode ?? "");
   zoomLevel.set(lZoomLevel ?? 100);
-  if (get(defaultPage) !== "home") {
-    goto(`/${get(defaultPage)}`);
+  if (get(lastPage) !== "/home") {
+    goto(get(lastPage));
   }
 }
 
@@ -87,7 +87,7 @@ export async function saveSettings() {
     loadedSettings.set("language", get(appLanguage)),
     loadedSettings.set("order_by", get(libraryOrder)),
     loadedSettings.set("is_ascending", get(isAscending)),
-    loadedSettings.set("default_page", get(defaultPage)),
+    loadedSettings.set("last_page", get(lastPage)),
     loadedSettings.set("use_mpv", get(useMpv)),
     loadedSettings.set("close_tray", get(closeTray)),
     loadedSettings.set("show_only_new", get(showOnlyNew)),
@@ -108,7 +108,7 @@ export async function resetSettings() {
     loadedSettings.set("language", "en"),
     loadedSettings.set("order_by", "id"),
     loadedSettings.set("is_ascending", true),
-    loadedSettings.set("default_page", "home"),
+    loadedSettings.set("last_page", "/home"),
     loadedSettings.set("use_mpv", false),
     loadedSettings.set("close_tray", false),
     loadedSettings.set("show_only_new", false),

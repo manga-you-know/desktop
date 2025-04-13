@@ -40,6 +40,7 @@
     Language as LanguageType,
   } from "@/interfaces";
   import { LANGUAGE_LABELS, MANGASOURCE_LANGUAGE } from "@/constants";
+  import { limitStr } from "@/utils";
 
   let isMulti = $state(false);
   let localSelectedLanguage = $state($preferableLanguage);
@@ -166,11 +167,9 @@
 >
   <Dialog.Content interactOutsideBehavior="close">
     <Dialog.Header>
-      <Dialog.Title class="w-full flex justify-center dark:text-white"
-        >{favorite.name.length > 40
-          ? favorite.name.substring(0, 40) + "..."
-          : favorite.name}</Dialog.Title
-      >
+      <Dialog.Title class="w-full flex justify-center dark:text-white">
+        {limitStr(favorite.name, 40)}
+      </Dialog.Title>
       <!-- <Dialog.Description
         >Change your favorites attributes and save it.</Dialog.Description
       > -->
@@ -223,7 +222,11 @@
       </div>
       <div class="w-1/2">
         <div class="w-48 flex flex-col gap-1">
-          <Input placeholder="Chapter..." bind:value={searchTerm} />
+          <Input
+            placeholder="Chapter..."
+            variant="secondary"
+            bind:value={searchTerm}
+          />
           <Separator />
           {#if isFetching}
             <div class="flex !h-[22rem] w-full justify-center items-center">

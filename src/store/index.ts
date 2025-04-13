@@ -10,6 +10,7 @@ import type {
   Language,
   UpdateInfo,
 } from "@/interfaces";
+import type { Mark } from "@/types";
 const os = type();
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
@@ -21,9 +22,12 @@ export const libraryFavorites = writable<Favorite[]>([]);
 export const ultraFavorites = writable<Favorite[]>([]);
 export const libraryQuery = writable<string>("");
 export const librarySource = writable<string>("");
+export const libraryCollection = writable<string>("");
 export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
+export const collections = writable<Mark[]>([]);
+export const panels = writable<{ src: string; path: string }[]>([]);
 export const updateInfo = writable<UpdateInfo>({
   updateAvaible: false,
   version: "",
@@ -36,6 +40,7 @@ export const openMenuChapters = writable<boolean>(false);
 export const openSearch = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
+export const openCollection = writable<boolean>(false);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
 export const autoSearchUpdates = writable<boolean>(true);
@@ -44,7 +49,7 @@ export const preferableLanguage = writable<Language>({
   label: "English",
 });
 export const autoEnterFullscreen = writable<boolean>(true);
-export const defaultPage = writable<string>("home");
+export const lastPage = writable<string>("/home");
 export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);

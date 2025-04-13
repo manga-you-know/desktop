@@ -4,6 +4,7 @@
   import { FavoriteRepository } from "@/repositories";
   import { refreshLibrary, refreshFavorites } from "@/functions";
   import type { Favorite } from "@/interfaces";
+  import { toast } from "svelte-sonner";
 
   interface Props {
     favorite: Favorite;
@@ -14,7 +15,7 @@
 </script>
 
 <AlertDialog.Root bind:open>
-  <AlertDialog.Content interactOutsideBehavior="close">
+  <AlertDialog.Content>
     <AlertDialog.Header>
       <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
       <AlertDialog.Description>
@@ -30,6 +31,7 @@
         onclick={async () => {
           await FavoriteRepository.deleteFavorite(favorite);
           open = false;
+          toast.warning(`${favorite.name} deleted with success.`);
           await Promise.all([refreshLibrary(), refreshFavorites()]);
         }}>Delete</Button
       >

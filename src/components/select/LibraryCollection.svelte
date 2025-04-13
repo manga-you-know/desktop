@@ -6,23 +6,17 @@
     Popover,
     ScrollArea,
   } from "@/lib/components";
-  import { libraryFavorites, librarySource } from "@/store";
-  import { refreshLibrary } from "@/functions";
-  import { FavoriteRepository } from "@/repositories";
+  import { libraryFavorites, libraryCollection, collections } from "@/store";
+  import { refreshCollections, refreshLibrary } from "@/functions";
+  import { MarkRepository } from "@/repositories";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import type { Mark } from "@/types";
 
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
-  let sources: string[] = $state([]);
-  async function refreshSources() {
-    sources = await FavoriteRepository.getFavoriteSources();
-  }
-  libraryFavorites.subscribe(async (_) => {
-    await refreshSources();
-  });
   onMount(async () => {
-    await refreshSources();
+    await refreshCollections();
   });
 </script>
 
@@ -36,34 +30,36 @@
           {...props}
           role="combobox"
           aria-expanded={open}
-          disabled={sources.length === 0}
+          disabled={$collections.length === 0}
           tabindex={-1}
         >
           <Label
-            class={`w-full text-sm text-center ml-[-4px] ${$librarySource === "" ? "dark:text-gray-400" : ""}`}
+            class={`w-full text-sm text-center ml-[-4px] ${$libraryCollection === "" ? "dark:text-gray-400" : ""}`}
           >
-            {$librarySource || "Filter by source..."}
+            {$libraryCollection || "Filter by collection..."}
           </Label>
         </Button>
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
       <Command.Root class="dark:bg-black">
-        <Command.Input placeholder="Search source..." />
-        <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
+        <Command.Input placeholder="Search collection..." />
+        <Command.Empty class="mb-[-68px]">No collection found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
-            {#each sources as source}
+            {#each $collections.reverse() as collection}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${source === $librarySource ? "!bg-slate-400 dark:!bg-gray-900" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`}
-                value={source}
+                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${collection.name === $libraryCollection ? "!bg-slate-400 dark:!bg-gray-900" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`}
+                value={collection.name}
                 onSelect={async () => {
-                  librarySource.set(source);
+                  libraryCollection.set(collection.name);
                   open = false;
                   await refreshLibrary();
                 }}
               >
-                <Label class="w-full text-center text-sm">{source}</Label>
+                <Label class="w-full text-center text-sm"
+                  >{collection.name}</Label
+                >
               </Command.Item>
             {/each}
           </Command.Group>
@@ -74,10 +70,10 @@
   <Button
     variant="secondary"
     class="w-8 rounded-l-none"
-    disabled={$librarySource === ""}
+    disabled={$libraryCollection === ""}
     onclick={() => {
       open = false;
-      librarySource.set("");
+      libraryCollection.set("");
       refreshLibrary();
     }}
   >

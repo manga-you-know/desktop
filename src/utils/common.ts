@@ -10,6 +10,10 @@ export function strNotEmpty(str: string | number | undefined): string {
   return str?.toString() ?? "";
 }
 
+export function limitStr(text: string, max: number = 17): string {
+  return text.length > max ? text.substring(0, max) + "..." : text;
+}
+
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

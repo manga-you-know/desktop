@@ -85,11 +85,23 @@
       <Dialog.Description
         >Change your favorites attributes and save it.</Dialog.Description
       >
-      <Input id={`name-${favorite.id}`} bind:value={name} />
+      <Input
+        divClass="!w-full"
+        class="w-full"
+        variant="secondary"
+        id={`name-${favorite.id}`}
+        bind:value={name}
+      />
       <div class="flex gap-2">
-        <Input id={`image-${favorite.id}`} bind:value={image} />
+        <Input
+          divClass="!w-full"
+          class="w-full"
+          variant="secondary"
+          id={`image-${favorite.id}`}
+          bind:value={image}
+        />
         <Button
-          class="w-9 h-9"
+          class="w-10"
           variant="outline"
           effect="shineHover"
           onclick={pickImage}

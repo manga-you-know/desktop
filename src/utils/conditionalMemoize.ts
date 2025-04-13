@@ -1,4 +1,4 @@
-import { memoize } from 'lodash';
+import { memoize } from "lodash";
 
 export function conditionalMemoize(fn: any, p0?: (...args: any[]) => string) {
   const memoizedFn = memoize(fn, (...args) => JSON.stringify(args));

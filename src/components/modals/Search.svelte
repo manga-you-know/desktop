@@ -61,10 +61,7 @@
 </script>
 
 <AlertDialog.Root bind:open={$openSearch}>
-  <AlertDialog.Content
-    class="w-[30rem] max-h-[23rem] p-0 gap-0"
-    interactOutsideBehavior="close"
-  >
+  <AlertDialog.Content class="w-[30rem] max-h-[23rem] p-0 gap-0">
     <AlertDialog.Header>
       <div class="flex items-center ml-3 my-1">
         <div class="w-5 h-5 mr-2">
@@ -77,7 +74,7 @@
           />
         </div>
         <Input
-          class="p-0 m-0 !border-none !outline-none !ring-0 shadow-none"
+          variant="link"
           autofocus
           bind:value={searchTerm}
           placeholder="Search..."

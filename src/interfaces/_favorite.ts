@@ -1,5 +1,5 @@
 import type { Chapter } from "./_chapter";
-import type { Mark } from "../models/_mark";
+import type { Mark } from "@/types";
 
 export interface Favorite {
   id?: number;

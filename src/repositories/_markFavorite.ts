@@ -1,16 +1,17 @@
 import Database from "@tauri-apps/plugin-sql";
-import { DATABASE_NAME } from "~/constants";
-import type { Favorite, Mark, MarkFavorites } from "~/models";
+import { DATABASE_NAME } from "@/constants";
+import type { Mark, MarkFavorites } from "@/types";
+import type { Favorite } from "@/interfaces";
 
 export async function createMarkFavorite(
   favorite: Favorite,
-  mark: Mark,
+  mark: Mark
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
       "INSERT INTO mark_favorites (mark_id, favorite_id) VALUES (?, ?) ",
-      [mark.id, favorite.id],
+      [mark.id, favorite.id]
     );
   } catch (error) {
     console.log(error);
@@ -20,14 +21,14 @@ export async function createMarkFavorite(
 }
 
 export async function addMarkFavorite(
-  favoriteId: number,
-  markId: number,
+  favorite: Favorite,
+  mark: Mark
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
       "INSERT INTO mark_favorites (favorite_id, mark_id) VALUES (?, ?) ",
-      [favoriteId, markId],
+      [favorite.id, mark.id]
     );
   } catch (error) {
     console.log(error);
@@ -38,7 +39,7 @@ export async function addMarkFavorite(
 
 export async function addMarkFavorites(
   favorites: Favorite[],
-  markId: number | null,
+  markId: number | null
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
@@ -46,7 +47,7 @@ export async function addMarkFavorites(
     const placeholder = favorites.map(() => "(?, ?)").join(", ");
     await db.execute(
       `INSERT INTO mark_favorites (favorite_id, mark_id) VALUES ${placeholder}`,
-      values,
+      values
     );
   } catch (error) {
     console.log(error);
@@ -56,13 +57,13 @@ export async function addMarkFavorites(
 }
 
 export async function getMarkFavorites(
-  favorite: Favorite,
+  favorite: Favorite
 ): Promise<MarkFavorites[]> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     const markFavorites: MarkFavorites[] = await db.select(
       "SELECT * FROM mark_favorites WHERE favorite_id = ?",
-      [favorite.id],
+      [favorite.id]
     );
     return markFavorites;
   } catch (error) {
@@ -73,15 +74,15 @@ export async function getMarkFavorites(
   }
 }
 
-export async function deleteMarkFavorite(
+export async function removeMarkFavorite(
   favorite: Favorite,
-  mark: Mark,
+  mark: Mark
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
     await db.execute(
       "DELETE FROM mark_favorites WHERE favorite_id = ? AND mark_id = ?",
-      [favorite.id, mark.id],
+      [favorite.id, mark.id]
     );
   } catch (error) {
     console.log(error);
@@ -92,7 +93,7 @@ export async function deleteMarkFavorite(
 
 export async function deleteMarkFavorites(
   favorites: Favorite[],
-  markId: number,
+  markId: number
 ): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
@@ -100,7 +101,7 @@ export async function deleteMarkFavorites(
     const placeholder = favorites.map(() => "?").join(", ");
     await db.execute(
       `DELETE FROM mark_favorites WHERE mark_id = ? AND favorite_id IN (${placeholder})`,
-      [markId, ...values],
+      [markId, ...values]
     );
   } catch (error) {
     console.log(error);

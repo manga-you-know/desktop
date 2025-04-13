@@ -21,18 +21,19 @@
     globalChapters,
     readeds,
     autoEnterFullscreen,
-    defaultPage,
     isFullscreen,
-    isMobile,
     openMenuChapters,
     zoomLevel,
     fitMode,
     viewMode,
+    lastPage,
+    isMobile,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
     exists,
     readDir,
+    remove,
     BaseDirectory,
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
@@ -161,7 +162,7 @@
     if (favorite) {
       loadFavoriteChapter(favorite);
     }
-    goto(`/${$defaultPage}`);
+    goto($lastPage);
     stopDiscordPresence();
   }
 
@@ -218,9 +219,9 @@
       if (event.key === "Backspace") {
         prevPage();
       }
-      if (event.key.toUpperCase() === "C" && (event.metaKey || event.ctrlKey)) {
-        copyImageBase64(images[currentlyCount - 1]);
-      }
+    }
+    if (event.key.toUpperCase() === "C" && (event.metaKey || event.ctrlKey)) {
+      copyImageBase64(images[currentlyCount - 1]);
     }
 
     if (event.key === "+" || (event.ctrlKey && event.key === "=")) {
@@ -317,13 +318,13 @@
           if (
             downloadedImages.map((img) => img.name).includes(currentlyImagePath)
           ) {
-            const docPath = await documentDir();
             const path = await join(
-              docPath,
+              await documentDir(),
               "favorite-panels",
               currentlyImagePath
             );
-            openPath(path);
+            await remove(path);
+            refreshDownloadeds();
           } else {
             await $downloadManager.writePageBase64(
               currentlyImage,
@@ -337,9 +338,9 @@
           icon={downloadedImages
             .map((img) => img.name)
             .includes(currentlyImagePath)
-            ? "tabler:photo-check"
+            ? "tabler:photo-x"
             : "tabler:photo-star"}
-          class="!w-5 !h-5 text-gray-400"
+          class="!w-5 !h-5"
         />
       </Button>
       {#if !$isMobile}
@@ -387,7 +388,7 @@
     <div class="flex gap-1">
       <div class="flex items-center gap-2 pointer-events-none">
         <Badge
-          class="w-12 rounded-md bg-slate-700 place-content-center"
+          class="w-12 rounded-md place-content-center"
           color={Math.round((currentlyCount / totalPage) * 100) === 100
             ? "success"
             : "neutral"}
@@ -400,7 +401,7 @@
               : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
         <Badge
-          class="w-12 mr-0.5 rounded-md bg-slate-700 place-content-center"
+          class="w-12 mr-0.5 rounded-md place-content-center"
           color="neutral"
           variant="outline"
         >

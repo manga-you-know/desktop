@@ -3,11 +3,26 @@ import {
   ReadedRepository,
   DATABASE_INIT,
   DATABASE_MIGRATION,
+  MarkRepository,
 } from "@/repositories";
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
-import { libraryFavorites, readeds, ultraFavorites } from "@/store";
+import {
+  collections,
+  libraryFavorites,
+  panels,
+  readeds,
+  ultraFavorites,
+} from "@/store";
 import type { Chapter, Favorite, Readed } from "@/interfaces";
+import {
+  BaseDirectory,
+  exists,
+  readDir,
+  type DirEntry,
+} from "@tauri-apps/plugin-fs";
+import { documentDir, join } from "@tauri-apps/api/path";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 export async function initDatabase() {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
@@ -111,4 +126,26 @@ export async function refreshFavorites() {
 export async function refreshReadeds(favorite: Favorite) {
   const newReadeds = await ReadedRepository.getReadeds(favorite);
   readeds.set(newReadeds);
+}
+
+export async function refreshCollections() {
+  const newCollections = await MarkRepository.getMarks();
+  collections.set(newCollections);
+}
+export async function refreshPanels() {
+  const path = "favorite-panels";
+  let downloaded: DirEntry[] = [];
+  if (await exists(path, { baseDir: BaseDirectory.Document })) {
+    downloaded = await readDir(path, {
+      baseDir: BaseDirectory.Document,
+    });
+  }
+  panels.set([]);
+  let localPanels = [];
+  const docDir = await documentDir();
+  for (const panel of downloaded) {
+    const path = await join(docDir, "favorite-panels", panel.name);
+    localPanels.push({ src: convertFileSrc(path), path });
+  }
+  panels.set(localPanels);
 }

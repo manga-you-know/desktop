@@ -6,13 +6,19 @@
     WatchFavorite,
     EditFavorite,
     AskDelete,
+    PickCollection,
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/interfaces";
-  import { FavoriteRepository, ReadedRepository } from "@/repositories";
+  import {
+    FavoriteRepository,
+    ReadedRepository,
+    MarkFavoriteRepository,
+  } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
   import { downloadManager, theme } from "@/store";
   import { twMerge } from "tailwind-merge";
+  import type { MarkFavorites } from "@/types";
 
   interface Props {
     favorite: Favorite;
@@ -25,9 +31,11 @@
   let isOpen = $state(false);
   let isEdit = $state(false);
   let isDelete = $state(false);
+  let isPicking = $state(false);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
   let readeds: Readed[] = $state([]);
   let chapters: Chapter[] = $state([]);
+  let markeds: MarkFavorites[] = $state([]);
 
   async function onHover(e: Event) {
     e.stopPropagation();
@@ -47,6 +55,7 @@
 {/if}
 <EditFavorite {favorite} bind:open={isEdit} />
 <AskDelete {favorite} bind:open={isDelete} />
+<PickCollection {favorite} bind:open={isPicking} bind:markeds />
 <ContextMenu.Root
   onOpenChange={() => {
     isUltraFavorite = favorite.is_ultra_favorite;
@@ -104,7 +113,7 @@
               />
             </Button>
             <Button
-              class="rounded-none !mx-[-0.7px]"
+              class="rounded-none !mx-[-1px]"
               variant="secondary"
               size="sm"
               tabindex={-1}
@@ -114,6 +123,20 @@
               }}
             >
               <Icon icon="lucide:square-pen" class="w-4 h-4" />
+            </Button>
+            <Button
+              class="rounded-none !mx-[-1px]"
+              variant="secondary"
+              size="sm"
+              tabindex={-1}
+              onclick={async (e: Event) => {
+                e.stopPropagation();
+                markeds =
+                  await MarkFavoriteRepository.getMarkFavorites(favorite);
+                isPicking = true;
+              }}
+            >
+              <Icon icon="lucide:bookmark" class="w-4 h-4" />
             </Button>
             <Button
               class="rounded-l-none rounded-r-xl"

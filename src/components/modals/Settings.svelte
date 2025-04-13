@@ -12,7 +12,7 @@
     Card,
     Label,
     Button,
-    Dialog,
+    AlertDialog,
     Input,
     Separator,
     Select,
@@ -25,14 +25,14 @@
     autoSearchUpdates,
     autoEnterFullscreen,
     preferableLanguage,
-    defaultPage,
+    lastPage,
     useMpv,
     openSearch,
     closeTray,
     isMobile,
   } from "@/store";
   import { onMount } from "svelte";
-  import { DefaultPage, Language, Theme } from "@/components";
+  import { Language, Theme } from "@/components";
   import type { Language as LanguageType } from "@/interfaces";
   import Icon from "@iconify/svelte";
   import { LANGUAGE_OPTIONS } from "@/constants";
@@ -61,10 +61,10 @@
   });
 </script>
 
-<Dialog.Root bind:open={$openSettings}>
-  <Dialog.Content interactOutsideBehavior="close">
-    <!-- <Dialog.Header class="font-bold">Settings</Dialog.Header> -->
-    <ScrollArea class="h-[21rem] mt-6 select-none">
+<AlertDialog.Root bind:open={$openSettings}>
+  <AlertDialog.Content class="py-0">
+    <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
+    <ScrollArea class="h-[21rem] select-none my-3">
       <div class="border-b-4 my-4 text-center relative rounded-xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
@@ -223,7 +223,7 @@
           </Card.Content>
         </Card.Root>
       {/if}
-      <div class="border-b-4 my-4 text-center relative rounded-xl">
+      <!-- <div class="border-b-4 my-4 text-center relative rounded-xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
         >
@@ -237,8 +237,8 @@
             <DefaultPage onChange={async () => await saveSettings()} />
           </div>
         </Card.Content>
-      </Card.Root>
+      </Card.Root> -->
     </ScrollArea>
-    <!-- <Dialog.Footer></Dialog.Footer> -->
-  </Dialog.Content>
-</Dialog.Root>
+    <!-- <AlertDialog.Footer></AlertDialog.Footer> -->
+  </AlertDialog.Content>
+</AlertDialog.Root>
