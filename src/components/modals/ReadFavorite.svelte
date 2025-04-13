@@ -25,7 +25,7 @@
     readeds,
     preferableLanguage,
   } from "@/store";
-  import { ReadedRepository } from "@/repositories";
+  import { FavoriteRepository, ReadedRepository } from "@/repositories";
   import {
     addReadedBelow,
     isReaded,
@@ -33,6 +33,7 @@
     refreshReadeds,
     stopDiscordPresence,
     setDiscordActivity,
+    refreshFavorites,
   } from "@/functions";
   import type {
     Favorite,
@@ -42,16 +43,15 @@
   import { LANGUAGE_LABELS, MANGASOURCE_LANGUAGE } from "@/constants";
   import { limitStr } from "@/utils";
 
+  let { favorite, open = $bindable(false) }: Props = $props();
+
   let isMulti = $state(false);
   let localSelectedLanguage = $state($preferableLanguage);
   let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
-  let displayedChapters = $derived(
-    $globalChapters.filter((chapter) =>
-      chapter.number.toString().includes(searchTerm)
-    )
-  );
+  let displayedChapters: Chapter[] = $state([]);
+  let isUltraFavorite = $state(favorite.is_ultra_favorite);
   interface Props {
     favorite: Favorite;
     open: boolean;
@@ -61,7 +61,6 @@
     stopPropagation: () => void;
   }
 
-  let { favorite, open = $bindable(false) }: Props = $props();
   let isFetching = $state(false);
   let isDownloading: { [key: string]: boolean } = $state({});
   let isDownloadingAll = $state(false);
@@ -115,6 +114,12 @@
     isDownloadingAll = false;
   }
 
+  function search() {
+    displayedChapters = $globalChapters.filter((chapter) =>
+      chapter.number.toString().includes(searchTerm)
+    );
+  }
+
   $effect(() => {
     if (open) {
       isFetching = true;
@@ -147,6 +152,7 @@
           await new Promise((resolve) => setTimeout(resolve, 10));
           globalChapters.set(result);
         }
+        displayedChapters = $globalChapters;
         await refreshReadeds(favorite);
         isFetching = false;
       })();
@@ -165,7 +171,7 @@
     }
   }}
 >
-  <Dialog.Content interactOutsideBehavior="close">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center dark:text-white">
         {limitStr(favorite.name, 40)}
@@ -207,24 +213,46 @@
             {favorite.source ?? "Open"}
           </span>
         </Button>
-        <Button
-          class="w-[165px]"
-          onclick={downloadAll}
-          disabled={isDownloadingAll}
-        >
-          <Icon
-            icon={isDownloadingAll
-              ? "line-md:loading-twotone-loop"
-              : "lucide:download"}
-          />
-          Download all
-        </Button>
+        <div class="flex gap-3">
+          <Button
+            class=""
+            variant="secondary"
+            onclick={async (e: Event) => {
+              e.stopPropagation();
+              favorite.is_ultra_favorite = !isUltraFavorite;
+              isUltraFavorite = favorite.is_ultra_favorite;
+              await FavoriteRepository.setUltraFavorite(favorite);
+              await refreshFavorites();
+            }}
+          >
+            <Icon
+              class="!w-5 !h-5 mx-[-5px]"
+              icon={isUltraFavorite
+                ? "fluent:star-emphasis-32-filled"
+                : "fluent:star-emphasis-32-regular"}
+            />
+          </Button>
+          <Button
+            class="px-[10px]"
+            onclick={downloadAll}
+            disabled={isDownloadingAll}
+          >
+            <Icon
+              icon={isDownloadingAll
+                ? "line-md:loading-twotone-loop"
+                : "lucide:download"}
+            />
+            Download
+          </Button>
+        </div>
       </div>
       <div class="w-1/2">
         <div class="w-48 flex flex-col gap-1">
           <Input
             placeholder="Chapter..."
-            variant="secondary"
+            oninput={search}
+            floatingLabel
+            variant="link"
             bind:value={searchTerm}
           />
           <Separator />

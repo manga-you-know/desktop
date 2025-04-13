@@ -3,7 +3,13 @@
   import { page } from "$app/state";
   import { saveSettings } from "@/functions";
   import { Sidebar, Label, Avatar } from "@/lib/components";
-  import { openSearch, openSettings, openAdd, lastPage } from "@/store";
+  import {
+    openSearch,
+    openSettings,
+    openAdd,
+    lastPage,
+    openCollection,
+  } from "@/store";
   import Icon from "@iconify/svelte";
 
   const items = [
@@ -77,7 +83,7 @@
 </script>
 
 <Sidebar.Root
-  class="pl-[2.5px] hover:bg-sidebar "
+  class="pl-[2.5px] hover:bg-sidebar pr-0"
   variant="inset"
   collapsible="icon"
   onmouseenter={() => {}}
@@ -137,6 +143,20 @@
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
+              class="pr-0 mr-0"
+              onclick={() => openCollection.set(true)}
+            >
+              <Icon
+                class="!w-6 !h-5 mx-[-3px]"
+                icon={$openCollection
+                  ? "ion:bookmarks"
+                  : "ion:bookmarks-outline"}
+              />
+              <Label class="cursor-pointer">Collection</Label>
+            </Sidebar.MenuButton>
+          </Sidebar.MenuItem>
+          <Sidebar.MenuItem>
+            <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
                 $openSettings = true;
@@ -149,7 +169,7 @@
                   : "heroicons:cog-6-tooth"}
                 class="!w-5 !h-5 ml-[-2px]"
               />
-              <Label>Settings</Label>
+              <Label class="cursor-pointer">Settings</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem class="hidden">

@@ -30,19 +30,12 @@
   });
 </script>
 
-<EditCollections />
 <div class="h-full overflow-hidden flex flex-col">
   <div class="w-full h-14 p-2 gap-2 flex items-center relative top-0">
     <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="secondary"
       >{count}</Badge
     >
     <LibrarySearch />
-    <Button variant="secondary" onclick={() => openCollection.set(true)}>
-      <Icon
-        class="!w-5 !h-5 mx-[-3px]"
-        icon={$openCollection ? "ion:bookmarks" : "ion:bookmarks-outline"}
-      />
-    </Button>
     <LibraryOrder />
     <LibraryCollection />
     <LibrarySource />

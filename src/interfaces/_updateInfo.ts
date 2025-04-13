@@ -1,5 +1,5 @@
 export interface UpdateInfo {
-  updateAvaible: boolean;
+  updateAvailable: boolean;
   version?: string;
   changelog?: string;
   url: string;

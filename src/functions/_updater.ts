@@ -26,7 +26,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       const isFocus = await window.isFocused();
       updateInfo.set({
         version: update.version,
-        updateAvaible: true,
+        updateAvailable: true,
         changelog: update.body,
         url: `https://github.com/manga-you-know/desktop/releases/tag/v${update.version}`,
         fetchUpdate: async () => {
@@ -58,7 +58,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       }
     } else if (isUserClick) {
       updateInfo.set({
-        updateAvaible: false,
+        updateAvailable: false,
         url: "",
         fetchUpdate: () => Promise.resolve(),
       });

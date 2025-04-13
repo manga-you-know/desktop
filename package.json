@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.8",
+    "@iconify-json/fluent": "^1.2.19",
     "@iconify-json/heroicons": "^1.2.1",
     "@iconify-json/ic": "^1.2.1",
     "@iconify-json/ion": "^1.2.2",

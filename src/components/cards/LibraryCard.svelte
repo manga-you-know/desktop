@@ -194,6 +194,16 @@
       />
       <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
     </ContextMenu.Item>
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={async (e: Event) => {
+        markeds = await MarkFavoriteRepository.getMarkFavorites(favorite);
+        isPicking = true;
+      }}
+    >
+      <Icon icon="lucide:bookmark" />
+      <Label>Collections</Label>
+    </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item
       class="gap-4"

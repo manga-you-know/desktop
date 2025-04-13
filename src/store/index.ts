@@ -29,7 +29,7 @@ export const readeds = writable<Readed[]>([]);
 export const collections = writable<Mark[]>([]);
 export const panels = writable<{ src: string; path: string }[]>([]);
 export const updateInfo = writable<UpdateInfo>({
-  updateAvaible: false,
+  updateAvailable: false,
   version: "",
   changelog: "",
   url: "",

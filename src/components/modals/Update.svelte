@@ -7,8 +7,8 @@
 </script>
 
 <AlertDialog.Root bind:open={$openUpdate}>
-  <AlertDialog.Content interactOutsideBehavior="close">
-    {#if $updateInfo.updateAvaible}
+  <AlertDialog.Content>
+    {#if $updateInfo.updateAvailable}
       <AlertDialog.Header>
         <AlertDialog.Title>New update avaible!</AlertDialog.Title>
         <AlertDialog.Description>

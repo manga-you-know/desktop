@@ -9,6 +9,7 @@
     AskDelete,
     Tooltip,
     WatchFavorite,
+    PickCollection,
   } from "@/components";
   import {
     downloadManager,
@@ -19,7 +20,11 @@
     useMpv,
     theme,
   } from "@/store";
-  import { FavoriteRepository, ReadedRepository } from "@/repositories";
+  import {
+    FavoriteRepository,
+    MarkFavoriteRepository,
+    ReadedRepository,
+  } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import {
     refreshFavorites,
@@ -32,11 +37,14 @@
   import { goto } from "$app/navigation";
   import { strNotEmpty } from "@/utils";
   import { twMerge } from "tailwind-merge";
+  import type { MarkFavorites } from "@/types";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
   let isEdit = $state(false);
   let isDelete = $state(false);
+  let isPicking = $state(false);
+  let markeds: MarkFavorites[] = $state([]);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
   let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);
@@ -89,6 +97,7 @@
   {/if}
   <EditFavorite {favorite} bind:open={isEdit} />
   <AskDelete {favorite} bind:open={isDelete} />
+  <PickCollection {favorite} bind:open={isPicking} bind:markeds />
   <ContextMenu.Root
     onOpenChange={() => {
       isUltraFavorite = favorite.is_ultra_favorite;
@@ -290,6 +299,16 @@
           icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
         />
         <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+      </ContextMenu.Item>
+      <ContextMenu.Item
+        class="gap-4"
+        onclick={async (e: Event) => {
+          markeds = await MarkFavoriteRepository.getMarkFavorites(favorite);
+          isPicking = true;
+        }}
+      >
+        <Icon icon="lucide:bookmark" />
+        <Label>Collections</Label>
       </ContextMenu.Item>
       <ContextMenu.Separator />
       <ContextMenu.Item
