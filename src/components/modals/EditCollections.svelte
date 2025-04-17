@@ -91,11 +91,7 @@
                 readonly={collection.id !== editing}
                 autofocus
                 disabled={editing !== null && collection.id !== editing}
-                onkeydown={(e) => {
-                  if (e.key === "Enter") {
-                    updateCollection(collection);
-                  }
-                }}
+                onenter={() => updateCollection(collection)}
               />
               <Button
                 class="rounded-none"

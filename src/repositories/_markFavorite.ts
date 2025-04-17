@@ -91,6 +91,17 @@ export async function removeMarkFavorite(
   }
 }
 
+export async function removeMarkFavoritesByMark(mark: Mark) {
+  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  try {
+    await db.execute("DELETE FROM mark_favorites WHERE mark_id = ?", [mark.id]);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    // db.close()
+  }
+}
+
 export async function deleteMarkFavorites(
   favorites: Favorite[],
   markId: number

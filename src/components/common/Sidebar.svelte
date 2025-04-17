@@ -198,28 +198,9 @@
     <img
       bind:this={imgElement}
       onclick={rotateImage}
-      class="w-16 min-w-10 ml-[12px]"
+      class="w-16 min-w-10 ml-[4px]"
       src="/icon.png"
       alt="icon"
     />
   </Sidebar.Footer>
 </Sidebar.Root>
-
-<!-- <ul class="w-28 space-y-1 fixed m-1 pt-10">
-  {#each items as item}
-    <li>
-      <button
-        on:click={() => goto(item.path)}
-        class="w-full flex items-center gap-2 rounded-lg px-4 py-1.5 text-gray-400 hover:bg-gray-900 hover:text-gray-200 duration-200 transition-[color, background-color] cursor-default"
-        class:!bg-gray-800={page.url.pathname === item.path}
-        class:!text-gray-200={page.url.pathname === item.path}
-      >
-        <Icon
-          class="w-4 h-4"
-          icon={page.url.pathname === item.path ? item.iconActive : item.icon}
-        />
-        <span class="text-sm font-bold"> {item.name} </span>
-      </button>
-    </li>
-  {/each}
-</ul> -->

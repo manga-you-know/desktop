@@ -78,6 +78,7 @@
           autofocus
           bind:value={searchTerm}
           placeholder="Search..."
+          floatingLabel
           oninput={search}
         />
         <Source />

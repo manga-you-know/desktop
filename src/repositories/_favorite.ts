@@ -9,7 +9,8 @@ import {
 } from "@/store";
 import { MarkRepository, UserRepository } from "@/repositories";
 import type { Favorite } from "@/interfaces";
-import type { Mark, User } from "@/models";
+import type { User } from "@/models";
+import type { Mark } from "@/types";
 import { get } from "svelte/store";
 
 export async function createFavorite(favorite: Favorite): Promise<void> {
@@ -361,13 +362,19 @@ export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
 export async function deleteFavorite(favorite: Favorite): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
-    await db.execute("DELETE FROM mark_favorites WHERE favorite_id = ?", [
-      favorite.id,
-    ]);
-    await db.execute("DELETE FROM readed WHERE favorite_id = ?", [favorite.id]);
-    await db.execute("DELETE FROM favorite WHERE id = ?", [favorite.id]);
+    await db.execute(
+      `
+      BEGIN TRANSACTION;
+      DELETE FROM mark_favorites WHERE favorite_id = ?;
+      DELETE FROM readed WHERE favorite_id = ?;
+      DELETE FROM favorite WHERE id = ?;
+      COMMIT;
+    `,
+      [favorite.id, favorite.id, favorite.id]
+    );
   } catch (error) {
     console.log(error);
+    await db.execute("ROLLBACK;");
   } finally {
     // db.close()
   }

@@ -2,6 +2,7 @@ import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
 import type { User } from "@/models";
 import type { Mark } from "@/types";
+import { MarkFavoriteRepository } from ".";
 
 export async function createMark(mark: Mark): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
@@ -121,12 +122,18 @@ export async function updateMark(mark: Mark): Promise<void> {
 export async function deleteMark(mark: Mark): Promise<void> {
   const db = await Database.load(`sqlite:${DATABASE_NAME}`);
   try {
-    await db.execute("DELETE FROM mark WHERE id = ? AND user_id = ?", [
-      mark.id,
-      mark.user_id,
-    ]);
+    await db.execute(
+      `
+      BEGIN TRANSACTION;
+      DELETE FROM mark_favorites WHERE mark_id = ?;
+      DELETE FROM mark WHERE id = ? AND user_id = ?;
+      COMMIT;
+    `,
+      [mark.id, mark.id, mark.user_id]
+    );
   } catch (error) {
     console.log(error);
+    await db.execute("ROLLBACK;");
   } finally {
     // db.close()
   }

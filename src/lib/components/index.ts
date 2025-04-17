@@ -30,4 +30,4 @@ export { Avatar } from "./ui/avatar";
 //common
 export { Toaster } from "./ui/sonner";
 //variants
-export { buttonVariants } from "./ui/button";
+export { buttonVariants, type ButtonVariant } from "./ui/button";

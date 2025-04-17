@@ -34,6 +34,7 @@
     stopDiscordPresence,
     setDiscordActivity,
     refreshFavorites,
+    refreshLibrary,
   } from "@/functions";
   import type {
     Favorite,
@@ -168,6 +169,8 @@
     globalChapters.set([]);
     if (!open) {
       loadFavoriteChapter(favorite);
+      refreshFavorites();
+      refreshLibrary();
     }
   }}
 >
@@ -222,7 +225,6 @@
               favorite.is_ultra_favorite = !isUltraFavorite;
               isUltraFavorite = favorite.is_ultra_favorite;
               await FavoriteRepository.setUltraFavorite(favorite);
-              await refreshFavorites();
             }}
           >
             <Icon

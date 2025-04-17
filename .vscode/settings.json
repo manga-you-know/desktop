@@ -8,6 +8,8 @@
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "html.customData": ["./node_modules/vidstack/vscode.html-data.json"],
+  "typescript.preferences.autoImportFileExcludePatterns": ["bits-ui"],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
   "[kotlin]": {
     "editor.defaultFormatter": "fwcd.kotlin"
   },

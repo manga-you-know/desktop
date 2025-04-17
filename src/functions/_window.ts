@@ -1,5 +1,5 @@
 import { isFullscreen, lastPage, autoEnterFullscreen } from "@/store";
-import { start, setActivity, destroy } from "tauri-plugin-drpc";
+import { start, setActivity, stop } from "tauri-plugin-drpc";
 import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import {
   Activity,
@@ -16,7 +16,12 @@ import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { toast } from "svelte-sonner";
-import { writeImageBase64, writeImageBinary } from "tauri-plugin-clipboard-api";
+import {
+  writeImageBase64,
+  writeImageBinary,
+  writeText,
+} from "tauri-plugin-clipboard-api";
+import { titleCase } from "@/utils";
 
 const currentWindow = getCurrentWindow();
 
@@ -28,6 +33,11 @@ export async function toggleFullscreen() {
 export async function setFullscreen(value: boolean) {
   await currentWindow.setFullscreen(value);
   isFullscreen.set(await currentWindow.isFullscreen());
+}
+
+export async function copyText(text: string, textType?: string) {
+  await writeText(text);
+  toast.info(titleCase(textType ?? "Text") + " copied!");
 }
 
 export async function copyImageFromPath(path: string) {
@@ -80,7 +90,7 @@ export async function setDiscordActivity(details: string, state?: string) {
 }
 
 export async function stopDiscordPresence() {
-  setDiscordActivity("Slacking off...");
+  await stop();
 }
 
 export async function createTray() {

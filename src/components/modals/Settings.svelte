@@ -131,10 +131,6 @@
                 onCheckedChange={async (value) => {
                   value ? await enable() : await disable();
                   await store?.set("auto_start", value);
-                  if (!value) {
-                    await store?.set("start_in_tray", false);
-                    startInTray = false;
-                  }
                 }}
               />
               <Label for="auto-start">Start app with system</Label>
