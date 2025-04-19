@@ -1,7 +1,7 @@
-## 0.4.3 (2025-04-17)
+## 0.4.4 (2025-04-19)
 
 
 ### New Features
 
-* improve some performance and UI ([a97a11a](https://github.com/manga-you-know/desktop/commit/a97a11a94d5a05a1d8f276188a94a2e792988c7b))
+* add the first comic source. and fix a lot of bugs ofc ([e2e079b](https://github.com/manga-you-know/desktop/commit/e2e079b8d926eed1337ddb97975ea4d1d64fefaf))
 
