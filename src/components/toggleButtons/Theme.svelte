@@ -1,26 +1,36 @@
 <script lang="ts">
   import { saveSettings } from "@/functions";
-  import { Button, Label } from "@/lib/components";
+  import { Button, Label, Switch } from "@/lib/components";
   import { theme } from "@/store";
+  import Icon from "@iconify/svelte";
+  import { onMount } from "svelte";
+
+  let isDark = $state(true);
+  onMount(() => {
+    isDark = $theme === "dark";
+  });
 </script>
 
-<div class="flex justify-start gap-0.5">
-  <Button
-    variant="outline"
-    class={$theme === "dark" ? "border-2  border-slate-300" : "gooeyRight"}
-    onclick={async () => {
-      $theme = "dark";
+<div class="inline-flex items-center justify-start gap-2">
+  <Icon
+    class="!w-5 !h-5"
+    icon={!isDark
+      ? "material-symbols:sunny-rounded"
+      : "material-symbols:sunny-outline-rounded"}
+  />
+  <Switch
+    bind:checked={isDark}
+    onCheckedChange={async (value) => {
+      $theme = value ? "dark" : "light";
       await saveSettings();
-    }}>Dark</Button
-  >
-  <Button
-    variant="outline"
-    class={$theme === "light" ? "border-2  border-slate-800" : "gooeyLeft"}
-    onclick={async () => {
-      $theme = "light";
-      await saveSettings();
-    }}>Light</Button
-  >
+    }}
+  />
+  <Icon
+    class="!w-5 !h-5"
+    icon={isDark
+      ? "material-symbols:dark-mode"
+      : "material-symbols:dark-mode-outline"}
+  />
 </div>
 
 <!-- <RadioGroup.Root

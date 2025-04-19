@@ -4,7 +4,7 @@ import { memoize } from "lodash";
 import type { MangaDl, Favorite, Chapter } from "@/interfaces";
 
 export class TCBScansDl implements MangaDl {
-  baseUrl = "https://tcbscans.me/";
+  baseUrl = "https://tcbonepiecechapters.com/";
   isMultiLanguage = false;
   headers = {
     accept:
@@ -13,7 +13,7 @@ export class TCBScansDl implements MangaDl {
     "cache-control": "max-age=0",
     dnt: "1",
     priority: "u=0, i",
-    referer: "https://tcbscans.me/",
+    referer: "https://tcbonepiecechapters.com/",
     "sec-ch-ua": '"Chromium";v="125", "Not.A/Brand";v="24"',
     "sec-ch-ua-arch": '"x86"',
     "sec-ch-ua-bitness": '"64"',

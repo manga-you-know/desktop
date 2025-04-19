@@ -1,13 +1,17 @@
 <script lang="ts">
   import { Button, Command, Popover, ScrollArea } from "@/lib/components";
   import { ChevronsUpDown } from "lucide-svelte";
-  import { MANGASOURCES, ANIMESOURCES } from "@/constants";
+  import { MANGASOURCES, ANIMESOURCES, COMICSOURCES } from "@/constants";
   import { selectedSource } from "@/store";
   import type { Source } from "@/interfaces";
   import Icon from "@iconify/svelte";
   import { saveSettings } from "@/functions";
+  import { Select } from "@/components";
+  import { cn } from "@/lib/utils";
+  import { onMount } from "svelte";
   const mangaSourceNames = MANGASOURCES.map((source) => source.name);
   const animeSourceNames = ANIMESOURCES.map((source) => source.name);
+  const comicSourceNames = COMICSOURCES.map((source) => source.name);
   const mangaSources: { [languageKey: string]: Source[] } = {};
   for (const source of MANGASOURCES) {
     if (!mangaSources[source.language]) {
@@ -22,12 +26,25 @@
     }
     animeSources[source.language].push(source);
   }
-  let sourceType: "manga" | "anime" = $derived(
-    mangaSourceNames.includes($selectedSource) ? "manga" : "anime"
-  );
-  let displayedSources = $derived(
-    sourceType === "manga" ? mangaSources : animeSources
-  );
+  const comicSources: { [languageKey: string]: Source[] } = {};
+  for (const source of COMICSOURCES) {
+    if (!comicSources[source.language]) {
+      comicSources[source.language] = [];
+    }
+    comicSources[source.language].push(source);
+  }
+
+  const sourcesByType = {
+    manga: mangaSources,
+    comic: comicSources,
+    anime: animeSources,
+  };
+  const sources = {
+    manga: MANGASOURCES,
+    comic: COMICSOURCES,
+    anime: ANIMESOURCES,
+  };
+  let sourceType: "manga" | "comic" | "anime" = $state("manga");
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
   // function closeAndFocusTrigger() {
@@ -39,6 +56,16 @@
   selectedSource.subscribe(async (value) => {
     await saveSettings();
   });
+
+  onMount(() => {
+    sourceType = mangaSourceNames.includes($selectedSource)
+      ? "manga"
+      : comicSourceNames.includes($selectedSource)
+        ? "comic"
+        : animeSourceNames.includes($selectedSource)
+          ? "anime"
+          : "manga";
+  });
 </script>
 
 <div class="inline-flex">
@@ -46,8 +73,8 @@
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}
         <Button
+          class="min-w-[165px] max-w-[165px] justify-between select-none rounded-r-none "
           variant="outline"
-          class="min-w-[165px] max-w-[165px] justify-between rounded-r-none "
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -61,12 +88,17 @@
       <Command.Root class="dark:bg-black">
         <Command.Input placeholder="Search source..." class="h-9" />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
-        <ScrollArea class="h-36">
-          {#each Object.keys(displayedSources) as language}
+        <ScrollArea class="h-36 select-none">
+          {#each Object.keys(sourcesByType[sourceType]) as language}
             <Command.Group heading={language}>
-              {#each displayedSources[language] as source}
+              {#each sourcesByType[sourceType][language] as source}
                 <Command.Item
-                  class={`flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 ${source.name === $selectedSource ? "!bg-gray-300 dark:!bg-gray-900" : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"}`}
+                  class={cn(
+                    "flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 ",
+                    source.name === $selectedSource
+                      ? "!bg-gray-300 dark:!bg-gray-900"
+                      : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"
+                  )}
                   value={source.name}
                   onSelect={() => {
                     selectedSource.set(source.name);
@@ -92,19 +124,19 @@
       </Command.Root>
     </Popover.Content>
   </Popover.Root>
-  <Button
-    class="w-8 rounded-l-none ml-[-2px]"
-    variant="outline"
-    onclick={() => {
-      selectedSource.set(
-        sourceType === "anime" ? MANGASOURCES[0].name : ANIMESOURCES[0].name
-      );
+  <Select
+    class="w-20 p-0 rounded-l-none"
+    variant="secondary"
+    bind:selected={sourceType}
+    items={["manga", "comic", "anime"]}
+    icons={{
+      manga: "uil:letter-japanese-a",
+      comic: "game-icons:spinning-sword",
+      anime: "mage:play-square-fill",
     }}
-  >
-    <Icon
-      icon={sourceType === "manga"
-        ? "heroicons:book-open"
-        : "lucide:tv-minimal-play"}
-    />
-  </Button>
+    onselect={() => {
+      selectedSource.set(sources[sourceType][0].name);
+    }}
+    openIcon={false}
+  />
 </div>

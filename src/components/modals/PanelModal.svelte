@@ -41,7 +41,7 @@
       <div class="w-[60%] inline-flex">
         <Select
           class="min-w-24 w-[40%] rounded-r-none"
-          variant="secondary"
+          variant="outline"
           bind:selected={copyMode}
           items={modes}
           {icons}

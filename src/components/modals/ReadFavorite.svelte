@@ -41,7 +41,7 @@
     Chapter,
     Language as LanguageType,
   } from "@/interfaces";
-  import { LANGUAGE_LABELS, MANGASOURCE_LANGUAGE } from "@/constants";
+  import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
   import { limitStr } from "@/utils";
 
   let { favorite, open = $bindable(false) }: Props = $props();
@@ -148,7 +148,7 @@
           }
           globalChapters.set(chapters);
         } else {
-          localSelectedLanguage.label = MANGASOURCE_LANGUAGE[favorite.source];
+          localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
           const result = await $downloadManager.getChapters(favorite);
           await new Promise((resolve) => setTimeout(resolve, 10));
           globalChapters.set(result);

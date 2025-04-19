@@ -38,11 +38,11 @@
               ? "line-md:loading-twotone-loop"
               : "ic:twotone-browser-updated"}
           />
-          Update</Button
-        >
-        <AlertDialog.Cancel disabled={isUpdating} class="dark:text-white"
-          >Cancel</AlertDialog.Cancel
-        >
+          Update
+        </Button>
+        <AlertDialog.Cancel disabled={isUpdating} class="dark:text-white">
+          Cancel
+        </AlertDialog.Cancel>
       </AlertDialog.Footer>
     {:else}
       <AlertDialog.Header>

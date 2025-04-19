@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Icon from "@iconify/svelte";
   import { toast } from "svelte-sonner";
   import { Button, Badge, Label } from "@/lib/components";
   import {
@@ -32,12 +31,14 @@
     openPlayer,
     addReadedBelow,
     loadFavoriteChapter,
+    refreshLibrary,
   } from "@/functions";
   import type { Favorite, Chapter, Readed } from "@/interfaces";
   import { goto } from "$app/navigation";
   import { strNotEmpty } from "@/utils";
   import { twMerge } from "tailwind-merge";
   import type { MarkFavorites } from "@/types";
+  import Icon from "@iconify/svelte";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
@@ -84,6 +85,38 @@
       nextChaptersImages = await $downloadManager.getChapterImages(chapter);
     }
   }
+
+  async function gotoNext(e?: Event) {
+    e?.stopPropagation();
+    globalChapters.set(favoriteLoad.chapters);
+    const chapter = favoriteLoad.nextChapter ?? favoriteLoad.chapters[0];
+    if (favorite.type === "anime") {
+      toast.promise($downloadManager.getEpisodeContent(chapter), {
+        loading: `Loading episode ${chapter.number}...`,
+        success: `Opening the player...`,
+        duration: 10000,
+      });
+      if ($useMpv) {
+        const episode = await $downloadManager.getEpisodeContent(chapter);
+        await openPlayer(episode, chapter.title);
+        await addReadedBelow(chapter, $globalChapters, favorite);
+        await loadFavoriteChapter(favorite);
+      } else {
+        goto(`/player/${favorite.id}/${chapter.number}`);
+      }
+    } else {
+      toast.promise($downloadManager.getChapterImages(chapter), {
+        loading: `Requesting chapter images...`,
+        duration: 10000,
+      });
+      globalChapters.set(favoriteLoad.chapters);
+      goto(
+        `/reader/${favorite.id}/${$globalChapters.indexOf(
+          favoriteLoad.nextChapter ?? favoriteLoad.chapters[0]
+        )}`
+      );
+    }
+  }
   // onMount(async () => {
   //   await getToRead();
   // });
@@ -106,7 +139,13 @@
     <ContextMenu.Trigger>
       <button
         class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
-        onclick={() => (isOpen = true)}
+        onclick={() => {
+          if (favoriteLoad.nextChapter === null) {
+            isOpen = true;
+          } else {
+            gotoNext();
+          }
+        }}
         tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
       >
         <img
@@ -191,39 +230,7 @@
                 size="sm"
                 tabindex={-1}
                 disabled={favoriteLoad.nextChapter === null}
-                onclick={async (e: Event) => {
-                  e.stopPropagation();
-                  globalChapters.set(favoriteLoad.chapters);
-                  const chapter =
-                    favoriteLoad.nextChapter ?? favoriteLoad.chapters[0];
-                  if (favorite.type === "anime") {
-                    toast.promise($downloadManager.getEpisodeContent(chapter), {
-                      loading: `Loading episode ${chapter.number}...`,
-                      success: `Opening the player...`,
-                      duration: 10000,
-                    });
-                    if ($useMpv) {
-                      const episode =
-                        await $downloadManager.getEpisodeContent(chapter);
-                      await openPlayer(episode, chapter.title);
-                      await addReadedBelow(chapter, $globalChapters, favorite);
-                      await loadFavoriteChapter(favorite);
-                    } else {
-                      goto(`/player/${favorite.id}/${chapter.number}`);
-                    }
-                  } else {
-                    toast.promise($downloadManager.getChapterImages(chapter), {
-                      loading: `Requesting chapter images...`,
-                      duration: 10000,
-                    });
-                    globalChapters.set(favoriteLoad.chapters);
-                    goto(
-                      `/reader/${favorite.id}/${$globalChapters.indexOf(
-                        favoriteLoad.nextChapter ?? favoriteLoad.chapters[0]
-                      )}`
-                    );
-                  }
-                }}
+                onclick={gotoNext}
                 {variant}
               >
                 <Icon icon="lucide:chevrons-right" class="w-4 h-4" />
@@ -293,7 +300,7 @@
           favorite.is_ultra_favorite = !isUltraFavorite;
           isUltraFavorite = favorite.is_ultra_favorite;
           await FavoriteRepository.setUltraFavorite(favorite);
-          await refreshFavorites();
+          await Promise.all([refreshFavorites, refreshLibrary]);
         }}
         ><Icon
           icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}

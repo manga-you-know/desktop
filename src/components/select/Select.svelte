@@ -14,6 +14,8 @@
     selected: string;
     items: string[];
     icons?: { [key: string]: string };
+    openIcon?: boolean;
+    invertIcons?: boolean;
     onselect?: VoidFunction;
     variant?: ButtonVariant;
     class?: string;
@@ -27,6 +29,8 @@
     icons,
     onselect,
     variant = "outline",
+    openIcon = true,
+    invertIcons = false,
     class: className,
     classPopup,
     classItem,
@@ -47,13 +51,20 @@
         aria-expanded={open}
         tabindex={-1}
       >
-        <div class="flex min-w-[60px] justify-between items-center gap-1">
+        <div
+          class={cn(
+            "flex min-w-[60px] justify-between items-center gap-1 select-none",
+            invertIcons ? "flex-row-reverse" : ""
+          )}
+        >
           {#if icons}
             <Icon icon={icons[selected]} />
           {/if}
           <Label class="w-full text-sm">{titleCase(selected)}</Label>
         </div>
-        <Icon icon="lucide:chevron-down" class="text-gray-500" />
+        {#if openIcon}
+          <Icon icon="lucide:chevron-down" class="text-gray-500" />
+        {/if}
       </Button>
     {/snippet}
   </Popover.Trigger>
@@ -64,10 +75,10 @@
           {#each items as item}
             <Command.Item
               class={cn(
-                "w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800",
+                "w-full flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 select-none",
                 classItem,
                 item === selected
-                  ? "bg-slate-400 dark:!bg-gray-900"
+                  ? "!bg-gray-300 dark:!bg-gray-900"
                   : " dark:aria-selected:bg-inherit"
               )}
               value={item}
@@ -77,11 +88,18 @@
                 onselect?.();
               }}
             >
-              <div class="flex items-center gap-2">
+              <div
+                class={cn(
+                  "flex w-full items-center gap-2",
+                  invertIcons ? "flex-row-reverse" : ""
+                )}
+              >
                 {#if icons}
                   <Icon icon={icons[item]} />
                 {/if}
-                <Label class="w-full text-sm">{titleCase(item)}</Label>
+                <Label class="flex w-full text-sm justify-center"
+                  >{titleCase(item)}</Label
+                >
               </div>
             </Command.Item>
           {/each}

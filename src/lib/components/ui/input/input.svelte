@@ -60,6 +60,10 @@
     placeholder,
     ...restProps
   }: InputProps = $props();
+
+  export function clear() {
+    value = "";
+  }
 </script>
 
 <div class={cn(divClass, "relative")}>
@@ -82,9 +86,10 @@
       for="floating_outlined"
       class={cn(
         labelClass,
-        value === "" ? "!translate-y-0 !top-[25%] !scale-100" : "",
-        "absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-gray-500 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-      )}>{placeholder}</label
-    >
+        value === "" ? "!translate-y-0 !top-[30%] !scale-100" : "",
+        "absolute select-none text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-gray-500 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+      )}
+      >{placeholder}
+    </label>
   {/if}
 </div>

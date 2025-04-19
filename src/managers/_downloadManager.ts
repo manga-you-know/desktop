@@ -12,6 +12,8 @@ import {
   MangaFireDl,
   WeebCentralDl,
   MangaLivreDl,
+  // ComicDl,
+  BatcaveBizDl,
   // AnimeDl
   AniplayDl,
 } from "@/downloaders";
@@ -28,6 +30,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
+  private comicSources: { [key: string]: MangaDl } = {};
   private animeSources: { [key: string]: AnimeDl } = {};
   private headers = {
     accept: "*/*",
@@ -59,6 +62,9 @@ export class DownloadManager {
       WeebCentral: new WeebCentralDl(),
       MangaLivre: new MangaLivreDl(),
     };
+    this.comicSources = {
+      BatcaveBiz: new BatcaveBizDl(),
+    };
     this.animeSources = {
       Aniplay: new AniplayDl(),
     };
@@ -83,12 +89,23 @@ export class DownloadManager {
     return this.mangaSources[source];
   }
 
+  getComicSource(source: string): MangaDl {
+    return this.comicSources[source];
+  }
+
   getAnimeSource(source: string): AnimeDl {
     return this.animeSources[source];
   }
 
+  getImageBasedSource(source: string): MangaDl {
+    return this.getMangaSource(source) || this.getComicSource(source);
+  }
+
   getSource(source: string): MangaDl | AnimeDl {
-    return this.getMangaSource(source) || this.getAnimeSource(source);
+    return (
+      (this.getMangaSource(source) || this.getComicSource(source)) ??
+      this.getAnimeSource(source)
+    );
   }
 
   getBaseUrl(source: string): string {
@@ -96,7 +113,7 @@ export class DownloadManager {
   }
 
   isMultiLanguage(source: string): boolean {
-    const sourceDl = this.getMangaSource(source);
+    const sourceDl = this.getImageBasedSource(source);
     return sourceDl.isMultiLanguage;
   }
 
@@ -116,7 +133,7 @@ export class DownloadManager {
   }
 
   async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {
-    const sourceDl = this.getMangaSource(favorite.source);
+    const sourceDl = this.getImageBasedSource(favorite.source);
     if (sourceDl.getFavoriteLanguages) {
       return await sourceDl.getFavoriteLanguages(favorite.source_id);
     }
@@ -127,7 +144,7 @@ export class DownloadManager {
     favorite: Favorite,
     language?: string
   ): Promise<Chapter[]> {
-    const sourceDl = this.getMangaSource(favorite.source);
+    const sourceDl = this.getImageBasedSource(favorite.source);
     try {
       return language !== undefined
         ? await sourceDl.getChapters(favorite.source_id, language)
@@ -148,7 +165,7 @@ export class DownloadManager {
   }
 
   async getChapterImages(chapter: Chapter): Promise<string[]> {
-    const sourceDl = this.getMangaSource(chapter.source);
+    const sourceDl = this.getImageBasedSource(chapter.source);
     return await sourceDl.getChapterImages(chapter.chapter_id);
   }
 
