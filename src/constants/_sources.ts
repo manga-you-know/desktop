@@ -22,7 +22,11 @@ export const MANGASOURCES: Source[] = [
   { name: "Taosect", language: "Portuguese" },
 ];
 
-export const MANGASOURCE_LANGUAGE: { [key: string]: string } = {
+export const COMICSOURCES: Source[] = [
+  { name: "BatcaveBiz", language: "English" },
+];
+
+export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   MangaDex: "Multi",
   MangaFire: "Multi",
   MangaSee: "English",
@@ -32,6 +36,7 @@ export const MANGASOURCE_LANGUAGE: { [key: string]: string } = {
   Taosect: "Português",
   MangaLivre: "Português",
   WeebCentral: "English",
+  BatcaveBiz: "English",
 };
 
 export const ANIMESOURCES: Source[] = [{ name: "Aniplay", language: "Multi" }];
