@@ -22,6 +22,7 @@ export { Label } from "./ui/label";
 export { Checkbox } from "./ui/checkbox";
 export { Input } from "./ui/input";
 export { Switch } from "./ui/switch";
+export { Textarea } from "./ui/textarea";
 export { Separator } from "./ui/separator";
 export { ScrollArea } from "./ui/scroll-area";
 export { Progress } from "./ui/progress";

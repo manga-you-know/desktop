@@ -1,7 +1,6 @@
 <script lang="ts">
   import "@/app.css";
   import { Toaster } from "@/lib/components";
-  import { ModeWatcher } from "mode-watcher";
   import { onMount, onDestroy } from "svelte";
   import {
     AddCustom,
@@ -27,10 +26,13 @@
     loadFavoriteChapters,
     createTray,
     setFullscreen,
+    logNewUser,
+    loadAppIcons,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
+
   let { children } = $props();
   const window = getCurrentWindow();
   const interval = setInterval(
@@ -71,14 +73,16 @@
     await initDatabase();
     await migrateDatabase();
   }
-  onMount(() => {
+  onMount(async () => {
     loadDatabase();
     loadSettings();
     createTray();
     loadFavoriteChapters();
+    loadAppIcons();
     if (!$isMobile && $autoSearchUpdates) {
       checkForAppUpdates();
     }
+    logNewUser();
   });
   onDestroy(() => {
     clearInterval(interval);

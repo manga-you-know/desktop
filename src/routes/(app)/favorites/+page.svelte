@@ -3,7 +3,12 @@
   import { FavoriteCard } from "@/components";
   import { Label, Switch, Badge } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
-  import { showOnlyNew, ultraFavorites, favoritesLoaded } from "@/store";
+  import {
+    showOnlyNew,
+    ultraFavorites,
+    favoritesLoaded,
+    isRefreshing,
+  } from "@/store";
   import {
     loadFavoriteChapters,
     refreshFavorites,
@@ -15,7 +20,6 @@
   onMount(async () => {
     await refreshFavorites();
   });
-  let isRefreshing = $state(false);
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
@@ -43,15 +47,11 @@
         size="sm"
         variant="secondary"
         class="rounded-xl h-8"
-        disabled={isRefreshing}
-        onclick={async () => {
-          isRefreshing = true;
-          await loadFavoriteChapters();
-          isRefreshing = false;
-        }}
+        disabled={$isRefreshing}
+        onclick={() => loadFavoriteChapters()}
       >
         <Icon
-          icon={isRefreshing
+          icon={$isRefreshing
             ? "line-md:loading-loop"
             : "mingcute:refresh-3-fill"}
           class="w-5 h-5"

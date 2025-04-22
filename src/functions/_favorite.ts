@@ -6,6 +6,7 @@ import { FavoriteRepository, ReadedRepository } from "@/repositories";
 import {
   downloadManager,
   favoritesLoaded,
+  isRefreshing,
   preferableLanguage,
   ultraFavorites,
 } from "@/store";
@@ -76,12 +77,14 @@ export async function preloadNextChapter(
 export async function loadFavoriteChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
+  isRefreshing.set(true);
   const favorites = await FavoriteRepository.getUltraFavorites();
   dl.clearChaptersCache();
   await Promise.all(favorites.map(loadFavoriteChapter));
   if (rerenderFavoritesOption) {
     await rerenderFavorites();
   }
+  isRefreshing.set(false);
 }
 
 export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
@@ -136,6 +139,7 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
   updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
   updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);
   updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
+  let valToRead = await getValueToRead(favorite);
   if (chaptersToRead.length > 0) {
     chaptersToRead.reverse();
     nextChapter = chaptersToRead[0];
@@ -146,7 +150,6 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     );
     chaptersToRead.reverse();
     const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
-    let valToRead = await getValueToRead(favorite);
     if (valToRead) {
       if (
         chaptersToRead.length > valToRead.chaptersToRead &&
@@ -173,12 +176,14 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
   } else {
     updateFavoriteProperty(strNotEmpty(favorite.id), "nextChapter", null);
   }
-  await setValueToRead(
-    favorite,
-    chapters.length,
-    readeds.length,
-    chaptersToRead.length
-  );
+  if (chaptersToRead.length > (valToRead?.chaptersToRead || 0)) {
+    await setValueToRead(
+      favorite,
+      chapters.length,
+      readeds.length,
+      chaptersToRead.length
+    );
+  }
 }
 export async function getValueToRead(favorite: Favorite): Promise<
   | {

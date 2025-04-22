@@ -64,7 +64,12 @@
       tabindex={-1}
       onclick={async (e: Event) => {
         e.stopPropagation();
-        await addReadedBelow(chapter, $globalChapters, favorite);
+        const chaptersToAdd = $globalChapters.map((chapter) => {
+          const chapterId = chapter.chapter_id.split("<token>")[0];
+          chapter.chapter_id = chapterId;
+          return chapter;
+        });
+        await addReadedBelow(chapter, chaptersToAdd.toReversed(), favorite);
         await refreshReadeds(favorite);
       }}
       ><Icon

@@ -18,6 +18,7 @@
   import type { Favorite } from "@/interfaces";
   import { onMount } from "svelte";
   import { cn } from "@/lib/utils";
+  import { limitStr } from "@/utils";
   import Icon from "@iconify/svelte";
 
   let isSearching = $state(false);
@@ -43,7 +44,10 @@
       return;
     }
     isSearching = true;
-    results = await $downloadManager.search(searchTerm, $selectedSource);
+    results = await $downloadManager.search(
+      searchTerm.toLowerCase(),
+      $selectedSource
+    );
     isSearching = false;
   }
   selectedSource.subscribe((_) => {
@@ -63,9 +67,9 @@
     await refreshRawFavorites();
     await refreshLibrary();
   }
+
   openSearch.subscribe(async (open) => {
-    searchTerm = "";
-    results = [];
+    isFavoriteOpen = false;
     if (open) {
       await setDiscordActivity("Searching mangas...");
     } else {
@@ -78,7 +82,7 @@
 </script>
 
 <AlertDialog.Root bind:open={$openSearch}>
-  <AlertDialog.Content class="overflow-hidden h-[16rem] w-[30rem]  p-0 gap-0">
+  <AlertDialog.Content class="overflow-hidden h-[16.2rem] w-[30rem]  p-0 gap-0">
     <div
       class={cn(
         "w-full absolute transition-all duration-500 ease-in-out",
@@ -91,9 +95,20 @@
             <Icon
               icon={isSearching
                 ? "eos-icons:bubble-loading"
-                : "mingcute:search-2-fill"}
-              class="!w-[1.2rem] !h-[1.2rem]"
+                : searchTerm.length > 0
+                  ? "lucide:x"
+                  : "mingcute:search-2-fill"}
+              class={cn(
+                "!w-[1.2rem] !h-[1.2rem]",
+                searchTerm.length > 0 && !isSearching ? "cursor-pointer" : ""
+              )}
               color="gray"
+              onclick={() => {
+                if (searchTerm.length > 0 && !isSearching) {
+                  searchTerm = "";
+                  results = [];
+                }
+              }}
             />
           </div>
           <Input
@@ -109,10 +124,10 @@
       </AlertDialog.Header>
       <Separator />
       <div
-        class="w-[30rem] bg-gray-200 dark:bg-gray-900 pt-1 pl-1 h-52 flex gap-2 rounded-b-xl"
+        class="w-[30rem] bg-gray-200 dark:bg-gray-900 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
       >
         {#if results.length !== 0}
-          <ScrollArea class="w-[30rem]">
+          <ScrollArea class="w-[30rem] rounded-xl">
             {#each results.slice(0, 20) as result}
               <div class="inline-flex w-[98%]">
                 <Button
@@ -124,7 +139,7 @@
                     favoriteOpen = result;
                   }}
                 >
-                  <span class="ml-2 truncate">{result.name}</span>
+                  <span class="ml-2 truncate">{limitStr(result.name, 55)}</span>
                 </Button>
                 <Button
                   onclick={async () => saveResult(result)}

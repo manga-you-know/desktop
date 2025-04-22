@@ -240,6 +240,10 @@
                 size="sm"
                 tabindex={-1}
                 {variant}
+                onclick={(e) => {
+                  e.stopPropagation();
+                  isOpen = true;
+                }}
               >
                 <Icon
                   icon={favorite.type === "anime"

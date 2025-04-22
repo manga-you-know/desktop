@@ -1,7 +1,7 @@
 <script lang="ts">
   import { open as openFile } from "@tauri-apps/plugin-dialog";
   import { convertFileSrc } from "@tauri-apps/api/core";
-  import { Dialog, Button, Input } from "@/lib/components";
+  import { Dialog, Button, Input, Textarea, Label } from "@/lib/components";
   import { FavoriteRepository } from "@/repositories";
   import { downloadManager } from "@/store";
   import {
@@ -20,7 +20,15 @@
 
   let { favorite, open = $bindable(false) }: Props = $props();
   let name = $state(favorite.name);
-  let image = $state(favorite.cover);
+  let link = $state(favorite.link);
+  let cover = $state(favorite.cover);
+  let malId = $state(favorite.mal_id);
+  let author = $state(favorite.author);
+  let anilistId = $state(favorite.anilist_id);
+  let folderName = $state(favorite.folder_name);
+  let description = $state(favorite.description);
+  let isUltraFavorite = $state(favorite.is_ultra_favorite);
+
   let isRefreshing = $state(false);
   let isRefreshed = $state(false);
 
@@ -37,31 +45,46 @@
       ],
     });
     if (file) {
-      image = convertFileSrc(file);
+      cover = convertFileSrc(file);
     }
   }
 
   async function refreshInfo() {
     isRefreshing = true;
-    const manga = await $downloadManager.getMangaById(
+    const favLoad = await $downloadManager.getMangaById(
       favorite.source_id,
       favorite.source
     );
-    name = manga.name;
-    image = manga.cover;
+    name = favLoad.name;
+    link = favLoad.link;
+    cover = favLoad.cover;
+    malId = favLoad.mal_id ?? malId;
+    author = favLoad.author ?? author;
+    folderName = favLoad.folder_name;
+    description = favLoad.description ?? description;
+    anilistId = favLoad.anilist_id ?? anilistId;
     favorite.name = name;
-    favorite.cover = image;
-    favorite.description = manga.description;
-    favorite.extra_name = manga.extra_name;
-    favorite.author = manga.author;
-    favorite.link = manga.link;
+    favorite.link = link;
+    favorite.cover = cover;
+    favorite.mal_id = malId;
+    favorite.author = author;
+    favorite.anilist_id = anilistId;
+    favorite.description = description;
+    favorite.extra_name = favLoad.extra_name;
+    favorite.author = favLoad.author;
     isRefreshing = false;
     isRefreshed = true;
   }
 
   async function save() {
     favorite.name = name;
-    favorite.cover = image;
+    favorite.link = link;
+    favorite.cover = cover;
+    favorite.mal_id = malId;
+    favorite.author = author;
+    favorite.anilist_id = anilistId;
+    favorite.folder_name = folderName;
+    favorite.description = description;
     await FavoriteRepository.updateFavorite(favorite);
     await Promise.all([refreshLibrary(), refreshFavorites()]);
     open = false;
@@ -69,7 +92,7 @@
 
   $effect(() => {
     name = favorite.name;
-    image = favorite.cover;
+    cover = favorite.cover;
     if (open) {
       setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
     } else {
@@ -79,52 +102,143 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content interactOutsideBehavior="close">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>Edit Favorite</Dialog.Title>
       <Dialog.Description
         >Change your favorites attributes and save it.</Dialog.Description
       >
-      <Input
-        divClass="!w-full"
-        class="w-full"
-        variant="secondary"
-        id={`name-${favorite.id}`}
-        bind:value={name}
-      />
-      <div class="flex gap-2">
+      <div class="flex gap-4">
         <Input
+          id={`name-${favorite.id}`}
           divClass="!w-full"
-          class="w-full"
+          class="w-64"
+          placeholder="Name"
+          floatingLabel
           variant="secondary"
-          id={`image-${favorite.id}`}
-          bind:value={image}
+          onenter={save}
+          bind:value={name}
         />
-        <Button
-          class="w-10"
-          variant="outline"
-          effect="shineHover"
-          onclick={pickImage}
-        >
-          <Icon icon="lucide:paperclip" />
-        </Button>
+        <div class="inline-flex w-full">
+          <Input
+            id={`image-${favorite.id}`}
+            class="w-full rounded-r-none"
+            divClass="!w-full"
+            placeholder="Cover"
+            floatingLabel
+            variant="secondary"
+            onenter={save}
+            bind:value={cover}
+          />
+          <Button
+            class="w-10 rounded-l-none"
+            variant="outline"
+            onclick={pickImage}
+          >
+            <Icon icon="lucide:paperclip" />
+          </Button>
+        </div>
       </div>
     </Dialog.Header>
-    <Dialog.Footer>
-      <Button effect="ringHover" disabled={isRefreshing} onclick={refreshInfo}>
-        <Icon icon="lucide:refresh-ccw" />
-      </Button>
+    <div class="w-full flex justify-between gap-2">
+      <Textarea
+        class="resize-none h-24 scrollbar"
+        placeholder="Description"
+        floatingLabel
+        variant="secondary"
+        bind:value={description}
+      />
+      <div class="flex flex-col gap-4">
+        <Input
+          placeholder="Folder name"
+          floatingLabel
+          variant="secondary"
+          onenter={save}
+          bind:value={folderName}
+        />
+        <Input
+          placeholder="Link"
+          floatingLabel
+          variant="secondary"
+          onenter={save}
+          bind:value={link}
+        />
+      </div>
+      <div class="flex flex-col gap-4">
+        <Input
+          class="w-20"
+          placeholder="MAL id"
+          floatingLabel
+          variant="secondary"
+          onenter={save}
+          bind:value={malId}
+        />
+        <Input
+          class="w-20"
+          placeholder="Anilist id"
+          floatingLabel
+          variant="secondary"
+          onenter={save}
+          bind:value={anilistId}
+        />
+      </div>
+    </div>
+    <div class="flex justify-between gap-2">
+      <Input
+        class="w-[10.65rem]"
+        placeholder="Author"
+        floatingLabel
+        variant="secondary"
+        onenter={save}
+        bind:value={author}
+      />
       <Button
-        effect="ringHover"
-        disabled={!(
-          name !== favorite.name ||
-          image !== favorite.cover ||
-          isRefreshed
-        )}
-        onclick={save}
+        class="w-28 h-10 ml-[0.6rem] flex justify-between"
+        variant="outline"
+        onclick={async () => {
+          isUltraFavorite = !isUltraFavorite;
+          favorite.is_ultra_favorite = isUltraFavorite;
+          await FavoriteRepository.updateFavorite(favorite);
+          await Promise.all([refreshLibrary(), refreshFavorites()]);
+        }}
       >
-        <Icon icon="lucide:check" />Confirm
+        {isUltraFavorite ? "Remove" : "Favorite"}
+        <Icon
+          class="!w-5 !h-5 mx-[-5px]"
+          icon={isUltraFavorite
+            ? "fluent:star-emphasis-32-filled"
+            : "fluent:star-emphasis-32-regular"}
+        />
       </Button>
-    </Dialog.Footer>
+
+      <div class="flex gap-2">
+        <Button
+          effect="ringHover"
+          disabled={isRefreshing}
+          onclick={refreshInfo}
+        >
+          <Icon
+            icon={isRefreshing
+              ? "eos-icons:bubble-loading"
+              : "lucide:refresh-ccw"}
+          />
+        </Button>
+        <Button
+          effect="ringHover"
+          disabled={!(
+            name !== favorite.name ||
+            cover !== favorite.cover ||
+            malId !== favorite.mal_id ||
+            folderName !== favorite.folder_name ||
+            description !== favorite.description ||
+            isUltraFavorite !== favorite.is_ultra_favorite ||
+            isRefreshed
+          )}
+          onclick={save}
+        >
+          <Icon icon="lucide:check" />Confirm
+        </Button>
+      </div>
+    </div>
   </Dialog.Content>
 </Dialog.Root>

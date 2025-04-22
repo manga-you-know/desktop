@@ -20,6 +20,7 @@ export function delay(ms: number): Promise<void> {
 
 export async function retry(
   func: () => Promise<any>,
+  message?: string,
   times = 3,
   timeoutMs = 300
 ): Promise<any> {
@@ -37,5 +38,5 @@ export async function retry(
     }
   }
 
-  throw new Error(`Function failed after ${times} retries.`);
+  throw new Error(message ?? `Function failed after ${times} retries.`);
 }

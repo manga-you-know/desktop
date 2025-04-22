@@ -39,4 +39,7 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   BatcaveBiz: "English",
 };
 
-export const ANIMESOURCES: Source[] = [{ name: "Aniplay", language: "Multi" }];
+export const ANIMESOURCES: Source[] = [
+  { name: "Aniplay", language: "Multi", isProblem: true },
+  { name: "AnimeOwl", language: "English" },
+];

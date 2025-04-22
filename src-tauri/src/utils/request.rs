@@ -1,4 +1,4 @@
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use tauri_plugin_http::reqwest;
 
 #[tauri::command]
@@ -11,8 +11,8 @@ pub async fn get_aniplay_chapters(anime_id: &str) -> Result<String, String> {
       .header("Origin", "https://aniplaynow.live")
       .json(&params)
       .send()
-      .await.map_err(|e| e.to_string())?; 
-    Ok(res.text().await.map_err(|e| e.to_string())?) 
+      .await.map_err(|e| e.to_string())?;
+    Ok(res.text().await.map_err(|e| e.to_string())?)
 }
 
 #[tauri::command]
@@ -37,31 +37,28 @@ pub async fn get_aniplay_episode(
       .header("Origin", "https://aniplaynow.live")
       .json(&params)
       .send()
-      .await.map_err(|e| e.to_string())?; 
-    Ok(res.text().await.map_err(|e| e.to_string())?) 
+      .await.map_err(|e| e.to_string())?;
+    Ok(res.text().await.map_err(|e| e.to_string())?)
 }
 
 #[tauri::command]
-pub async fn get_base64_image(
-    url: &str,
-    referer: &str,
-) -> Result<String, String> {
-  let client = reqwest::Client::new();
-  if referer == "https://mangadex.org" {
-    let res = client.get(url)
-        .send()
-        .await.map_err(|e| e.to_string())?;
-    let bytes = res.bytes().await.map_err(|e| e.to_string())?;
-    let base64_string = BASE64.encode(&bytes);
-    Ok(base64_string)
-  } else {
-      let res = client.get(url)
-          .header("Referer", referer)
-          .header("Origin", referer)
-          .send()
-          .await.map_err(|e| e.to_string())?;
-      let bytes = res.bytes().await.map_err(|e| e.to_string())?;
-      let base64_string = BASE64.encode(&bytes);
-      Ok(base64_string)
-  }
+pub async fn get_base64_image(url: &str, referer: &str) -> Result<String, String> {
+    let client = reqwest::Client::new();
+    if referer == "https://mangadex.org" {
+        let res = client.get(url).send().await.map_err(|e| e.to_string())?;
+        let bytes = res.bytes().await.map_err(|e| e.to_string())?;
+        let base64_string = BASE64.encode(&bytes);
+        Ok(base64_string)
+    } else {
+        let res = client
+            .get(url)
+            .header("Referer", referer)
+            .header("Origin", referer)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+        let bytes = res.bytes().await.map_err(|e| e.to_string())?;
+        let base64_string = BASE64.encode(&bytes);
+        Ok(base64_string)
+    }
 }

@@ -64,11 +64,7 @@
           floatingLabel
           disabled={editing !== null}
           bind:value={newCollection}
-          onkeydown={(e) => {
-            if (e.key === "Enter") {
-              addCollection();
-            }
-          }}
+          onenter={addCollection}
         />
         <Button
           class="w-10"

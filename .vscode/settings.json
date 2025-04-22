@@ -7,6 +7,15 @@
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "package.json": "pnpm-lock.yaml, package.json, bun.lockb, package-lock.json, .pnpmrc, turbo.json, tsconfig.json, components.json",
+    "*.tsx": "*.test.tsx, *.spec.tsx, *.styles.ts, *.module.css, *.module.scss",
+    "*.ts": "*.test.ts, *.spec.ts",
+    "svelte.config.js": "tailwind.config.ts, svelte.config.js, vite.config.ts, postcss.config.js",
+    "README.md": "LICENSE, .gitignore, CHANGELOG.md",
+    "myk": "get_allow.py, get_valids.py, allow_list.txt"
+  },
   "html.customData": ["./node_modules/vidstack/vscode.html-data.json"],
   "typescript.preferences.autoImportFileExcludePatterns": ["bits-ui"],
   "typescript.preferences.importModuleSpecifier": "non-relative",

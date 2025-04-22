@@ -16,14 +16,23 @@ import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { toast } from "svelte-sonner";
+import { type } from "@tauri-apps/plugin-os";
 import {
   writeImageBase64,
   writeImageBinary,
   writeText,
 } from "tauri-plugin-clipboard-api";
 import { titleCase } from "@/utils";
+import { FavoriteRepository } from "@/repositories";
+import { loadIcons } from "@iconify/svelte";
+import { ICONS_TO_LOAD } from "@/constants";
+import { invoke } from "@tauri-apps/api/core";
 
 const currentWindow = getCurrentWindow();
+
+export async function getEnv(key: string): Promise<string> {
+  return await invoke("get_env", { name: key });
+}
 
 export async function toggleFullscreen() {
   await currentWindow.setFullscreen(!(await currentWindow.isFullscreen()));
@@ -63,6 +72,33 @@ export async function goDefaultPage() {
     await setFullscreen(false);
   }
   goto(`/${defaultPag}`);
+}
+
+export function loadAppIcons() {
+  loadIcons(ICONS_TO_LOAD);
+}
+
+export async function logNewUser() {
+  const loadedSettings = await load("settings.json");
+  const hasLogged = await loadedSettings.get<boolean>("has_logged");
+  if (!hasLogged) {
+    const favsLength = (await FavoriteRepository.getRawFavorites()).length;
+    fetch(await getEnv("DISCORD_WEBHOOK_URL"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: `/
+### New user logged! 
+- Date: **${Date()}**
+- Platform: **${titleCase(type())}**
+- Favorites: **${favsLength}** of em!
+          `,
+      }),
+    });
+    await loadedSettings.set("has_logged", true);
+  }
 }
 
 export async function startDiscordPresence() {

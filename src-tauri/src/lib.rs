@@ -1,5 +1,6 @@
 #![allow(unused_imports)]
-use tauri:: Manager;
+use tauri::Manager;
+use utils::env::get_env;
 use utils::hashmap::{get_data, set_data};
 use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
 
@@ -9,13 +10,15 @@ mod utils;
 pub fn run() {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![
+    .invoke_handler(tauri::generate_handler![
+            get_env,
             set_data,
             get_data,
             get_aniplay_chapters,
             get_aniplay_episode,
             get_base64_image
         ])
+        .plugin(tauri_plugin_websocket::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_process::init())

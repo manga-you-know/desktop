@@ -16,6 +16,7 @@ import {
   BatcaveBizDl,
   // AnimeDl
   AniplayDl,
+  AnimeOwlDl,
 } from "@/downloaders";
 import type {
   AnimeDl,
@@ -67,6 +68,7 @@ export class DownloadManager {
     };
     this.animeSources = {
       Aniplay: new AniplayDl(),
+      AnimeOwl: new AnimeOwlDl(),
     };
     this.search = this.search.bind(this);
     this._getChapters = this._getChapters.bind(this);
@@ -119,25 +121,26 @@ export class DownloadManager {
 
   async getMangaByUrl(url: string, source: string): Promise<Favorite> {
     const sourceDl = this.getMangaSource(source);
-    return await sourceDl.getMangaByUrl(url);
+    return await retry(() => sourceDl.getMangaByUrl(url));
   }
 
   async getMangaById(id: string, source: string): Promise<Favorite> {
     const sourceDl = this.getMangaSource(source);
-    return await sourceDl.getMangaById(id);
+    return await retry(() => sourceDl.getMangaById(id));
   }
 
   async search(query: string, source: string): Promise<Favorite[]> {
     const sourceDl = this.getSource(source);
-    return (await sourceDl.search(query)).slice(0, 20);
+    const results: Favorite[] = await retry(() => sourceDl.search(query));
+    return results.slice(0, 20);
   }
 
   async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {
     const sourceDl = this.getImageBasedSource(favorite.source);
-    if (sourceDl.getFavoriteLanguages) {
-      return await sourceDl.getFavoriteLanguages(favorite.source_id);
-    }
-    throw new Error("source not multi language");
+    return await retry(
+      () => sourceDl.getFavoriteLanguages!(favorite.source_id),
+      "Source not multilanguage"
+    );
   }
 
   async _getChapters(
@@ -147,8 +150,8 @@ export class DownloadManager {
     const sourceDl = this.getImageBasedSource(favorite.source);
     try {
       return language !== undefined
-        ? await sourceDl.getChapters(favorite.source_id, language)
-        : await sourceDl.getChapters(favorite.source_id);
+        ? await retry(() => sourceDl.getChapters(favorite.source_id, language))
+        : await retry(() => sourceDl.getChapters(favorite.source_id));
     } catch (e) {
       console.log(e);
       return [];
@@ -161,29 +164,31 @@ export class DownloadManager {
 
   async getEpisodes(favorite: Favorite): Promise<Chapter[]> {
     const sourceDl = this.getAnimeSource(favorite.source);
-    return await sourceDl.getEpisodes(favorite.source_id);
+    return await retry(() => sourceDl.getEpisodes(favorite.source_id));
   }
 
   async getChapterImages(chapter: Chapter): Promise<string[]> {
     const sourceDl = this.getImageBasedSource(chapter.source);
-    return await sourceDl.getChapterImages(chapter.chapter_id);
+    return await retry(() => sourceDl.getChapterImages(chapter.chapter_id));
   }
 
   async getEpisodeContent(chapter: Chapter): Promise<Episode> {
     const sourceDl = this.getAnimeSource(chapter.source);
-    return await sourceDl.getEpisodeContent(chapter.chapter_id);
+    return await retry(() => sourceDl.getEpisodeContent(chapter.chapter_id));
   }
 
   async getImageContent(
     url: string,
     referer: string
   ): Promise<ReadableStream<Uint8Array>> {
-    const response = await fetch(url, {
-      headers: {
-        ...this.headers,
-        Referer: referer,
-      },
-    });
+    const response = await retry(() =>
+      fetch(url, {
+        headers: {
+          ...this.headers,
+          Referer: referer,
+        },
+      })
+    );
     if (response.status !== 200 || response.body === null) {
       throw new Error(`Failed to get image content ${url} ${response.status}`);
     }

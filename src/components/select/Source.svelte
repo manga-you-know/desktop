@@ -78,6 +78,7 @@
           {...props}
           role="combobox"
           aria-expanded={open}
+          tabindex={-1}
         >
           {$selectedSource || "Select a source..."}
           <ChevronsUpDown class="opacity-50" />
@@ -88,7 +89,7 @@
       <Command.Root class="dark:bg-black">
         <Command.Input placeholder="Search source..." class="h-9" />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
-        <ScrollArea class="h-36 select-none">
+        <ScrollArea class="h-36 scroll-smooth select-none">
           {#each Object.keys(sourcesByType[sourceType]) as language}
             <Command.Group heading={language}>
               {#each sourcesByType[sourceType][language] as source}

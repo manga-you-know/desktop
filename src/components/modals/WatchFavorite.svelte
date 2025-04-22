@@ -68,7 +68,7 @@
     }
   }}
 >
-  <Dialog.Content class="flex justify-center" interactOutsideBehavior="close">
+  <Dialog.Content class="flex justify-center">
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center"
         >{favorite.name.length > 40
