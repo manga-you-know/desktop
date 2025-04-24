@@ -1,7 +1,7 @@
-## 0.4.6 (2025-04-24)
+## 0.4.7 (2025-04-24)
 
 
 ### New Features
 
-* some refactor, improve Update download, and fix EditFavorite modal. ([28ad30c](https://github.com/manga-you-know/desktop/commit/28ad30c05c7436efee949416016b770dcb99c2fb))
+* Get more responsive and fix some errors in logic ([b75c8ca](https://github.com/manga-you-know/desktop/commit/b75c8ca611bb68218d659cb350124703459cf894))
 
