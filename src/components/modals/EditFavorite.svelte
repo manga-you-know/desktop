@@ -122,6 +122,7 @@
           class="w-64"
           placeholder="Name"
           floatingLabel
+          required
           variant="secondary"
           onenter={save}
           bind:value={name}
@@ -133,6 +134,7 @@
             divClass="!w-full"
             placeholder="Cover"
             floatingLabel
+            required
             variant="secondary"
             onenter={save}
             bind:value={cover}
@@ -161,6 +163,7 @@
           id="folderName-{favorite.id}"
           placeholder="Folder name"
           floatingLabel
+          required
           variant="secondary"
           onenter={save}
           bind:value={folderName}
@@ -169,6 +172,7 @@
           id="link-{favorite.id}"
           placeholder="Link"
           floatingLabel
+          required
           variant="secondary"
           onenter={save}
           bind:value={link}
@@ -238,15 +242,22 @@
         </Button>
         <Button
           effect="ringHover"
-          disabled={!(
-            name !== favorite.name ||
-            cover !== favorite.cover ||
-            malId !== favorite.mal_id ||
-            folderName !== favorite.folder_name ||
-            description !== favorite.description ||
-            isUltraFavorite !== favorite.is_ultra_favorite ||
-            isRefreshed
-          )}
+          disabled={name.length === 0 ||
+            link.length === 0 ||
+            cover.length === 0 ||
+            folderName.length === 0 ||
+            !(
+              name !== favorite.name ||
+              link !== favorite.link ||
+              cover !== favorite.cover ||
+              malId !== favorite.mal_id ||
+              author !== favorite.author ||
+              anilistId !== favorite.anilist_id ||
+              folderName !== favorite.folder_name ||
+              description !== favorite.description ||
+              isUltraFavorite !== favorite.is_ultra_favorite ||
+              isRefreshed
+            )}
           onclick={save}
         >
           <Icon icon="lucide:check" />Confirm
