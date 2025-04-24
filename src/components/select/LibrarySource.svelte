@@ -40,7 +40,9 @@
           tabindex={-1}
         >
           <Label
-            class={`w-full text-sm text-center ml-[-4px] ${$librarySource === "" ? "dark:text-gray-400" : ""}`}
+            class="w-full text-sm text-center ml-[-4px] {$librarySource === ''
+              ? 'dark:text-gray-400'
+              : ''}"
           >
             {$librarySource || "Filter by source..."}
           </Label>
@@ -55,7 +57,10 @@
           <Command.Group>
             {#each sources as source}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${source === $librarySource ? "!bg-slate-400 dark:!bg-gray-900" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`}
+                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 
+                {source === $librarySource
+                  ? '!bg-slate-400 dark:!bg-gray-900'
+                  : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={source}
                 onSelect={async () => {
                   librarySource.set(source);

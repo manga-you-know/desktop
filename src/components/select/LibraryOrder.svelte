@@ -37,7 +37,10 @@
           <Command.Group>
             {#each orders as order}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${order === $libraryOrder ? "bg-slate-400 dark:!bg-gray-900" : " dark:aria-selected:bg-inherit"}`}
+                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 {order ===
+                $libraryOrder
+                  ? 'bg-slate-400 dark:!bg-gray-900'
+                  : ' dark:aria-selected:bg-inherit'}"
                 value={order}
                 onSelect={async () => {
                   libraryOrder.set(order);

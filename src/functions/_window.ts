@@ -26,6 +26,7 @@ import { titleCase } from "@/utils";
 import { FavoriteRepository } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
 import { ICONS_TO_LOAD } from "@/constants";
+import { relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 
 const currentWindow = getCurrentWindow();
@@ -74,6 +75,10 @@ export async function goDefaultPage() {
   goto(`/${defaultPag}`);
 }
 
+export async function reloadApp() {
+  await relaunch()
+}
+
 export function loadAppIcons() {
   loadIcons(ICONS_TO_LOAD);
 }
@@ -82,8 +87,10 @@ export async function logNewUser() {
   const loadedSettings = await load("settings.json");
   const hasLogged = await loadedSettings.get<boolean>("has_logged");
   if (!hasLogged) {
+    const envUrl = await getEnv("DISCORD_WEBHOOK_URL");
+    console.log(envUrl);
     const favsLength = (await FavoriteRepository.getRawFavorites()).length;
-    fetch(await getEnv("DISCORD_WEBHOOK_URL"), {
+    fetch(envUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

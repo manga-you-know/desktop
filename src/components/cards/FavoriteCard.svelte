@@ -99,7 +99,14 @@
       if ($useMpv) {
         const episode = await $downloadManager.getEpisodeContent(chapter);
         await openPlayer(episode, chapter.title);
-        await addReadedBelow(chapter, $globalChapters, favorite);
+        await addReadedBelow(
+          chapter,
+          $globalChapters.map((c) => {
+            c.chapter_id = c.chapter_id.split("<token>")[0];
+            return c;
+          }),
+          favorite
+        );
         await loadFavoriteChapter(favorite);
       } else {
         goto(`/player/${favorite.id}/${chapter.number}`);
@@ -138,7 +145,10 @@
   >
     <ContextMenu.Trigger>
       <button
-        class={`group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out  outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 ${favoriteLoad.toReadCount > 0 ? "opacity-100 " : "opacity-60"}`}
+        class="group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 {favoriteLoad.toReadCount >
+        0
+          ? 'opacity-100 '
+          : 'opacity-60'}"
         onclick={() => {
           if (favoriteLoad.nextChapter === null) {
             isOpen = true;
@@ -181,13 +191,19 @@
           <!-- </Badge> -->
 
           <div
-            class={`w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start ${favoriteLoad.toReadCount > 0 ? "opacity-100 translate-x-0 " : "opacity-0 translate-x-[-40%]"} group-hover:opacity-100`}
+            class="w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start
+            {favoriteLoad.toReadCount > 0
+              ? 'opacity-100 translate-x-0 '
+              : 'opacity-0 translate-x-[-40%]'} group-hover:opacity-100"
           >
             <Tooltip
-              text={`${favoriteLoad.chapters.length - favoriteLoad.toReadCount}/${favoriteLoad.chapters.length}`}
+              text="{favoriteLoad.chapters.length -
+                favoriteLoad.toReadCount}/{favoriteLoad.chapters.length}"
             >
               <div
-                class={`${favoriteLoad.toReadCount > 0 ? "transition-all duration-500 group-hover:rotate-[720deg]" : ""}`}
+                class={favoriteLoad.toReadCount > 0
+                  ? "transition-all duration-500 group-hover:rotate-[720deg]"
+                  : ""}
                 role="group"
               >
                 <Badge
@@ -226,7 +242,7 @@
               role="group"
             >
               <Button
-                class={`rounded-b-none rounded-t-xl `}
+                class="rounded-b-none rounded-t-xl"
                 size="sm"
                 tabindex={-1}
                 disabled={favoriteLoad.nextChapter === null}

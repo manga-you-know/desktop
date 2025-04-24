@@ -121,6 +121,12 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     }
   }
   chaptersToRead = [];
+  if (favorite.type === "anime") {
+    chapters = chapters.map((c) => {
+      c.chapter_id = c.chapter_id.split("<token>")[0];
+      return c;
+    });
+  }
   for (const chapter of chapters) {
     if (isReaded(chapter, readeds)) {
       break;

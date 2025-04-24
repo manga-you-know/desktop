@@ -110,7 +110,7 @@
         }
         toRun();
       }
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
     isDownloadingAll = false;
   }

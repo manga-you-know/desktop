@@ -28,6 +28,7 @@
     setFullscreen,
     logNewUser,
     loadAppIcons,
+    reloadApp,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
@@ -57,6 +58,10 @@
     }
     if (e.key.toUpperCase() === "K" && (e.metaKey || e.ctrlKey)) {
       openSearch.set(!$openSearch);
+    }
+
+    if (e.key === "F5" || (e.key === "R" && (e.metaKey || e.ctrlKey))) {
+      reloadApp();
     }
   }
 

@@ -34,7 +34,8 @@
           tabindex={-1}
         >
           <Label
-            class={`w-full text-sm text-center ml-[-4px] ${$libraryCollection === "" ? "dark:text-gray-400" : ""}`}
+            class="w-full text-sm text-center ml-[-4px] 
+            {$libraryCollection === '' ? 'dark:text-gray-400' : ''}"
           >
             {$libraryCollection || "Filter by collection..."}
           </Label>
@@ -49,7 +50,10 @@
           <Command.Group>
             {#each $collections.reverse() as collection}
               <Command.Item
-                class={`w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 ${collection.name === $libraryCollection ? "!bg-slate-400 dark:!bg-gray-900" : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"}`}
+                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 {collection.name ===
+                $libraryCollection
+                  ? '!bg-slate-400 dark:!bg-gray-900'
+                  : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={collection.name}
                 onSelect={async () => {
                   libraryCollection.set(collection.name);

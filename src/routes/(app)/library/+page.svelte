@@ -7,10 +7,9 @@
     LibrarySearch,
     LibrarySource,
     LibraryCollection,
-    EditCollections,
   } from "@/components";
   import { FavoriteRepository } from "@/repositories";
-  import { libraryFavorites, openCollection } from "@/store";
+  import { libraryFavorites } from "@/store";
   import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
   let favoriteDiv: HTMLDivElement;
@@ -44,7 +43,7 @@
     bind:this={favoriteDiv}
     class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
-    {#each displayedFavorites as favorite}
+    {#each displayedFavorites as favorite, i (i)}
       <LibraryCard {favorite} />
     {/each}
   </div>

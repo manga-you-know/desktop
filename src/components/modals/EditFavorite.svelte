@@ -92,7 +92,14 @@
 
   $effect(() => {
     name = favorite.name;
+    link = favorite.link;
     cover = favorite.cover;
+    malId = favorite.mal_id;
+    author = favorite.author;
+    anilistId = favorite.anilist_id;
+    folderName = favorite.folder_name;
+    description = favorite.description;
+    isUltraFavorite = favorite.is_ultra_favorite;
     if (open) {
       setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
     } else {
@@ -110,7 +117,7 @@
       >
       <div class="flex gap-4">
         <Input
-          id={`name-${favorite.id}`}
+          id="name-{favorite.id}"
           divClass="!w-full"
           class="w-64"
           placeholder="Name"
@@ -121,7 +128,7 @@
         />
         <div class="inline-flex w-full">
           <Input
-            id={`image-${favorite.id}`}
+            id="image-{favorite.id}"
             class="w-full rounded-r-none"
             divClass="!w-full"
             placeholder="Cover"
@@ -142,6 +149,7 @@
     </Dialog.Header>
     <div class="w-full flex justify-between gap-2">
       <Textarea
+        id="description-{favorite.id}"
         class="resize-none h-24 scrollbar"
         placeholder="Description"
         floatingLabel
@@ -150,6 +158,7 @@
       />
       <div class="flex flex-col gap-4">
         <Input
+          id="folderName-{favorite.id}"
           placeholder="Folder name"
           floatingLabel
           variant="secondary"
@@ -157,6 +166,7 @@
           bind:value={folderName}
         />
         <Input
+          id="link-{favorite.id}"
           placeholder="Link"
           floatingLabel
           variant="secondary"
@@ -166,6 +176,7 @@
       </div>
       <div class="flex flex-col gap-4">
         <Input
+          id="malId-{favorite.id}"
           class="w-20"
           placeholder="MAL id"
           floatingLabel
@@ -174,6 +185,7 @@
           bind:value={malId}
         />
         <Input
+          id="anilistId-{favorite.id}"
           class="w-20"
           placeholder="Anilist id"
           floatingLabel
@@ -185,6 +197,7 @@
     </div>
     <div class="flex justify-between gap-2">
       <Input
+        id="author-{favorite.id}"
         class="w-[10.65rem]"
         placeholder="Author"
         floatingLabel
