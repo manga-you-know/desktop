@@ -1,7 +1,7 @@
-## 0.4.8 (2025-04-29)
+## 0.4.9 (2025-04-29)
 
 
-### New Features
+### Bug Fixes
 
-* add controls, shorcuts, improve UI, improve Reader UI and a lotttt of things ( i think) also performance is slight better ([2e046e0](https://github.com/manga-you-know/desktop/commit/2e046e0f0e3deb52c6bf13e83122ee1fbfb54244))
+* a little bit, i guess? ([e2e0144](https://github.com/manga-you-know/desktop/commit/e2e014412cea7b2a7df16068770311f309a13d04))
 
