@@ -334,11 +334,9 @@
     "clipboard:write-all",
     "clipboard:read-all",
     "core:image:default",
-    "log:default",
     "notification:default",
     "fs:default",
     "store:default",
-    "dialog:default",
-    "websocket:default"
+    "dialog:default"
   ]
 }

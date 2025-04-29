@@ -18,7 +18,6 @@ pub fn run() {
             get_aniplay_episode,
             get_base64_image
         ])
-        .plugin(tauri_plugin_websocket::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_process::init())

@@ -29,7 +29,14 @@
     const episode = await $downloadManager.getEpisodeContent(chapter);
     if ($useMpv) {
       await openPlayer(episode, chapter.title);
-      await addReadedBelow(chapter, $globalChapters, favorite);
+      await addReadedBelow(
+        chapter,
+        $globalChapters.map((c) => {
+          c.chapter_id = c.chapter_id.split("<token>")[0];
+          return c;
+        }),
+        favorite
+      );
       await refreshReadeds(favorite);
       isWatching = false;
     } else {
@@ -73,7 +80,7 @@
         await refreshReadeds(favorite);
       }}
       ><Icon
-        icon={isReaded(chapter, $readeds) !== undefined
+        icon={isReaded({...chapter, chapter_id: chapter.chapter_id.split("<token>")[0]}, $readeds) !== undefined
           ? "lucide:check"
           : "lucide:minus"}
         class="w-5 h-5"

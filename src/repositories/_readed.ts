@@ -2,8 +2,14 @@ import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
 import type { Favorite, Chapter, Readed } from "@/interfaces";
 
+let db: Database = null!;
+
+async function loadDb() {
+  db = await Database.load(`sqlite:${DATABASE_NAME}`);
+}
+
 export async function createReaded(readed: Readed): Promise<void> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     await db.execute(
       "INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?)",
@@ -28,7 +34,7 @@ export async function createReadeds(
   if (favoriteID === undefined) {
     throw new Error("favoriteID is undefined");
   }
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     const placeholders = chapters.map(() => "(?, ?, ?, ?)").join(", ");
     const values = chapters.flatMap((chapter: Chapter) => [
@@ -51,7 +57,7 @@ export async function createReadeds(
 export async function getLastReaded(
   favorite: Favorite
 ): Promise<Readed | undefined> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     const readed: Readed[] = await db.select(
       "SELECT * FROM readed WHERE favorite_id = ? ORDER BY id DESC LIMIT 1",
@@ -69,7 +75,7 @@ export async function getLastReaded(
 }
 
 export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     const readeds: Readed[] = await db.select(
       "SELECT * FROM readed WHERE favorite_id = ?",
@@ -85,7 +91,7 @@ export async function getReadeds(favorite: Favorite): Promise<Readed[]> {
 }
 
 export async function updateReaded(readed: Readed): Promise<void> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     await db.execute(
       "UPDATE readed SET chapter_id = ?, source = ?, language = ? WHERE id = ?",
@@ -99,7 +105,7 @@ export async function updateReaded(readed: Readed): Promise<void> {
 }
 
 export async function deleteReaded(readed: Readed): Promise<void> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     await db.execute("DELETE FROM readed WHERE id = ?", [readed.id]);
   } catch (error) {
@@ -110,7 +116,7 @@ export async function deleteReaded(readed: Readed): Promise<void> {
 }
 
 export async function deleteReadeds(readeds: Readed[]): Promise<void> {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  if (!db) await loadDb();
   try {
     const placeholders = readeds.map(() => "?").join(", ");
     const values = readeds.map((readed) => readed.id);

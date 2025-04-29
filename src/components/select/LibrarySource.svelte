@@ -38,6 +38,37 @@
           aria-expanded={open}
           disabled={sources.length === 0}
           tabindex={-1}
+          onwheel={(e) => {
+            if (e.deltaY < 0) {
+              if ($librarySource === "") {
+                librarySource.set(sources.at(0) || "");
+              } else {
+                librarySource.set(
+                  sources.at(
+                    sources.findIndex((s) => s === $librarySource) + 1
+                  ) ?? ""
+                );
+              }
+            } else {
+              if ($librarySource === "") {
+                librarySource.set(sources.at(-1) || "");
+              } else {
+                librarySource.set(
+                  sources.at(
+                    sources.findIndex((s) => s === $librarySource) - 1
+                  ) ?? ""
+                );
+              }
+            }
+            refreshLibrary();
+          }}
+          onmouseup={(e) => {
+            if (e.button === 1) {
+              open = false;
+              librarySource.set("");
+              refreshLibrary();
+            }
+          }}
         >
           <Label
             class="w-full text-sm text-center ml-[-4px] {$librarySource === ''
@@ -55,7 +86,7 @@
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
-            {#each sources as source}
+            {#each sources.toReversed() as source}
               <Command.Item
                 class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 
                 {source === $librarySource

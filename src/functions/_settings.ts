@@ -1,4 +1,4 @@
-import { load } from "@tauri-apps/plugin-store";
+import { load, Store } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import {
   selectedSource,
@@ -16,13 +16,19 @@ import {
   fitMode,
   viewMode,
   zoomLevel,
+  openReadMenu,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
-import { setTheme } from "@tauri-apps/api/app";
+
+let loadedSettings: Store;
+
+async function connectSettings() {
+  loadedSettings = await load("settings.json");
+}
 
 export async function loadSettings() {
-  const loadedSettings = await load("settings.json");
+  if (!loadedSettings) await connectSettings();
   const [
     lSelectedSource,
     lAutoSearchUpdates,
@@ -39,6 +45,7 @@ export async function loadSettings() {
     lViewMode,
     lFitMode,
     lZoomLevel,
+    lOpenReadMenu,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -53,8 +60,9 @@ export async function loadSettings() {
     loadedSettings.get<boolean>("close_tray"),
     loadedSettings.get<boolean>("show_only_new"),
     loadedSettings.get<string>("view_mode"),
-    loadedSettings.get<string>("fit_mode"),
+    loadedSettings.get<"" | "fit-width">("fit_mode"),
     loadedSettings.get<number>("zoom_level"),
+    loadedSettings.get<boolean>("open_read_menu"),
   ]);
   selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
@@ -71,13 +79,14 @@ export async function loadSettings() {
   viewMode.set(lViewMode ?? "single");
   fitMode.set(lFitMode ?? "");
   zoomLevel.set(lZoomLevel ?? 100);
+  openReadMenu.set(lOpenReadMenu ?? true);
   if (get(lastPage) !== "/home") {
     goto(get(lastPage));
   }
 }
 
 export async function saveSettings() {
-  const loadedSettings = await load("settings.json");
+  if (!loadedSettings) await connectSettings();
   await Promise.all([
     loadedSettings.set("selected_source", get(selectedSource)),
     loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),
@@ -94,11 +103,12 @@ export async function saveSettings() {
     loadedSettings.set("view_mode", get(viewMode)),
     loadedSettings.set("fit_mode", get(fitMode)),
     loadedSettings.set("zoom_level", get(zoomLevel)),
+    loadedSettings.set("open_read_menu", get(openReadMenu)),
   ]);
 }
 
 export async function resetSettings() {
-  const loadedSettings = await load("settings.json");
+  if (!loadedSettings) await connectSettings();
   await Promise.all([
     loadedSettings.set("selected_source", "WeebCentral"),
     loadedSettings.set("auto_search_updates", true),
@@ -115,6 +125,7 @@ export async function resetSettings() {
     loadedSettings.set("view_mode", "single"),
     loadedSettings.set("fit_mode", ""),
     loadedSettings.set("zoom_level", 100),
+    loadedSettings.set("open_read_menu", true),
   ]);
   await loadSettings();
 }

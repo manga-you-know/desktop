@@ -28,6 +28,7 @@
     viewMode,
     lastPage,
     isMobile,
+    openReadMenu,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -38,13 +39,12 @@
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
   import { open as openPath } from "@tauri-apps/plugin-shell";
-  import { writeImageBase64 } from "tauri-plugin-clipboard-api";
   import { goto, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
   import { ChaptersMenu } from "@/components";
   import { join, documentDir } from "@tauri-apps/api/path";
-  import { Image, transformImage } from "@tauri-apps/api/image";
+  import { cn } from "@/lib/utils";
 
   let { favoriteId, chapterIndex } = page.params;
   let chapter = $state($globalChapters[Number(chapterIndex)]);
@@ -110,7 +110,7 @@
 
     setDiscordActivity(
       `Reading [${name}]`,
-      `Chapter ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
 
@@ -121,7 +121,9 @@
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $globalChapters[Number(chapterIndex)];
-    toast.loading("Loading chapter " + chapter.number);
+    toast.loading(
+      `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
+    );
     const chaptersImages = await $downloadManager.getChapterImages(chapter);
     images = chaptersImages;
     currentlyImage = chaptersImages[0];
@@ -177,6 +179,24 @@
     );
   }
 
+  async function favoriteImage() {
+    if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
+      const path = await join(
+        await documentDir(),
+        "favorite-panels",
+        currentlyImagePath
+      );
+      await remove(path);
+      refreshDownloadeds();
+    } else {
+      await $downloadManager.writePageBase64(
+        currentlyImage,
+        currentlyImagePath
+      );
+      refreshDownloadeds();
+    }
+  }
+
   onMount(async () => {
     if ($autoEnterFullscreen) {
       await setFullscreen(true);
@@ -203,46 +223,66 @@
   });
 
   function handleKeydown(event: KeyboardEvent) {
+    const key = event.key.toLowerCase();
+    const ctrl = event.metaKey || event.ctrlKey;
     if ($viewMode === "single") {
-      if (event.key === "ArrowLeft") {
+      if (key === "arrowleft") {
         prevPage();
       }
-      if (event.key === "ArrowRight") {
+      if (key === "arrowright") {
         nextPage();
       }
-      if (event.key === " ") {
+      if (key === " ") {
         nextPage();
       }
-      if (event.key === "Enter") {
+      if (key === "enter") {
+        if (currentlyCount === totalPage && !isTheLastChapter) {
+          handleGoChapter("next");
+        }
         nextPage();
       }
-      if (event.key === "Backspace") {
+      if (key === "backspace") {
         prevPage();
       }
     }
-    if (event.key.toUpperCase() === "C" && (event.metaKey || event.ctrlKey)) {
+    if (key === "c" && ctrl) {
       copyImageBase64(images[currentlyCount - 1]);
     }
-
-    if (event.key === "+" || (event.ctrlKey && event.key === "=")) {
+    if (key === "s" && ctrl) {
+      favoriteImage();
+    }
+    if (key === "+" || (event.ctrlKey && key === "=")) {
       $zoomLevel = Math.min(200, $zoomLevel + 10);
     }
-    if (event.key === "-" || (event.ctrlKey && event.key === "-")) {
+    if (key === "-" || (event.ctrlKey && key === "-")) {
       $zoomLevel = Math.max(50, $zoomLevel - 10);
     }
 
-    if (event.key === ">") {
+    if (key === ">") {
       handleGoChapter("next");
     }
-    if (event.key === "<") {
+    if (key === "<") {
       handleGoChapter("prev");
     }
 
-    if (event.key === "v") {
+    if (key === "v") {
       $viewMode = $viewMode === "scroll" ? "single" : "scroll";
+      saveSettings();
     }
 
-    if (event.key === "F4") {
+    if (key === "f") {
+      fitMode.set($fitMode === "" ? "fit-width" : "");
+      saveSettings();
+    }
+    if (key === "a") {
+      openReadMenu.set(!$openReadMenu);
+      saveSettings();
+    }
+    if (key === "m") {
+      openMenuChapters.set(!$openMenuChapters);
+    }
+
+    if (key === "F4") {
       goHome();
     }
   }
@@ -278,139 +318,90 @@
   <div
     class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
   >
-    {#if currentlyCount === totalPage && !isTheLastChapter}
+    {#if currentlyCount === totalPage}
       <Button
-        class="pointer-events-auto"
+        class="h-24 pointer-events-auto"
+        disabled={isTheLastChapter}
+        variant={isTheLastChapter ? "outline" : "default"}
         onclick={() => handleGoChapter("next")}
       >
-        <Icon icon="lucide:arrow-right" /></Button
-      >
+        <Icon
+          icon={isTheLastChapter ? "lucide:circle-x" : "lucide:arrow-right"}
+        />
+      </Button>
     {/if}
   </div>
   <div
-    class="fixed w-screen gap-1 p-[1%] flex flex-col justify-end items-end z-50 pointer-events-none"
+    class={cn(
+      "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500  ",
+      $openReadMenu ? "translate-x-0" : "translate-x-[14rem]"
+    )}
   >
-    <div class="flex gap-1 z-30">
-      <Button
-        class="pointer-events-auto"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        onclick={goHome}
-      >
-        <Icon icon="lucide:home" />
-      </Button>
-      <Button
-        class="pointer-events-auto"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        onclick={() => ($openMenuChapters = true)}
-      >
-        <Icon icon="lucide:menu" />
-      </Button>
-      <Button
-        class="pointer-events-auto"
-        size="sm"
-        color="neutral"
-        variant="outline"
-        onclick={async () => {
-          if (
-            downloadedImages.map((img) => img.name).includes(currentlyImagePath)
-          ) {
-            const path = await join(
-              await documentDir(),
-              "favorite-panels",
-              currentlyImagePath
-            );
-            await remove(path);
-            refreshDownloadeds();
-          } else {
-            await $downloadManager.writePageBase64(
-              currentlyImage,
-              currentlyImagePath
-            );
-            refreshDownloadeds();
-          }
-        }}
-      >
-        <Icon
-          icon={downloadedImages
-            .map((img) => img.name)
-            .includes(currentlyImagePath)
-            ? "tabler:photo-x"
-            : "tabler:photo-star"}
-          class="!w-5 !h-5"
-        />
-      </Button>
-      {#if !$isMobile}
-        <div class="inline-flex pointer-events-auto z-50">
-          <Button
-            class="w-6 rounded-r-none"
-            size="sm"
-            variant="outline"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = Math.max(50, $zoomLevel - 10);
-              saveSettings();
-            }}
-          >
-            <Icon icon="lucide:minus" />
-          </Button>
-          <Button
-            class="w-10 p-0 flex justify-center rounded-none"
-            size="sm"
-            variant="outline"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = 100;
-              saveSettings();
-            }}
-          >
-            {$zoomLevel}%
-          </Button>
-          <Button
-            class="w-6 rounded-l-none"
-            size="sm"
-            variant="outline"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = Math.min(200, $zoomLevel + 10);
-              saveSettings();
-            }}
-          >
-            <Icon icon="lucide:plus" />
-          </Button>
-        </div>
-      {/if}
-    </div>
-
-    <div class="flex gap-1">
-      <div class="flex items-center gap-2 pointer-events-none">
+    <Button
+      class="w-3 rounded-l-full rounded-r-none pointer-events-auto"
+      variant="ghost"
+      onclick={(_) => {
+        openReadMenu.set(!$openReadMenu);
+        saveSettings();
+      }}
+    >
+      <Icon
+        class={cn(
+          "!w-5 !h-5 transition-all duration-700",
+          $openReadMenu ? "rotate-0" : "rotate-180"
+        )}
+        icon="typcn:chevron-left"
+      />
+    </Button>
+    <div class="flex flex-col items-end justify-end gap-1 p-1">
+      <div class="flex gap-1">
         <Badge
-          class="w-12 rounded-md place-content-center"
+          class="w-9 h-9 place-content-center"
           color={Math.round((currentlyCount / totalPage) * 100) === 100
             ? "success"
             : "neutral"}
           variant="outline"
         >
-          {isNaN(Math.round((currentlyCount / totalPage) * 100))
+          {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
+          !isFinite(Math.round((currentlyCount / totalPage) * 100))
             ? 0
             : currentlyCount === 1 && totalPage === 1
               ? 100
               : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
-        <Badge
-          class="w-12 mr-0.5 rounded-md place-content-center"
-          color="neutral"
-          variant="outline"
-        >
+        <Badge class="w-12 h-9  place-content-center" variant="outline">
           {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
         </Badge>
         <Button
-          class="pointer-events-auto"
+          class="w-10 pointer-events-auto z-50"
           size="sm"
-          color="neutral"
+          variant="outline"
+          onclick={async () => await toggleFullscreen()}
+        >
+          <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
+        </Button>
+
+        <Button
+          class="w-10 pointer-events-auto"
+          size="sm"
+          variant="outline"
+          onclick={() => ($openMenuChapters = true)}
+        >
+          <Icon icon="lucide:menu" />
+        </Button>
+        <Button
+          class="w-10 pointer-events-auto"
+          size="sm"
+          variant="outline"
+          onclick={goHome}
+        >
+          <Icon icon="lucide:home" />
+        </Button>
+      </div>
+      <div class="flex gap-1 z-30">
+        <Button
+          class="w-10 pointer-events-auto"
+          size="sm"
           variant="outline"
           disabled={$viewMode === "scroll"}
           onclick={() => {
@@ -429,7 +420,7 @@
           />
         </Button>
         <Button
-          class="pointer-events-auto"
+          class="w-10 pointer-events-auto"
           size="sm"
           color="neutral"
           variant="outline"
@@ -442,37 +433,85 @@
             icon={$viewMode === "scroll" ? "lucide:scroll" : "lucide:book-open"}
           />
         </Button>
+
+        {#if !$isMobile}
+          <div class="inline-flex pointer-events-auto z-50">
+            <Button
+              class="w-8 rounded-r-none"
+              size="sm"
+              variant="outline"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = Math.max(50, $zoomLevel - 10);
+                saveSettings();
+              }}
+            >
+              <Icon icon="lucide:minus" />
+            </Button>
+            <Button
+              class="w-[68px] p-0 flex justify-center rounded-none"
+              size="sm"
+              variant="outline"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = 100;
+                saveSettings();
+              }}
+            >
+              {$zoomLevel}%
+            </Button>
+            <Button
+              class="w-8 rounded-l-none"
+              size="sm"
+              variant="outline"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = Math.min(200, $zoomLevel + 10);
+                saveSettings();
+              }}
+            >
+              <Icon icon="lucide:plus" />
+            </Button>
+          </div>
+        {/if}
       </div>
-    </div>
-    <div class="flex gap-2 pointer-events-auto cursor-default">
-      <div class="inline-flex">
-        <Badge
-          class="w-[120px]  flex justify-center rounded-xl rounded-r-none"
+      <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
+        <div class="inline-flex">
+          <Badge
+            class="w-[128px]  flex justify-center rounded-r-none"
+            variant="outline"
+          >
+            {favorite?.name
+              ? favorite.name.length > 17
+                ? favorite.name.substring(0, 17) + "..."
+                : favorite.name
+              : ""}
+          </Badge>
+          <Badge
+            class="w-12 rounded-l-none flex justify-center items-center px-2"
+            color="neutral"
+            variant="outline"
+          >
+            {chapter.number.toString()}
+          </Badge>
+        </div>
+        <Button
+          class="w-10 pointer-events-auto"
+          size="sm"
           color="neutral"
           variant="outline"
+          onclick={favoriteImage}
         >
-          {favorite?.name
-            ? favorite.name.length > 17
-              ? favorite.name.substring(0, 17) + "..."
-              : favorite.name
-            : ""}
-        </Badge>
-        <Badge
-          class="w-10 rounded-xl rounded-l-none flex justify-center items-center px-2"
-          color="neutral"
-          variant="outline"
-        >
-          {chapter.number.toString()}
-        </Badge>
+          <Icon
+            icon={downloadedImages
+              .map((img) => img.name)
+              .includes(currentlyImagePath)
+              ? "tabler:photo-x"
+              : "tabler:photo-star"}
+            class="!w-5 !h-5"
+          />
+        </Button>
       </div>
-      <Button
-        class="pointer-events-auto z-50"
-        size="sm"
-        variant="outline"
-        onclick={async () => await toggleFullscreen()}
-      >
-        <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
-      </Button>
     </div>
   </div>
 
@@ -504,6 +543,15 @@
       oncontextmenu={(e) => {
         e.preventDefault();
         prevPage();
+      }}
+      onwheel={(e) => {
+        if ($fitMode !== "") {
+          if (e.deltaY > 0) {
+            nextPage();
+          } else {
+            prevPage();
+          }
+        }
       }}
     >
       <!-- <button
@@ -556,7 +604,7 @@
   >
     {#if currentlyCount === totalPage && !isTheLastChapter}
       <Button
-        class="pointer-events-auto"
+        class=" pointer-events-auto"
         onclick={() => handleGoChapter("next")}
       >
         <Icon icon="lucide:arrow-right" />

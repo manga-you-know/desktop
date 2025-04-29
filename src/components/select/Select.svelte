@@ -17,6 +17,8 @@
     openIcon?: boolean;
     invertIcons?: boolean;
     onselect?: VoidFunction;
+    onmouseup?: (e: any) => void;
+    wheelControls?: boolean;
     variant?: ButtonVariant;
     class?: string;
     classPopup?: string;
@@ -28,9 +30,11 @@
     items,
     icons,
     onselect,
+    onmouseup,
     variant = "outline",
     openIcon = true,
     invertIcons = false,
+    wheelControls = false,
     class: className,
     classPopup,
     classItem,
@@ -50,6 +54,21 @@
         role="combobox"
         aria-expanded={open}
         tabindex={-1}
+        onwheel={(e) => {
+          if (wheelControls) {
+            if (e.deltaY < 0) {
+              selected =
+                items.at(items.findIndex((v) => v === selected) - 1) ??
+                items[0];
+            } else {
+              selected =
+                items.at(items.findIndex((v) => v === selected) + 1) ??
+                items[0];
+            }
+            onselect?.();
+          }
+        }}
+        {onmouseup}
       >
         <div
           class={cn(
@@ -60,7 +79,9 @@
           {#if icons}
             <Icon icon={icons[selected]} />
           {/if}
-          <Label class="w-full text-sm">{titleCase(selected)}</Label>
+          <Label class="w-full text-sm cursor-pointer"
+            >{titleCase(selected)}</Label
+          >
         </div>
         {#if openIcon}
           <Icon icon="lucide:chevron-down" class="text-gray-500" />

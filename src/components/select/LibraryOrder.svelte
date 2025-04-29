@@ -25,6 +25,31 @@
           role="combobox"
           aria-expanded={open}
           tabindex={-1}
+          onwheel={(e) => {
+            if (e.deltaY < 0) {
+              libraryOrder.set(
+                orders.at(orders.findIndex((o) => o === $libraryOrder) - 1) ??
+                  orders[0]
+              );
+            } else {
+              libraryOrder.set(
+                orders.at(orders.findIndex((o) => o === $libraryOrder) + 1) ??
+                  orders[0]
+              );
+            }
+            refreshLibrary();
+            saveSettings();
+          }}
+          onmouseup={(e) => {
+            if (e.button === 1) {
+              libraryOrder.set(
+                orders.at(orders.findIndex((o) => o === $libraryOrder) + 1) ??
+                  orders[0]
+              );
+              refreshLibrary();
+              saveSettings();
+            }
+          }}
         >
           <Icon icon={orderIcon[$libraryOrder]} />
           <Icon icon="lucide:chevron-down" class="text-gray-500" />
@@ -67,6 +92,18 @@
       await saveSettings();
     }}
     tabindex={-1}
+    onwheel={(e) => {
+      isAscending.set(!$isAscending);
+      refreshLibrary();
+      saveSettings();
+    }}
+    onmouseup={(e) => {
+      if (e.button === 1) {
+        isAscending.set(!$isAscending);
+        refreshLibrary();
+        saveSettings();
+      }
+    }}
   >
     <Icon
       icon={$isAscending ? "typcn:arrow-sorted-up" : "typcn:arrow-sorted-down"}

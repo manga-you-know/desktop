@@ -5,7 +5,7 @@
   import type { HTMLButtonAttributes } from "svelte/elements";
 
   export const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none",
     {
       variants: {
         variant: {
@@ -73,6 +73,7 @@
   export let size: $$Props["size"] = "default";
   export let icon: $$Props["icon"] = undefined;
   export let iconPlacement: $$Props["iconPlacement"] = "left";
+
   export { className as class };
   let className = "";
 </script>
@@ -81,6 +82,7 @@
   class={cn(buttonVariants({ variant, effect, size }), className)}
   {...$$restProps}
   tabindex={-1}
+  onfocus={(e) => e.currentTarget.blur()}
 >
   {#if icon && iconPlacement === "left"}
     {#if effect === "expandIcon"}

@@ -79,6 +79,39 @@
           role="combobox"
           aria-expanded={open}
           tabindex={-1}
+          onscroll={(e) => {
+            console.log(e);
+          }}
+          onwheel={(e) => {
+            if (e.deltaY < 0) {
+              selectedSource.set(
+                sources[sourceType].at(
+                  sources[sourceType].findIndex(
+                    (s) => s.name === $selectedSource
+                  ) - 1
+                )?.name ?? sources[sourceType][0].name
+              );
+            } else {
+              selectedSource.set(
+                sources[sourceType].at(
+                  sources[sourceType].findIndex(
+                    (s) => s.name === $selectedSource
+                  ) + 1
+                )?.name ?? sources[sourceType][0].name
+              );
+            }
+          }}
+          onmouseup={(e) => {
+            if (e.button === 1) {
+              selectedSource.set(
+                sources[sourceType].at(
+                  sources[sourceType].findIndex(
+                    (s) => s.name === $selectedSource
+                  ) + 1
+                )?.name ?? sources[sourceType][0].name
+              );
+            }
+          }}
         >
           {$selectedSource || "Select a source..."}
           <ChevronsUpDown class="opacity-50" />
@@ -139,5 +172,18 @@
       selectedSource.set(sources[sourceType][0].name);
     }}
     openIcon={false}
+    wheelControls
+    onmouseup={(e) => {
+      if (e.button === 1) {
+        if (sourceType === "manga") {
+          sourceType = "comic";
+        } else if (sourceType === "comic") {
+          sourceType = "anime";
+        } else {
+          sourceType = "manga";
+        }
+        selectedSource.set(sources[sourceType][0].name);
+      }
+    }}
   />
 </div>
