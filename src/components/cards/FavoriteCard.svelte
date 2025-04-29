@@ -320,7 +320,7 @@
           favorite.is_ultra_favorite = !isUltraFavorite;
           isUltraFavorite = favorite.is_ultra_favorite;
           await FavoriteRepository.setUltraFavorite(favorite);
-          await Promise.all([refreshFavorites, refreshLibrary]);
+          await Promise.all([refreshFavorites(), refreshLibrary()]);
         }}
         ><Icon
           icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}

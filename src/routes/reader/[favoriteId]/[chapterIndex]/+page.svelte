@@ -120,6 +120,7 @@
 
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
+    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     chapter = $globalChapters[Number(chapterIndex)];
     toast.loading(
       `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
@@ -128,7 +129,6 @@
     images = chaptersImages;
     currentlyImage = chaptersImages[0];
     totalPage = chaptersImages.length;
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedRepository.getReadeds(favorite);
@@ -348,7 +348,7 @@
       <Icon
         class={cn(
           "!w-5 !h-5 transition-all duration-700",
-          $openReadMenu ? "rotate-0" : "rotate-180"
+          $openReadMenu ? "rotate-180" : "rotate-0"
         )}
         icon="typcn:chevron-left"
       />
