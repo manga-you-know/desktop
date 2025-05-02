@@ -23,9 +23,9 @@ import {
   writeText,
 } from "tauri-plugin-clipboard-api";
 import { titleCase } from "@/utils";
-import { FavoriteRepository } from "@/repositories";
+import { FavoriteDB } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
-import { ICONS_TO_LOAD } from "@/constants";
+import { DISCORD_WEBHOOK_URL, ICONS_TO_LOAD } from "@/constants";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -76,7 +76,7 @@ export async function goDefaultPage() {
 }
 
 export async function reloadApp() {
-  await relaunch()
+  await relaunch();
 }
 
 export function loadAppIcons() {
@@ -85,12 +85,10 @@ export function loadAppIcons() {
 
 export async function logNewUser() {
   const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged");
+  const hasLogged = await loadedSettings.get<boolean>("has_logged_1");
   if (!hasLogged) {
-    const envUrl = await getEnv("DISCORD_WEBHOOK_URL");
-    console.log(envUrl);
-    const favsLength = (await FavoriteRepository.getRawFavorites()).length;
-    fetch(envUrl, {
+    const favsLength = (await FavoriteDB.getRawFavorites()).length;
+    fetch(DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +102,7 @@ export async function logNewUser() {
           `,
       }),
     });
-    await loadedSettings.set("has_logged", true);
+    await loadedSettings.set("has_logged_1", true);
   }
 }
 

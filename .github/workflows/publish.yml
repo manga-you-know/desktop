@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
 
 permissions:
   contents: write
@@ -13,6 +16,9 @@ permissions:
 jobs:
   changelog:
     name: Generate Changelog
+    if: |
+      contains(github.event.head_commit.message, 'feat') ||
+      contains(github.event.head_commit.message, 'fix')
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.changelog.outputs.tag }}
@@ -42,8 +48,9 @@ jobs:
           config-file-path: ./.github/.config.cjs
           version-file: "./src-tauri/tauri.conf.json"
           skip-version-file: false
-          skip-git-pull: true
+          skip-git-pull: false
           pre-release: false
+          preset: conventionalcommits
 
       - run: |
           rm -rf node_modules
@@ -69,6 +76,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - uses: oven-sh/setup-bun@v2
 
       - name: Setup node
@@ -97,11 +105,15 @@ jobs:
       - name: Install front-end dependencies
         run: bun install
 
+      - name: Set env consts
+        run: bun create-env
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
       - name: Publish Release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:

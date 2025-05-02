@@ -9,7 +9,7 @@
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-lock.yaml, package.json, bun.lockb, package-lock.json, .pnpmrc, turbo.json, tsconfig.json, components.json",
+    "package.json": "pnpm-lock.yaml, package.json, bun.lockb, package-lock.json, .pnpmrc, turbo.json, tsconfig.json, components.json, .env",
     "*.tsx": "*.test.tsx, *.spec.tsx, *.styles.ts, *.module.css, *.module.scss",
     "*.ts": "*.test.ts, *.spec.ts",
     "svelte.config.js": "tailwind.config.ts, svelte.config.js, vite.config.ts, postcss.config.js",

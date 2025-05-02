@@ -1,37 +1,43 @@
-'use strict'
-const config = require('conventional-changelog-conventionalcommits')
+"use strict";
+const config = require("conventional-changelog-conventionalcommits");
 
 function whatBump(commits) {
-  let releaseType = 2
+  let releaseType = 2;
 
   for (const commit of commits) {
-    if (commit == null || !commit.header) continue
-    if (commit.header.startsWith('chore(bump-mc)') || commit.header.startsWith('chore!')) {
-      releaseType = 0
-      break
+    if (commit == null || !commit.header) continue;
+    if (
+      commit.header.startsWith("chore(bump-mc)") ||
+      commit.header.startsWith("chore!")
+    ) {
+      releaseType = 0;
+      break;
     }
-    if ((commit.header.startsWith('feat!') || commit.header.startsWith('fix!')) && releaseType > 1) {
-      releaseType = 1
+    if (
+      (commit.header.startsWith("feat!") || commit.header.startsWith("fix!")) &&
+      releaseType > 1
+    ) {
+      releaseType = 1;
     }
   }
 
-  let releaseTypes = ['major', 'minor', 'patch']
+  let releaseTypes = ["major", "minor", "patch"];
 
-  let reason = 'No special commits found. Defaulting to a patch.'
+  let reason = "No special commits found. Defaulting to a patch.";
 
   switch (releaseTypes[releaseType]) {
-    case 'major':
-      reason = 'Found a commit with a chore(bump-mc) header..'
-      break
-    case 'minor':
-      reason = 'Found a commit with a feat! or fix! header.'
-      break
+    case "major":
+      reason = "Found a commit with a chore(bump-mc) header..";
+      break;
+    case "minor":
+      reason = "Found a commit with a feat! or fix! header.";
+      break;
   }
 
   return {
     releaseType: releaseTypes[releaseType],
     reason: reason,
-  }
+  };
 }
 
 async function getOptions() {
@@ -53,13 +59,13 @@ async function getOptions() {
       { type: "build", section: "Build System" },
       { type: "ci", section: "Continuous Integration", hidden: true },
     ],
-  })
+  });
 
   // Both of these are used in different places...
-  options.recommendedBumpOpts.whatBump = whatBump
-  options.whatBump = whatBump
+  options.recommendedBumpOpts.whatBump = whatBump;
+  options.whatBump = whatBump;
 
-  return options
+  return options;
 }
 
-module.exports = getOptions()
+module.exports = getOptions();

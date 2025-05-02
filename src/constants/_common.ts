@@ -74,7 +74,7 @@ export const ICONS_TO_LOAD = [
   "line-md:loading-alt-loop",
   "line-md:loading-twotone-loop",
   "fluent:star-emphasis-32-filled",
-  "fluent:star-empashis-32-regular",
+  "fluent:star-emphasis-32-regular",
   "uil:search",
   "uil:letter-japanese-a",
   "solar:book-2-bold",

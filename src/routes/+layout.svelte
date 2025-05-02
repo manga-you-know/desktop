@@ -60,7 +60,10 @@
       openSearch.set(!$openSearch);
     }
 
-    if (e.key === "F5" || (e.key === "R" && (e.metaKey || e.ctrlKey))) {
+    if (
+      (e.key === "F5" && (e.metaKey || e.ctrlKey)) ||
+      (e.key === "R" && (e.metaKey || e.ctrlKey))
+    ) {
       reloadApp();
     }
   }
