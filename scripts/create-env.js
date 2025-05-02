@@ -2,7 +2,7 @@ const fs = require("fs");
 const shell = require("shelljs");
 const path = require("path");
 
-const DIR = require.main.path;
+const DIR = __dirname;
 const FILE = "../src/constants/_secrets.ts";
 
 const REPLACEMENTS = [
