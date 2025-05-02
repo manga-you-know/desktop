@@ -4,7 +4,7 @@
   import { AlertDialog, Button, Input, ScrollArea } from "@/lib/components";
   import { openCollection, collections } from "@/store";
   import { refreshCollections } from "@/functions";
-  import { MarkRepository } from "@/repositories";
+  import { MarkDB } from "@/repositories";
   import type { Mark } from "@/types";
   import { toast } from "svelte-sonner";
 
@@ -28,7 +28,7 @@
     )
       return;
 
-    await MarkRepository.addMark(newCollection.trim());
+    await MarkDB.addMark(newCollection.trim());
     await refreshCollections();
     toast.success(`Collection ${newCollection.trim()} added`);
     newCollection = "";
@@ -43,7 +43,7 @@
         .map((cl) => cl.name.toLowerCase())
         .includes(collection.name.toLowerCase().trim())
     ) {
-      await MarkRepository.updateMark(collection);
+      await MarkDB.updateMark(collection);
     }
     await refreshCollections();
   }
@@ -147,7 +147,7 @@
           onclick={async () => {
             const mark = $collections.find((mk) => mk.id === editing);
             if (mark) {
-              await MarkRepository.deleteMark(mark);
+              await MarkDB.deleteMark(mark);
               await refreshCollections();
               openDelete = false;
               toast.warning(`Deleted collection ${mark.name}.`);

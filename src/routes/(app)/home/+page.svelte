@@ -4,7 +4,7 @@
   import { Item } from "@/lib/components/ui/carousel";
   import { SHOUNENS, SPORTS } from "@/constants";
   import type { Favorite } from "@/interfaces";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import { openSearch } from "@/store";
 </script>
 

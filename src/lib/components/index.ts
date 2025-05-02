@@ -10,6 +10,7 @@ export * as Sidebar from "./ui/sidebar";
 export * as Collapsible from "./ui/collapsible";
 export * as Command from "./ui/command";
 export * as Card from "./ui/card";
+export * as Tabs from "./ui/tabs";
 export * as Select from "./ui/select";
 export * as ContextMenu from "./ui/context-menu";
 export * as ToggleGroup from "./ui/toggle-group";

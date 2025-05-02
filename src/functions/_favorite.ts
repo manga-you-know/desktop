@@ -2,7 +2,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/interfaces";
-import { FavoriteRepository, ReadedRepository } from "@/repositories";
+import { FavoriteDB, ReadedDB } from "@/repositories";
 import {
   downloadManager,
   favoritesLoaded,
@@ -78,7 +78,7 @@ export async function loadFavoriteChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
   isRefreshing.set(true);
-  const favorites = await FavoriteRepository.getUltraFavorites();
+  const favorites = await FavoriteDB.getUltraFavorites();
   dl.clearChaptersCache();
   await Promise.all(favorites.map(loadFavoriteChapter));
   if (rerenderFavoritesOption) {
@@ -100,13 +100,13 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
   let readeds: Readed[] = [];
   let chaptersToRead: Chapter[] = [];
   let nextChapter: Chapter | null = null;
-  readeds = await ReadedRepository.getReadeds(favorite);
+  readeds = await ReadedDB.getReadeds(favorite);
   if (favorite.type === "anime") {
     chapters = await dl.getEpisodes(favorite);
   } else {
     const isMulti = dl.isMultiLanguage(favorite.source);
     if (isMulti) {
-      const lastReaded = await ReadedRepository.getLastReaded(favorite);
+      const lastReaded = await ReadedDB.getLastReaded(favorite);
       if (lastReaded) {
         chapters = await dl.getChapters(favorite, lastReaded.language);
       } else {

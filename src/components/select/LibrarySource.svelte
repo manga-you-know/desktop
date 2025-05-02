@@ -8,7 +8,7 @@
   } from "@/lib/components";
   import { libraryFavorites, librarySource } from "@/store";
   import { refreshLibrary } from "@/functions";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
 
@@ -16,7 +16,7 @@
   let triggerRef = $state<HTMLButtonElement>(null!);
   let sources: string[] = $state([]);
   async function refreshSources() {
-    sources = await FavoriteRepository.getFavoriteSources();
+    sources = await FavoriteDB.getFavoriteSources();
   }
   libraryFavorites.subscribe(async (_) => {
     await refreshSources();

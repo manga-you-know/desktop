@@ -8,7 +8,7 @@
     LibrarySource,
     LibraryCollection,
   } from "@/components";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import { libraryFavorites } from "@/store";
   import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
@@ -24,7 +24,7 @@
   });
   const siblingCount = 1;
   onMount(async () => {
-    const newFavorites = await FavoriteRepository.getLibraryFavorites();
+    const newFavorites = await FavoriteDB.getLibraryFavorites();
     libraryFavorites.set(newFavorites);
   });
 </script>

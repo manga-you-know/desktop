@@ -43,6 +43,7 @@ export const openSettings = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
 export const openCollection = writable<boolean>(false);
 export const isRefreshing = writable<boolean>(false);
+export const isChaptersDescending = writable<boolean>(true);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
 export const autoSearchUpdates = writable<boolean>(true);

@@ -8,7 +8,7 @@
   } from "@/lib/components";
   import { libraryFavorites, libraryCollection, collections } from "@/store";
   import { refreshCollections, refreshLibrary } from "@/functions";
-  import { MarkRepository } from "@/repositories";
+  import { MarkDB } from "@/repositories";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import type { Mark } from "@/types";

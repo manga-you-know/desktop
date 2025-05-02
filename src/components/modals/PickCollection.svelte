@@ -7,7 +7,7 @@
     Label,
     ScrollArea,
   } from "@/lib/components";
-  import { MarkFavoriteRepository } from "@/repositories";
+  import { MarkFavoriteDB } from "@/repositories";
   import { collections } from "@/store";
   import type { MarkFavorites } from "@/types";
   import { limitStr } from "@/utils";
@@ -45,16 +45,9 @@
             variant={isMarked ? "secondary" : "ghost"}
             onclick={async () => {
               if (isMarked)
-                await MarkFavoriteRepository.removeMarkFavorite(
-                  favorite,
-                  collection
-                );
-              else
-                await MarkFavoriteRepository.addMarkFavorite(
-                  favorite,
-                  collection
-                );
-              markeds = await MarkFavoriteRepository.getMarkFavorites(favorite);
+                await MarkFavoriteDB.removeMarkFavorite(favorite, collection);
+              else await MarkFavoriteDB.addMarkFavorite(favorite, collection);
+              markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
             }}
           >
             {limitStr(collection.name, 30)}

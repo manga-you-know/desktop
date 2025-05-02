@@ -21,7 +21,7 @@
     readeds,
   } from "@/store";
   import type { Episode, Favorite } from "@/interfaces";
-  import { FavoriteRepository, ReadedRepository } from "@/repositories";
+  import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,
     goDefaultPage,
@@ -59,12 +59,12 @@
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
     chapter = $globalChapters[Number(chapterIndex)];
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
     episode = chapterEpisode;
     currentSrc = episode.url;
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
   });
   function handleGoChapter(way: "next" | "prev") {
@@ -103,12 +103,12 @@
     if ($autoEnterFullscreen) {
       await setFullscreen(true);
     }
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     const chapterEpisode = await $downloadManager.getEpisodeContent(chapter);
     episode = chapterEpisode;
     currentSrc = episode.url;
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
   });
 </script>

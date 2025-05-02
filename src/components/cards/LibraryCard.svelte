@@ -9,11 +9,7 @@
     PickCollection,
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/interfaces";
-  import {
-    FavoriteRepository,
-    ReadedRepository,
-    MarkFavoriteRepository,
-  } from "@/repositories";
+  import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
   import { downloadManager, theme } from "@/store";
@@ -39,7 +35,7 @@
 
   async function onHover(e: Event) {
     e.stopPropagation();
-    const data = await ReadedRepository.getReadeds(favorite);
+    const data = await ReadedDB.getReadeds(favorite);
     readeds = data;
     chapters =
       favorite.type === "manga"
@@ -63,11 +59,11 @@
 >
   <ContextMenu.Trigger>
     <button
-      class="group relative rounded-lg h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1"
+      class="group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1"
       onclick={() => (isOpen = true)}
     >
       <img
-        class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[17px] object-contain rounded-b-md dark:!bg-gray-600"
+        class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[26px] object-contain rounded-b-md dark:!bg-gray-600"
         src={favorite.cover}
         alt={favorite.name}
         id={favorite.id?.toString() || ""}
@@ -131,8 +127,7 @@
               tabindex={-1}
               onclick={async (e: Event) => {
                 e.stopPropagation();
-                markeds =
-                  await MarkFavoriteRepository.getMarkFavorites(favorite);
+                markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
                 isPicking = true;
               }}
             >
@@ -186,7 +181,7 @@
         e.stopPropagation();
         favorite.is_ultra_favorite = !isUltraFavorite;
         isUltraFavorite = favorite.is_ultra_favorite;
-        await FavoriteRepository.setUltraFavorite(favorite);
+        await FavoriteDB.setUltraFavorite(favorite);
         await refreshFavorites();
       }}
       ><Icon
@@ -197,7 +192,7 @@
     <ContextMenu.Item
       class="gap-4"
       onclick={async (e: Event) => {
-        markeds = await MarkFavoriteRepository.getMarkFavorites(favorite);
+        markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
         isPicking = true;
       }}
     >

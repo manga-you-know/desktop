@@ -1,9 +1,9 @@
 import {
-  FavoriteRepository,
-  ReadedRepository,
+  FavoriteDB,
+  ReadedDB,
   DATABASE_INIT,
   DATABASE_MIGRATION,
-  MarkRepository,
+  MarkDB,
 } from "@/repositories";
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
@@ -64,7 +64,7 @@ export function isReaded(chapter: Chapter, readeds: Readed[]) {
 }
 
 export async function isFavorite(favorite: Favorite): Promise<boolean> {
-  const rawFavs = await FavoriteRepository.getRawFavorites();
+  const rawFavs = await FavoriteDB.getRawFavorites();
   return rawFavs.some(
     (fav) =>
       fav.source_id === favorite.source_id || fav.source === favorite.source
@@ -78,7 +78,7 @@ export async function addReadedBelow(
   readeds?: Readed[],
   dontDelete?: boolean
 ) {
-  const localReadeds = readeds ?? (await ReadedRepository.getReadeds(favorite));
+  const localReadeds = readeds ?? (await ReadedDB.getReadeds(favorite));
   const readed = isReaded(chapter, localReadeds);
   if (readed) {
     if (!dontDelete) {
@@ -92,7 +92,7 @@ export async function addReadedBelow(
     if (chapterI.chapter_id === chapter.chapter_id) isForAdd = true;
     if (isForAdd) if (!isReaded(chapterI, localReadeds)) toAdd.push(chapterI);
   }
-  await ReadedRepository.createReadeds(toAdd, favorite.id);
+  await ReadedDB.createReadeds(toAdd, favorite.id);
 }
 
 export async function deleteReadedAbove(
@@ -110,26 +110,26 @@ export async function deleteReadedAbove(
     }
   }
   console.log(toDelete);
-  await ReadedRepository.deleteReadeds(toDelete);
+  await ReadedDB.deleteReadeds(toDelete);
 }
 
 export async function refreshLibrary() {
-  const favs = await FavoriteRepository.getLibraryFavorites();
+  const favs = await FavoriteDB.getLibraryFavorites();
   libraryFavorites.set(favs);
 }
 
 export async function refreshFavorites() {
-  const favs = await FavoriteRepository.getUltraFavorites();
+  const favs = await FavoriteDB.getUltraFavorites();
   ultraFavorites.set(favs);
 }
 
 export async function refreshReadeds(favorite: Favorite) {
-  const newReadeds = await ReadedRepository.getReadeds(favorite);
+  const newReadeds = await ReadedDB.getReadeds(favorite);
   readeds.set(newReadeds);
 }
 
 export async function refreshCollections() {
-  const newCollections = await MarkRepository.getMarks();
+  const newCollections = await MarkDB.getMarks();
   collections.set(newCollections);
 }
 export async function refreshPanels() {

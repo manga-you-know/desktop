@@ -19,11 +19,7 @@
     useMpv,
     theme,
   } from "@/store";
-  import {
-    FavoriteRepository,
-    MarkFavoriteRepository,
-    ReadedRepository,
-  } from "@/repositories";
+  import { FavoriteDB, MarkFavoriteDB, ReadedDB } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import {
     refreshFavorites,
@@ -39,6 +35,7 @@
   import { twMerge } from "tailwind-merge";
   import type { MarkFavorites } from "@/types";
   import Icon from "@iconify/svelte";
+  import { cn } from "@/lib/utils";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
@@ -53,7 +50,7 @@
     $derived(favoriteLoad.toReadCount > 0 ? "destructive" : "secondary");
 
   async function updateReaded() {
-    favoriteLoad.readeds = await ReadedRepository.getReadeds(favorite);
+    favoriteLoad.readeds = await ReadedDB.getReadeds(favorite);
   }
 
   $effect.pre(() => {
@@ -200,26 +197,24 @@
               text="{favoriteLoad.chapters.length -
                 favoriteLoad.toReadCount}/{favoriteLoad.chapters.length}"
             >
-              <div
-                class={favoriteLoad.toReadCount > 0
-                  ? "transition-all duration-500 group-hover:rotate-[720deg]"
-                  : ""}
-                role="group"
+              <Badge
+                class={cn(
+                  "min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default",
+                  favoriteLoad.toReadCount > 0
+                    ? "group-hover:ring-2 group-hover:scale-[0.9] ring-white  transition-all duration-500"
+                    : ""
+                )}
+                {variant}
+                tabindex={-1}
               >
-                <Badge
-                  class="min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default"
-                  {variant}
-                  tabindex={-1}
-                >
-                  {#if favoriteLoad.isLoading}
-                    <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
-                  {:else if favoriteLoad.toReadCount > 0}
-                    <Label tabindex={-1}>+{favoriteLoad.toReadCount}</Label>
-                  {:else}
-                    <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
-                  {/if}
-                </Badge>
-              </div>
+                {#if favoriteLoad.isLoading}
+                  <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
+                {:else if favoriteLoad.toReadCount > 0}
+                  <Label tabindex={-1}>+{favoriteLoad.toReadCount}</Label>
+                {:else}
+                  <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
+                {/if}
+              </Badge>
             </Tooltip>
           </div>
           <div
@@ -227,7 +222,7 @@
           >
             <Badge
               {variant}
-              class="w-14 mb-1 flex justify-center text-xs px-[-0.2px] rounded-md"
+              class="w-14 mb-1 flex justify-center text-xs px-[-0.2px]"
             >
               {`${
                 favoriteLoad.chapters.length - favoriteLoad.toReadCount
@@ -319,7 +314,7 @@
           e.stopPropagation();
           favorite.is_ultra_favorite = !isUltraFavorite;
           isUltraFavorite = favorite.is_ultra_favorite;
-          await FavoriteRepository.setUltraFavorite(favorite);
+          await FavoriteDB.setUltraFavorite(favorite);
           await Promise.all([refreshFavorites(), refreshLibrary()]);
         }}
         ><Icon
@@ -330,7 +325,7 @@
       <ContextMenu.Item
         class="gap-4"
         onclick={async (e: Event) => {
-          markeds = await MarkFavoriteRepository.getMarkFavorites(favorite);
+          markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
           isPicking = true;
         }}
       >

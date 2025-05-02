@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { FavoriteCard } from "@/components";
   import { Label, Switch, Badge } from "@/lib/components";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import {
     showOnlyNew,
     ultraFavorites,

@@ -9,7 +9,7 @@
   } from "@/lib/components";
   import { Source } from "@/components";
   import { openSearch, downloadManager, selectedSource } from "@/store";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import {
     refreshLibrary,
     stopDiscordPresence,
@@ -34,7 +34,7 @@
     );
   }
   async function refreshRawFavorites() {
-    rawFavorites = await FavoriteRepository.getRawFavorites();
+    rawFavorites = await FavoriteDB.getRawFavorites();
   }
   async function search() {
     await new Promise((resolve) => setTimeout(resolve, 5));
@@ -56,13 +56,13 @@
   });
   async function saveResult(result: Favorite) {
     if (isFavorite(result)) {
-      const favorite = await FavoriteRepository.getFavoriteBySource(
+      const favorite = await FavoriteDB.getFavoriteBySource(
         result.source_id,
         result.source
       );
-      await FavoriteRepository.deleteFavorite(favorite);
+      await FavoriteDB.deleteFavorite(favorite);
     } else {
-      await FavoriteRepository.createFavorite(result);
+      await FavoriteDB.createFavorite(result);
     }
     await refreshRawFavorites();
     await refreshLibrary();

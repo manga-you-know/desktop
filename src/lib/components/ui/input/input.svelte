@@ -71,12 +71,17 @@
 </script>
 
 <button
-  class={cn(divClass, "relative", disabled ? "cursor-default" : "!cursor-text")}
+  class={cn(
+    divClass,
+    "relative focus-visible:ring-0 ring-0",
+    disabled ? "cursor-default" : "!cursor-text"
+  )}
   onclick={() => {
     if (!disabled) {
       ref?.focus();
     }
   }}
+  tabindex={-1}
 >
   <input
     bind:this={ref}

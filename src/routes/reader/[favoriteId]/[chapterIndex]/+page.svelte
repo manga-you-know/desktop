@@ -2,7 +2,7 @@
   import { page } from "$app/state";
   import { swipe, type SwipeCustomEvent } from "svelte-gestures";
   import { toast } from "svelte-sonner";
-  import { FavoriteRepository, ReadedRepository } from "@/repositories";
+  import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,
     loadFavoriteChapter,
@@ -120,7 +120,7 @@
 
     isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
     isTheLastChapter = Number(chapterIndex) === 0;
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     chapter = $globalChapters[Number(chapterIndex)];
     toast.loading(
       `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
@@ -131,7 +131,7 @@
     totalPage = chaptersImages.length;
     setChapterActivity(favorite.name);
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (favorite) {
       loadFavoriteChapter(favorite);
@@ -188,12 +188,14 @@
       );
       await remove(path);
       refreshDownloadeds();
+      toast.success("Page favorited!", { duration: 300 });
     } else {
       await $downloadManager.writePageBase64(
         currentlyImage,
         currentlyImagePath
       );
       refreshDownloadeds();
+      toast.warning("Page removed!", { duration: 300 });
     }
   }
 
@@ -201,14 +203,14 @@
     if ($autoEnterFullscreen) {
       await setFullscreen(true);
     }
-    favorite = await FavoriteRepository.getFavorite(Number(favoriteId));
+    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
     const chapterImages = await $downloadManager.getChapterImages(chapter);
     images = chapterImages;
     currentlyImage = images[0];
     totalPage = images.length;
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedRepository.getReadeds(favorite);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (favorite) {
       loadFavoriteChapter(favorite);
@@ -282,7 +284,7 @@
       openMenuChapters.set(!$openMenuChapters);
     }
 
-    if (key === "F4") {
+    if (key === "f4") {
       goHome();
     }
   }
@@ -333,7 +335,7 @@
   </div>
   <div
     class={cn(
-      "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500  ",
+      "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500",
       $openReadMenu ? "translate-x-0" : "translate-x-[14rem]"
     )}
   >

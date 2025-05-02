@@ -24,8 +24,9 @@
     globalChapters,
     readeds,
     preferableLanguage,
+    isChaptersDescending,
   } from "@/store";
-  import { FavoriteRepository, ReadedRepository } from "@/repositories";
+  import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,
     isReaded,
@@ -35,6 +36,7 @@
     setDiscordActivity,
     refreshFavorites,
     refreshLibrary,
+    saveSettings,
   } from "@/functions";
   import type {
     Favorite,
@@ -43,6 +45,7 @@
   } from "@/interfaces";
   import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
   import { limitStr } from "@/utils";
+  import { cn } from "@/lib/utils";
 
   let { favorite, open = $bindable(false) }: Props = $props();
 
@@ -53,6 +56,8 @@
   let searchTerm = $state("");
   let displayedChapters: Chapter[] = $state([]);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let chaptersMode: "web" | "local" = $state("web");
+
   interface Props {
     favorite: Favorite;
     open: boolean;
@@ -116,9 +121,13 @@
   }
 
   function search() {
-    displayedChapters = $globalChapters.filter((chapter) =>
-      chapter.number.toString().includes(searchTerm)
-    );
+    if (searchTerm === "") {
+      displayedChapters = $globalChapters;
+      return;
+    }
+    displayedChapters = $globalChapters
+      .filter((chapter) => chapter.number.toString().includes(searchTerm))
+      .toReversed();
   }
 
   $effect(() => {
@@ -130,7 +139,7 @@
         isMulti = $downloadManager.isMultiLanguage(favorite.source);
         await refreshDownloadeds();
         if (isMulti) {
-          const lastReaded = await ReadedRepository.getLastReaded(favorite);
+          const lastReaded = await ReadedDB.getLastReaded(favorite);
           let chapters: Chapter[] = [];
           if (lastReaded?.language) {
             localSelectedLanguage.id = lastReaded.language;
@@ -188,9 +197,10 @@
         <img
           src={favorite.cover}
           alt={favorite.name}
-          class="w-40 h-70 object-contain rounded-xl !bg-gray-950"
+          class="!w-40 !h-70 object-contain rounded-xl !bg-gray-950"
         />
         <Language
+          class="mt-3"
           bind:selectedLanguage={localSelectedLanguage}
           {languageOptions}
           onChange={async () => {
@@ -224,7 +234,7 @@
               e.stopPropagation();
               favorite.is_ultra_favorite = !isUltraFavorite;
               isUltraFavorite = favorite.is_ultra_favorite;
-              await FavoriteRepository.setUltraFavorite(favorite);
+              await FavoriteDB.setUltraFavorite(favorite);
             }}
           >
             <Icon
@@ -249,14 +259,53 @@
         </div>
       </div>
       <div class="w-1/2">
-        <div class="w-48 flex flex-col gap-1">
-          <Input
-            placeholder="Chapter..."
-            oninput={search}
-            floatingLabel
-            variant="link"
-            bind:value={searchTerm}
-          />
+        <div class="w-52 flex flex-col gap-1">
+          <div class="flex gap-1 items-center">
+            <Input
+              class="w-20"
+              placeholder="Chapter..."
+              oninput={search}
+              floatingLabel
+              variant="link"
+              bind:value={searchTerm}
+            />
+            <Button
+              class="w-10 h-10"
+              variant="secondary"
+              onclick={() => {
+                isChaptersDescending.set(!$isChaptersDescending);
+                saveSettings();
+              }}
+            >
+              <Icon
+                class="!w-5 !h-5"
+                icon={$isChaptersDescending
+                  ? "typcn:arrow-sorted-down"
+                  : "typcn:arrow-sorted-up"}
+              />
+            </Button>
+            <div
+              class="flex items-center justify-center p-1 gap-1 bg-gray-900 rounded-xl"
+            >
+              <Button
+                class="w-9 h-9"
+                size="sm"
+                onclick={() => (chaptersMode = "web")}
+                variant={chaptersMode === "web" ? "secondary" : "link"}
+              >
+                <Icon class="!w-5 !h-5" icon="tabler:world" />
+              </Button>
+              <Button
+                class="w-9 h-9"
+                size="sm"
+                disabled
+                onclick={() => (chaptersMode = "local")}
+                variant={chaptersMode === "local" ? "secondary" : "link"}
+              >
+                <Icon class="!w-5 !h-5" icon="tabler:file-download" />
+              </Button>
+            </div>
+          </div>
           <Separator />
           {#if isFetching}
             <div class="flex !h-[22rem] w-full justify-center items-center">
@@ -270,38 +319,105 @@
             <div class="flex !h-[12rem] w-full justify-center items-center">
               <Badge
                 class="w-full h-10 flex justify-center text-center"
-                variant="destructive">No chapters found in this language!</Badge
+                variant="destructive"
               >
+                {searchTerm === ""
+                  ? "No chapters found in this language!"
+                  : `No chapters found with '${searchTerm}'`}
+              </Badge>
             </div>
           {:else}
-            <VList
-              class="scrollbar !h-[22rem] !w-48 overflow-x-hidden scroll-smooth"
-              data={displayedChapters}
-              itemSize={40}
-              getKey={(_, i) => i}
-            >
-              {#snippet children(chapter, i)}
-                {@const isDownloaded = downloaded
-                  .map((d) => d.name)
-                  .includes(chapter.number)}
-                {@const isReadedHere =
-                  isReaded(chapter, $readeds) !== undefined}
-                <ChapterButton
-                  {chapter}
-                  {isDownloaded}
-                  isReaded={isReadedHere}
-                  bind:isDownloading
-                  onclick={() => {
-                    goto(`/reader/${favorite.id}/${i}`);
+            <div class="relative w-52 h-[22rem] overflow-hidden">
+              <VList
+                class={cn(
+                  "scrollbar !h-[22rem] !w-52 overflow-x-hidden scroll-smooth absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                  chaptersMode === "web" ? "translate-x-0" : "-translate-x-full"
+                )}
+                data={$isChaptersDescending || searchTerm !== ""
+                  ? displayedChapters
+                  : displayedChapters.toReversed()}
+                itemSize={40}
+                getKey={(_, i) => i}
+              >
+                {#snippet children(chapter, i)}
+                  {@const isDownloaded = downloaded
+                    .map((d) => d.name)
+                    .includes(chapter.number)}
+                  {@const isReadedHere =
+                    isReaded(chapter, $readeds) !== undefined}
+                  <ChapterButton
+                    {chapter}
+                    {isDownloaded}
+                    isReaded={isReadedHere}
+                    bind:isDownloading
+                    onclick={() => {
+                      const originalIndex = $globalChapters.findIndex(
+                        (c) => c.chapter_id === chapter.chapter_id
+                      );
+                      goto(`/reader/${favorite.id}/${originalIndex}`);
+                    }}
+                    ondownloadclick={async (e: Event) => {
+                      e.stopPropagation();
+                      if (!isDownloaded) {
+                        isDownloading[chapter.chapter_id] = true;
+                        await $downloadManager.downloadChapter(
+                          chapter,
+                          favorite
+                        );
+                        await refreshDownloadeds();
+                        isDownloading[chapter.chapter_id] = false;
+                      } else {
+                        const path = await join(
+                          await downloadDir(),
+                          "Mangas",
+                          favorite.folder_name,
+                          chapter.number
+                        );
+                        openPath(path);
+                      }
+                    }}
+                    onreadclick={async (e: Event) => {
+                      e.stopPropagation();
+                      await addReadedBelow(chapter, $globalChapters, favorite);
+                      await refreshReadeds(favorite);
+                    }}
+                  />
+                {/snippet}
+              </VList>
+              <VList
+                class={cn(
+                  "scrollbar !h-[22rem] !w-52 overflow-x-hidden scroll-smooth absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                  chaptersMode === "local"
+                    ? "translate-x-0"
+                    : "translate-x-full"
+                )}
+                data={$isChaptersDescending || searchTerm !== ""
+                  ? downloaded
+                  : downloaded.toReversed()}
+                itemSize={40}
+                getKey={(_, i) => i}
+              >
+                {#snippet children(dirItem, i)}
+                  {@const chapter = {
+                    chapter_id: "",
+                    number: dirItem.name,
+                    source: favorite.source,
                   }}
-                  ondownloadclick={async (e: Event) => {
-                    e.stopPropagation();
-                    if (!isDownloaded) {
-                      isDownloading[chapter.chapter_id] = true;
-                      await $downloadManager.downloadChapter(chapter, favorite);
-                      await refreshDownloadeds();
-                      isDownloading[chapter.chapter_id] = false;
-                    } else {
+                  {@const isReadedHere =
+                    isReaded(chapter, $readeds) !== undefined}
+                  <ChapterButton
+                    {chapter}
+                    isDownloaded
+                    isReaded={isReadedHere}
+                    bind:isDownloading
+                    onclick={() => {
+                      const originalIndex = $globalChapters.findIndex(
+                        (c) => c.chapter_id === chapter.chapter_id
+                      );
+                      goto(`/reader/${favorite.id}/${originalIndex}`);
+                    }}
+                    ondownloadclick={async (e: Event) => {
+                      e.stopPropagation();
                       const path = await join(
                         await downloadDir(),
                         "Mangas",
@@ -309,16 +425,16 @@
                         chapter.number
                       );
                       openPath(path);
-                    }
-                  }}
-                  onreadclick={async (e: Event) => {
-                    e.stopPropagation();
-                    await addReadedBelow(chapter, $globalChapters, favorite);
-                    await refreshReadeds(favorite);
-                  }}
-                />
-              {/snippet}
-            </VList>
+                    }}
+                    onreadclick={async (e: Event) => {
+                      e.stopPropagation();
+                      await addReadedBelow(chapter, $globalChapters, favorite);
+                      await refreshReadeds(favorite);
+                    }}
+                  />
+                {/snippet}
+              </VList>
+            </div>
           {/if}
         </div>
       </div>

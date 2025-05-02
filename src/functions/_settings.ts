@@ -17,6 +17,7 @@ import {
   viewMode,
   zoomLevel,
   openReadMenu,
+  isChaptersDescending,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
@@ -46,6 +47,7 @@ export async function loadSettings() {
     lFitMode,
     lZoomLevel,
     lOpenReadMenu,
+    lIsChaptersDescending,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -63,6 +65,7 @@ export async function loadSettings() {
     loadedSettings.get<"" | "fit-width">("fit_mode"),
     loadedSettings.get<number>("zoom_level"),
     loadedSettings.get<boolean>("open_read_menu"),
+    loadedSettings.get<boolean>("is_chapters_descending"),
   ]);
   selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
@@ -80,6 +83,7 @@ export async function loadSettings() {
   fitMode.set(lFitMode ?? "");
   zoomLevel.set(lZoomLevel ?? 100);
   openReadMenu.set(lOpenReadMenu ?? true);
+  isChaptersDescending.set(lIsChaptersDescending ?? true);
   if (get(lastPage) !== "/home") {
     goto(get(lastPage));
   }
@@ -104,6 +108,7 @@ export async function saveSettings() {
     loadedSettings.set("fit_mode", get(fitMode)),
     loadedSettings.set("zoom_level", get(zoomLevel)),
     loadedSettings.set("open_read_menu", get(openReadMenu)),
+    loadedSettings.set("is_chapters_descending", get(isChaptersDescending)),
   ]);
 }
 
@@ -126,6 +131,7 @@ export async function resetSettings() {
     loadedSettings.set("fit_mode", ""),
     loadedSettings.set("zoom_level", 100),
     loadedSettings.set("open_read_menu", true),
+    loadedSettings.set("is_chapters_descending", true),
   ]);
   await loadSettings();
 }

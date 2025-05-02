@@ -2,7 +2,7 @@
   import { open as openFile } from "@tauri-apps/plugin-dialog";
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { Dialog, Button, Input, Textarea, Label } from "@/lib/components";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import { downloadManager } from "@/store";
   import {
     refreshLibrary,
@@ -85,7 +85,7 @@
     favorite.anilist_id = anilistId;
     favorite.folder_name = folderName;
     favorite.description = description;
-    await FavoriteRepository.updateFavorite(favorite);
+    await FavoriteDB.updateFavorite(favorite);
     await Promise.all([refreshLibrary(), refreshFavorites()]);
     open = false;
   }
@@ -108,7 +108,12 @@
   });
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root
+  bind:open
+  onOpenChange={async () => {
+    await Promise.all([refreshLibrary(), refreshFavorites()]);
+  }}
+>
   <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>Edit Favorite</Dialog.Title>
@@ -215,8 +220,7 @@
         onclick={async () => {
           isUltraFavorite = !isUltraFavorite;
           favorite.is_ultra_favorite = isUltraFavorite;
-          await FavoriteRepository.updateFavorite(favorite);
-          await Promise.all([refreshLibrary(), refreshFavorites()]);
+          await FavoriteDB.updateFavorite(favorite);
         }}
       >
         {isUltraFavorite ? "Remove" : "Favorite"}

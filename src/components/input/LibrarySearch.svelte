@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import { libraryFavorites, libraryQuery } from "@/store";
   import { Button, Input } from "@/lib/components";
 
@@ -20,7 +20,7 @@
     if ($libraryQuery.length > 0) {
       showInput = false;
       libraryQuery.set("");
-      FavoriteRepository.getLibraryFavorites().then((favorites) => {
+      FavoriteDB.getLibraryFavorites().then((favorites) => {
         libraryFavorites.set(favorites);
       });
       return;
@@ -36,7 +36,7 @@
     if ($libraryQuery.length === 0) showInput = false;
   }
   function updateFavorites() {
-    FavoriteRepository.getLibraryFavorites().then((favorites) => {
+    FavoriteDB.getLibraryFavorites().then((favorites) => {
       libraryFavorites.set(favorites);
     });
   }

@@ -7,7 +7,7 @@ import {
   librarySource,
   libraryCollection,
 } from "@/store";
-import { MarkRepository, UserRepository } from "@/repositories";
+import { MarkDB, UserDB } from "@/repositories";
 import type { Favorite } from "@/interfaces";
 import type { User } from "@/models";
 import type { Mark } from "@/types";
@@ -21,7 +21,7 @@ async function loadDb() {
 
 export async function createFavorite(favorite: Favorite): Promise<void> {
   if (!db) await loadDb();
-  const user = await UserRepository.getDefaultUser();
+  const user = await UserDB.getDefaultUser();
   try {
     await db.execute(
       "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

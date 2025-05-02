@@ -3,7 +3,7 @@
   import Icon from "@iconify/svelte";
   import { ReadFavorite, EditFavorite, AskDelete } from "@/components";
   import type { Suggestion } from "@/interfaces";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
 
   interface Props {
     suggestion: Suggestion;

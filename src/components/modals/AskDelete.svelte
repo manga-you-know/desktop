@@ -1,7 +1,7 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { AlertDialog, Button } from "@/lib/components";
-  import { FavoriteRepository } from "@/repositories";
+  import { FavoriteDB } from "@/repositories";
   import { refreshLibrary, refreshFavorites } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import { toast } from "svelte-sonner";
@@ -29,7 +29,7 @@
         variant="destructive"
         effect="gooeyLeft"
         onclick={async () => {
-          await FavoriteRepository.deleteFavorite(favorite);
+          await FavoriteDB.deleteFavorite(favorite);
           open = false;
           toast.warning(`${favorite.name} deleted with success.`);
           await Promise.all([refreshLibrary(), refreshFavorites()]);
