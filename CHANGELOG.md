@@ -1,4 +1,23 @@
-## [0.4.10](https://github.com/manga-you-know/desktop/compare/v0.4.8...v0.4.10) (2025-05-02)
+## [0.4.11](https://github.com/manga-you-know/desktop/compare/v0.4.10...v0.4.11) (2025-05-03)
+
+
+### New Features
+
+* Add reading offline!!! ([4203e12](https://github.com/manga-you-know/desktop/commit/4203e12b806240555dea638bf5865790650392be))
+
+
+### Bug Fixes
+
+* two icons not pre loadeds ([0b72ea2](https://github.com/manga-you-know/desktop/commit/0b72ea2d9af7b98fbaaeabadedd6fdd9df034e61))
+
+## [0.4.10](https://github.com/manga-you-know/desktop/compare/v0.4.9...v0.4.10) (2025-05-02)
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.10 [skip ci] ([ee8cb0e](https://github.com/manga-you-know/desktop/commit/ee8cb0e4cf8e9b783922759456f71333a9532105))
+
+## [0.4.9](https://github.com/manga-you-know/desktop/compare/v0.4.8...v0.4.9) (2025-05-02)
 
 
 ### New Features
@@ -41,28 +60,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.7 [skip ci] ([5e46991](https://github.com/manga-you-know/desktop/commit/5e46991e701e18194b89e5f01742e367092cbf78))
-
-## [0.4.6](https://github.com/manga-you-know/desktop/compare/v0.4.5...v0.4.6) (2025-04-24)
-
-
-### New Features
-
-* some refactor, improve Update download, and fix EditFavorite modal. ([28ad30c](https://github.com/manga-you-know/desktop/commit/28ad30c05c7436efee949416016b770dcb99c2fb))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.6 [skip ci] ([ef9838e](https://github.com/manga-you-know/desktop/commit/ef9838eec014a96c817825be2285824d1f180ad4))
-
-## [0.4.5](https://github.com/manga-you-know/desktop/compare/v0.4.4...v0.4.5) (2025-04-22)
-
-
-### New Features
-
-* add some things lmao ([0f33d47](https://github.com/manga-you-know/desktop/commit/0f33d47f895a7da918f7fb66b52b20367b6b7487))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.5 [skip ci] ([5d690c4](https://github.com/manga-you-know/desktop/commit/5d690c4d13aa7e1191891cb1226453b06f05a221))
 
