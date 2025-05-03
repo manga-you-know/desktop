@@ -43,10 +43,12 @@
   import { onMount } from "svelte";
   import { floor } from "lodash";
   import { ChaptersMenu } from "@/components";
-  import { join, documentDir } from "@tauri-apps/api/path";
+  import { join, documentDir, downloadDir } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
+  import { convertFileSrc } from "@tauri-apps/api/core";
 
   let { favoriteId, chapterIndex } = page.params;
+  let isLocal = page.url.searchParams.has("local");
   let chapter = $state($globalChapters[Number(chapterIndex)]);
   let favorite: Favorite = $state({
     name: "",
@@ -113,37 +115,6 @@
       `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
-
-  afterNavigate(async () => {
-    favoriteId = page.params.favoriteId;
-    chapterIndex = page.params.chapterIndex;
-
-    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
-    isTheLastChapter = Number(chapterIndex) === 0;
-    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
-    chapter = $globalChapters[Number(chapterIndex)];
-    toast.loading(
-      `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
-    );
-    const chaptersImages = await $downloadManager.getChapterImages(chapter);
-    images = chaptersImages;
-    currentlyImage = chaptersImages[0];
-    totalPage = chaptersImages.length;
-    setChapterActivity(favorite.name);
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedDB.getReadeds(favorite);
-    readeds.set(newReadeds);
-    if (favorite) {
-      loadFavoriteChapter(favorite);
-    }
-    images = await $downloadManager.getBase64Images(
-      images,
-      $downloadManager.getBaseUrl(favorite.source)
-    );
-    currentlyImage = images[currentlyCount - 1];
-    preloadNextChapter(Number(chapterIndex), $globalChapters);
-  });
-
   function prevPage() {
     if (currentlyCount === 1) return;
     currentlyCount--;
@@ -199,29 +170,98 @@
     }
   }
 
-  onMount(async () => {
-    if ($autoEnterFullscreen) {
-      await setFullscreen(true);
+  function gotoPage(page: string) {
+    currentlyCount = 1;
+    totalPage = 1;
+    currentlyImage = "/myk.png";
+    images = ["/myk.png"];
+    scrollToTop();
+    goto(page);
+  }
+
+  async function getLocalChapterImages(): Promise<string[]> {
+    if (!chapter.path) {
+      goHome();
+      return [];
     }
+    if (await exists(chapter.path, { baseDir: BaseDirectory.Download })) {
+      let images = [];
+      const dlDir = await downloadDir();
+      downloadedImages = await readDir(chapter.path, {
+        baseDir: BaseDirectory.Download,
+      });
+      for (const image of downloadedImages) {
+        const path = await join(dlDir, chapter.path, image.name);
+        images.push(convertFileSrc(path));
+      }
+      return images;
+    }
+    goHome();
+    return [];
+  }
+
+  afterNavigate(async () => {
+    favoriteId = page.params.favoriteId;
+    chapterIndex = page.params.chapterIndex;
+    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
+    isTheLastChapter = Number(chapterIndex) === 0;
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
-    setChapterActivity(favorite.name);
-    const chapterImages = await $downloadManager.getChapterImages(chapter);
-    images = chapterImages;
+    chapter = $globalChapters[Number(chapterIndex)];
+    if (!isLocal) {
+      toast.loading(
+        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
+      );
+      images = await $downloadManager.getChapterImages(chapter);
+    } else {
+      images = await getLocalChapterImages();
+    }
     currentlyImage = images[0];
     totalPage = images.length;
+    setChapterActivity(favorite.name);
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (favorite) {
       loadFavoriteChapter(favorite);
     }
-    images = await $downloadManager.getBase64Images(
-      images,
-      $downloadManager.getBaseUrl(favorite.source)
-    );
-    currentlyImage = images[currentlyCount - 1];
-    refreshDownloadeds();
-    preloadNextChapter(Number(chapterIndex), $globalChapters);
+    if (!isLocal) {
+      images = await $downloadManager.getBase64Images(
+        images,
+        $downloadManager.getBaseUrl(favorite.source)
+      );
+      currentlyImage = images[currentlyCount - 1];
+      preloadNextChapter(Number(chapterIndex), $globalChapters);
+    }
+  });
+
+  onMount(async () => {
+    if ($autoEnterFullscreen) {
+      await setFullscreen(true);
+    }
+    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
+    setChapterActivity(favorite.name);
+    if (!isLocal) {
+      images = await $downloadManager.getChapterImages(chapter);
+    } else {
+      images = await getLocalChapterImages();
+    }
+    currentlyImage = images[0];
+    totalPage = images.length;
+    setChapterActivity(favorite.name);
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
+    readeds.set(newReadeds);
+    if (favorite) {
+      loadFavoriteChapter(favorite);
+    }
+    if (!isLocal) {
+      images = await $downloadManager.getBase64Images(
+        images,
+        $downloadManager.getBaseUrl(favorite.source)
+      );
+      currentlyImage = images[currentlyCount - 1];
+      preloadNextChapter(Number(chapterIndex), $globalChapters);
+    }
   });
 
   function handleKeydown(event: KeyboardEvent) {
@@ -296,15 +336,6 @@
     if (e.detail.direction === "left") {
       nextPage();
     }
-  }
-
-  function gotoPage(page: string) {
-    currentlyCount = 1;
-    totalPage = 1;
-    currentlyImage = "/myk.png";
-    images = ["/myk.png"];
-    scrollToTop();
-    goto(page);
   }
 </script>
 

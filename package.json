@@ -44,6 +44,7 @@
     "shelljs": "^0.9.2",
     "sqlite3": "^5.1.7",
     "svelte-keyboard-shortcuts": "^0.0.1",
+    "svelte-ux": "^1.0.4",
     "tailwind-merge": "^2.5.5",
     "tailwind-variants": "^0.3.0",
     "tailwindcss-animate": "^1.0.7",

@@ -27,6 +27,7 @@ import type {
   Language,
 } from "@/interfaces";
 import { memoizeExpiring, retry } from "@/utils";
+import { load, Store } from "@tauri-apps/plugin-store";
 import { invoke } from "@tauri-apps/api/core";
 
 export class DownloadManager {
@@ -258,7 +259,13 @@ export class DownloadManager {
     });
   }
 
-  async downloadChapter(chapter: Chapter, favorite: Favorite): Promise<void> {
+  async downloadChapter(
+    chapter: Chapter,
+    favorite: Favorite,
+    store: Store = null!
+  ): Promise<void> {
+    if (!store)
+      store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
     const images = await this.getChapterImages(chapter);
     const imagesBase64: string[] = await this.getBase64Images(
       images,
@@ -282,5 +289,6 @@ export class DownloadManager {
         { baseDir: BaseDirectory.Download }
       );
     });
+    await store.set(chapter.number.toString(), chapter);
   }
 }

@@ -48,10 +48,10 @@
         variant="ghost"
         size="sm"
         tabindex={-1}
-        disabled={isDownloading[chapter.chapter_id]}
+        disabled={isDownloading[chapter.chapter_id] && !isDownloaded}
         bind:onclick={ondownloadclick}
         ><Icon
-          icon={isDownloading[chapter.chapter_id]
+          icon={isDownloading[chapter.chapter_id] && !isDownloaded
             ? "line-md:loading-twotone-loop"
             : isDownloaded
               ? "lucide:folder-check"
@@ -62,8 +62,9 @@
     </Tooltip>
     <span
       class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start"
-      >{chapter.number}</span
     >
+      {chapter.number}
+    </span>
   </div>
   <Button
     class="h-7 w-7 "
@@ -71,6 +72,7 @@
     size="sm"
     tabindex={-1}
     bind:onclick={onreadclick}
-    ><Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="w-5 h-5" />
+  >
+    <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="w-5 h-5" />
   </Button>
 </Button>

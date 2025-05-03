@@ -46,6 +46,7 @@
   import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
   import { limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
+  import { load, Store } from "@tauri-apps/plugin-store";
 
   let { favorite, open = $bindable(false) }: Props = $props();
 
@@ -55,9 +56,19 @@
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
   let displayedChapters: Chapter[] = $state([]);
+  let displayedLocalChapters: Chapter[] = $state([]);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
   let chaptersMode: "web" | "local" = $state("web");
-
+  let store: Store = $state(null!);
+  let jsonChapters: { [key: string]: Chapter } = $state({});
+  let chaptersDl = $derived(
+    downloaded
+      .map((d) => ({
+        ...jsonChapters[d.name],
+        path: `Mangas/${favorite.folder_name}/${d.name}`,
+      }))
+      .toReversed()
+  );
   interface Props {
     favorite: Favorite;
     open: boolean;
@@ -73,10 +84,19 @@
   async function refreshDownloadeds() {
     const path = `Mangas/${favorite.folder_name}`;
     if (await exists(path, { baseDir: BaseDirectory.Download })) {
-      downloaded = await readDir(path, {
-        baseDir: BaseDirectory.Download,
-      });
+      downloaded = (
+        await readDir(path, {
+          baseDir: BaseDirectory.Download,
+        })
+      ).sort((a, b) => Number(a.name) - Number(b.name));
     }
+  }
+  async function refreshJsonChapters() {
+    jsonChapters = Object.fromEntries(await store.entries()) as {
+      [key: string]: Chapter;
+    };
+    displayedChapters = chaptersDl;
+    search();
   }
 
   async function downloadAll() {
@@ -90,15 +110,17 @@
         chaptersToDownload.push(chapter);
       }
     });
+    if (chaptersToDownload.length === 0) return;
     const downloadChapter = async (chapter: Chapter) => {
       downloadingNow += 1;
       isDownloading[chapter.chapter_id] = true;
       try {
-        await $downloadManager.downloadChapter(chapter, favorite);
+        await $downloadManager.downloadChapter(chapter, favorite, store);
       } catch (e) {
         console.log(e);
       }
       await refreshDownloadeds();
+      refreshJsonChapters();
       isDownloading[chapter.chapter_id] = false;
       downloadingNow -= 1;
     };
@@ -122,11 +144,17 @@
 
   function search() {
     if (searchTerm === "") {
+      displayedLocalChapters = chaptersDl;
       displayedChapters = $globalChapters;
       return;
     }
     displayedChapters = $globalChapters
-      .filter((chapter) => chapter.number.toString().includes(searchTerm))
+      .filter((chapter) => chapter.number?.toString().includes(searchTerm))
+      .toReversed();
+    displayedLocalChapters = chaptersDl
+      .filter(
+        (chapter) => chapter.number?.toString()?.includes(searchTerm) ?? false
+      )
       .toReversed();
   }
 
@@ -135,6 +163,8 @@
       isFetching = true;
       setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
       (async () => {
+        store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
+        refreshJsonChapters();
         globalChapters.set([]);
         isMulti = $downloadManager.isMultiLanguage(favorite.source);
         await refreshDownloadeds();
@@ -298,7 +328,6 @@
               <Button
                 class="w-9 h-9"
                 size="sm"
-                disabled
                 onclick={() => (chaptersMode = "local")}
                 variant={chaptersMode === "local" ? "secondary" : "link"}
               >
@@ -307,7 +336,7 @@
             </div>
           </div>
           <Separator />
-          {#if isFetching}
+          {#if isFetching && chaptersMode === "web"}
             <div class="flex !h-[22rem] w-full justify-center items-center">
               <Icon
                 icon="line-md:loading-loop"
@@ -315,7 +344,7 @@
                 class="w-10 h-10 "
               />
             </div>
-          {:else if displayedChapters.length === 0 && !isFetching}
+          {:else if displayedChapters.length === 0}
             <div class="flex !h-[12rem] w-full justify-center items-center">
               <Badge
                 class="w-full h-10 flex justify-center text-center"
@@ -365,6 +394,7 @@
                           favorite
                         );
                         await refreshDownloadeds();
+                        refreshJsonChapters();
                         isDownloading[chapter.chapter_id] = false;
                       } else {
                         const path = await join(
@@ -392,17 +422,12 @@
                     : "translate-x-full"
                 )}
                 data={$isChaptersDescending || searchTerm !== ""
-                  ? downloaded
-                  : downloaded.toReversed()}
+                  ? displayedLocalChapters
+                  : displayedLocalChapters.toReversed()}
                 itemSize={40}
                 getKey={(_, i) => i}
               >
-                {#snippet children(dirItem, i)}
-                  {@const chapter = {
-                    chapter_id: "",
-                    number: dirItem.name,
-                    source: favorite.source,
-                  }}
+                {#snippet children(chapter, i)}
                   {@const isReadedHere =
                     isReaded(chapter, $readeds) !== undefined}
                   <ChapterButton
@@ -411,10 +436,11 @@
                     isReaded={isReadedHere}
                     bind:isDownloading
                     onclick={() => {
+                      $globalChapters = chaptersDl;
                       const originalIndex = $globalChapters.findIndex(
                         (c) => c.chapter_id === chapter.chapter_id
                       );
-                      goto(`/reader/${favorite.id}/${originalIndex}`);
+                      goto(`/reader/${favorite.id}/${originalIndex}?local`);
                     }}
                     ondownloadclick={async (e: Event) => {
                       e.stopPropagation();
@@ -428,7 +454,7 @@
                     }}
                     onreadclick={async (e: Event) => {
                       e.stopPropagation();
-                      await addReadedBelow(chapter, $globalChapters, favorite);
+                      await addReadedBelow(chapter, chaptersDl, favorite);
                       await refreshReadeds(favorite);
                     }}
                   />

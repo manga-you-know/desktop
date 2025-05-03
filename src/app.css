@@ -67,13 +67,23 @@
   }
 }
 
+.no-blurry {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
 .group:has(button:hover) {
   @apply dark:bg-slate-600 bg-slate-300;
 }
 
 .logo-shadow {
-  box-shadow: #fef08a 0px 15px 60px, #fef08a 0px -12px 30px, #fef08a 0px 4px 6px,
-    #fef08a 0px 8px 13px, #fef08a 0px -3px 5px;
+  box-shadow:
+    #fef08a 0px 15px 60px,
+    #fef08a 0px -12px 30px,
+    #fef08a 0px 4px 6px,
+    #fef08a 0px 8px 13px,
+    #fef08a 0px -3px 5px;
 }
 
 @layer utilities {
