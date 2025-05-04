@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Tilt } from 'svelte-ux';
+  import { Tilt, ScrollingValue } from "svelte-ux";
   import { toast } from "svelte-sonner";
   import { Button, Badge, Label } from "@/lib/components";
   import {
@@ -143,11 +143,9 @@
   >
     <ContextMenu.Trigger>
       <button
-        class={cn("group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
-        favoriteLoad.toReadCount >
-        0
-          ? "opacity-100"
-          : "opacity-60"
+        class={cn(
+          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+          favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60"
         )}
         onclick={() => {
           if (favoriteLoad.nextChapter === null) {
@@ -213,7 +211,11 @@
                 {#if favoriteLoad.isLoading}
                   <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
                 {:else if favoriteLoad.toReadCount > 0}
-                  <Label tabindex={-1}>+{favoriteLoad.toReadCount}</Label>
+                  <Label tabindex={-1}>
+                    <ScrollingValue axis="y"
+                      >+{favoriteLoad.toReadCount ?? 0}
+                    </ScrollingValue>
+                  </Label>
                 {:else}
                   <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
                 {/if}

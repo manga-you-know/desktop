@@ -92,7 +92,7 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
   if (!loadedFavorite) {
     addFavorite(favorite);
   }
-  if (loadedFavorite.isLoading) {
+  if (loadedFavorite?.isLoading) {
     return;
   }
   updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", true);
