@@ -164,10 +164,10 @@
       setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
       (async () => {
         store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
-        refreshJsonChapters();
         globalChapters.set([]);
-        isMulti = $downloadManager.isMultiLanguage(favorite.source);
         await refreshDownloadeds();
+        refreshJsonChapters();
+        isMulti = $downloadManager.isMultiLanguage(favorite.source);
         if (isMulti) {
           const lastReaded = await ReadedDB.getLastReaded(favorite);
           let chapters: Chapter[] = [];
@@ -315,10 +315,10 @@
               />
             </Button>
             <div
-              class="flex items-center justify-center p-1 gap-1 bg-gray-900 rounded-xl"
+              class="flex items-center justify-center p-1 gap-1 bg-gray-900 rounded-xl z-10"
             >
               <Button
-                class="w-9 h-9"
+                class="w-9 h-9 transition-colors duration-500"
                 size="sm"
                 onclick={() => (chaptersMode = "web")}
                 variant={chaptersMode === "web" ? "secondary" : "link"}
@@ -326,7 +326,7 @@
                 <Icon class="!w-5 !h-5" icon="tabler:world" />
               </Button>
               <Button
-                class="w-9 h-9"
+                class="w-9 h-9  transition-colors duration-500"
                 size="sm"
                 onclick={() => (chaptersMode = "local")}
                 variant={chaptersMode === "local" ? "secondary" : "link"}
@@ -345,18 +345,20 @@
               />
             </div>
           {:else if displayedChapters.length === 0}
-            <div class="flex !h-[12rem] w-full justify-center items-center">
+            <div class="flex !h-[22rem] w-full justify-center items-center">
               <Badge
-                class="w-full h-10 flex justify-center text-center"
-                variant="destructive"
+                class="w-full h-12 flex justify-center text-center"
+                variant="secondary"
               >
                 {searchTerm === ""
-                  ? "No chapters found in this language!"
+                  ? `No chapters${chaptersMode === "local" ? " downloaded" : ""} found in this language!`
                   : `No chapters found with '${searchTerm}'`}
               </Badge>
             </div>
           {:else}
-            <div class="relative w-52 h-[22rem] overflow-hidden">
+            <div
+              class="bg-secondary mt-[-4px] rounded-b-xl relative w-[13.25rem] h-[22rem] overflow-hidden"
+            >
               <VList
                 class={cn(
                   "scrollbar !h-[22rem] !w-52 overflow-x-hidden scroll-smooth absolute left-0 top-0 transition-all duration-300 ease-in-out",
