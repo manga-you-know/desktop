@@ -1,3 +1,16 @@
+## [0.4.12](https://github.com/manga-you-know/desktop/compare/v0.4.11...v0.4.12) (2025-05-04)
+
+
+### Bug Fixes
+
+* change some animations and fix image favorite for local reading ([1ba40a5](https://github.com/manga-you-know/desktop/commit/1ba40a5bf9a3d16dcc25dec356b6799ce88b8e09))
+* chapters local not loading right on and minor bug ([08b2b1f](https://github.com/manga-you-know/desktop/commit/08b2b1fda174f9a0c1a6aa5d607967eb8ddd3975))
+
+
+### Styles
+
+* change the chapters a bit ([91a9d0d](https://github.com/manga-you-know/desktop/commit/91a9d0dc59faf8e4d95ce8bf8fa4010cb9f05ccf))
+
 ## [0.4.11](https://github.com/manga-you-know/desktop/compare/v0.4.10...v0.4.11) (2025-05-03)
 
 
@@ -9,6 +22,11 @@
 ### Bug Fixes
 
 * two icons not pre loadeds ([0b72ea2](https://github.com/manga-you-know/desktop/commit/0b72ea2d9af7b98fbaaeabadedd6fdd9df034e61))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.11 [skip ci] ([1e2ee4f](https://github.com/manga-you-know/desktop/commit/1e2ee4f69797e9651cf1fd2387680d13d94352e6))
 
 ## [0.4.10](https://github.com/manga-you-know/desktop/compare/v0.4.9...v0.4.10) (2025-05-02)
 
@@ -48,16 +66,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.8 [skip ci] ([860c34a](https://github.com/manga-you-know/desktop/commit/860c34a7767ceca872ea080d40819250ee697b87))
-
-## [0.4.7](https://github.com/manga-you-know/desktop/compare/v0.4.6...v0.4.7) (2025-04-24)
-
-
-### New Features
-
-* Get more responsive and fix some errors in logic ([b75c8ca](https://github.com/manga-you-know/desktop/commit/b75c8ca611bb68218d659cb350124703459cf894))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.7 [skip ci] ([5e46991](https://github.com/manga-you-know/desktop/commit/5e46991e701e18194b89e5f01742e367092cbf78))
 
