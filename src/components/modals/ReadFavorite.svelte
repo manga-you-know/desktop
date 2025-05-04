@@ -337,131 +337,154 @@
           </div>
           <Separator />
           {#if isFetching && chaptersMode === "web"}
-            <div class="flex !h-[22rem] w-full justify-center items-center">
+            <div class="flex !h-[21.75rem] w-full justify-center items-center">
               <Icon
                 icon="line-md:loading-loop"
                 color="white"
                 class="w-10 h-10 "
               />
             </div>
-          {:else if displayedChapters.length === 0}
-            <div class="flex !h-[22rem] w-full justify-center items-center">
-              <Badge
-                class="w-full h-12 flex justify-center text-center"
-                variant="secondary"
-              >
-                {searchTerm === ""
-                  ? `No chapters${chaptersMode === "local" ? " downloaded" : ""} found in this language!`
-                  : `No chapters found with '${searchTerm}'`}
-              </Badge>
-            </div>
           {:else}
             <div
               class="bg-secondary mt-[-4px] rounded-b-xl relative w-[13.25rem] h-[22rem] overflow-hidden"
             >
-              <VList
+              <div
                 class={cn(
-                  "scrollbar !h-[22rem] !w-52 overflow-x-hidden scroll-smooth absolute left-0 top-0 transition-all duration-300 ease-in-out",
-                  chaptersMode === "web" ? "translate-x-0" : "-translate-x-full"
+                  "flex justify-center !h-[22rem] w-[13.25rem] absolute transition-all duration-300 ease-in-out",
+                  chaptersMode === "web" ? "translate-x-0" : "translate-x-full"
                 )}
-                data={$isChaptersDescending || searchTerm !== ""
-                  ? displayedChapters
-                  : displayedChapters.toReversed()}
-                itemSize={40}
-                getKey={(_, i) => i}
               >
-                {#snippet children(chapter, i)}
-                  {@const isDownloaded = downloaded
-                    .map((d) => d.name)
-                    .includes(chapter.number)}
-                  {@const isReadedHere =
-                    isReaded(chapter, $readeds) !== undefined}
-                  <ChapterButton
-                    {chapter}
-                    {isDownloaded}
-                    isReaded={isReadedHere}
-                    bind:isDownloading
-                    onclick={() => {
-                      const originalIndex = $globalChapters.findIndex(
-                        (c) => c.chapter_id === chapter.chapter_id
-                      );
-                      goto(`/reader/${favorite.id}/${originalIndex}`);
-                    }}
-                    ondownloadclick={async (e: Event) => {
-                      e.stopPropagation();
-                      if (!isDownloaded) {
-                        isDownloading[chapter.chapter_id] = true;
-                        await $downloadManager.downloadChapter(
-                          chapter,
-                          favorite
-                        );
-                        await refreshDownloadeds();
-                        refreshJsonChapters();
-                        isDownloading[chapter.chapter_id] = false;
-                      } else {
-                        const path = await join(
-                          await downloadDir(),
-                          "Mangas",
-                          favorite.folder_name,
-                          chapter.number
-                        );
-                        openPath(path);
-                      }
-                    }}
-                    onreadclick={async (e: Event) => {
-                      e.stopPropagation();
-                      await addReadedBelow(chapter, $globalChapters, favorite);
-                      await refreshReadeds(favorite);
-                    }}
-                  />
-                {/snippet}
-              </VList>
-              <VList
+                {#if displayedChapters.length === 0}
+                  <Badge
+                    class="w-32 h-16  m-5  flex justify-center text-center"
+                    variant="destructive"
+                  >
+                    {searchTerm === ""
+                      ? "No chapters found in this language!"
+                      : `No chapters found with '${searchTerm}'`}
+                  </Badge>
+                {:else}
+                  <VList
+                    class="scrollbar overflow-x-hidden scroll-smooth"
+                    data={$isChaptersDescending || searchTerm !== ""
+                      ? displayedChapters
+                      : displayedChapters.toReversed()}
+                    itemSize={40}
+                    getKey={(_, i) => i}
+                  >
+                    {#snippet children(chapter, i)}
+                      {@const isDownloaded = downloaded
+                        .map((d) => d.name)
+                        .includes(chapter.number)}
+                      {@const isReadedHere =
+                        isReaded(chapter, $readeds) !== undefined}
+                      <ChapterButton
+                        {chapter}
+                        {isDownloaded}
+                        isReaded={isReadedHere}
+                        bind:isDownloading
+                        onclick={() => {
+                          const originalIndex = $globalChapters.findIndex(
+                            (c) => c.chapter_id === chapter.chapter_id
+                          );
+                          goto(`/reader/${favorite.id}/${originalIndex}`);
+                        }}
+                        ondownloadclick={async (e: Event) => {
+                          e.stopPropagation();
+                          if (!isDownloaded) {
+                            isDownloading[chapter.chapter_id] = true;
+                            await $downloadManager.downloadChapter(
+                              chapter,
+                              favorite
+                            );
+                            await refreshDownloadeds();
+                            refreshJsonChapters();
+                            isDownloading[chapter.chapter_id] = false;
+                          } else {
+                            const path = await join(
+                              await downloadDir(),
+                              "Mangas",
+                              favorite.folder_name,
+                              chapter.number
+                            );
+                            openPath(path);
+                          }
+                        }}
+                        onreadclick={async (e: Event) => {
+                          e.stopPropagation();
+                          await addReadedBelow(
+                            chapter,
+                            $globalChapters,
+                            favorite
+                          );
+                          await refreshReadeds(favorite);
+                        }}
+                      />
+                    {/snippet}
+                  </VList>
+                {/if}
+              </div>
+              <div
                 class={cn(
-                  "scrollbar !h-[22rem] !w-52 overflow-x-hidden scroll-smooth absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                  "flex justify-center !h-[22rem] !w-[13.25rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
                   chaptersMode === "local"
                     ? "translate-x-0"
                     : "translate-x-full"
                 )}
-                data={$isChaptersDescending || searchTerm !== ""
-                  ? displayedLocalChapters
-                  : displayedLocalChapters.toReversed()}
-                itemSize={40}
-                getKey={(_, i) => i}
               >
-                {#snippet children(chapter, i)}
-                  {@const isReadedHere =
-                    isReaded(chapter, $readeds) !== undefined}
-                  <ChapterButton
-                    {chapter}
-                    isDownloaded
-                    isReaded={isReadedHere}
-                    bind:isDownloading
-                    onclick={() => {
-                      $globalChapters = chaptersDl;
-                      const originalIndex = $globalChapters.findIndex(
-                        (c) => c.chapter_id === chapter.chapter_id
-                      );
-                      goto(`/reader/${favorite.id}/${originalIndex}?local`);
-                    }}
-                    ondownloadclick={async (e: Event) => {
-                      e.stopPropagation();
-                      const path = await join(
-                        await downloadDir(),
-                        "Mangas",
-                        favorite.folder_name,
-                        chapter.number
-                      );
-                      openPath(path);
-                    }}
-                    onreadclick={async (e: Event) => {
-                      e.stopPropagation();
-                      await addReadedBelow(chapter, chaptersDl, favorite);
-                      await refreshReadeds(favorite);
-                    }}
-                  />
-                {/snippet}
-              </VList>
+                {#if displayedLocalChapters.length === 0}
+                  <Badge
+                    class="w-32 h-16  m-5  flex justify-center text-center"
+                    variant="destructive"
+                  >
+                    {searchTerm === ""
+                      ? "No chapters downloaded found in this language!"
+                      : `No chapters found with '${searchTerm}'`}
+                  </Badge>
+                {:else}
+                  <VList
+                    class="scrollbar overflow-x-hidden scroll-smooth"
+                    data={$isChaptersDescending || searchTerm !== ""
+                      ? displayedLocalChapters
+                      : displayedLocalChapters.toReversed()}
+                    itemSize={40}
+                    getKey={(_, i) => i}
+                  >
+                    {#snippet children(chapter, i)}
+                      {@const isReadedHere =
+                        isReaded(chapter, $readeds) !== undefined}
+                      <ChapterButton
+                        {chapter}
+                        isDownloaded
+                        isReaded={isReadedHere}
+                        bind:isDownloading
+                        onclick={() => {
+                          $globalChapters = chaptersDl;
+                          const originalIndex = $globalChapters.findIndex(
+                            (c) => c.chapter_id === chapter.chapter_id
+                          );
+                          goto(`/reader/${favorite.id}/${originalIndex}?local`);
+                        }}
+                        ondownloadclick={async (e: Event) => {
+                          e.stopPropagation();
+                          const path = await join(
+                            await downloadDir(),
+                            "Mangas",
+                            favorite.folder_name,
+                            chapter.number
+                          );
+                          openPath(path);
+                        }}
+                        onreadclick={async (e: Event) => {
+                          e.stopPropagation();
+                          await addReadedBelow(chapter, chaptersDl, favorite);
+                          await refreshReadeds(favorite);
+                        }}
+                      />
+                    {/snippet}
+                  </VList>
+                {/if}
+              </div>
             </div>
           {/if}
         </div>

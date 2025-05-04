@@ -30,8 +30,8 @@
 </script>
 
 <Button
-  class="chapter-button w-full flex justify-between items-center rounded-md group"
-  variant="ghost"
+  class="chapter-button w-full flex justify-between items-center rounded-md group hover:bg-gray-900"
+  variant="secondary"
   size="sm"
   bind:onclick
 >

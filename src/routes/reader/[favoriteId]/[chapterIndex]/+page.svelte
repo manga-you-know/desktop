@@ -37,6 +37,7 @@
     remove,
     BaseDirectory,
     type DirEntry,
+    copyFile,
   } from "@tauri-apps/plugin-fs";
   import { open as openPath } from "@tauri-apps/plugin-shell";
   import { goto, afterNavigate } from "$app/navigation";
@@ -151,20 +152,31 @@
   }
 
   async function favoriteImage() {
+    const path = await join("favorite-panels", currentlyImagePath);
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
-      const path = await join(
-        await documentDir(),
-        "favorite-panels",
-        currentlyImagePath
-      );
-      await remove(path);
+      await remove(path, { baseDir: BaseDirectory.Document });
       refreshDownloadeds();
       toast.success("Page favorited!", { duration: 300 });
     } else {
-      await $downloadManager.writePageBase64(
-        currentlyImage,
-        currentlyImagePath
-      );
+      if (isLocal) {
+        await copyFile(
+          `Mangas/${favorite.folder_name}/${chapter.number}/${(
+            currentlyCount - 1
+          )
+            .toString()
+            .padStart(3, "0")}.png`,
+          path,
+          {
+            fromPathBaseDir: BaseDirectory.Download,
+            toPathBaseDir: BaseDirectory.Document,
+          }
+        );
+      } else {
+        await $downloadManager.writePageBase64(
+          currentlyImage,
+          currentlyImagePath
+        );
+      }
       refreshDownloadeds();
       toast.warning("Page removed!", { duration: 300 });
     }
