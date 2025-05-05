@@ -69,13 +69,13 @@
   }
 
   window.onCloseRequested((e) => {
+    e.preventDefault();
     if (get(closeTray)) {
-      e.preventDefault();
       window.hide();
     } else {
       window.destroy();
+      interval.unref();
     }
-    interval.unref();
   });
   async function loadDatabase() {
     await initDatabase();

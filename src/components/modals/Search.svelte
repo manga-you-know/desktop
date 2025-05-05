@@ -71,6 +71,11 @@
   openSearch.subscribe(async (open) => {
     isFavoriteOpen = false;
     if (open) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const input = document.querySelector(
+        `input[id="search-input"]`
+      ) as HTMLInputElement;
+      input?.focus();
       await setDiscordActivity("Searching mangas...");
     } else {
       await stopDiscordPresence();
@@ -112,6 +117,7 @@
             />
           </div>
           <Input
+            id="search-input"
             variant="link"
             autofocus
             bind:value={searchTerm}
@@ -153,6 +159,12 @@
                   />
                 </Button>
               </div>
+              <img
+                class="hidden"
+                src={result.cover}
+                alt="Prefetched"
+                data-sveltekit-prefetch
+              />
             {/each}
           </ScrollArea>
         {:else}
