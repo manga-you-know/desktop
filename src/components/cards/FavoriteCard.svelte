@@ -344,7 +344,7 @@
           e.stopPropagation();
           isDelete = true;
         }}
-        ><Icon icon="lucide:circle-x" />
+        ><Icon icon="mdi:delete-outline" />
         <Label>Delete</Label>
       </ContextMenu.Item>
     </ContextMenu.Content>

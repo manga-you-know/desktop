@@ -137,7 +137,7 @@
             {#each results.slice(0, 20) as result}
               <div class="inline-flex w-[98%]">
                 <Button
-                  class="w-full flex justify-start rounded-r-none"
+                  class="w-full flex justify-start rounded-r-none transition-colors duration-500"
                   variant="ghost"
                   onclick={() => {
                     favoriteOpen = null;
@@ -149,7 +149,7 @@
                 </Button>
                 <Button
                   onclick={async () => saveResult(result)}
-                  class="rounded-l-none"
+                  class="rounded-l-none transition-colors duration-500"
                   variant="ghost"
                 >
                   <Icon

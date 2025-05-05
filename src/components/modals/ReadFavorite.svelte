@@ -63,6 +63,7 @@
   let jsonChapters: { [key: string]: Chapter } = $state({});
   let chaptersDl = $derived(
     downloaded
+      .filter((d) => jsonChapters[d.name])
       .map((d) => ({
         ...jsonChapters[d.name],
         path: `Mangas/${favorite.folder_name}/${d.name}`,

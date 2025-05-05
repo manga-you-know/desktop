@@ -23,19 +23,10 @@
       }
     ],
     "security": {
-      "headers": {
-        "Access-Control-Expose-Headers": "Tauri-Custom-Header",
-        "Tauri-Custom-Header": {
-          "referer": "'https://github.com'",
-          "origin": "'https://github.com'"
-        }
-      },
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "**/*"
-        ]
+        "scope": ["**/*"]
       }
     }
   },
