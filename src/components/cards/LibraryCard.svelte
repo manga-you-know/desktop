@@ -98,23 +98,6 @@
               tabindex={-1}
               onclick={(e: Event) => {
                 e.stopPropagation();
-                isOpen = true;
-              }}
-            >
-              <Icon
-                icon={favorite.type === "anime"
-                  ? "lucide:tv-minimal-play"
-                  : "lucide:book-open-text"}
-                class="w-4 h-4"
-              />
-            </Button>
-            <Button
-              class="rounded-none !mx-[-1px]"
-              variant="secondary"
-              size="sm"
-              tabindex={-1}
-              onclick={(e: Event) => {
-                e.stopPropagation();
                 isEdit = true;
               }}
             >
@@ -143,7 +126,7 @@
                 isDelete = true;
               }}
             >
-              <Icon icon="lucide:circle-x" class="w-4 h-4" />
+              <Icon icon="mdi:delete-outline" class="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -206,7 +189,7 @@
         e.stopPropagation();
         isDelete = true;
       }}
-      ><Icon icon="lucide:circle-x" />
+      ><Icon icon="mdi:delete-outline" />
       <Label>Delete</Label>
     </ContextMenu.Item>
   </ContextMenu.Content>

@@ -69,6 +69,7 @@ export const ICONS_TO_LOAD = [
   "ic:baseline-photo-library",
   "ic:twotone-browser-updated",
   "mdi:sort",
+  "mdi:delete-outline",
   "mdi:checkbox-blank-circle",
   "mdi:checkbox-blank-circle-outline",
   "mdi:sort-alphabetical-variant",

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { Tooltip } from "@/components";
+  import { Tooltip } from "svelte-ux";
   import { Button } from "@/lib/components";
   import type { Chapter } from "@/interfaces";
 
@@ -37,7 +37,7 @@
 >
   <div class="flex items-center gap-2">
     <Tooltip
-      text={isDownloading[chapter.chapter_id]
+      title={isDownloading[chapter.chapter_id]
         ? "Downloading..."
         : isDownloaded
           ? "Open folder"
