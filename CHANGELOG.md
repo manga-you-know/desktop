@@ -1,3 +1,15 @@
+## [0.4.13](https://github.com/manga-you-know/desktop/compare/v0.4.12...v0.4.13) (2025-05-05)
+
+
+### Bug Fixes
+
+* app not closing and input not focusing on search. also prefetch images on search ([e9f03d3](https://github.com/manga-you-know/desktop/commit/e9f03d3af01e258a8987b172a354f78ada11fc28))
+
+
+### Styles
+
+* more beautiful. ([d7dab57](https://github.com/manga-you-know/desktop/commit/d7dab576dadebb2a9811682765bccd6fe6a1f7c1))
+
 ## [0.4.12](https://github.com/manga-you-know/desktop/compare/v0.4.11...v0.4.12) (2025-05-04)
 
 
@@ -10,6 +22,11 @@
 ### Styles
 
 * change the chapters a bit ([91a9d0d](https://github.com/manga-you-know/desktop/commit/91a9d0dc59faf8e4d95ce8bf8fa4010cb9f05ccf))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.12 [skip ci] ([6bdc465](https://github.com/manga-you-know/desktop/commit/6bdc465962de831f600270646c9493c2f7194d71))
 
 ## [0.4.11](https://github.com/manga-you-know/desktop/compare/v0.4.10...v0.4.11) (2025-05-03)
 
@@ -54,16 +71,4 @@
 
 * **release:** v0.4.10 [skip ci] ([1aa95fc](https://github.com/manga-you-know/desktop/commit/1aa95fc75e8c047c461c8c258b476e6afd6796ea))
 * **release:** v0.4.9 [skip ci] ([d1ffb14](https://github.com/manga-you-know/desktop/commit/d1ffb142f093c6248d9bd95efadf9aea7bb47641))
-
-## [0.4.8](https://github.com/manga-you-know/desktop/compare/v0.4.7...v0.4.8) (2025-04-29)
-
-
-### New Features
-
-* add controls, shorcuts, improve UI, improve Reader UI and a lotttt of things ( i think) also performance is slight better ([2e046e0](https://github.com/manga-you-know/desktop/commit/2e046e0f0e3deb52c6bf13e83122ee1fbfb54244))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.8 [skip ci] ([860c34a](https://github.com/manga-you-know/desktop/commit/860c34a7767ceca872ea080d40819250ee697b87))
 
