@@ -1,3 +1,10 @@
+## [0.4.14](https://github.com/manga-you-know/desktop/compare/v0.4.13...v0.4.14) (2025-05-05)
+
+
+### Bug Fixes
+
+* not mapped chapters appearing ([c354090](https://github.com/manga-you-know/desktop/commit/c3540909562bedd5471df45c98020a162ac48868))
+
 ## [0.4.13](https://github.com/manga-you-know/desktop/compare/v0.4.12...v0.4.13) (2025-05-05)
 
 
@@ -9,6 +16,11 @@
 ### Styles
 
 * more beautiful. ([d7dab57](https://github.com/manga-you-know/desktop/commit/d7dab576dadebb2a9811682765bccd6fe6a1f7c1))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.13 [skip ci] ([1529e67](https://github.com/manga-you-know/desktop/commit/1529e6718d50ca34e701e8f1af6ebd3cff59fe0a))
 
 ## [0.4.12](https://github.com/manga-you-know/desktop/compare/v0.4.11...v0.4.12) (2025-05-04)
 
@@ -51,24 +63,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.10 [skip ci] ([ee8cb0e](https://github.com/manga-you-know/desktop/commit/ee8cb0e4cf8e9b783922759456f71333a9532105))
-
-## [0.4.9](https://github.com/manga-you-know/desktop/compare/v0.4.8...v0.4.9) (2025-05-02)
-
-
-### New Features
-
-* improve design, pattern design and performance ([98b1f41](https://github.com/manga-you-know/desktop/commit/98b1f41001ec43c3d699e6e33f986ee17851e7b7))
-
-
-### Bug Fixes
-
-* a little bit, i guess? ([e2e0144](https://github.com/manga-you-know/desktop/commit/e2e014412cea7b2a7df16068770311f309a13d04))
-* create-env not working properly ([f8f7443](https://github.com/manga-you-know/desktop/commit/f8f744314957804f40af8b978b6d67c431cb555d))
-* shortcuts not working, ENV not building etc ([4fd43db](https://github.com/manga-you-know/desktop/commit/4fd43db55d9ba18e2e23ee74a2cc8eb2fe2736b5))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.10 [skip ci] ([1aa95fc](https://github.com/manga-you-know/desktop/commit/1aa95fc75e8c047c461c8c258b476e6afd6796ea))
-* **release:** v0.4.9 [skip ci] ([d1ffb14](https://github.com/manga-you-know/desktop/commit/d1ffb142f093c6248d9bd95efadf9aea7bb47641))
 
