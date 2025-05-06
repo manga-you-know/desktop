@@ -349,7 +349,7 @@
             >
               {#if isFetching}
                 <Icon
-                  icon="line-md:loading-loop"
+                  icon="line-md:loading-alt-loop"
                   color="white"
                   class="!w-16 !h-16"
                 />

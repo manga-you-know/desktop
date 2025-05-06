@@ -11,6 +11,7 @@ const UPDATE_URL =
 
 const window = getCurrentWindow();
 let isDownloaded = false;
+let lastUpdateFound = "";
 
 async function fetchUpdate(update: Update) {
   let downloaded = 0;
@@ -61,7 +62,13 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       });
       openUpdate.set(true);
       if (!isFocus) {
-        notify(`Update v${update.version} avaible!`, "Open the app to update");
+        if (update.version !== lastUpdateFound) {
+          notify(
+            `Update v${update.version} avaible!`,
+            "Open the app to update"
+          );
+        }
+        lastUpdateFound = update.version;
       }
     } else if (isUserClick) {
       updateInfo.set({

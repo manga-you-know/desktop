@@ -18,7 +18,7 @@
 </script>
 
 <div
-  class="h-full flex flex-wrap content-start gap-10 scroll-smooth overflow-y-auto overflow-x-hidden p-5"
+  class="h-full flex flex-wrap content-start gap-5 scroll-smooth overflow-y-auto overflow-x-hidden p-7"
 >
   {#each $panels as panel}
     <FavoritePanel src={panel.src} path={panel.path} />

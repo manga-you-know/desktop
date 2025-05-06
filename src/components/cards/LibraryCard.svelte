@@ -126,7 +126,7 @@
                 isDelete = true;
               }}
             >
-              <Icon icon="mdi:delete-outline" class="w-4 h-4" />
+              <Icon icon="lucide:trash" class="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -189,7 +189,7 @@
         e.stopPropagation();
         isDelete = true;
       }}
-      ><Icon icon="mdi:delete-outline" />
+      ><Icon icon="lucide:trash" />
       <Label>Delete</Label>
     </ContextMenu.Item>
   </ContextMenu.Content>
