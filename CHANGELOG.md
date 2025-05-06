@@ -1,9 +1,26 @@
+## [0.4.15](https://github.com/manga-you-know/desktop/compare/v0.4.14...v0.4.15) (2025-05-06)
+
+
+### New Features
+
+* improve interface and prefetch more search ([a629a42](https://github.com/manga-you-know/desktop/commit/a629a42f07526fd2bf07a5307447b530216ada24))
+
+
+### Bug Fixes
+
+* sending too much notification about updates ([f9a7845](https://github.com/manga-you-know/desktop/commit/f9a78452aa1cdd6895c74d30214bb1c0917d91a7))
+
 ## [0.4.14](https://github.com/manga-you-know/desktop/compare/v0.4.13...v0.4.14) (2025-05-05)
 
 
 ### Bug Fixes
 
 * not mapped chapters appearing ([c354090](https://github.com/manga-you-know/desktop/commit/c3540909562bedd5471df45c98020a162ac48868))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.14 [skip ci] ([722d2d3](https://github.com/manga-you-know/desktop/commit/722d2d3629edda6b4b71820d8947fa5946a587ab))
 
 ## [0.4.13](https://github.com/manga-you-know/desktop/compare/v0.4.12...v0.4.13) (2025-05-05)
 
@@ -56,11 +73,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.11 [skip ci] ([1e2ee4f](https://github.com/manga-you-know/desktop/commit/1e2ee4f69797e9651cf1fd2387680d13d94352e6))
-
-## [0.4.10](https://github.com/manga-you-know/desktop/compare/v0.4.9...v0.4.10) (2025-05-02)
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.10 [skip ci] ([ee8cb0e](https://github.com/manga-you-know/desktop/commit/ee8cb0e4cf8e9b783922759456f71333a9532105))
 
