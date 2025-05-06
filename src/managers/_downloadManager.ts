@@ -111,6 +111,31 @@ export class DownloadManager {
     );
   }
 
+  getSources(type: "manga" | "comic" | "anime"): MangaDl[] | AnimeDl[] {
+    const sources = {
+      manga: Object.values(this.mangaSources),
+      comic: Object.values(this.comicSources),
+      anime: Object.values(this.animeSources),
+    };
+    return sources[type];
+  }
+
+  getSourcesNames(type: "manga" | "comic" | "anime"): string[] {
+    const sources = {
+      manga: Object.keys(this.mangaSources),
+      comic: Object.keys(this.comicSources),
+      anime: Object.keys(this.animeSources),
+    };
+    return sources[type];
+  }
+
+  getSourceType(source: string): "manga" | "comic" | "anime" {
+    if (source in this.mangaSources) return "manga";
+    if (source in this.comicSources) return "comic";
+    if (source in this.animeSources) return "anime";
+    throw new Error(`Unknown source type: ${source}`);
+  }
+
   getBaseUrl(source: string): string {
     return this.getSource(source).baseUrl;
   }
@@ -133,9 +158,23 @@ export class DownloadManager {
   async search(query: string, source: string): Promise<Favorite[]> {
     const sourceDl = this.getSource(source);
     const results: Favorite[] = await retry(() => sourceDl.search(query));
+    this.prefetchSearch(query, source, this.getSourceType(source));
     return results.slice(0, 20);
   }
 
+  async prefetchSearch(
+    query: string,
+    sourceToExclude: string,
+    type: "manga" | "comic" | "anime"
+  ) {
+    const sourceNames = this.getSourcesNames(type);
+    for (let source of sourceNames) {
+      if (source === sourceToExclude) {
+        continue;
+      }
+      this.search(query, source);
+    }
+  }
   async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {
     const sourceDl = this.getImageBasedSource(favorite.source);
     return await retry(

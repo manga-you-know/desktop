@@ -145,7 +145,7 @@
                     favoriteOpen = result;
                   }}
                 >
-                  <span class="ml-2 truncate">{limitStr(result.name, 55)}</span>
+                  <span class="ml-2 truncate">{limitStr(result.name, 50)}</span>
                 </Button>
                 <Button
                   onclick={async () => saveResult(result)}
