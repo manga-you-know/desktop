@@ -1,9 +1,21 @@
+## [0.4.18](https://github.com/manga-you-know/desktop/compare/v0.4.17...v0.4.18) (2025-05-07)
+
+
+### Bug Fixes
+
+* richColors (maybe fixed) ([5322b85](https://github.com/manga-you-know/desktop/commit/5322b85c1dbb0c25318a2afa86d4a18922de733a))
+
 ## [0.4.17](https://github.com/manga-you-know/desktop/compare/v0.4.16...v0.4.17) (2025-05-07)
 
 
 ### Bug Fixes
 
 * change toasts to appear right and some problem with updates ([44a8c9e](https://github.com/manga-you-know/desktop/commit/44a8c9ed1ad8d359359e652c4f96375580b1b1a9))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.17 [skip ci] ([30303ec](https://github.com/manga-you-know/desktop/commit/30303ec20e15aad092457ea5c768045f8db13f7d))
 
 ## [0.4.16](https://github.com/manga-you-know/desktop/compare/v0.4.15...v0.4.16) (2025-05-07)
 
@@ -45,21 +57,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.14 [skip ci] ([722d2d3](https://github.com/manga-you-know/desktop/commit/722d2d3629edda6b4b71820d8947fa5946a587ab))
-
-## [0.4.13](https://github.com/manga-you-know/desktop/compare/v0.4.12...v0.4.13) (2025-05-05)
-
-
-### Bug Fixes
-
-* app not closing and input not focusing on search. also prefetch images on search ([e9f03d3](https://github.com/manga-you-know/desktop/commit/e9f03d3af01e258a8987b172a354f78ada11fc28))
-
-
-### Styles
-
-* more beautiful. ([d7dab57](https://github.com/manga-you-know/desktop/commit/d7dab576dadebb2a9811682765bccd6fe6a1f7c1))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.13 [skip ci] ([1529e67](https://github.com/manga-you-know/desktop/commit/1529e6718d50ca34e701e8f1af6ebd3cff59fe0a))
 
