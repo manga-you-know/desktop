@@ -98,13 +98,13 @@
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
+<Toaster richColors duration={2700} />
 <div
   class={twMerge(
     "dark:bg-black text-black dark:text-white",
     $theme === "dark" ? "dark" : ""
   )}
 >
-  <Toaster richColors duration={2700} />
   <Search />
   <Settings />
   <AddCustom />

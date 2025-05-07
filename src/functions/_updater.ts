@@ -46,7 +46,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       return;
     } else if (update) {
       const isFocus = await window.isFocused();
-      fetchUpdate(update);
+      if (!isDownloaded) fetchUpdate(update);
       updateInfo.set({
         version: update.version,
         updateAvailable: true,

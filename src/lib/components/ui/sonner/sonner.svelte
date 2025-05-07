@@ -9,7 +9,7 @@
 </script>
 
 <Sonner
-  theme={$mode}
+  theme={$mode === "dark" ? "light" : "dark"}
   class="toaster group"
   toastOptions={{
     classes: {
