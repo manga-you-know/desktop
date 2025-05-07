@@ -1,4 +1,4 @@
-import { writable, readable } from "svelte/store";
+import { writable, readable, get } from "svelte/store";
 import { type } from "@tauri-apps/plugin-os";
 import { DownloadManager } from "@/managers";
 import { MANGASOURCES } from "@/constants";
@@ -49,6 +49,8 @@ export const isChaptersDescending = writable<boolean>(true);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
 export const autoSearchUpdates = writable<boolean>(true);
+export const notifyUpdate = writable<boolean>(true);
+export const discordIntegration = writable<boolean>(false);
 export const preferableLanguage = writable<Language>({
   id: "en",
   label: "English",
@@ -59,6 +61,6 @@ export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);
 export const isFullscreen = writable<boolean>(false);
-export const fitMode = writable<"" | "fit-width">("");
+export const fitMode = writable<"" | "width">(get(isMobile) ? "" : "width");
 export const viewMode = writable<string>("single");
 export const zoomLevel = writable<number>(100);

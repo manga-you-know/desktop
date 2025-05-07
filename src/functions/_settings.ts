@@ -18,6 +18,8 @@ import {
   zoomLevel,
   openReadMenu,
   isChaptersDescending,
+  notifyUpdate,
+  discordIntegration,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/interfaces";
@@ -48,6 +50,8 @@ export async function loadSettings() {
     lZoomLevel,
     lOpenReadMenu,
     lIsChaptersDescending,
+    lNotifyUpdate,
+    lDiscordIntegration,
   ] = await Promise.all([
     loadedSettings.get<string>("selected_source"),
     loadedSettings.get<boolean>("auto_search_updates"),
@@ -62,10 +66,12 @@ export async function loadSettings() {
     loadedSettings.get<boolean>("close_tray"),
     loadedSettings.get<boolean>("show_only_new"),
     loadedSettings.get<string>("view_mode"),
-    loadedSettings.get<"" | "fit-width">("fit_mode"),
+    loadedSettings.get<"" | "width">("fit_mode"),
     loadedSettings.get<number>("zoom_level"),
     loadedSettings.get<boolean>("open_read_menu"),
     loadedSettings.get<boolean>("is_chapters_descending"),
+    loadedSettings.get<boolean>("notify_update"),
+    loadedSettings.get<boolean>("discord_integration"),
   ]);
   selectedSource.set(lSelectedSource ?? "WeebCentral");
   autoSearchUpdates.set(lAutoSearchUpdates ?? true);
@@ -84,6 +90,8 @@ export async function loadSettings() {
   zoomLevel.set(lZoomLevel ?? 100);
   openReadMenu.set(lOpenReadMenu ?? true);
   isChaptersDescending.set(lIsChaptersDescending ?? true);
+  notifyUpdate.set(lNotifyUpdate ?? true);
+  discordIntegration.set(lDiscordIntegration ?? false);
   if (get(lastPage) !== "/home") {
     goto(get(lastPage));
   }
@@ -109,6 +117,8 @@ export async function saveSettings() {
     loadedSettings.set("zoom_level", get(zoomLevel)),
     loadedSettings.set("open_read_menu", get(openReadMenu)),
     loadedSettings.set("is_chapters_descending", get(isChaptersDescending)),
+    loadedSettings.set("notify_update", get(notifyUpdate)),
+    loadedSettings.set("discord_integration", get(discordIntegration)),
   ]);
 }
 
@@ -128,10 +138,12 @@ export async function resetSettings() {
     loadedSettings.set("close_tray", false),
     loadedSettings.set("show_only_new", false),
     loadedSettings.set("view_mode", "single"),
-    loadedSettings.set("fit_mode", ""),
+    loadedSettings.set("fit_mode", "width"),
     loadedSettings.set("zoom_level", 100),
     loadedSettings.set("open_read_menu", true),
     loadedSettings.set("is_chapters_descending", true),
+    loadedSettings.set("notify_update", true),
+    loadedSettings.set("discord_integration", false),
   ]);
   await loadSettings();
 }

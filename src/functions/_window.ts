@@ -1,4 +1,9 @@
-import { isFullscreen, lastPage, autoEnterFullscreen } from "@/store";
+import {
+  isFullscreen,
+  lastPage,
+  autoEnterFullscreen,
+  discordIntegration,
+} from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
 import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import {
@@ -108,13 +113,14 @@ export async function logNewUser() {
 
 export async function startDiscordPresence() {
   try {
-    await start("1336775889366552597");
+    if (get(discordIntegration)) await start("1336775889366552597");
   } catch (e) {
     console.log(e);
   }
 }
 
 export async function setDiscordActivity(details: string, state?: string) {
+  if (!get(discordIntegration)) return;
   await startDiscordPresence();
   const button = new Button(
     "Download app",

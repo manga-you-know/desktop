@@ -7,6 +7,7 @@
     saveSettings,
     stopDiscordPresence,
     setDiscordActivity,
+    resetSettings,
   } from "@/functions";
   import {
     Card,
@@ -30,6 +31,8 @@
     openSearch,
     closeTray,
     isMobile,
+    notifyUpdate,
+    discordIntegration,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
@@ -64,20 +67,18 @@
 <AlertDialog.Root bind:open={$openSettings}>
   <AlertDialog.Content class="py-0 px-2">
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
-    <ScrollArea
-      class="h-[23rem] rounded-xl select-none my-3 pr-2 scroll-smooth"
-    >
+    <ScrollArea class="h-[80vh] rounded-xl select-none my-2 pr-3 scroll-smooth">
       <div class="border-b-4 my-4 text-center relative rounded-xl">
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
         >
           App
         </span>
       </div>
       <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
         <Card.Content class="flex flex-col gap-4">
-          <Label
-            >Current version: <span class="font-bold">
+          <Label class="text-md"
+            >Current version: <span class="text-xl font-bold">
               v{version}
             </span></Label
           >
@@ -109,22 +110,58 @@
                   await saveSettings();
                 }}
               />
-              <Label class="cursor-pointer" for="auto-update"
-                >Auto check for updates</Label
-              >
+              <Label class="cursor-pointer" for="auto-update">
+                Auto check for updates
+              </Label>
             </div>
-
+            <div class="flex gap-2 items-center">
+              <Separator
+                class="border-y-[12px] border-x-2"
+                orientation="vertical"
+              />
+              <Checkbox
+                id="notify-update"
+                disabled={!$autoSearchUpdates}
+                bind:checked={$notifyUpdate}
+                onCheckedChange={async () => {
+                  await saveSettings();
+                }}
+              />
+              <Label for="notify-update">
+                Desktop notication for new updates
+              </Label>
+            </div>
+            <div class="flex items-center">
+              <Checkbox
+                id="discord-integration"
+                bind:checked={$discordIntegration}
+                class="flex-shrink-0 mr-2"
+                onCheckedChange={async () => {
+                  await saveSettings();
+                  await stopDiscordPresence();
+                }}
+              />
+              <Label
+                class="cursor-pointer flex items-center "
+                for="discord-integration"
+              >
+                Discord <Icon
+                  class="!w-5 !h-5 mr-1 m-0.5"
+                  icon="ic:round-discord"
+                />integration
+              </Label>
+            </div>
             <div class="flex gap-2 items-center">
               <Checkbox
                 id="auto-start"
                 bind:checked={$closeTray}
-                onCheckedChange={async (value) => {
+                onCheckedChange={async () => {
                   await saveSettings();
                 }}
               />
-              <Label for="auto-start"
-                >Minize to tray apps instead of closing</Label
-              >
+              <Label for="auto-start">
+                Minize to tray apps instead of closing
+              </Label>
             </div>
             <div class="flex gap-2 items-center">
               <Checkbox
@@ -155,15 +192,29 @@
           {/if}
           <Label>Theme</Label>
           <Theme />
+          <Button
+            class="w-44 bg-slate-300 dark:bg-[#2d3649] "
+            variant="ghost"
+            onclick={async () => {
+              await resetSettings();
+            }}
+          >
+            <Icon
+              icon="material-symbols:rule-settings-rounded"
+              class="!w-5 !h-5"
+            />
+            Reset all settings
+          </Button>
         </Card.Content>
       </Card.Root>
-      <div class="border-b-4 my-4 text-center relative rounded-xl">
+      <div class="border-b-4 my-5 text-center relative rounded-xl">
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
         >
           Reader
         </span>
       </div>
+
       <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
         <Card.Content class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
@@ -196,7 +247,7 @@
       {#if !$isMobile}
         <div class="border-b-4 my-4 text-center relative rounded-xl">
           <span
-            class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
+            class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
           >
             Player
           </span>

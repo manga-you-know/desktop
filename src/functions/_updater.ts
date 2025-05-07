@@ -2,7 +2,7 @@ import { fetch } from "@tauri-apps/plugin-http";
 import { check, Update } from "@tauri-apps/plugin-updater";
 import { message } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { isMobile, updateInfo, openUpdate } from "@/store";
+import { isMobile, updateInfo, openUpdate, notifyUpdate } from "@/store";
 import { notify, reloadApp } from "@/functions";
 import { get } from "svelte/store";
 
@@ -62,7 +62,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       });
       openUpdate.set(true);
       if (!isFocus) {
-        if (update.version !== lastUpdateFound) {
+        if (update.version !== lastUpdateFound && get(notifyUpdate)) {
           notify(
             `Update v${update.version} avaible!`,
             "Open the app to update"
