@@ -5,7 +5,12 @@
   import Icon from "@iconify/svelte";
   import { remove } from "@tauri-apps/plugin-fs";
 
-  let { open = $bindable(false), src, path } = $props();
+  let {
+    open = $bindable(false),
+    src,
+    path,
+    shouldCopy = $bindable(false),
+  } = $props();
 
   let copyMode: "image" | "path" = $state("image");
   let modes = ["image", "path"];
@@ -14,16 +19,9 @@
     path: "ic:baseline-folder-copy",
   };
   let openDelete = $state(false);
-
-  async function handleKeydown(event: KeyboardEvent) {
-    if (event.key.toUpperCase() === "C" && (event.metaKey || event.ctrlKey)) {
-      await copyImageFromPath(path);
-    }
-  }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
-<AlertDialog.Root bind:open onOpenChange={() => {}}>
+<AlertDialog.Root bind:open onOpenChange={(value) => (shouldCopy = value)}>
   <AlertDialog.Content
     class="max-w-full w-auto h-[97vh] mx-auto flex flex-col justify-center"
   >

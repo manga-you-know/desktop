@@ -27,7 +27,9 @@ export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
 export const collections = writable<Mark[]>([]);
-export const panels = writable<{ src: string; path: string }[]>([]);
+export const panels = writable<
+  { src: string; path: string; shouldCopy?: boolean }[]
+>([]);
 export const updateInfo = writable<UpdateInfo>({
   updateAvailable: false,
   version: "",

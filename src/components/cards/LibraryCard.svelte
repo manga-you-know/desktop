@@ -96,18 +96,6 @@
               variant="secondary"
               size="sm"
               tabindex={-1}
-              onclick={(e: Event) => {
-                e.stopPropagation();
-                isEdit = true;
-              }}
-            >
-              <Icon icon="lucide:square-pen" class="w-4 h-4" />
-            </Button>
-            <Button
-              class="rounded-none !mx-[-1px]"
-              variant="secondary"
-              size="sm"
-              tabindex={-1}
               onclick={async (e: Event) => {
                 e.stopPropagation();
                 markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
@@ -115,6 +103,18 @@
               }}
             >
               <Icon icon="lucide:bookmark" class="w-4 h-4" />
+            </Button>
+            <Button
+              class="rounded-none !mx-[-1px]"
+              variant="secondary"
+              size="sm"
+              tabindex={-1}
+              onclick={(e: Event) => {
+                e.stopPropagation();
+                isEdit = true;
+              }}
+            >
+              <Icon icon="lucide:square-pen" class="w-4 h-4" />
             </Button>
             <Button
               class="rounded-l-none rounded-r-xl"

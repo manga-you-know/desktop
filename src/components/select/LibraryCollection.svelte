@@ -70,7 +70,7 @@
           }}
         >
           <Label
-            class="!w-36 text-sm text-center ml-[-4px] text-ellipsis    
+            class="!w-36 cursor-pointer text-sm text-center ml-[-4px] text-ellipsis    
             {$libraryCollection === undefined ? 'dark:text-gray-400' : ''}"
           >
             {limitStr(

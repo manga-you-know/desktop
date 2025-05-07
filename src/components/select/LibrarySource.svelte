@@ -71,7 +71,8 @@
           }}
         >
           <Label
-            class="w-full text-sm text-center ml-[-4px] {$librarySource === ''
+            class="w-full text-sm text-center ml-[-4px] cursor-pointer {$librarySource ===
+            ''
               ? 'dark:text-gray-400'
               : ''}"
           >

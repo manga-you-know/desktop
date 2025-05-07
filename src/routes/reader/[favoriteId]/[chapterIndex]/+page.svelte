@@ -156,7 +156,7 @@
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
       await remove(path, { baseDir: BaseDirectory.Document });
       refreshDownloadeds();
-      toast.success("Page favorited!", { duration: 300 });
+      toast.warning("Page removed!", { duration: 300 });
     } else {
       if (isLocal) {
         await copyFile(
@@ -177,8 +177,8 @@
           currentlyImagePath
         );
       }
+      toast.success("Page favorited!", { duration: 300 });
       refreshDownloadeds();
-      toast.warning("Page removed!", { duration: 300 });
     }
   }
 

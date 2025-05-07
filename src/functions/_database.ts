@@ -145,7 +145,7 @@ export async function refreshPanels() {
   const docDir = await documentDir();
   for (const panel of downloaded) {
     const path = await join(docDir, "favorite-panels", panel.name);
-    localPanels.push({ src: convertFileSrc(path), path });
+    localPanels.push({ src: convertFileSrc(path), path, shouldCopy: false });
   }
   panels.set(localPanels);
 }
