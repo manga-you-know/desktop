@@ -52,7 +52,7 @@
         bind:onclick={ondownloadclick}
         ><Icon
           icon={isDownloading[chapter.chapter_id] && !isDownloaded
-            ? "line-md:loading-twotone-loop"
+            ? "line-md:loading-alt-loop"
             : isDownloaded
               ? "lucide:folder-check"
               : "lucide:download"}

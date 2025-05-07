@@ -62,9 +62,11 @@
 </script>
 
 <AlertDialog.Root bind:open={$openSettings}>
-  <AlertDialog.Content class="py-0">
+  <AlertDialog.Content class="py-0 px-2">
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
-    <ScrollArea class="h-[23rem] rounded-xl select-none my-3 scroll-smooth">
+    <ScrollArea
+      class="h-[23rem] rounded-xl select-none my-3 pr-2 scroll-smooth"
+    >
       <div class="border-b-4 my-4 text-center relative rounded-xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"

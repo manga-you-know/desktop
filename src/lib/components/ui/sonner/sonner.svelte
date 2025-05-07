@@ -3,13 +3,11 @@
     Toaster as Sonner,
     type ToasterProps as SonnerProps,
   } from "svelte-sonner";
-  import { theme as mode } from "@/store";
 
   let restProps: SonnerProps = $props();
 </script>
 
 <Sonner
-  theme={$mode === "dark" ? "light" : "dark"}
   class="toaster group"
   toastOptions={{
     classes: {
