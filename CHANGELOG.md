@@ -1,9 +1,21 @@
+## [0.4.17](https://github.com/manga-you-know/desktop/compare/v0.4.16...v0.4.17) (2025-05-07)
+
+
+### Bug Fixes
+
+* change toasts to appear right and some problem with updates ([44a8c9e](https://github.com/manga-you-know/desktop/commit/44a8c9ed1ad8d359359e652c4f96375580b1b1a9))
+
 ## [0.4.16](https://github.com/manga-you-know/desktop/compare/v0.4.15...v0.4.16) (2025-05-07)
 
 
 ### Bug Fixes
 
 * some minor UI issues ([8d23217](https://github.com/manga-you-know/desktop/commit/8d23217319a59bde41f0f98bccde6eb0d447f3dc))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.16 [skip ci] ([5d7a87b](https://github.com/manga-you-know/desktop/commit/5d7a87b5bab8d0716ad0be885e2a5f49945e4dee))
 
 ## [0.4.15](https://github.com/manga-you-know/desktop/compare/v0.4.14...v0.4.15) (2025-05-06)
 
@@ -50,22 +62,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.13 [skip ci] ([1529e67](https://github.com/manga-you-know/desktop/commit/1529e6718d50ca34e701e8f1af6ebd3cff59fe0a))
-
-## [0.4.12](https://github.com/manga-you-know/desktop/compare/v0.4.11...v0.4.12) (2025-05-04)
-
-
-### Bug Fixes
-
-* change some animations and fix image favorite for local reading ([1ba40a5](https://github.com/manga-you-know/desktop/commit/1ba40a5bf9a3d16dcc25dec356b6799ce88b8e09))
-* chapters local not loading right on and minor bug ([08b2b1f](https://github.com/manga-you-know/desktop/commit/08b2b1fda174f9a0c1a6aa5d607967eb8ddd3975))
-
-
-### Styles
-
-* change the chapters a bit ([91a9d0d](https://github.com/manga-you-know/desktop/commit/91a9d0dc59faf8e4d95ce8bf8fa4010cb9f05ccf))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.12 [skip ci] ([6bdc465](https://github.com/manga-you-know/desktop/commit/6bdc465962de831f600270646c9493c2f7194d71))
 
