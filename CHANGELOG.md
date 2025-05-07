@@ -1,3 +1,10 @@
+## [0.4.16](https://github.com/manga-you-know/desktop/compare/v0.4.15...v0.4.16) (2025-05-07)
+
+
+### Bug Fixes
+
+* some minor UI issues ([8d23217](https://github.com/manga-you-know/desktop/commit/8d23217319a59bde41f0f98bccde6eb0d447f3dc))
+
 ## [0.4.15](https://github.com/manga-you-know/desktop/compare/v0.4.14...v0.4.15) (2025-05-06)
 
 
@@ -9,6 +16,11 @@
 ### Bug Fixes
 
 * sending too much notification about updates ([f9a7845](https://github.com/manga-you-know/desktop/commit/f9a78452aa1cdd6895c74d30214bb1c0917d91a7))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.4.15 [skip ci] ([2a73603](https://github.com/manga-you-know/desktop/commit/2a736032ba85ee028fae38598b600ee551167691))
 
 ## [0.4.14](https://github.com/manga-you-know/desktop/compare/v0.4.13...v0.4.14) (2025-05-05)
 
@@ -56,21 +68,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.12 [skip ci] ([6bdc465](https://github.com/manga-you-know/desktop/commit/6bdc465962de831f600270646c9493c2f7194d71))
-
-## [0.4.11](https://github.com/manga-you-know/desktop/compare/v0.4.10...v0.4.11) (2025-05-03)
-
-
-### New Features
-
-* Add reading offline!!! ([4203e12](https://github.com/manga-you-know/desktop/commit/4203e12b806240555dea638bf5865790650392be))
-
-
-### Bug Fixes
-
-* two icons not pre loadeds ([0b72ea2](https://github.com/manga-you-know/desktop/commit/0b72ea2d9af7b98fbaaeabadedd6fdd9df034e61))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.11 [skip ci] ([1e2ee4f](https://github.com/manga-you-know/desktop/commit/1e2ee4f69797e9651cf1fd2387680d13d94352e6))
 
