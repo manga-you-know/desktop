@@ -132,6 +132,7 @@ export async function refreshCollections() {
   const newCollections = await MarkDB.getMarks();
   collections.set(newCollections);
 }
+
 export async function refreshPanels() {
   const path = "favorite-panels";
   let downloaded: DirEntry[] = [];

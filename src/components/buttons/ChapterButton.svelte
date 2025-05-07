@@ -30,7 +30,7 @@
 </script>
 
 <Button
-  class="chapter-button w-full flex justify-between items-center rounded-md group transition-colors duration-500 hover:bg-gray-900"
+  class="chapter-button w-full flex justify-between items-center rounded-md group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-gray-900"
   variant="secondary"
   size="sm"
   bind:onclick
@@ -56,7 +56,6 @@
             : isDownloaded
               ? "lucide:folder-check"
               : "lucide:download"}
-          class="w-5 h-5"
         />
       </Button>
     </Tooltip>
@@ -66,13 +65,15 @@
       {chapter.number}
     </span>
   </div>
-  <Button
-    class="h-7 w-7 "
-    variant="ghost"
-    size="sm"
-    tabindex={-1}
-    bind:onclick={onreadclick}
-  >
-    <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="w-5 h-5" />
-  </Button>
+  <Tooltip title={isReaded ? "Remove readed" : "Mark as read"}>
+    <Button
+      class="h-7 w-7 "
+      variant="ghost"
+      size="sm"
+      tabindex={-1}
+      bind:onclick={onreadclick}
+    >
+      <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="w-5 h-5" />
+    </Button>
+  </Tooltip>
 </Button>

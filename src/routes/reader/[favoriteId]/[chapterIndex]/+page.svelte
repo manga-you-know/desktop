@@ -38,6 +38,7 @@
     BaseDirectory,
     type DirEntry,
     copyFile,
+    mkdir,
   } from "@tauri-apps/plugin-fs";
   import { open as openPath } from "@tauri-apps/plugin-shell";
   import { goto, afterNavigate } from "$app/navigation";
@@ -159,6 +160,10 @@
       toast.warning("Page removed!", { duration: 300 });
     } else {
       if (isLocal) {
+        await mkdir("favorite-panels", {
+          baseDir: BaseDirectory.Document,
+          recursive: true,
+        });
         await copyFile(
           `Mangas/${favorite.folder_name}/${chapter.number}/${(
             currentlyCount - 1
@@ -325,7 +330,7 @@
     }
 
     if (key === "f") {
-      fitMode.set($fitMode === "" ? "fit-width" : "");
+      fitMode.set($fitMode === "" ? "width" : "");
       saveSettings();
     }
     if (key === "a") {
@@ -451,7 +456,7 @@
           disabled={$viewMode === "scroll"}
           onclick={() => {
             if ($fitMode === "") {
-              $fitMode = "fit-width";
+              $fitMode = "width";
             } else {
               $fitMode = "";
             }
@@ -459,7 +464,7 @@
           }}
         >
           <Icon
-            icon={$fitMode === "fit-width"
+            icon={$fitMode === "width"
               ? "tabler:arrow-autofit-content-filled"
               : "tabler:arrow-autofit-content"}
           />
@@ -618,7 +623,7 @@
         }}
       ></button> -->
     </button>
-    {#if $fitMode === "fit-width"}
+    {#if $fitMode === "width"}
       <div class="h-full w-full overflow-auto">
         <div class="min-h-full w-full flex items-center justify-center">
           <img

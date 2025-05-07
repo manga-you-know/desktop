@@ -21,6 +21,12 @@ const config: Config = {
       },
     },
     extend: {
+      transitionDuration: {
+        "200": "200ms",
+        "400": "400ms",
+        "600": "600ms",
+        "800": "800ms",
+      },
       colors: {
         border: "hsl(var(--border) / <alpha-value>)",
         input: "hsl(var(--input) / <alpha-value>)",

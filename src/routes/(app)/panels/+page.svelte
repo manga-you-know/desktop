@@ -1,13 +1,5 @@
 <script lang="ts">
   import { FavoritePanel } from "@/components";
-  import {
-    exists,
-    readDir,
-    BaseDirectory,
-    type DirEntry,
-  } from "@tauri-apps/plugin-fs";
-  import { convertFileSrc } from "@tauri-apps/api/core";
-  import { documentDir, join } from "@tauri-apps/api/path";
   import { onMount } from "svelte";
   import { panels } from "@/store";
   import { copyImageFromPath, refreshPanels } from "@/functions";

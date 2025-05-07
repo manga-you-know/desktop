@@ -100,7 +100,7 @@
   .scrollbar::-webkit-scrollbar-thumb {
     @apply dark:bg-slate-900 bg-slate-400;
     padding: 10px;
-    border-radius: 30%;
+    border-radius: 6px;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {

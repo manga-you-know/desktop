@@ -8,6 +8,9 @@
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "explorer.fileNesting.enabled": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "explorer.fileNesting.patterns": {
     "package.json": "pnpm-lock.yaml, package.json, bun.lockb, package-lock.json, .pnpmrc, turbo.json, tsconfig.json, components.json, .env",
     "*.tsx": "*.test.tsx, *.spec.tsx, *.styles.ts, *.module.css, *.module.scss",
