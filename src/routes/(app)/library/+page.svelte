@@ -19,8 +19,14 @@
   let displayedFavorites: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
-  libraryFavorites.subscribe((_) => {
-    page = 1;
+  libraryFavorites.subscribe(async (_) => {
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    console.log(page, displayedFavorites.length);
+    if (displayedFavorites.length === 0 && page > 1) {
+      page = page - 1;
+      console.log("FUCKING");
+    }
+    console.log(page);
   });
   const siblingCount = 1;
   onMount(async () => {

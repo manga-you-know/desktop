@@ -29,6 +29,7 @@
     lastPage,
     isMobile,
     openReadMenu,
+    openSearch,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -121,14 +122,14 @@
     if (currentlyCount === 1) return;
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
-    if ($viewMode === "single") scrollToTop();
+    if ($viewMode === "single" || $fitMode === "") scrollToTop();
   }
 
   function nextPage() {
     if (currentlyCount === totalPage) return;
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
-    if ($viewMode === "single") scrollToTop();
+    if ($viewMode === "single" || $fitMode === "") scrollToTop();
   }
 
   function goHome() {
@@ -157,7 +158,7 @@
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
       await remove(path, { baseDir: BaseDirectory.Document });
       refreshDownloadeds();
-      toast.warning("Page removed!", { duration: 300 });
+      toast.warning("Page removed!", { duration: 600 });
     } else {
       if (isLocal) {
         await mkdir("favorite-panels", {
@@ -182,7 +183,7 @@
           currentlyImagePath
         );
       }
-      toast.success("Page favorited!", { duration: 300 });
+      toast.success("Page favorited!", { duration: 600 });
       refreshDownloadeds();
     }
   }
@@ -284,63 +285,63 @@
   function handleKeydown(event: KeyboardEvent) {
     const key = event.key.toLowerCase();
     const ctrl = event.metaKey || event.ctrlKey;
-    if ($viewMode === "single") {
-      if (key === "arrowleft") {
-        prevPage();
-      }
-      if (key === "arrowright") {
-        nextPage();
-      }
-      if (key === " ") {
-        nextPage();
-      }
-      if (key === "enter") {
-        if (currentlyCount === totalPage && !isTheLastChapter) {
-          handleGoChapter("next");
+    if (!$openSearch) {
+      if ($viewMode === "single") {
+        if (key === "arrowleft") {
+          prevPage();
         }
-        nextPage();
+        if (key === "arrowright") {
+          nextPage();
+        }
+        if (key === " ") {
+          nextPage();
+        }
+        if (key === "enter") {
+          if (currentlyCount === totalPage && !isTheLastChapter) {
+            handleGoChapter("next");
+          }
+          nextPage();
+        }
       }
       if (key === "backspace") {
         prevPage();
       }
-    }
-    if (key === "c" && ctrl) {
-      copyImageBase64(images[currentlyCount - 1]);
-    }
-    if (key === "s" && ctrl) {
-      favoriteImage();
-    }
-    if (key === "+" || (event.ctrlKey && key === "=")) {
-      $zoomLevel = Math.min(200, $zoomLevel + 10);
-    }
-    if (key === "-" || (event.ctrlKey && key === "-")) {
-      $zoomLevel = Math.max(50, $zoomLevel - 10);
-    }
+      if (key === "c" && ctrl) {
+        copyImageBase64(images[currentlyCount - 1]);
+      }
+      if (key === "s" && ctrl) {
+        favoriteImage();
+      }
+      if (key === "+" || (event.ctrlKey && key === "=")) {
+        $zoomLevel = Math.min(200, $zoomLevel + 10);
+      }
+      if (key === "-" || (event.ctrlKey && key === "-")) {
+        $zoomLevel = Math.max(50, $zoomLevel - 10);
+      }
+      if (key === ">") {
+        handleGoChapter("next");
+      }
+      if (key === "<") {
+        handleGoChapter("prev");
+      }
 
-    if (key === ">") {
-      handleGoChapter("next");
-    }
-    if (key === "<") {
-      handleGoChapter("prev");
-    }
+      if (key === "v") {
+        $viewMode = $viewMode === "single" ? "scroll" : "single";
+        saveSettings();
+      }
 
-    if (key === "v") {
-      $viewMode = $viewMode === "scroll" ? "single" : "scroll";
-      saveSettings();
+      if (key === "f") {
+        fitMode.set($fitMode === "" ? "width" : "");
+        saveSettings();
+      }
+      if (key === "a") {
+        openReadMenu.set(!$openReadMenu);
+        saveSettings();
+      }
+      if (key === "m") {
+        openMenuChapters.set(!$openMenuChapters);
+      }
     }
-
-    if (key === "f") {
-      fitMode.set($fitMode === "" ? "width" : "");
-      saveSettings();
-    }
-    if (key === "a") {
-      openReadMenu.set(!$openReadMenu);
-      saveSettings();
-    }
-    if (key === "m") {
-      openMenuChapters.set(!$openMenuChapters);
-    }
-
     if (key === "f4") {
       goHome();
     }
@@ -588,8 +589,15 @@
       class="fixed inset-0 flex cursor-default"
       style="z-index: 40;"
       use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+      onfocus={(e) => {
+        e.currentTarget.blur();
+      }}
+      tabindex={-1}
       onswipe={handleSwipe}
-      onclick={nextPage}
+      onclick={(e) => {
+        nextPage();
+        e.currentTarget.blur();
+      }}
       oncontextmenu={(e) => {
         e.preventDefault();
         prevPage();

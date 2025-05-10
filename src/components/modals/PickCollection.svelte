@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { refreshFavorites, refreshLibrary } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import {
     AlertDialog,
@@ -26,7 +27,15 @@
   }: Props = $props();
 </script>
 
-<AlertDialog.Root bind:open>
+<AlertDialog.Root
+  bind:open
+  onOpenChange={(open) => {
+    if (!open) {
+      refreshFavorites();
+      refreshLibrary();
+    }
+  }}
+>
   <AlertDialog.Content class="w-[26rem] flex flex-col justify-center">
     <AlertDialog.Title class="text-center">
       Select collections to

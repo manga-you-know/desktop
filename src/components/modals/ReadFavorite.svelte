@@ -378,9 +378,15 @@
               size="sm"
               onclick={() => {
                 if (nextChapter) {
-                  const originalIndex = $globalChapters.findIndex(
-                    (c) => c.chapter_id === nextChapter.chapter_id
-                  );
+                  const originalIndex =
+                    chaptersMode === "web"
+                      ? $globalChapters.findIndex(
+                          (c) => c.chapter_id === nextChapter.chapter_id
+                        )
+                      : chaptersDl.findIndex(
+                          (c) => c.chapter_id === nextChapter.chapter_id
+                        );
+
                   goto(`/reader/${favorite.id}/${originalIndex}`);
                 }
               }}
@@ -454,7 +460,7 @@
                 tabindex={-1}
                 disabled={nextChapter === undefined}
                 onclick={async (e) => {
-                  e.preventDefault();
+                  e.stopPropagation();
                   if (nextChapter) {
                     await addReadedBelow(
                       nextChapter,

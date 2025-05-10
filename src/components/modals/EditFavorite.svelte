@@ -9,6 +9,7 @@
     refreshFavorites,
     setDiscordActivity,
     stopDiscordPresence,
+    loadFavoriteChapter,
   } from "@/functions";
   import type { Favorite } from "@/interfaces";
   import Icon from "@iconify/svelte";
@@ -110,8 +111,12 @@
 
 <Dialog.Root
   bind:open
-  onOpenChange={async () => {
-    await Promise.all([refreshLibrary(), refreshFavorites()]);
+  onOpenChange={(open) => {
+    if (!open) {
+      loadFavoriteChapter(favorite);
+      refreshFavorites();
+      refreshLibrary();
+    }
   }}
 >
   <Dialog.Content>
