@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaLivreDl implements MangaDl {
@@ -55,6 +56,7 @@ export class MangaLivreDl implements MangaDl {
           .join("-");
         const imageFormat = splitedSrc.at(-1)?.split(".").at(-1);
         result.push({
+          id: 0,
           name: divContent.find("h2").text(),
           source: "MangaLivre",
           source_id: resultId,

@@ -25,6 +25,7 @@
     readeds,
     preferableLanguage,
     isChaptersDescending,
+    downloadings,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -38,11 +39,7 @@
     refreshLibrary,
     saveSettings,
   } from "@/functions";
-  import type {
-    Favorite,
-    Chapter,
-    Language as LanguageType,
-  } from "@/interfaces";
+  import type { Favorite, Chapter, Language as LanguageType } from "@/types";
   import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
   import { limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
@@ -82,6 +79,7 @@
   let isNextDownloaded = $derived(
     downloaded.map((d) => d.name).includes(nextChapter?.number ?? "")
   );
+
   let store: Store = $state(null!);
   let displayedChaptersLength = $derived(
     chaptersMode === "web"
@@ -98,8 +96,55 @@
   }
 
   let isFetching = $state(false);
-  let isDownloading: { [key: string]: boolean } = $state({});
   let isDownloadingAll = $state(false);
+
+  function isDownloading(chapter: Chapter) {
+    if ($downloadings[favorite.id] === undefined) return false;
+    return (
+      $downloadings[favorite.id].downloading.find(
+        (dl) => dl.chapter_id === chapter.chapter_id
+      ) !== undefined
+    );
+  }
+
+  function initDownloadings() {
+    if ($downloadings[favorite.id] === undefined) {
+      downloadings.update((d) => ({
+        ...d,
+        [favorite.id]: {
+          chapters: $globalChapters,
+          fav: favorite,
+          downloadQueue: [],
+          downloading: [],
+        },
+      }));
+    }
+  }
+
+  function pushDownloading(chapter: Chapter) {
+    initDownloadings();
+    downloadings.update((d) => ({
+      ...d,
+      [favorite.id]: {
+        ...d[favorite.id],
+        downloading: [...d[favorite.id].downloading, chapter],
+      },
+    }));
+  }
+
+  function removeDownloading(chapter: Chapter) {
+    initDownloadings();
+    downloadings.update((d) => ({
+      ...d,
+      [favorite.id]: {
+        ...d[favorite.id],
+        downloading: d[favorite.id].downloading.filter(
+          (c) => c.chapter_id !== chapter.chapter_id
+        ),
+      },
+    }));
+  }
+
   async function refreshDownloadeds() {
     const path = `Mangas/${favorite.folder_name}`;
     if (await exists(path, { baseDir: BaseDirectory.Download })) {
@@ -130,9 +175,11 @@
       }
     });
     if (chaptersToDownload.length === 0) return;
+    initDownloadings();
+    $downloadings[favorite.id].downloadQueue = chaptersToDownload;
     const downloadChapter = async (chapter: Chapter) => {
       downloadingNow += 1;
-      isDownloading[chapter.chapter_id] = true;
+      pushDownloading(chapter);
       try {
         await $downloadManager.downloadChapter(chapter, favorite, store);
       } catch (e) {
@@ -140,17 +187,22 @@
       }
       await refreshDownloadeds();
       refreshJsonChapters();
-      isDownloading[chapter.chapter_id] = false;
+      removeDownloading(chapter);
       downloadingNow -= 1;
     };
-    const downloadQueue = chaptersToDownload.map((chapter) => {
-      return async () => downloadChapter(chapter);
-    });
+
     while (true) {
       if (downloadingNow < maxCurrently) {
-        const toRun = downloadQueue.shift();
+        const toRun = async () =>
+          downloadChapter(
+            $downloadings[favorite.id].downloadQueue.shift() ?? {
+              chapter_id: "",
+              source: "",
+              number: "",
+            }
+          );
         if (!toRun) continue;
-        if (downloadQueue.length === 0) {
+        if ($downloadings[favorite.id].downloadQueue.length === 0) {
           await toRun();
           break;
         }
@@ -394,7 +446,7 @@
               <div class="flex items-center gap-2">
                 <Tooltip
                   title={nextChapter !== undefined
-                    ? isDownloading[nextChapter?.chapter_id]
+                    ? isDownloading(nextChapter)
                       ? "Downloading..."
                       : isNextDownloaded
                         ? "Open folder"
@@ -407,21 +459,20 @@
                     size="sm"
                     tabindex={-1}
                     disabled={nextChapter
-                      ? isDownloading[nextChapter?.chapter_id] &&
-                        !isNextDownloaded
+                      ? isDownloading(nextChapter) && !isNextDownloaded
                       : true}
                     onclick={async (e) => {
                       e.stopPropagation();
                       if (nextChapter === undefined) return;
                       if (!isNextDownloaded) {
-                        isDownloading[nextChapter.chapter_id] = true;
+                        pushDownloading(nextChapter);
                         await $downloadManager.downloadChapter(
                           nextChapter,
                           favorite
                         );
                         await refreshDownloadeds();
+                        removeDownloading(nextChapter);
                         refreshJsonChapters();
-                        isDownloading[nextChapter.chapter_id] = false;
                       } else {
                         const path = await join(
                           await downloadDir(),
@@ -434,7 +485,7 @@
                     }}
                     ><Icon
                       icon={nextChapter
-                        ? isDownloading[nextChapter?.chapter_id] &&
+                        ? isDownloading(nextChapter) &&
                           !downloaded
                             .map((d) => d.name)
                             .includes(nextChapter?.number ?? "")
@@ -522,11 +573,12 @@
                       .includes(chapter.number)}
                     {@const isReadedHere =
                       isReaded(chapter, $readeds) !== undefined}
+                    {@const isDownloadingHere = isDownloading(chapter)}
                     <ChapterButton
                       {chapter}
                       {isDownloaded}
                       isReaded={isReadedHere}
-                      bind:isDownloading
+                      isDownloading={isDownloadingHere}
                       onclick={() => {
                         const originalIndex = $globalChapters.findIndex(
                           (c) => c.chapter_id === chapter.chapter_id
@@ -536,14 +588,14 @@
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();
                         if (!isDownloaded) {
-                          isDownloading[chapter.chapter_id] = true;
+                          pushDownloading(chapter);
                           await $downloadManager.downloadChapter(
                             chapter,
                             favorite
                           );
+                          removeDownloading(chapter);
                           await refreshDownloadeds();
                           refreshJsonChapters();
-                          isDownloading[chapter.chapter_id] = false;
                         } else {
                           const path = await join(
                             await downloadDir(),
@@ -599,7 +651,7 @@
                       {chapter}
                       isDownloaded
                       isReaded={isReadedHere}
-                      bind:isDownloading
+                      isDownloading={false}
                       onclick={() => {
                         $globalChapters = chaptersDl;
                         const originalIndex = $globalChapters.findIndex(

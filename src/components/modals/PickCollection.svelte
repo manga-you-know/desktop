@@ -1,6 +1,6 @@
 <script lang="ts">
   import { refreshFavorites, refreshLibrary } from "@/functions";
-  import type { Favorite } from "@/interfaces";
+  import type { Favorite } from "@/types";
   import {
     AlertDialog,
     Button,

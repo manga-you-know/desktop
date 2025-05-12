@@ -1,7 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
-import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/interfaces";
+import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/types";
 import { FavoriteDB, ReadedDB } from "@/repositories";
 import {
   downloadManager,

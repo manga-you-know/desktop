@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Language } from "@/interfaces";
+  import type { Language } from "@/types";
   import {
     Button,
     Command,

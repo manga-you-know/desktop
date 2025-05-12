@@ -1,4 +1,4 @@
-import type { Suggestion } from "@/interfaces";
+import type { Suggestion } from "@/types";
 
 export const SHOUNENS: Suggestion[] = [
   {

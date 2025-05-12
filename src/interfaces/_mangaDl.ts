@@ -1,4 +1,4 @@
-import type { Favorite, Chapter, Language } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export interface MangaDl {
   baseUrl: string;

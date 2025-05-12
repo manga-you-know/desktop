@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { Tooltip } from "svelte-ux";
   import { Button } from "@/lib/components";
-  import type { Chapter } from "@/interfaces";
+  import type { Chapter } from "@/types";
 
   interface Event {
     stopPropagation: () => void;
@@ -11,7 +11,7 @@
   interface Props {
     chapter: Chapter;
     isDownloaded: boolean;
-    isDownloading: { [key: string]: boolean };
+    isDownloading: boolean;
     isReaded: boolean;
     onclick?: () => void;
     ondownloadclick?: (e: Event) => void;
@@ -21,8 +21,8 @@
   let {
     chapter,
     isDownloaded = $bindable(false),
-    isDownloading = $bindable({ chapter_id: false }),
     isReaded = $bindable(false),
+    isDownloading = false,
     onclick,
     ondownloadclick,
     onreadclick,
@@ -37,7 +37,7 @@
 >
   <div class="flex items-center gap-2">
     <Tooltip
-      title={isDownloading[chapter.chapter_id]
+      title={isDownloading
         ? "Downloading..."
         : isDownloaded
           ? "Open folder"
@@ -48,10 +48,10 @@
         variant="ghost"
         size="sm"
         tabindex={-1}
-        disabled={isDownloading[chapter.chapter_id] && !isDownloaded}
+        disabled={isDownloading && !isDownloaded}
         bind:onclick={ondownloadclick}
         ><Icon
-          icon={isDownloading[chapter.chapter_id] && !isDownloaded
+          icon={isDownloading && !isDownloaded
             ? "line-md:loading-alt-loop"
             : isDownloaded
               ? "lucide:folder-check"

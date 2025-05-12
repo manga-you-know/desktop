@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class SlimeReadDl implements MangaDl {
   baseUrl = "https://slimeread.com";
@@ -30,6 +31,7 @@ export class SlimeReadDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -50,6 +52,7 @@ export class SlimeReadDl implements MangaDl {
     const json = await response.json();
     return json.map((b: any) => {
       return {
+        id: 0,
         name: b.book_name_original,
         folder_name: b.book_name,
         cover: b.book_image,

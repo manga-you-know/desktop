@@ -3,14 +3,19 @@
   import { page } from "$app/state";
   import { saveSettings } from "@/functions";
   import { Sidebar, Label, Avatar } from "@/lib/components";
+  import { Badge } from "svelte-ux";
   import {
     openSearch,
     openSettings,
     openAdd,
     lastPage,
     openCollection,
+    openDownloads,
+    downloadings,
+    favoritesLoaded,
   } from "@/store";
   import Icon from "@iconify/svelte";
+  import type { Downloading } from "@/types";
 
   const items = [
     {
@@ -54,6 +59,17 @@
   let rotation: number = 0;
   let imgElement: HTMLImageElement | null = null;
   let isAnimating: boolean = false;
+  let downloadingCount = $derived(
+    Object.values<Downloading>($downloadings).reduce(
+      (a1, a2) => a1 + a2.downloading.length,
+      0
+    )
+  );
+  let favoritesWithChapterCount = $derived(
+    Object.values($favoritesLoaded)
+      .map((fv) => (fv.nextChapter ? 1 : 0))
+      .reduce((a, b) => a + b, 0 as number)
+  );
 
   function rotateImage(): void {
     if (isAnimating) return;
@@ -106,12 +122,27 @@
                 }}
                 tabindex={-1}
               >
-                <Icon
-                  icon={page.url.pathname === item.path
-                    ? item.iconActive
-                    : item.icon}
-                  class="!w-5 !h-5 ml-[-2px]"
-                />
+                {#if item.path !== "/favorites" || favoritesWithChapterCount === 0}
+                  <Icon
+                    icon={page.url.pathname === item.path
+                      ? item.iconActive
+                      : item.icon}
+                    class="!w-5 !h-5 ml-[-2px]"
+                  />
+                {:else}
+                  <Badge
+                    class="dark:text-black"
+                    value={favoritesWithChapterCount}
+                    small
+                  >
+                    <Icon
+                      icon={page.url.pathname === item.path
+                        ? item.iconActive
+                        : item.icon}
+                      class="!w-5 !h-5 ml-[-2px]"
+                    />
+                  </Badge>
+                {/if}
                 <Label class="cursor-pointer">{item.name}</Label>
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
@@ -126,9 +157,9 @@
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
-                $openSearch = true;
-                $openSettings = false;
-                $openAdd = false;
+                openSearch.set(true);
+                openSettings.set(false);
+                openAdd.set(false);
               }}
               tabindex={-1}
             >
@@ -144,7 +175,10 @@
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
               class="pr-0 mr-0"
-              onclick={() => openCollection.set(true)}
+              onclick={(e) => {
+                e.currentTarget.blur();
+                openCollection.set(true);
+              }}
             >
               <Icon
                 class="!w-6 !h-5 mx-[-3px]"
@@ -159,7 +193,35 @@
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
-                $openSettings = true;
+                openDownloads.set(true);
+              }}
+              tabindex={-1}
+            >
+              {#if downloadingCount > 0}
+                <Badge class="dark:text-black" value={downloadingCount} small>
+                  <Icon
+                    icon={$openDownloads
+                      ? "basil:download-solid"
+                      : "basil:download-outline"}
+                    class="!w-6 !h-6 ml-[-3px]"
+                  />
+                </Badge>
+              {:else}
+                <Icon
+                  icon={$openDownloads
+                    ? "basil:download-solid"
+                    : "basil:download-outline"}
+                  class="!w-6 !h-6 ml-[-3px]"
+                />
+              {/if}
+              <Label class="cursor-pointer">Downloads</Label>
+            </Sidebar.MenuButton>
+          </Sidebar.MenuItem>
+          <Sidebar.MenuItem>
+            <Sidebar.MenuButton
+              onclick={(e) => {
+                e.currentTarget.blur();
+                openSettings.set(true);
               }}
               tabindex={-1}
             >
@@ -172,11 +234,12 @@
               <Label class="cursor-pointer">Settings</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
+
           <Sidebar.MenuItem class="hidden">
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
-                $openAdd = true;
+                openAdd.set(true);
               }}
               tabindex={-1}
             >

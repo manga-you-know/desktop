@@ -1,4 +1,4 @@
-import type { Source } from "@/interfaces";
+import type { Source } from "@/types";
 
 // export const MANGASOURCES: Source[] = [
 //   "MangaSee",

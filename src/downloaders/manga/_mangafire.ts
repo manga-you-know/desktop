@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaFireDl implements MangaDl {
@@ -57,6 +58,7 @@ export class MangaFireDl implements MangaDl {
           .slice(0, splitedLink.length - 1)
           .join(".");
         mangas.push({
+          id: 0,
           name: name,
           folder_name: folderName,
           cover: img.attr("src")?.replace("@100", "") ?? "/myk.png",

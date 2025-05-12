@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Label } from "@/lib/components";
-  import type { Chapter, Favorite } from "@/interfaces";
+  import type { Chapter, Favorite } from "@/types";
   import Icon from "@iconify/svelte";
   import {
     addReadedBelow,
@@ -80,7 +80,10 @@
         await refreshReadeds(favorite);
       }}
       ><Icon
-        icon={isReaded({...chapter, chapter_id: chapter.chapter_id.split("<token>")[0]}, $readeds) !== undefined
+        icon={isReaded(
+          { ...chapter, chapter_id: chapter.chapter_id.split("<token>")[0] },
+          $readeds
+        ) !== undefined
           ? "lucide:check"
           : "lucide:minus"}
         class="w-5 h-5"

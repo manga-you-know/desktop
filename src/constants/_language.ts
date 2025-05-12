@@ -1,4 +1,4 @@
-import type { Language } from "@/interfaces";
+import type { Language } from "@/types";
 
 export const LANGUAGE_LABELS: { [key: string]: string } = {
   th: "ไทย",

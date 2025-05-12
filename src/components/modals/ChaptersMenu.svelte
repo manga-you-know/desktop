@@ -5,7 +5,7 @@
     stopDiscordPresence,
     setFullscreen,
   } from "@/functions";
-  import type { Chapter, Favorite } from "@/interfaces";
+  import type { Chapter, Favorite } from "@/types";
   import { Button, Checkbox, Label, Sheet, Switch } from "@/lib/components";
   import { openMenuChapters, globalChapters, lastPage } from "@/store";
   import Icon from "@iconify/svelte";

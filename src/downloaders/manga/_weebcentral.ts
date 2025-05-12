@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class WeebCentralDl implements MangaDl {
   baseUrl = "https://weebcentral.com";
@@ -35,6 +36,7 @@ export class WeebCentralDl implements MangaDl {
     const href = $("link[rel=canonical]").attr("href") ?? "";
     const uls = $("ul.flex.flex-col.gap-4");
     return {
+      id: 0,
       name: $("h1").first().text(),
       source: "WeebCentral",
       source_id: mangaId,
@@ -50,6 +52,7 @@ export class WeebCentralDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -77,6 +80,7 @@ export class WeebCentralDl implements MangaDl {
       const a = aList.eq(1);
       const href = $(a).attr("href") ?? "";
       mangas.push({
+        id: 0,
         name: $(a).text(),
         source: "WeebCentral",
         source_id: href.split("/").slice(-2, -1)[0],

@@ -22,7 +22,7 @@ import {
   discordIntegration,
 } from "@/store";
 import { goto } from "$app/navigation";
-import type { Language } from "@/interfaces";
+import type { Language } from "@/types";
 
 let loadedSettings: Store;
 

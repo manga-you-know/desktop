@@ -1,7 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME } from "@/constants";
-import type { Mark, MarkFavorites } from "@/types";
-import type { Favorite } from "@/interfaces";
+import type { Favorite, Mark, MarkFavorites } from "@/types";
 
 let db: Database = null!;
 

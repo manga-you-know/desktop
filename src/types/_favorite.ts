@@ -1,8 +1,7 @@
-import type { Chapter } from "./_chapter";
-import type { Mark } from "@/types";
+import type { Chapter, Mark } from "@/types";
 
 export interface Favorite {
-  id?: number;
+  id: number;
   user_id?: number;
   name: string;
   folder_name: string;

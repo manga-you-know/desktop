@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter } from "@/types";
 
 export class BatcaveBizDl implements MangaDl {
   baseUrl = "https://batcave.biz";
@@ -30,6 +31,7 @@ export class BatcaveBizDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -55,6 +57,7 @@ export class BatcaveBizDl implements MangaDl {
       const id = link.split("/").at(-1)?.replace(".html", "") ?? "";
       const src = this.baseUrl + ($(div).find("img").attr("data-src") ?? "");
       comics.push({
+        id: 0,
         name: $(div).find("h2").text(),
         folder_name: id,
         source: "BatcaveBiz",

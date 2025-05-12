@@ -8,9 +8,7 @@ import {
   libraryCollection,
 } from "@/store";
 import { MarkDB, UserDB } from "@/repositories";
-import type { Favorite } from "@/interfaces";
-import type { User } from "@/models";
-import type { Mark } from "@/types";
+import type { Favorite, Mark } from "@/types";
 import { get } from "svelte/store";
 
 let db: Database = null!;

@@ -1,2 +1,12 @@
 export type { Mark } from "./_mark";
+export type { Readed } from "./_readed";
+export type { Source } from "./_source";
+export type { Chapter } from "./_chapter";
+export type { Episode } from "./_episode";
+export type { Favorite } from "./_favorite";
+export type { Language } from "./_language";
+export type { Suggestion } from "./_suggestion";
+export type { UpdateInfo } from "./_updateInfo";
+export type { Downloading } from "./_downloading";
 export type { MarkFavorites } from "./_markFavorite";
+export type { FavoriteLoaded } from "./_favoriteLoaded";

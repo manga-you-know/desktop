@@ -3,7 +3,7 @@
   import { ChevronsUpDown } from "lucide-svelte";
   import { MANGASOURCES, ANIMESOURCES, COMICSOURCES } from "@/constants";
   import { selectedSource } from "@/store";
-  import type { Source } from "@/interfaces";
+  import type { Source } from "@/types";
   import Icon from "@iconify/svelte";
   import { saveSettings } from "@/functions";
   import { Select } from "@/components";

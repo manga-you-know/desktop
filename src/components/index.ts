@@ -34,6 +34,7 @@ export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";
 export { default as EditFavorite } from "./modals/EditFavorite.svelte";
 export { default as PanelModal } from "./modals/PanelModal.svelte";
 export { default as AddCustom } from "./modals/AddCustom.svelte";
+export { default as Downloads } from "./modals/Downloads.svelte";
 export { default as AskDelete } from "./modals/AskDelete.svelte";
 export { default as Settings } from "./modals/Settings.svelte";
 export { default as AskSure } from "./modals/AskSure.svelte";

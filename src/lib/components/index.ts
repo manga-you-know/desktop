@@ -1,5 +1,6 @@
 // complex ui
 export * as AlertDialog from "./ui/alert-dialog";
+export * as Accordion from "./ui/accordion";
 export * as Dialog from "./ui/dialog";
 export * as Pagination from "./ui/pagination";
 export * as Tooltip from "./ui/tooltip";

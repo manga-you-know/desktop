@@ -54,11 +54,11 @@
 </script>
 
 <AlertDialog.Root bind:open={$openCollection}>
-  <AlertDialog.Content class="w-[28rem]">
-    <div class="flex flex-col items-center gap-2">
+  <AlertDialog.Content class="w-[26rem] px-2">
+    <div class="w-[26rem] flex flex-col items-center gap-2">
       <div class="inline-flex gap-2">
         <Input
-          class="w-80"
+          class="w-80 ml-[-12px]"
           variant="secondary"
           placeholder="Create collection..."
           floatingLabel
@@ -75,9 +75,9 @@
           <Icon class="!w-5 !h-5" icon="lucide:plus" />
         </Button>
       </div>
-      <ScrollArea class="h-80">
-        <div class="flex flex-col gap-1 justify-center px-5">
-          {#each $collections.reverse() as collection}
+      <ScrollArea class="h-80 p-0 rounded-xl">
+        <div class="flex flex-col gap-1 justify-center pr-3">
+          {#each $collections.reverse() as collection, i (i)}
             <div class="inline-flex">
               <Input
                 id={collection.id.toString()}

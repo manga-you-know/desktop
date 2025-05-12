@@ -14,7 +14,7 @@ import {
   readeds,
   ultraFavorites,
 } from "@/store";
-import type { Chapter, Favorite, Readed } from "@/interfaces";
+import type { Favorite, Chapter, Readed } from "@/types";
 import {
   BaseDirectory,
   exists,

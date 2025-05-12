@@ -20,7 +20,7 @@
     isFullscreen,
     readeds,
   } from "@/store";
-  import type { Episode, Favorite } from "@/interfaces";
+  import type { Episode, Favorite } from "@/types";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,

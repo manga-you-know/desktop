@@ -1,5 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class MangaDexDl implements MangaDl {
@@ -12,6 +13,7 @@ export class MangaDexDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -47,6 +49,7 @@ export class MangaDexDl implements MangaDl {
         : manga.attributes.title[Object.keys(manga.attributes.title)[0]];
 
       listMangas.push({
+        id: 0,
         source_id: manga.id,
         name: titleName,
         folder_name: encodeURIComponent(titleName),

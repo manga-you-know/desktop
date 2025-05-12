@@ -1,6 +1,6 @@
 import { Command } from "@tauri-apps/plugin-shell";
 import { autoEnterFullscreen } from "@/store";
-import type { Episode } from "@/interfaces";
+import type { Episode } from "@/types";
 import { get } from "svelte/store";
 
 export async function openPlayer(episode: Episode, title?: string) {

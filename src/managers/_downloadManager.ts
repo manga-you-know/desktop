@@ -18,14 +18,8 @@ import {
   AniplayDl,
   AnimeOwlDl,
 } from "@/downloaders";
-import type {
-  AnimeDl,
-  MangaDl,
-  Favorite,
-  Chapter,
-  Episode,
-  Language,
-} from "@/interfaces";
+import type { AnimeDl, MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Episode, Language } from "@/types";
 import { memoizeExpiring, retry } from "@/utils";
 import { load, Store } from "@tauri-apps/plugin-store";
 import { invoke } from "@tauri-apps/api/core";

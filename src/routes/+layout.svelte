@@ -4,6 +4,7 @@
   import { onMount, onDestroy } from "svelte";
   import {
     AddCustom,
+    Downloads,
     EditCollections,
     Search,
     Settings,
@@ -105,6 +106,7 @@
   <Search />
   <Settings />
   <AddCustom />
+  <Downloads />
   <Update />
   <EditCollections />
   <TooltipPrimitive.Provider>

@@ -1,7 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import { memoize } from "lodash";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class TCBScansDl implements MangaDl {
   baseUrl = "https://tcbonepiecechapters.com/";
@@ -43,6 +44,7 @@ export class TCBScansDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -67,6 +69,7 @@ export class TCBScansDl implements MangaDl {
       const img = $(a).find("img");
       if (img.length) {
         mangas.push({
+          id: 0,
           name: img.attr("alt") || "",
           source_id: $(a).attr("href")?.replace("/mangas/", "") || "",
           folder_name: $(a).attr("href")?.split("/").pop() || "",

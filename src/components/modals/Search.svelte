@@ -15,7 +15,7 @@
     stopDiscordPresence,
     setDiscordActivity,
   } from "@/functions";
-  import type { Favorite } from "@/interfaces";
+  import type { Favorite } from "@/types";
   import { onMount } from "svelte";
   import { cn } from "@/lib/utils";
   import { limitStr } from "@/utils";

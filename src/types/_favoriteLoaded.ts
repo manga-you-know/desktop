@@ -1,4 +1,4 @@
-import type { Chapter, Readed } from "@/interfaces";
+import type { Chapter, Readed } from "@/types";
 
 export interface FavoriteLoaded {
   readeds: Readed[];

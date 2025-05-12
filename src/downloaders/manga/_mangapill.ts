@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class MangaPillDl implements MangaDl {
   baseUrl = "https://mangapill.com";
@@ -37,6 +38,7 @@ export class MangaPillDl implements MangaDl {
     const img = $("img");
     const splitedUrl = url.split("/");
     return {
+      id: 0,
       name: $(img).attr("alt") ?? "",
       folder_name: splitedUrl[splitedUrl.length - 1],
       cover: $(img).attr("data-src") ?? "",
@@ -65,6 +67,7 @@ export class MangaPillDl implements MangaDl {
       .each((_, div) => {
         const a = $(div).find("a.relative.block");
         mangas.push({
+          id: 0,
           name: $(div).find("a.mb-2").find("div").text(),
           source_id: a.attr("href")?.replace("/manga/", "") ?? "",
           folder_name: a.attr("href")?.split("/")[2] ?? "",

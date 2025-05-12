@@ -1,13 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { invoke } from "@tauri-apps/api/core";
 import * as cheerio from "cheerio";
-import type {
-  AnimeDl,
-  Favorite,
-  Chapter,
-  Episode,
-  Language,
-} from "@/interfaces";
+import type { AnimeDl } from "@/interfaces";
+import type { Favorite, Chapter, Episode, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class AniplayDl implements AnimeDl {
@@ -50,6 +45,7 @@ export class AniplayDl implements AnimeDl {
       await response.json();
     return responseJson.data.Page.results.map((anime: any) => {
       return {
+        id: 0,
         name: anime.title.english ? anime.title.english : anime.title.romaji,
         folder_name: anime.title.romaji,
         extra_name: anime.title.english,

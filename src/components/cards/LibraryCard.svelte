@@ -8,7 +8,7 @@
     AskDelete,
     PickCollection,
   } from "@/components";
-  import type { Chapter, Favorite, Readed } from "@/interfaces";
+  import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
   import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";

@@ -10,23 +10,20 @@
   } from "@/components";
   import { FavoriteDB } from "@/repositories";
   import { libraryFavorites } from "@/store";
-  import type { Favorite } from "@/interfaces";
-  import Icon from "@iconify/svelte";
-  let favoriteDiv: HTMLDivElement;
+  import type { Favorite } from "@/types";
+  let favoriteDiv: HTMLDivElement = $state(null!);
+  let favdivWidth: number = $state(0);
   let page = $state(1);
-  let perPage = 16;
+  let perPage = $derived(Math.floor(favdivWidth / 178) * 3);
   const count = $derived($libraryFavorites.length);
   let displayedFavorites: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
   libraryFavorites.subscribe(async (_) => {
     await new Promise((resolve) => setTimeout(resolve, 10));
-    console.log(page, displayedFavorites.length);
     if (displayedFavorites.length === 0 && page > 1) {
-      page = page - 1;
-      console.log("FUCKING");
+      page -= 1;
     }
-    console.log(page);
   });
   const siblingCount = 1;
   onMount(async () => {
@@ -40,13 +37,14 @@
     <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="secondary">
       {count}
     </Badge>
-    <LibrarySearch />
+    <LibrarySearch bind:page bind:favdiv={favoriteDiv} />
     <LibraryOrder />
     <LibraryCollection />
     <LibrarySource />
   </div>
   <div
     bind:this={favoriteDiv}
+    bind:clientWidth={favdivWidth}
     class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
     {#each displayedFavorites as favorite, i (i)}
@@ -56,7 +54,7 @@
 
   {#if $libraryFavorites.length > perPage}
     <Pagination.Root
-      class="my-2"
+      class="mt-2"
       {count}
       {perPage}
       {siblingCount}

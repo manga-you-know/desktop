@@ -1,4 +1,4 @@
-import type { Favorite, Chapter, Episode } from "@/interfaces";
+import type { Favorite, Chapter, Episode } from "@/types";
 
 export interface AnimeDl {
   baseUrl: string;

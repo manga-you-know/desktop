@@ -1,13 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { invoke } from "@tauri-apps/api/core";
 import { load } from "cheerio";
-import type {
-  AnimeDl,
-  Favorite,
-  Chapter,
-  Episode,
-  Language,
-} from "@/interfaces";
+import type { AnimeDl } from "@/interfaces";
+import type { Favorite, Chapter, Episode, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
 export class AnimeOwlDl implements AnimeDl {
@@ -67,6 +62,7 @@ export class AnimeOwlDl implements AnimeDl {
     const responseJson: { results: any[] } = await response.json();
     return responseJson.results.map((rslt) => {
       return {
+        id: 0,
         name: rslt.anime_name,
         other_name: rslt.jp_name,
         folder_name: rslt.anime_slug,

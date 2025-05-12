@@ -6,8 +6,14 @@
 
   interface Props {
     showInput?: boolean;
+    page: number;
+    favdiv: HTMLDivElement;
   }
-  let { showInput = $bindable($libraryQuery !== "") }: Props = $props();
+  let {
+    showInput = $bindable($libraryQuery !== ""),
+    page = $bindable(1),
+    favdiv = $bindable(null!),
+  }: Props = $props();
 
   let isHovered = false;
 
@@ -36,6 +42,8 @@
     if ($libraryQuery.length === 0) showInput = false;
   }
   function updateFavorites() {
+    page = 1;
+    favdiv.scrollTo({ top: 0 });
     FavoriteDB.getLibraryFavorites().then((favorites) => {
       libraryFavorites.set(favorites);
     });

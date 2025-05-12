@@ -3,7 +3,7 @@
   import { AlertDialog, Button } from "@/lib/components";
   import { FavoriteDB } from "@/repositories";
   import { refreshLibrary, refreshFavorites } from "@/functions";
-  import type { Favorite } from "@/interfaces";
+  import type { Favorite } from "@/types";
   import { toast } from "svelte-sonner";
 
   interface Props {

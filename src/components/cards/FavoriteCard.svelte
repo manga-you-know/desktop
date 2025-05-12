@@ -30,7 +30,7 @@
     loadFavoriteChapter,
     refreshLibrary,
   } from "@/functions";
-  import type { Favorite, Chapter, Readed } from "@/interfaces";
+  import type { Favorite, Chapter, Readed } from "@/types";
   import { goto } from "$app/navigation";
   import { strNotEmpty } from "@/utils";
   import { twMerge } from "tailwind-merge";

@@ -36,7 +36,7 @@
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
-  import type { Language as LanguageType } from "@/interfaces";
+  import type { Language as LanguageType } from "@/types";
   import Icon from "@iconify/svelte";
   import { LANGUAGE_OPTIONS } from "@/constants";
 
@@ -67,15 +67,17 @@
 <AlertDialog.Root bind:open={$openSettings}>
   <AlertDialog.Content class="py-0 px-2">
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
-    <ScrollArea class="h-[80vh] rounded-xl select-none my-2 pr-3 scroll-smooth">
-      <div class="border-b-4 my-4 text-center relative rounded-xl">
+    <ScrollArea
+      class="h-[80vh] rounded-3xl select-none my-2 pr-3 scroll-smooth"
+    >
+      <div class="border-b-4 my-4 text-center relative rounded-3xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
         >
           App
         </span>
       </div>
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
+      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <Label class="text-md"
             >Current version: <span class="text-xl font-bold">
@@ -207,7 +209,7 @@
           </Button>
         </Card.Content>
       </Card.Root>
-      <div class="border-b-4 my-5 text-center relative rounded-xl">
+      <div class="border-b-4 my-5 text-center relative rounded-3xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
         >
@@ -215,7 +217,7 @@
         </span>
       </div>
 
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
+      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <Label>Preferable language</Label>
@@ -245,14 +247,14 @@
         </Card.Content>
       </Card.Root>
       {#if !$isMobile}
-        <div class="border-b-4 my-4 text-center relative rounded-xl">
+        <div class="border-b-4 my-4 text-center relative rounded-3xl">
           <span
             class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
           >
             Player
           </span>
         </div>
-        <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
+        <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
           <Card.Content class="flex flex-col gap-4">
             <div class="flex items-center">
               <Checkbox
@@ -272,14 +274,14 @@
           </Card.Content>
         </Card.Root>
       {/if}
-      <!-- <div class="border-b-4 my-4 text-center relative rounded-xl">
+      <!-- <div class="border-b-4 my-4 text-center relative rounded-3xl">
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
         >
           Others
         </span>
       </div>
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0">
+      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <Label>Default page</Label>
           <div class="flex">

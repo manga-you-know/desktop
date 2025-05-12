@@ -2,7 +2,7 @@
   import { Button, Badge, Tooltip } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import { ReadFavorite, EditFavorite, AskDelete } from "@/components";
-  import type { Suggestion } from "@/interfaces";
+  import type { Suggestion } from "@/types";
   import { FavoriteDB } from "@/repositories";
 
   interface Props {

@@ -59,8 +59,10 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@iconify-json/basil": "^1.2.2",
     "@iconify-json/carbon": "^1.2.8",
     "@iconify-json/eos-icons": "^1.2.2",
+    "@iconify-json/f7": "^1.2.2",
     "@iconify-json/fluent": "^1.2.19",
     "@iconify-json/game-icons": "^1.2.1",
     "@iconify-json/heroicons": "^1.2.1",

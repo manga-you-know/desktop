@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class TaosectDl implements MangaDl {
   baseUrl = "https://taosect.com";
@@ -28,6 +29,7 @@ export class TaosectDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -55,6 +57,7 @@ export class TaosectDl implements MangaDl {
       const a = $(article).find("a");
       const coverStyle = $(article).find("div").attr("style") || "";
       mangas.push({
+        id: 0,
         source_id: a.attr("href")?.split("/").slice(-2, -1)[0] || "",
         name:
           a

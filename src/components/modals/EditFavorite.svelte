@@ -11,7 +11,7 @@
     stopDiscordPresence,
     loadFavoriteChapter,
   } from "@/functions";
-  import type { Favorite } from "@/interfaces";
+  import type { Favorite } from "@/types";
   import Icon from "@iconify/svelte";
 
   interface Props {

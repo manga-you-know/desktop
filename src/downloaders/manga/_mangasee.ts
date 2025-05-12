@@ -2,7 +2,8 @@ import { fetch } from "@tauri-apps/plugin-http";
 // import axios from 'axios';
 import { memoize } from "lodash";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 
 export class MangaSeeDl implements MangaDl {
   baseUrl = "https://mangasee123.com";
@@ -41,6 +42,7 @@ export class MangaSeeDl implements MangaDl {
     const description = $(ul).find("div.top-5.Content").text();
     const author = $(ul).find("a[href^='/search/?author']").text();
     return {
+      id: 0,
       name: name,
       folder_name: name,
       cover: `https://temp.compsci88.com/cover/${id}.jpg`,
@@ -56,6 +58,7 @@ export class MangaSeeDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",

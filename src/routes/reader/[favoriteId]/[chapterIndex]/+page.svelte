@@ -14,7 +14,7 @@
     saveSettings,
     copyImageBase64,
   } from "@/functions";
-  import type { Favorite } from "@/interfaces";
+  import type { Favorite } from "@/types";
   import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
   import {
     downloadManager,
@@ -54,6 +54,7 @@
   let isLocal = page.url.searchParams.has("local");
   let chapter = $state($globalChapters[Number(chapterIndex)]);
   let favorite: Favorite = $state({
+    id: 0,
     name: "",
     link: "",
     cover: "",
@@ -158,7 +159,7 @@
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
       await remove(path, { baseDir: BaseDirectory.Document });
       refreshDownloadeds();
-      toast.warning("Page removed!", { duration: 600 });
+      toast.warning("Page removed!", { duration: 800 });
     } else {
       if (isLocal) {
         await mkdir("favorite-panels", {
@@ -183,7 +184,7 @@
           currentlyImagePath
         );
       }
-      toast.success("Page favorited!", { duration: 600 });
+      toast.success("Page favorited!", { duration: 800 });
       refreshDownloadeds();
     }
   }
@@ -355,9 +356,25 @@
       nextPage();
     }
   }
+  function handleMouse(
+    e: MouseEvent & {
+      currentTarget: EventTarget & Window;
+    }
+  ) {
+    if (e.button === 3) {
+      e.preventDefault();
+      e.stopPropagation();
+      prevPage();
+    }
+    if (e.button === 4) {
+      e.preventDefault();
+      e.stopPropagation();
+      nextPage();
+    }
+  }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} onmousedown={handleMouse} />
 <ChaptersMenu
   favorite={favorite ?? undefined}
   currentlyChapter={chapter}
@@ -406,13 +423,7 @@
     </Button>
     <div class="flex flex-col items-end justify-end gap-1 p-1">
       <div class="flex gap-1">
-        <Badge
-          class="w-9 h-9 place-content-center"
-          color={Math.round((currentlyCount / totalPage) * 100) === 100
-            ? "success"
-            : "neutral"}
-          variant="outline"
-        >
+        <Badge class="w-9 h-9 place-content-center" variant="secondary">
           {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
           !isFinite(Math.round((currentlyCount / totalPage) * 100))
             ? 0
@@ -420,13 +431,13 @@
               ? 100
               : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
-        <Badge class="w-12 h-9  place-content-center" variant="outline">
+        <Badge class="w-12 h-9  place-content-center" variant="secondary">
           {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
         </Badge>
         <Button
           class="w-10 pointer-events-auto z-50"
           size="sm"
-          variant="outline"
+          variant="secondary"
           onclick={async () => await toggleFullscreen()}
         >
           <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
@@ -435,7 +446,7 @@
         <Button
           class="w-10 pointer-events-auto"
           size="sm"
-          variant="outline"
+          variant="secondary"
           onclick={() => ($openMenuChapters = true)}
         >
           <Icon icon="lucide:menu" />
@@ -443,7 +454,7 @@
         <Button
           class="w-10 pointer-events-auto"
           size="sm"
-          variant="outline"
+          variant="secondary"
           onclick={goHome}
         >
           <Icon icon="lucide:home" />
@@ -453,7 +464,7 @@
         <Button
           class="w-10 pointer-events-auto"
           size="sm"
-          variant="outline"
+          variant="secondary"
           disabled={$viewMode === "scroll"}
           onclick={() => {
             if ($fitMode === "") {
@@ -474,7 +485,7 @@
           class="w-10 pointer-events-auto"
           size="sm"
           color="neutral"
-          variant="outline"
+          variant="secondary"
           onclick={() => {
             $viewMode = $viewMode === "scroll" ? "single" : "scroll";
             saveSettings();
@@ -490,7 +501,7 @@
             <Button
               class="w-8 rounded-r-none"
               size="sm"
-              variant="outline"
+              variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
               onclick={() => {
                 $zoomLevel = Math.max(50, $zoomLevel - 10);
@@ -502,7 +513,7 @@
             <Button
               class="w-[68px] p-0 flex justify-center rounded-none"
               size="sm"
-              variant="outline"
+              variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
               onclick={() => {
                 $zoomLevel = 100;
@@ -514,7 +525,7 @@
             <Button
               class="w-8 rounded-l-none"
               size="sm"
-              variant="outline"
+              variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
               onclick={() => {
                 $zoomLevel = Math.min(200, $zoomLevel + 10);
@@ -530,7 +541,7 @@
         <div class="inline-flex">
           <Badge
             class="w-[128px]  flex justify-center rounded-r-none"
-            variant="outline"
+            variant="secondary"
           >
             {favorite?.name
               ? favorite.name.length > 17
@@ -539,9 +550,8 @@
               : ""}
           </Badge>
           <Badge
-            class="w-12 rounded-l-none flex justify-center items-center px-2"
-            color="neutral"
-            variant="outline"
+            class="w-12 rounded-l-none flex justify-center items-center ml-0.5 px-2"
+            variant="secondary"
           >
             {chapter.number.toString()}
           </Badge>
@@ -550,15 +560,15 @@
           class="w-10 pointer-events-auto"
           size="sm"
           color="neutral"
-          variant="outline"
+          variant="secondary"
           onclick={favoriteImage}
         >
           <Icon
             icon={downloadedImages
               .map((img) => img.name)
               .includes(currentlyImagePath)
-              ? "tabler:photo-x"
-              : "tabler:photo-star"}
+              ? "f7:photo-fill"
+              : "f7:photo"}
             class="!w-5 !h-5"
           />
         </Button>

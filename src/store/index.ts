@@ -3,14 +3,15 @@ import { type } from "@tauri-apps/plugin-os";
 import { DownloadManager } from "@/managers";
 import { MANGASOURCES } from "@/constants";
 import type {
-  Favorite,
-  Chapter,
+  Mark,
   Readed,
-  FavoriteLoaded,
+  Chapter,
+  Favorite,
   Language,
   UpdateInfo,
-} from "@/interfaces";
-import type { Mark } from "@/types";
+  Downloading,
+  FavoriteLoaded,
+} from "@/types";
 const os = type();
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
@@ -42,12 +43,14 @@ export const openMenuChapters = writable<boolean>(false);
 export const openReadMenu = writable<boolean>(true);
 export const openSearch = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
+export const openDownloads = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
 export const openCollection = writable<boolean>(false);
 export const isRefreshing = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
+export const downloadings = writable<Downloading[]>([]);
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
 export const discordIntegration = writable<boolean>(false);

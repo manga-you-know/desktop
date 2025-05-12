@@ -5,7 +5,7 @@
     BaseDirectory,
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
-  import type { Favorite, Episode } from "@/interfaces";
+  import type { Favorite, Episode } from "@/types";
   import { downloadManager, globalChapters, readeds } from "@/store";
   import { EpisodeButton } from "@/components";
   import {

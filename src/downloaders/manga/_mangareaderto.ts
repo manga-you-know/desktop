@@ -1,6 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl, Favorite, Chapter, Language } from "@/interfaces";
+import type { MangaDl } from "@/interfaces";
+import type { Favorite, Chapter, Language } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 import { memoizeExpiring } from "@/utils";
 
@@ -36,6 +37,7 @@ export class MangaReaderToDl implements MangaDl {
 
   async getMangaByUrl(url: string): Promise<Favorite> {
     return {
+      id: 0,
       name: "",
       folder_name: "",
       cover: "",
@@ -64,6 +66,7 @@ export class MangaReaderToDl implements MangaDl {
       const img = $(div).find("img");
       const a = $(div).find("a[title]");
       mangas.push({
+        id: 0,
         source_id: a.attr("href")?.slice(1) || "",
         name: a.attr("title") || "",
         folder_name: a.attr("href")?.slice(1) || "",
