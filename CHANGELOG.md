@@ -1,9 +1,21 @@
+## [0.5.3](https://github.com/manga-you-know/desktop/compare/v0.5.2...v0.5.3) (2025-05-12)
+
+
+### New Features
+
+* fix some things, refactor and new modal downloads ([8822d2f](https://github.com/manga-you-know/desktop/commit/8822d2f3b03b48a0a9f031a571e79b3ebb8730b6))
+
 ## [0.5.2](https://github.com/manga-you-know/desktop/compare/v0.5.1...v0.5.2) (2025-05-10)
 
 
 ### Bug Fixes
 
 * some errors! ([370ae9c](https://github.com/manga-you-know/desktop/commit/370ae9ca53935413b304fa583bf4e475e5ad5487))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.5.2 [skip ci] ([a34abf9](https://github.com/manga-you-know/desktop/commit/a34abf9184bac713c350c8a159f89674cefa8777))
 
 ## [0.5.1](https://github.com/manga-you-know/desktop/compare/v0.5.0...v0.5.1) (2025-05-07)
 
@@ -37,16 +49,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.4.18 [skip ci] ([9c7d849](https://github.com/manga-you-know/desktop/commit/9c7d8495306f99ff6ef2ec495721f740e4a7b748))
-
-## [0.4.17](https://github.com/manga-you-know/desktop/compare/v0.4.16...v0.4.17) (2025-05-07)
-
-
-### Bug Fixes
-
-* change toasts to appear right and some problem with updates ([44a8c9e](https://github.com/manga-you-know/desktop/commit/44a8c9ed1ad8d359359e652c4f96375580b1b1a9))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.17 [skip ci] ([30303ec](https://github.com/manga-you-know/desktop/commit/30303ec20e15aad092457ea5c768045f8db13f7d))
 
