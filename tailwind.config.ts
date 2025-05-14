@@ -96,8 +96,8 @@ const config: Config = {
         },
       },
       animation: {
-        "accordion-down": "accordion-down 300ms ease-out forwards",
-        "accordion-up": "accordion-up 300ms ease-out forwards",
+        "accordion-down": "accordion-down 600ms ease-out forwards",
+        "accordion-up": "accordion-up 600ms ease-out forwards",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
     },

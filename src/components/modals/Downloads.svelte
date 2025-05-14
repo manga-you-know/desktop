@@ -41,8 +41,7 @@
                   favDownloading.downloading.length}...)"
                 class="w-96 flex justify-between"
                 >{limitStr(favDownloading.fav.name, 40)}
-                <span class="mr-[-230px]"></span></Accordion.Trigger
-              >
+              </Accordion.Trigger>
               <Accordion.Content class="flex flex-col gap-0.5">
                 <ScrollArea class="h-44 p-0 rounded-xl pr-5">
                   {#each favDownloading.downloading as chapter, i (i)}

@@ -177,40 +177,38 @@
     if (chaptersToDownload.length === 0) return;
     initDownloadings();
     $downloadings[favorite.id].downloadQueue = chaptersToDownload;
-    const downloadChapter = async (chapter: Chapter) => {
-      downloadingNow += 1;
-      pushDownloading(chapter);
-      try {
-        await $downloadManager.downloadChapter(chapter, favorite, store);
-      } catch (e) {
-        console.log(e);
+
+    const processQueue = async () => {
+      while (
+        $downloadings[favorite.id].downloadQueue.length > 0 ||
+        downloadingNow > 0
+      ) {
+        if (
+          downloadingNow < maxCurrently &&
+          $downloadings[favorite.id].downloadQueue.length > 0
+        ) {
+          const chapter = $downloadings[favorite.id].downloadQueue.shift();
+          if (!chapter) continue;
+
+          downloadingNow += 1;
+          pushDownloading(chapter);
+          try {
+            await $downloadManager.downloadChapter(chapter, favorite, store);
+          } catch (e) {
+            console.log(e);
+          }
+          await refreshDownloadeds();
+          refreshJsonChapters();
+          removeDownloading(chapter);
+          downloadingNow -= 1;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
-      await refreshDownloadeds();
-      refreshJsonChapters();
-      removeDownloading(chapter);
-      downloadingNow -= 1;
+      isDownloadingAll = false;
     };
 
-    while (true) {
-      if (downloadingNow < maxCurrently) {
-        const toRun = async () =>
-          downloadChapter(
-            $downloadings[favorite.id].downloadQueue.shift() ?? {
-              chapter_id: "",
-              source: "",
-              number: "",
-            }
-          );
-        if (!toRun) continue;
-        if ($downloadings[favorite.id].downloadQueue.length === 0) {
-          await toRun();
-          break;
-        }
-        toRun();
-      }
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-    isDownloadingAll = false;
+    // Start the download process
+    processQueue();
   }
 
   function search() {

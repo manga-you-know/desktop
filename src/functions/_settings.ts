@@ -1,5 +1,5 @@
 import { load, Store } from "@tauri-apps/plugin-store";
-import { get } from "svelte/store";
+import { get, type Writable } from "svelte/store";
 import {
   selectedSource,
   libraryOrder,
@@ -26,123 +26,89 @@ import type { Language } from "@/types";
 
 let loadedSettings: Store;
 
+type SettingValue =
+  | string
+  | boolean
+  | number
+  | Language
+  | "dark"
+  | "light"
+  | "single"
+  | "scroll"
+  | ""
+  | "width"
+  | undefined;
+
+interface SettingConfig {
+  store: Writable<SettingValue>;
+  default: SettingValue;
+}
+
+// Define the settings schema
+const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
+  selected_source: { store: selectedSource, default: "WeebCentral" },
+  auto_search_updates: { store: autoSearchUpdates, default: true },
+  preferable_language: {
+    store: preferableLanguage,
+    default: { id: "en", label: "English" },
+  },
+  auto_open_fullscreen: { store: autoEnterFullscreen, default: true },
+  theme: { store: theme, default: "dark" },
+  language: { store: appLanguage, default: "en" },
+  order_by: { store: libraryOrder, default: "id" },
+  is_ascending: { store: isAscending, default: true },
+  last_page: { store: lastPage, default: "/home" },
+  use_mpv: { store: useMpv, default: false },
+  close_tray: { store: closeTray, default: false },
+  show_only_new: { store: showOnlyNew, default: false },
+  view_mode: { store: viewMode, default: "single" },
+  fit_mode: { store: fitMode, default: "" },
+  zoom_level: { store: zoomLevel, default: 100 },
+  open_read_menu: { store: openReadMenu, default: true },
+  is_chapters_descending: { store: isChaptersDescending, default: true },
+  notify_update: { store: notifyUpdate, default: true },
+  discord_integration: { store: discordIntegration, default: false },
+} as const;
+
 async function connectSettings() {
   loadedSettings = await load("settings.json");
 }
 
-export async function loadSettings() {
+async function ensureConnected() {
   if (!loadedSettings) await connectSettings();
-  const [
-    lSelectedSource,
-    lAutoSearchUpdates,
-    lPreferableLanguage,
-    lAutoOpenFullscreen,
-    lTheme,
-    lLanguage,
-    lOrderBy,
-    lIsAscending,
-    lLastPage,
-    lUseMpv,
-    lCloseTray,
-    lShowOnlyNew,
-    lViewMode,
-    lFitMode,
-    lZoomLevel,
-    lOpenReadMenu,
-    lIsChaptersDescending,
-    lNotifyUpdate,
-    lDiscordIntegration,
-  ] = await Promise.all([
-    loadedSettings.get<string>("selected_source"),
-    loadedSettings.get<boolean>("auto_search_updates"),
-    loadedSettings.get<Language>("preferable_language"),
-    loadedSettings.get<boolean>("auto_open_fullscreen"),
-    loadedSettings.get<"dark" | "light" | undefined>("theme"),
-    loadedSettings.get<string>("language"),
-    loadedSettings.get<string>("order_by"),
-    loadedSettings.get<boolean>("is_ascending"),
-    loadedSettings.get<string>("last_page"),
-    loadedSettings.get<boolean>("use_mpv"),
-    loadedSettings.get<boolean>("close_tray"),
-    loadedSettings.get<boolean>("show_only_new"),
-    loadedSettings.get<"single" | "scroll">("view_mode"),
-    loadedSettings.get<"" | "width">("fit_mode"),
-    loadedSettings.get<number>("zoom_level"),
-    loadedSettings.get<boolean>("open_read_menu"),
-    loadedSettings.get<boolean>("is_chapters_descending"),
-    loadedSettings.get<boolean>("notify_update"),
-    loadedSettings.get<boolean>("discord_integration"),
-  ]);
-  selectedSource.set(lSelectedSource ?? "WeebCentral");
-  autoSearchUpdates.set(lAutoSearchUpdates ?? true);
-  preferableLanguage.set(lPreferableLanguage ?? { id: "en", label: "English" });
-  autoEnterFullscreen.set(lAutoOpenFullscreen ?? true);
-  closeTray.set(lCloseTray ?? false);
-  theme.set(lTheme ?? "dark");
-  appLanguage.set(lLanguage ?? "en");
-  libraryOrder.set(lOrderBy ?? "id");
-  isAscending.set(lIsAscending ?? true);
-  lastPage.set(lLastPage ?? "/home");
-  useMpv.set(lUseMpv ?? false);
-  showOnlyNew.set(lShowOnlyNew ?? false);
-  viewMode.set(lViewMode ?? "single");
-  fitMode.set(lFitMode ?? "");
-  zoomLevel.set(lZoomLevel ?? 100);
-  openReadMenu.set(lOpenReadMenu ?? true);
-  isChaptersDescending.set(lIsChaptersDescending ?? true);
-  notifyUpdate.set(lNotifyUpdate ?? true);
-  discordIntegration.set(lDiscordIntegration ?? false);
+}
+
+export async function loadSettings() {
+  await ensureConnected();
+  const data = Object.fromEntries(await loadedSettings.entries()) as Record<
+    string,
+    SettingValue
+  >;
+  Object.entries(SETTINGS_SCHEMA).forEach(
+    ([key, { store, default: defaultValue }]) => {
+      store.set(data[key] ?? defaultValue);
+    }
+  );
   if (get(lastPage) !== "/home") {
     goto(get(lastPage));
   }
 }
 
 export async function saveSettings() {
-  if (!loadedSettings) await connectSettings();
-  await Promise.all([
-    loadedSettings.set("selected_source", get(selectedSource)),
-    loadedSettings.set("auto_search_updates", get(autoSearchUpdates)),
-    loadedSettings.set("preferable_language", get(preferableLanguage)),
-    loadedSettings.set("auto_open_fullscreen", get(autoEnterFullscreen)),
-    loadedSettings.set("theme", get(theme)),
-    loadedSettings.set("language", get(appLanguage)),
-    loadedSettings.set("order_by", get(libraryOrder)),
-    loadedSettings.set("is_ascending", get(isAscending)),
-    loadedSettings.set("last_page", get(lastPage)),
-    loadedSettings.set("use_mpv", get(useMpv)),
-    loadedSettings.set("close_tray", get(closeTray)),
-    loadedSettings.set("show_only_new", get(showOnlyNew)),
-    loadedSettings.set("view_mode", get(viewMode)),
-    loadedSettings.set("fit_mode", get(fitMode)),
-    loadedSettings.set("zoom_level", get(zoomLevel)),
-    loadedSettings.set("open_read_menu", get(openReadMenu)),
-    loadedSettings.set("is_chapters_descending", get(isChaptersDescending)),
-    loadedSettings.set("notify_update", get(notifyUpdate)),
-    loadedSettings.set("discord_integration", get(discordIntegration)),
-  ]);
+  await ensureConnected();
+  await Promise.all(
+    Object.entries(SETTINGS_SCHEMA).map(([key, { store }]) =>
+      loadedSettings.set(key, get(store))
+    )
+  );
 }
 
 export async function resetSettings() {
-  if (!loadedSettings) await connectSettings();
-  await Promise.all([
-    loadedSettings.set("selected_source", "WeebCentral"),
-    loadedSettings.set("auto_search_updates", true),
-    loadedSettings.set("preferable_language", { id: "en", label: "English" }),
-    loadedSettings.set("auto_open_fullscreen", true),
-    loadedSettings.set("theme", "dark"),
-    loadedSettings.set("language", "en"),
-    loadedSettings.set("order_by", "id"),
-    loadedSettings.set("is_ascending", true),
-    loadedSettings.set("use_mpv", false),
-    loadedSettings.set("close_tray", false),
-    loadedSettings.set("show_only_new", false),
-    loadedSettings.set("view_mode", "single"),
-    loadedSettings.set("fit_mode", "width"),
-    loadedSettings.set("zoom_level", 100),
-    loadedSettings.set("open_read_menu", true),
-    loadedSettings.set("is_chapters_descending", true),
-    loadedSettings.set("notify_update", true),
-    loadedSettings.set("discord_integration", false),
-  ]);
+  await ensureConnected();
+  await Promise.all(
+    Object.entries(SETTINGS_SCHEMA).map(([key, { default: defaultValue }]) =>
+      loadedSettings.set(key, defaultValue)
+    )
+  );
   await loadSettings();
 }

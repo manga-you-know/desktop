@@ -30,17 +30,19 @@
           class="font-bold h-8 w-22 rounded-xl rounded-r-none mr-0"
           variant="secondary"
         >
-          + {Object.values($favoritesLoaded)
-            .map((fv) => (fv.nextChapter ? 1 : 0))
-            .reduce((a, b) => a + b, 0 as number)} Favorites
+          + {Object.values($favoritesLoaded).reduce(
+            (total, fv) => total + (fv.isLoaded && fv.nextChapter ? 1 : 0),
+            0
+          )} Favorites
         </Badge>
         <Badge
           class="font-bold h-8 w-22 rounded-xl rounded-l-none ml-[-2px]"
           variant="secondary"
         >
-          + {Object.values($favoritesLoaded)
-            .map((fv) => fv.toReadCount)
-            .reduce((a, b) => a + b, 0 as number)} Chapters
+          + {Object.values($favoritesLoaded).reduce(
+            (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
+            0
+          )} Chapters
         </Badge>
       </div>
       <Button

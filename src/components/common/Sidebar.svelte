@@ -67,8 +67,8 @@
   );
   let favoritesWithChapterCount = $derived(
     Object.values($favoritesLoaded)
-      .map((fv) => (fv.nextChapter ? 1 : 0))
-      .reduce((a, b) => a + b, 0 as number)
+      .map((fv) => (fv.nextChapter !== null ? 1 : 0))
+      .reduce((a: number, b: number): number => a + b, 0)
   );
 
   function rotateImage(): void {
