@@ -1,9 +1,21 @@
+## [0.5.4](https://github.com/manga-you-know/desktop/compare/v0.5.3...v0.5.4) (2025-05-14)
+
+
+### Bug Fixes
+
+* some dumb things happens ([8bafae9](https://github.com/manga-you-know/desktop/commit/8bafae9f6787718c7a5c99b87fdef4cec99c7a05))
+
 ## [0.5.3](https://github.com/manga-you-know/desktop/compare/v0.5.2...v0.5.3) (2025-05-12)
 
 
 ### New Features
 
 * fix some things, refactor and new modal downloads ([8822d2f](https://github.com/manga-you-know/desktop/commit/8822d2f3b03b48a0a9f031a571e79b3ebb8730b6))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.5.3 [skip ci] ([3754237](https://github.com/manga-you-know/desktop/commit/37542372773ea93a78019a7a7e2d73b53e3a3b68))
 
 ## [0.5.2](https://github.com/manga-you-know/desktop/compare/v0.5.1...v0.5.2) (2025-05-10)
 
@@ -37,16 +49,4 @@
 
 * some UI problems ([84c476e](https://github.com/manga-you-know/desktop/commit/84c476ed1a1cf877bf9c5697e1408d63e7054639))
 * THE WORST ERROR IS OVER!!! some intense bug was happening. ([0905310](https://github.com/manga-you-know/desktop/commit/0905310c9f5d35ec86e9e4bf96376a0e9d03e4f2))
-
-## [0.4.18](https://github.com/manga-you-know/desktop/compare/v0.4.17...v0.4.18) (2025-05-07)
-
-
-### Bug Fixes
-
-* richColors (maybe fixed) ([5322b85](https://github.com/manga-you-know/desktop/commit/5322b85c1dbb0c25318a2afa86d4a18922de733a))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.4.18 [skip ci] ([9c7d849](https://github.com/manga-you-know/desktop/commit/9c7d8495306f99ff6ef2ec495721f740e4a7b748))
 
