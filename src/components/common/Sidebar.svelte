@@ -62,6 +62,7 @@
   let downloadingCount = $derived(
     Object.values<Downloading>($downloadings).reduce(
       (a1, a2) => a1 + a2.downloading.length,
+      
       0
     )
   );
