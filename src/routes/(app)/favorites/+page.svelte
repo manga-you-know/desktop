@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { FavoriteCard } from "@/components";
-  import { Label, Switch, Badge } from "@/lib/components";
-  import { FavoriteDB } from "@/repositories";
+  import { Button, Label, Switch, Badge } from "@/lib/components";
   import {
     showOnlyNew,
     ultraFavorites,
@@ -14,7 +13,6 @@
     refreshFavorites,
     saveSettings,
   } from "@/functions";
-  import Button from "@/lib/components/ui/button/button.svelte";
   import Icon from "@iconify/svelte";
 
   onMount(async () => {

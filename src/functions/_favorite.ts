@@ -133,41 +133,49 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     }
     chaptersToRead.push(chapter);
   }
-  updateFavoriteProperty(
-    strNotEmpty(favorite.id),
-    "toReadCount",
-    chaptersToRead.length
-  );
-  // if (favorite.type !== "anime" && nextChapter) {
-  //   preloadChapter(nextChapter);
-  // }
-  updateFavoriteProperty(strNotEmpty(favorite.id), "chapters", chapters);
-  updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
-  updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);
-  updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
+
+  favoritesLoaded.update((currentFavorites) => {
+    const favoriteId = strNotEmpty(favorite.id);
+    const currentFavorite = currentFavorites[favoriteId] || {
+      isLoaded: false,
+      isLoading: false,
+      chapters: [],
+      readeds: [],
+      toReadCount: 0,
+      startLoading: () => loadFavoriteChapter(favorite),
+      nextChapter: null,
+    };
+
+    if (chaptersToRead.length > 0) {
+      chaptersToRead.reverse();
+      nextChapter = chaptersToRead[0];
+      chaptersToRead.reverse();
+    } else {
+      nextChapter = null;
+    }
+
+    return {
+      ...currentFavorites,
+      [favoriteId]: {
+        ...currentFavorite,
+        isLoaded: true,
+        isLoading: false,
+        chapters,
+        readeds,
+        toReadCount: chaptersToRead.length,
+        nextChapter,
+      },
+    };
+  });
+
   let valToRead = await getValueToRead(favorite);
   if (chaptersToRead.length > 0) {
-    chaptersToRead.reverse();
-    nextChapter = chaptersToRead[0];
-    updateFavoriteProperty(
-      strNotEmpty(favorite.id),
-      "nextChapter",
-      nextChapter
-    );
-    chaptersToRead.reverse();
     const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
     if (valToRead) {
       if (
         chaptersToRead.length > valToRead.chaptersToRead &&
         chapters.length !== valToRead.chapters
       ) {
-        // if (await window.isFocused()) {
-        //   toast.info(
-        //     `+${
-        //       chaptersToRead.length - valToRead.chaptersToRead
-        //     } ${chaptersType}${pluralText}!`
-        //   );
-        // } else {
         const newToRead =
           chaptersToRead.length - Number(valToRead.chaptersToRead);
         await notify(
@@ -176,12 +184,10 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
             ? `New ${chaptersType} available!`
             : `+${newToRead} ${chaptersType}s!`
         );
-        // }
       }
     }
-  } else {
-    updateFavoriteProperty(strNotEmpty(favorite.id), "nextChapter", null);
   }
+
   if (chaptersToRead.length > (valToRead?.chaptersToRead || 0)) {
     await setValueToRead(
       favorite,
@@ -191,6 +197,7 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
     );
   }
 }
+
 export async function getValueToRead(favorite: Favorite): Promise<
   | {
       chapters: number;

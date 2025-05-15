@@ -96,7 +96,6 @@
   }
 
   let isFetching = $state(false);
-  let isDownloadingAll = $state(false);
 
   function isDownloading(chapter: Chapter) {
     if ($downloadings[favorite.id] === undefined) return false;
@@ -114,6 +113,7 @@
         [favorite.id]: {
           chapters: $globalChapters,
           fav: favorite,
+          isDownloadingAll: false,
           downloadQueue: [],
           downloading: [],
         },
@@ -164,7 +164,6 @@
   }
 
   async function downloadAll() {
-    isDownloadingAll = true;
     const maxCurrently = 5;
     let downloadingNow = 0;
     const reversedChapters = $globalChapters.slice().reverse();
@@ -176,15 +175,17 @@
     });
     if (chaptersToDownload.length === 0) return;
     initDownloadings();
+    $downloadings[favorite.id].isDownloadingAll = true;
     $downloadings[favorite.id].downloadQueue = chaptersToDownload;
 
     const processQueue = async () => {
+      const downloadPromises = new Set<Promise<void>>();
       while (
         $downloadings[favorite.id].downloadQueue.length > 0 ||
-        downloadingNow > 0
+        downloadPromises.size > 0
       ) {
-        if (
-          downloadingNow < maxCurrently &&
+        while (
+          downloadPromises.size < maxCurrently &&
           $downloadings[favorite.id].downloadQueue.length > 0
         ) {
           const chapter = $downloadings[favorite.id].downloadQueue.shift();
@@ -192,22 +193,33 @@
 
           downloadingNow += 1;
           pushDownloading(chapter);
-          try {
-            await $downloadManager.downloadChapter(chapter, favorite, store);
-          } catch (e) {
-            console.log(e);
-          }
-          await refreshDownloadeds();
-          refreshJsonChapters();
-          removeDownloading(chapter);
-          downloadingNow -= 1;
+
+          const downloadPromise = (async () => {
+            try {
+              await $downloadManager.downloadChapter(chapter, favorite, store);
+              await refreshDownloadeds();
+              refreshJsonChapters();
+            } catch (error) {
+              console.error(
+                `Failed to download chapter ${chapter.number}:`,
+                error
+              );
+            } finally {
+              removeDownloading(chapter);
+              downloadingNow -= 1;
+            }
+          })();
+
+          downloadPromises.add(downloadPromise);
+          downloadPromise.finally(() =>
+            downloadPromises.delete(downloadPromise)
+          );
         }
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 70));
       }
-      isDownloadingAll = false;
+      $downloadings[favorite.id].isDownloadingAll = false;
     };
 
-    // Start the download process
     processQueue();
   }
 
@@ -346,9 +358,13 @@
                   : "fluent:star-emphasis-32-regular"}
               />
             </Button>
-            <Button class="" onclick={downloadAll} disabled={isDownloadingAll}>
+            <Button
+              class=""
+              onclick={downloadAll}
+              disabled={$downloadings[favorite.id]?.isDownloadingAll ?? false}
+            >
               <Icon
-                icon={isDownloadingAll
+                icon={($downloadings[favorite.id]?.isDownloadingAll ?? false)
                   ? "line-md:loading-twotone-loop"
                   : "lucide:download"}
               />
