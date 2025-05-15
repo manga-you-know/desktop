@@ -1,9 +1,22 @@
+## [0.5.5](https://github.com/manga-you-know/desktop/compare/v0.5.4...v0.5.5) (2025-05-15)
+
+
+### Bug Fixes
+
+* bruh ([7a8a738](https://github.com/manga-you-know/desktop/commit/7a8a73815b07d840154ef75d62719ad8d7cce5d0))
+* just to build DUMB ([efbbc20](https://github.com/manga-you-know/desktop/commit/efbbc20aad221bba8339289ed7150cd95d1d2358))
+
 ## [0.5.4](https://github.com/manga-you-know/desktop/compare/v0.5.3...v0.5.4) (2025-05-14)
 
 
 ### Bug Fixes
 
 * some dumb things happens ([8bafae9](https://github.com/manga-you-know/desktop/commit/8bafae9f6787718c7a5c99b87fdef4cec99c7a05))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.5.4 [skip ci] ([9ed00ae](https://github.com/manga-you-know/desktop/commit/9ed00ae11de1ef173ba87dc2085dc9f4403e1609))
 
 ## [0.5.3](https://github.com/manga-you-know/desktop/compare/v0.5.2...v0.5.3) (2025-05-12)
 
@@ -35,18 +48,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.5.1 [skip ci] ([023297e](https://github.com/manga-you-know/desktop/commit/023297e5e1f66b203d78a9f8f79bd033db0e9055))
-
-## [0.5.0](https://github.com/manga-you-know/desktop/compare/v0.4.18...v0.5.0) (2025-05-07)
-
-
-### New Features
-
-* More costumization!! (never too much) 0.5.0 IS HERE ([4d98339](https://github.com/manga-you-know/desktop/commit/4d983398e2d508ec52802fb1657733e1224261e7))
-* WE ARE SO BACK! now we have next chapter again. Also a chapter count. it got REALLY PRETTY. ([c1e9467](https://github.com/manga-you-know/desktop/commit/c1e9467ed1c45a7a4bcfe0a3113f0628a95b1f3c))
-
-
-### Bug Fixes
-
-* some UI problems ([84c476e](https://github.com/manga-you-know/desktop/commit/84c476ed1a1cf877bf9c5697e1408d63e7054639))
-* THE WORST ERROR IS OVER!!! some intense bug was happening. ([0905310](https://github.com/manga-you-know/desktop/commit/0905310c9f5d35ec86e9e4bf96376a0e9d03e4f2))
 
