@@ -1,3 +1,10 @@
+## [0.5.6](https://github.com/manga-you-know/desktop/compare/v0.5.5...v0.5.6) (2025-05-17)
+
+
+### Bug Fixes
+
+* FINALLLY THE GREATEST ERROR IN HISTORY IS FIXED ([47e6e12](https://github.com/manga-you-know/desktop/commit/47e6e12f5bb50eda0a2d9400dc6808716150fa87))
+
 ## [0.5.5](https://github.com/manga-you-know/desktop/compare/v0.5.4...v0.5.5) (2025-05-15)
 
 
@@ -5,6 +12,11 @@
 
 * bruh ([7a8a738](https://github.com/manga-you-know/desktop/commit/7a8a73815b07d840154ef75d62719ad8d7cce5d0))
 * just to build DUMB ([efbbc20](https://github.com/manga-you-know/desktop/commit/efbbc20aad221bba8339289ed7150cd95d1d2358))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.5.5 [skip ci] ([83cebee](https://github.com/manga-you-know/desktop/commit/83cebeed88d8b1b50fcebe21084bf373eb49a0c6))
 
 ## [0.5.4](https://github.com/manga-you-know/desktop/compare/v0.5.3...v0.5.4) (2025-05-14)
 
@@ -41,11 +53,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.5.2 [skip ci] ([a34abf9](https://github.com/manga-you-know/desktop/commit/a34abf9184bac713c350c8a159f89674cefa8777))
-
-## [0.5.1](https://github.com/manga-you-know/desktop/compare/v0.5.0...v0.5.1) (2025-05-07)
-
-
-### Miscellaneous Chores
-
-* **release:** v0.5.1 [skip ci] ([023297e](https://github.com/manga-you-know/desktop/commit/023297e5e1f66b203d78a9f8f79bd033db0e9055))
 
