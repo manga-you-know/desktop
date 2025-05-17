@@ -24,8 +24,18 @@ import {
 import { documentDir, join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
+let db: Database = null!;
+
+async function loadDb() {
+  db = await Database.load(`sqlite:${DATABASE_NAME}`);
+}
+
+async function ensureConnected() {
+  if (!db) await loadDb();
+}
+
 export async function initDatabase() {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  await ensureConnected();
   try {
     await db.execute(DATABASE_INIT);
   } catch (error) {
@@ -36,7 +46,8 @@ export async function initDatabase() {
 }
 
 export async function migrateDatabase() {
-  const db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  await ensureConnected();
+
   try {
     const databaseInfo: { name: string }[] = await db.select(
       "PRAGMA table_info(favorite);"
