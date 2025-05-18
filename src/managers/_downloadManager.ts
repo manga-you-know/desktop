@@ -1,6 +1,11 @@
 import { memoize } from "lodash";
 import { fetch } from "@tauri-apps/plugin-http";
-import { mkdir, writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
+import {
+  mkdir,
+  writeFile,
+  BaseDirectory,
+  readFile,
+} from "@tauri-apps/plugin-fs";
 import {
   // MangaDl
   MangaDexDl,
@@ -177,7 +182,7 @@ export class DownloadManager {
     );
   }
 
-  async _getChapters(
+  private async _getChapters(
     favorite: Favorite,
     language?: string
   ): Promise<Chapter[]> {
@@ -290,6 +295,106 @@ export class DownloadManager {
     await writeFile("favorite-panels\\" + fileName, bytes, {
       baseDir: BaseDirectory.Document,
     });
+  }
+
+  async pathToBase64(imagePath: string): Promise<string> {
+    try {
+      const bytes = await readFile(imagePath);
+      const base64 = btoa(String.fromCharCode.apply(null, Array.from(bytes)));
+      return `data:image/png;base64,${base64}`;
+    } catch (error) {
+      throw new Error(`Failed to convert image to base64: ${error}`);
+    }
+  }
+
+  async joinBase64Images(
+    base64Image1: string,
+    base64Image2: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img1 = new Image();
+      const img2 = new Image();
+
+      img1.onload = () => {
+        img2.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) {
+            reject(new Error("Could not get canvas context"));
+            return;
+          }
+
+          const newWidth = img1.width + img2.width;
+          const newHeight = Math.max(img1.height, img2.height);
+
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+
+          // Draw images side by side
+          ctx.drawImage(img2, 0, 0);
+          ctx.drawImage(img1, img2.width, 0);
+
+          resolve(canvas.toDataURL("image/jpeg"));
+        };
+
+        img2.onerror = () => reject(new Error("Failed to load second image"));
+        img2.src = base64Image2;
+      };
+
+      img1.onerror = () => reject(new Error("Failed to load first image"));
+      img1.src = base64Image1;
+    });
+  }
+
+  async joinBase64ImagesList(base64Images: string[]): Promise<string[]> {
+    if (base64Images.length === 1) {
+      return base64Images;
+    }
+
+    const newB64Images: string[] = [];
+    let count = 0;
+
+    while (count !== base64Images.length) {
+      if (count === base64Images.length - 1) {
+        newB64Images.push(base64Images[count]);
+        break;
+      }
+
+      if (count === 0) {
+        newB64Images.push(base64Images[count]);
+        count++;
+        continue;
+      }
+
+      const img1 = new Image();
+      const img2 = new Image();
+
+      await new Promise<void>((resolve, reject) => {
+        img1.onload = () => {
+          img2.onload = () => {
+            if (img1.width > img1.height || img2.width > img2.height) {
+              newB64Images.push(base64Images[count]);
+              count++;
+              resolve();
+              return;
+            }
+
+            this.joinBase64Images(base64Images[count], base64Images[count + 1])
+              .then((newImg) => {
+                newB64Images.push(newImg);
+                count += 2;
+                resolve();
+              })
+              .catch(reject);
+          };
+          img2.src = base64Images[count + 1];
+        };
+        img1.src = base64Images[count];
+      });
+    }
+
+    return newB64Images;
   }
 
   async downloadChapter(

@@ -133,7 +133,7 @@
                 Desktop notication for new updates
               </Label>
             </div>
-            <div class="flex items-center">
+            <!-- <div class="flex items-center">
               <Checkbox
                 id="discord-integration"
                 bind:checked={$discordIntegration}
@@ -152,7 +152,7 @@
                   icon="ic:round-discord"
                 />integration
               </Label>
-            </div>
+            </div> -->
             <div class="flex gap-2 items-center">
               <Checkbox
                 id="auto-start"

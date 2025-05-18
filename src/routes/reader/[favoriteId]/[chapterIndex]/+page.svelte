@@ -63,6 +63,7 @@
     folder_name: "",
   });
   let images: string[] = $state([]);
+  let backupImages: string[] = [];
   let currentlyCount = $state(1);
   let totalPage = $state(0);
   let isTheLastChapter = $state(Number(chapterIndex) === 0);
@@ -189,6 +190,35 @@
     }
   }
 
+  function resetImages() {
+    images = [...backupImages];
+    currentlyCount = 1;
+    currentlyImage = images[currentlyCount - 1];
+    totalPage = images.length;
+  }
+
+  async function joinCurrentlyImageToNext() {
+    if (currentlyCount === totalPage) return;
+    let newImage = "";
+    if (isLocal) {
+      const [currentlyB64, nextB64] = await Promise.all([
+        $downloadManager.pathToBase64(images[currentlyCount - 1]),
+        $downloadManager.pathToBase64(images[currentlyCount]),
+      ]);
+      newImage = await $downloadManager.joinBase64Images(currentlyB64, nextB64);
+    } else {
+      newImage = await $downloadManager.joinBase64Images(
+        images[currentlyCount - 1],
+        images[currentlyCount]
+      );
+    }
+    currentlyImage = newImage;
+    images[currentlyCount - 1] = newImage;
+    images.splice(currentlyCount, 1);
+    totalPage = images.length;
+    toast.success("Images joined!", { duration: 800 });
+  }
+
   function gotoPage(page: string) {
     currentlyCount = 1;
     totalPage = 1;
@@ -234,6 +264,7 @@
     } else {
       images = await getLocalChapterImages();
     }
+    backupImages = [...images];
     currentlyImage = images[0];
     totalPage = images.length;
     setChapterActivity(favorite.name);
@@ -248,6 +279,7 @@
         images,
         $downloadManager.getBaseUrl(favorite.source)
       );
+      backupImages = [...images];
       currentlyImage = images[currentlyCount - 1];
       preloadNextChapter(Number(chapterIndex), $globalChapters);
     }
@@ -264,6 +296,7 @@
     } else {
       images = await getLocalChapterImages();
     }
+    backupImages = [...images];
     currentlyImage = images[0];
     totalPage = images.length;
     setChapterActivity(favorite.name);
@@ -278,6 +311,7 @@
         images,
         $downloadManager.getBaseUrl(favorite.source)
       );
+      backupImages = [...images];
       currentlyImage = images[currentlyCount - 1];
       preloadNextChapter(Number(chapterIndex), $globalChapters);
     }
@@ -312,6 +346,12 @@
       }
       if (key === "s" && ctrl) {
         favoriteImage();
+      }
+      if (key === "q" && ctrl) {
+        joinCurrentlyImageToNext();
+      }
+      if (key === "w" && ctrl) {
+        resetImages();
       }
       if (key === "+" || (event.ctrlKey && key === "=")) {
         $zoomLevel = Math.min(200, $zoomLevel + 10);
@@ -416,14 +456,14 @@
       <Icon
         class={cn(
           "!w-5 !h-5 transition-all duration-700",
-          $openReadMenu ? "rotate-180" : "rotate-0"
+          $openReadMenu ? "rotate-180" : "rotate-0 opacity-30"
         )}
         icon="typcn:chevron-left"
       />
     </Button>
     <div class="flex flex-col items-end justify-end gap-1 p-1">
       <div class="flex gap-1">
-        <Badge class="w-9 h-9 place-content-center" variant="secondary">
+        <Badge class="w-10 h-9 place-content-center" variant="secondary">
           {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
           !isFinite(Math.round((currentlyCount / totalPage) * 100))
             ? 0
@@ -435,7 +475,7 @@
           {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
         </Badge>
         <Button
-          class="w-10 pointer-events-auto z-50"
+          class="pointer-events-auto z-50"
           size="sm"
           variant="secondary"
           onclick={async () => await toggleFullscreen()}
@@ -444,7 +484,7 @@
         </Button>
 
         <Button
-          class="w-10 pointer-events-auto"
+          class="pointer-events-auto"
           size="sm"
           variant="secondary"
           onclick={() => ($openMenuChapters = true)}
@@ -452,7 +492,7 @@
           <Icon icon="lucide:menu" />
         </Button>
         <Button
-          class="w-10 pointer-events-auto"
+          class="w-11 pointer-events-auto"
           size="sm"
           variant="secondary"
           onclick={goHome}
@@ -462,7 +502,7 @@
       </div>
       <div class="flex gap-1 z-30">
         <Button
-          class="w-10 pointer-events-auto"
+          class="h-9 pointer-events-auto"
           size="sm"
           variant="secondary"
           disabled={$viewMode === "scroll"}
@@ -482,7 +522,7 @@
           />
         </Button>
         <Button
-          class="w-10 pointer-events-auto"
+          class="h-9 pointer-events-auto"
           size="sm"
           color="neutral"
           variant="secondary"
@@ -495,11 +535,19 @@
             icon={$viewMode === "scroll" ? "lucide:scroll" : "lucide:book-open"}
           />
         </Button>
-
+        <Button
+          class="h-9 pointer-events-auto"
+          size="sm"
+          color="neutral"
+          variant="secondary"
+          onclick={joinCurrentlyImageToNext}
+        >
+          <Icon icon="fluent:image-split-24-filled" />
+        </Button>
         {#if !$isMobile}
           <div class="inline-flex pointer-events-auto z-50">
             <Button
-              class="w-8 rounded-r-none"
+              class="w-7 rounded-r-none"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -511,7 +559,7 @@
               <Icon icon="lucide:minus" />
             </Button>
             <Button
-              class="w-[68px] p-0 flex justify-center rounded-none"
+              class="w-[40px] p-0 flex justify-center rounded-none"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -523,7 +571,7 @@
               {$zoomLevel}%
             </Button>
             <Button
-              class="w-8 rounded-l-none"
+              class="w-7 rounded-l-none"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -540,7 +588,7 @@
       <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
         <div class="inline-flex">
           <Badge
-            class="w-[128px]  flex justify-center rounded-r-none"
+            class="w-[133px]  flex justify-center rounded-r-none"
             variant="secondary"
           >
             {favorite?.name
@@ -567,8 +615,8 @@
             icon={downloadedImages
               .map((img) => img.name)
               .includes(currentlyImagePath)
-              ? "f7:photo-fill"
-              : "f7:photo"}
+              ? "tabler:photo-filled"
+              : "tabler:photo"}
             class="!w-5 !h-5"
           />
         </Button>
