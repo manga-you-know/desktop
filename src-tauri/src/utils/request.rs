@@ -1,7 +1,7 @@
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use tauri_plugin_http::reqwest;
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn get_aniplay_chapters(anime_id: &str) -> Result<String, String> {
     let params = [anime_id];
     let client = reqwest::Client::new();
@@ -15,7 +15,7 @@ pub async fn get_aniplay_chapters(anime_id: &str) -> Result<String, String> {
     Ok(res.text().await.map_err(|e| e.to_string())?)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn get_aniplay_episode(
     anime_id: &str,
     provider_id: &str,
@@ -41,7 +41,7 @@ pub async fn get_aniplay_episode(
     Ok(res.text().await.map_err(|e| e.to_string())?)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn get_base64_image(url: &str, referer: &str) -> Result<String, String> {
     let client = reqwest::Client::new();
     if referer == "https://mangadex.org" {

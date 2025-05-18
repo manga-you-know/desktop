@@ -62,7 +62,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   close_tray: { store: closeTray, default: false },
   show_only_new: { store: showOnlyNew, default: false },
   view_mode: { store: viewMode, default: "single" },
-  fit_mode: { store: fitMode, default: "" },
+  fit_mode: { store: fitMode, default: "width" },
   zoom_level: { store: zoomLevel, default: 100 },
   open_read_menu: { store: openReadMenu, default: true },
   is_chapters_descending: { store: isChaptersDescending, default: true },

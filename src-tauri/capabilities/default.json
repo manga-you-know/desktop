@@ -31,11 +31,6 @@
     "core:app:default",
     "core:path:default",
     "shell:default",
-    "sql:default",
-    "sql:allow-close",
-    "sql:allow-execute",
-    "sql:allow-load",
-    "sql:allow-select",
     "http:allow-fetch",
     "http:allow-fetch-cancel",
     "http:allow-fetch-read-body",
@@ -52,6 +47,12 @@
         }
       ]
     },
+
+    "sql:default",
+    "sql:allow-close",
+    "sql:allow-execute",
+    "sql:allow-load",
+    "sql:allow-select",
     "notification:allow-batch",
     "notification:allow-cancel",
     "notification:allow-check-permissions",

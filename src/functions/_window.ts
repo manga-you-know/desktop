@@ -112,32 +112,32 @@ export async function logNewUser() {
 }
 
 export async function startDiscordPresence() {
-  try {
-    if (get(discordIntegration)) await start("1336775889366552597");
-  } catch (e) {
-    console.log(e);
-  }
+  // try {
+  //   if (get(discordIntegration)) await start("1336775889366552597");
+  // } catch (e) {
+  //   console.log(e);
+  // }
 }
 
 export async function setDiscordActivity(details: string, state?: string) {
-  if (!get(discordIntegration)) return;
-  await startDiscordPresence();
-  const button = new Button(
-    "Download app",
-    "https://github.com/manga-you-know/desktop/releases/latest/"
-  );
-  const activity = new Activity()
-    .setButton([button])
-    .setActivity(ActivityType.Watching)
-    .setDetails(details);
-  if (state) {
-    activity.setState(state);
-  }
-  await setActivity(activity);
+  // if (!get(discordIntegration)) return;
+  // await startDiscordPresence();
+  // const button = new Button(
+  //   "Download app",
+  //   "https://github.com/manga-you-know/desktop/releases/latest/"
+  // );
+  // const activity = new Activity()
+  //   .setButton([button])
+  //   .setActivity(ActivityType.Watching)
+  //   .setDetails(details);
+  // if (state) {
+  //   activity.setState(state);
+  // }
+  // await setActivity(activity);
 }
 
 export async function stopDiscordPresence() {
-  await stop();
+  // await stop();
 }
 
 export async function createTray() {
