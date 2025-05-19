@@ -216,7 +216,7 @@
     images[currentlyCount - 1] = newImage;
     images.splice(currentlyCount, 1);
     totalPage = images.length;
-    toast.success("Images joined!", { duration: 800 });
+    toast.success("Images joined!", { duration: 600 });
   }
 
   function gotoPage(page: string) {
@@ -442,7 +442,7 @@
   <div
     class={cn(
       "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500",
-      $openReadMenu ? "translate-x-0" : "translate-x-[14rem]"
+      $openReadMenu ? "translate-x-0" : "translate-x-[15rem]"
     )}
   >
     <Button
@@ -478,7 +478,7 @@
           class="pointer-events-auto z-50"
           size="sm"
           variant="secondary"
-          onclick={async () => await toggleFullscreen()}
+          onclick={toggleFullscreen}
         >
           <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
         </Button>
@@ -524,7 +524,6 @@
         <Button
           class="h-9 pointer-events-auto"
           size="sm"
-          color="neutral"
           variant="secondary"
           onclick={() => {
             $viewMode = $viewMode === "scroll" ? "single" : "scroll";
@@ -538,8 +537,8 @@
         <Button
           class="h-9 pointer-events-auto"
           size="sm"
-          color="neutral"
           variant="secondary"
+          disabled={isLocal}
           onclick={joinCurrentlyImageToNext}
         >
           <Icon icon="fluent:image-split-24-filled" />
@@ -607,7 +606,6 @@
         <Button
           class="w-10 pointer-events-auto"
           size="sm"
-          color="neutral"
           variant="secondary"
           onclick={favoriteImage}
         >

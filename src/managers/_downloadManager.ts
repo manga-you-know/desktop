@@ -1,4 +1,5 @@
 import { memoize } from "lodash";
+import { fromByteArray } from "base64-js";
 import { fetch } from "@tauri-apps/plugin-http";
 import {
   mkdir,
@@ -300,9 +301,11 @@ export class DownloadManager {
   async pathToBase64(imagePath: string): Promise<string> {
     try {
       const bytes = await readFile(imagePath);
-      const base64 = btoa(String.fromCharCode.apply(null, Array.from(bytes)));
-      return `data:image/png;base64,${base64}`;
+      console.log(fromByteArray(bytes));
+      console.log("THIS IS FUCKED");
+      return "";
     } catch (error) {
+      console.log(imagePath, "FODASSE");
       throw new Error(`Failed to convert image to base64: ${error}`);
     }
   }

@@ -288,7 +288,7 @@
   onOpenChange={(open) => {
     globalChapters.set([]);
     if (!open) {
-      loadFavoriteChapter(favorite);
+      if (favorite.is_ultra_favorite) loadFavoriteChapter(favorite);
       refreshFavorites();
       refreshLibrary();
     }
