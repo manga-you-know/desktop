@@ -1,3 +1,10 @@
+## [0.5.8](https://github.com/manga-you-know/desktop/compare/v0.5.7...v0.5.8) (2025-05-19)
+
+
+### Bug Fixes
+
+* minor errors ([4fdbd25](https://github.com/manga-you-know/desktop/commit/4fdbd25fb55bbf7314bedea8700ab03d003bdf5f))
+
 ## [0.5.7](https://github.com/manga-you-know/desktop/compare/v0.5.6...v0.5.7) (2025-05-18)
 
 
@@ -9,6 +16,11 @@
 ### Bug Fixes
 
 * NOW THIS TIME I WIN ([c5c5287](https://github.com/manga-you-know/desktop/commit/c5c5287ba81372057e67d2c1f78eb0bcded1bd81))
+
+
+### Miscellaneous Chores
+
+* **release:** v0.5.7 [skip ci] ([d1d64c3](https://github.com/manga-you-know/desktop/commit/d1d64c3fc0b0256eda4af7bf7e36351de7a56297))
 
 ## [0.5.6](https://github.com/manga-you-know/desktop/compare/v0.5.5...v0.5.6) (2025-05-17)
 
@@ -46,16 +58,4 @@
 ### Miscellaneous Chores
 
 * **release:** v0.5.4 [skip ci] ([9ed00ae](https://github.com/manga-you-know/desktop/commit/9ed00ae11de1ef173ba87dc2085dc9f4403e1609))
-
-## [0.5.3](https://github.com/manga-you-know/desktop/compare/v0.5.2...v0.5.3) (2025-05-12)
-
-
-### New Features
-
-* fix some things, refactor and new modal downloads ([8822d2f](https://github.com/manga-you-know/desktop/commit/8822d2f3b03b48a0a9f031a571e79b3ebb8730b6))
-
-
-### Miscellaneous Chores
-
-* **release:** v0.5.3 [skip ci] ([3754237](https://github.com/manga-you-know/desktop/commit/37542372773ea93a78019a7a7e2d73b53e3a3b68))
 
