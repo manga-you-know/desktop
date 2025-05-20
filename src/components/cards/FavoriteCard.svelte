@@ -37,6 +37,7 @@
   import type { MarkFavorites } from "@/types";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
+  import { fly } from "svelte/transition";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);

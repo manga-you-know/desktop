@@ -599,25 +599,10 @@
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-32 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
-                      ></div>
-                    </div>
-                  </div>
-                  <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
-                  >
-                    <div
-                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
-                    ></div>
-                    <div class="w-full gap-0.5 flex flex-col">
-                      <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
-                      ></div>
-                      <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
                       ></div>
                     </div>
                   </div>
@@ -629,10 +614,25 @@
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-36 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-28 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                  >
+                    <div
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                    ></div>
+                    <div class="w-full gap-0.5 flex flex-col">
+                      <div
+                        class="w-24 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                      <div
+                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
                       ></div>
                     </div>
                   </div>

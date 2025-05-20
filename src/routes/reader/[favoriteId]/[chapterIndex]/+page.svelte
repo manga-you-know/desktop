@@ -72,11 +72,10 @@
   );
   let currentlyImage = $state("/myk.png");
   let currentlyImagePath = $derived(
-    `${favorite.id}~${favorite.folder_name}~${chapter.number}~${currentlyCount}.png`
+    `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`
   );
   let downloadedImages: DirEntry[] = $state([]);
-  // svelte-ignore non_reactive_update
-  let pagesDiv: HTMLDivElement;
+  let pagesDiv: HTMLDivElement = $state(null!);
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -117,7 +116,7 @@
 
     setDiscordActivity(
       `Reading [${name}]`,
-      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
   function prevPage() {
@@ -137,7 +136,7 @@
   function goHome() {
     currentlyImage = "/myk.png";
     setFullscreen(false);
-    if (favorite) {
+    if (favorite?.is_ultra_favorite) {
       loadFavoriteChapter(favorite);
     }
     goto($lastPage);
@@ -168,7 +167,7 @@
           recursive: true,
         });
         await copyFile(
-          `Mangas/${favorite.folder_name}/${chapter.number}/${(
+          `Mangas/${favorite.folder_name}/${chapter?.number}/${(
             currentlyCount - 1
           )
             .toString()
@@ -229,18 +228,18 @@
   }
 
   async function getLocalChapterImages(): Promise<string[]> {
-    if (!chapter.path) {
+    if (!chapter?.path) {
       goHome();
       return [];
     }
-    if (await exists(chapter.path, { baseDir: BaseDirectory.Download })) {
+    if (await exists(chapter?.path, { baseDir: BaseDirectory.Download })) {
       let images = [];
       const dlDir = await downloadDir();
-      downloadedImages = await readDir(chapter.path, {
+      downloadedImages = await readDir(chapter?.path, {
         baseDir: BaseDirectory.Download,
       });
       for (const image of downloadedImages) {
-        const path = await join(dlDir, chapter.path, image.name);
+        const path = await join(dlDir, chapter?.path, image.name);
         images.push(convertFileSrc(path));
       }
       return images;
@@ -258,7 +257,7 @@
     chapter = $globalChapters[Number(chapterIndex)];
     if (!isLocal) {
       toast.loading(
-        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
+        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`
       );
       images = await $downloadManager.getChapterImages(chapter);
     } else {
@@ -271,7 +270,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite) {
+    if (favorite.is_ultra_favorite) {
       loadFavoriteChapter(favorite);
     }
     if (!isLocal) {
@@ -303,7 +302,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite) {
+    if (favorite.is_ultra_favorite) {
       loadFavoriteChapter(favorite);
     }
     if (!isLocal) {
@@ -600,7 +599,7 @@
             class="w-12 rounded-l-none flex justify-center items-center ml-0.5 px-2"
             variant="secondary"
           >
-            {chapter.number.toString()}
+            {chapter?.number.toString()}
           </Badge>
         </div>
         <Button

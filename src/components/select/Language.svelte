@@ -7,7 +7,7 @@
     Popover,
     ScrollArea,
   } from "@/lib/components";
-  import { ChevronsUpDown } from "lucide-svelte";
+  import { ChevronsUpDown, LanguagesIcon } from "lucide-svelte";
   import { cn } from "$lib/utils";
 
   interface Props {
@@ -47,6 +47,25 @@
         role="combobox"
         aria-expanded={open}
         disabled={inverseDisabled ? !disabled : disabled}
+        onwheel={(e) => {
+          if (e.deltaY < 0) {
+            selectedLanguage = options.at(
+              options.findIndex((v) => v.id === selectedLanguage.id) - 1
+            ) ?? { id: "en", label: "English" };
+          } else {
+            if (
+              options.findIndex((v) => v.id === selectedLanguage.id) + 1 ===
+              options.length
+            ) {
+              selectedLanguage = options[0];
+            } else {
+              selectedLanguage = options.at(
+                options.findIndex((v) => v.id === selectedLanguage.id) + 1
+              ) ?? { id: "en", label: "English" };
+            }
+          }
+          onChange?.();
+        }}
       >
         {selectedLanguage.label}
         <ChevronsUpDown class="opacity-50" />

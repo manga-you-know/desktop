@@ -32,8 +32,11 @@
     const currentPos = pageDirection[currentId];
     const lastPos = pageDirection[lastId];
     runBoth++;
-    if (runBoth === 2) {
-      lastPage.set(currentId);
+    if (
+      runBoth === 2 &&
+      !(currentId.includes("reader") && currentId.includes("player"))
+    ) {
+      lastPage.set("/" + currentId);
       saveSettings();
       runBoth = 0;
     }
@@ -52,7 +55,7 @@
       <SidebarProv.Inset class="p-2">
         {#key page.route.id}
           <div
-            class="absolute pb-5"
+            class="h-[99vh] absolute pb-5"
             in:fly={{
               y: getTransitionY(
                 getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
