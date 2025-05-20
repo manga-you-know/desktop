@@ -85,7 +85,7 @@
       <Command.Root class="dark:bg-black">
         <Command.Input placeholder="Search collection..." />
         <Command.Empty class="mb-[-68px]">No collection found.</Command.Empty>
-        <ScrollArea class="h-36">
+        <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
             {#each $collections.reverse() as collection}
               <Command.Item

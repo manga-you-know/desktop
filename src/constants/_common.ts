@@ -54,6 +54,7 @@ export const ICONS_TO_LOAD = [
   "tabler:arrow-autofit-content-filled",
   "mingcute:check-2-fill",
   "mingcute:search-3-fill",
+  "mingcute:search-2-fill",
   "mingcute:search-3-line",
   "mingcute:refresh-3-fill",
   "material-symbols:dark-mode",

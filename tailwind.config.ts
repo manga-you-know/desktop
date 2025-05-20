@@ -94,11 +94,16 @@ const config: Config = {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
+        pulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: ".5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 600ms ease-out forwards",
         "accordion-up": "accordion-up 600ms ease-out forwards",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

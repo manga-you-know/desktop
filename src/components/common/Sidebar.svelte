@@ -1,14 +1,12 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { saveSettings } from "@/functions";
   import { Sidebar, Label, Avatar } from "@/lib/components";
   import { Badge } from "svelte-ux";
   import {
     openSearch,
     openSettings,
     openAdd,
-    lastPage,
     openCollection,
     openDownloads,
     downloadings,
@@ -62,7 +60,7 @@
   let downloadingCount = $derived(
     Object.values<Downloading>($downloadings).reduce(
       (a1, a2) => a1 + a2.downloading.length,
-      
+
       0
     )
   );
@@ -117,8 +115,7 @@
               <Sidebar.MenuButton
                 onclick={(e) => {
                   e.currentTarget.blur();
-                  lastPage.set(item.path);
-                  saveSettings();
+
                   goto(item.path);
                 }}
                 tabindex={-1}
@@ -262,7 +259,7 @@
     <img
       bind:this={imgElement}
       onclick={rotateImage}
-      class="w-16 min-w-10 ml-[4px]"
+      class="w-24 min-w-10 ml-[2px]"
       src="/icon.png"
       alt="icon"
     />

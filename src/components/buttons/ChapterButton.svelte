@@ -30,7 +30,7 @@
 </script>
 
 <Button
-  class="chapter-button w-full flex justify-between items-center rounded-md group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-gray-900"
+  class="chapter-button w-full flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-gray-900"
   variant="secondary"
   size="sm"
   bind:onclick

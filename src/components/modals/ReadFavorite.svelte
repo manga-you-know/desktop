@@ -10,6 +10,7 @@
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
   import Icon from "@iconify/svelte";
+  import { ScrollingValue } from "svelte-ux";
   import {
     Dialog,
     ScrollArea,
@@ -17,6 +18,7 @@
     Input,
     Separator,
     Badge,
+    Skeleton,
   } from "@/lib/components";
   import { ChapterButton, Language } from "@/components";
   import {
@@ -81,6 +83,9 @@
   );
 
   let store: Store = $state(null!);
+  let chaptersLength = $derived(
+    chaptersMode === "web" ? $globalChapters.length : chaptersDl.length
+  );
   let displayedChaptersLength = $derived(
     chaptersMode === "web"
       ? displayedChapters.length
@@ -468,7 +473,7 @@
                     : "No chapter"}
                 >
                   <Button
-                    class="h-7 w-7"
+                    class={cn("h-7 w-7", chaptersLength === 0 ? "hidden" : "")}
                     variant="ghost"
                     size="sm"
                     tabindex={-1}
@@ -513,9 +518,18 @@
                   </Button>
                 </Tooltip>
                 <span
-                  class="group-hover:underline group-hover:underline-offset-4 truncate w-[4rem] text-start"
+                  class={cn(
+                    "flex group-hover:underline group-hover:underline-offset-4 truncate",
+                    chaptersLength === 0
+                      ? "w-[100px] justify-end"
+                      : "w-[4rem] text-start"
+                  )}
                 >
-                  {nextChapter?.number ?? "All clear!"}
+                  {nextChapter !== undefined
+                    ? nextChapter.number
+                    : chaptersLength === 0
+                      ? "No chapters..."
+                      : "All clear!"}
                 </span>
               </div>
               <Button
@@ -545,7 +559,8 @@
             <Badge
               variant="secondary"
               class="w-12 mr-1 flex justify-center select-none"
-              >{displayedChaptersLength}
+            >
+              <ScrollingValue value={displayedChaptersLength} axis="y" />
             </Badge>
           </div>
           <div
@@ -558,10 +573,73 @@
               )}
             >
               {#if isFetching}
+                <div
+                  class="w-[13.25rem] h-full flex flex-col justify-start items-start"
+                >
+                  <div
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                  >
+                    <div
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                    ></div>
+                    <div class="w-full gap-0.5 flex flex-col">
+                      <div
+                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                      <div
+                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                  >
+                    <div
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                    ></div>
+                    <div class="w-full gap-0.5 flex flex-col">
+                      <div
+                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                      <div
+                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                  >
+                    <div
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                    ></div>
+                    <div class="w-full gap-0.5 flex flex-col">
+                      <div
+                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                      <div
+                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                  >
+                    <div
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                    ></div>
+                    <div class="w-full gap-0.5 flex flex-col">
+                      <div
+                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                      <div
+                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
                 <Icon
+                  class="!w-16 !h-16 fixed text-gray-600 dark:text-white"
                   icon="line-md:loading-loop"
-                  color="white"
-                  class="!w-16 !h-16"
                 />
               {:else if displayedChapters.length === 0}
                 <Badge
@@ -578,8 +656,9 @@
                   data={$isChaptersDescending || searchTerm !== ""
                     ? displayedChapters
                     : displayedChapters.toReversed()}
-                  itemSize={40}
+                  itemSize={25}
                   getKey={(_, i) => i}
+                  tabindex={-1}
                 >
                   {#snippet children(chapter, i)}
                     {@const isDownloaded = downloaded
@@ -655,8 +734,9 @@
                   data={$isChaptersDescending || searchTerm !== ""
                     ? displayedLocalChapters
                     : displayedLocalChapters.toReversed()}
-                  itemSize={40}
+                  itemSize={25}
                   getKey={(_, i) => i}
+                  tabindex={-1}
                 >
                   {#snippet children(chapter, i)}
                     {@const isReadedHere =
