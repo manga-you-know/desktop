@@ -53,7 +53,7 @@
           <Switch
             id="close-on-change"
             bind:checked={closeOnChange}
-            class="flex-shrink-0 mr-2"
+            class="shrink-0 mr-2"
           />
           <Label class="dark:text-white" for="close-on-change"
             >Close on change</Label

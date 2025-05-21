@@ -36,7 +36,7 @@
     }
   }}
 >
-  <AlertDialog.Content class="w-[26rem] flex flex-col justify-center">
+  <AlertDialog.Content class="w-104 flex flex-col justify-center">
     <AlertDialog.Title class="text-center">
       Select collections to
       <spam class="font-extrabold">
@@ -61,7 +61,7 @@
           >
             {limitStr(collection.name, 30)}
             <Icon
-              class="!w-5 !h-5"
+              class="w-5! h-5!"
               icon={isMarked
                 ? "mdi:checkbox-blank-circle"
                 : "mdi:checkbox-blank-circle-outline"}

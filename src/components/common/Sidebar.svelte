@@ -105,13 +105,13 @@
   onmouseleave={() => {}}
 >
   <Sidebar.Header></Sidebar.Header>
-  <Sidebar.Content class="!overflow-hidden">
+  <Sidebar.Content class="overflow-hidden!">
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
         <Sidebar.Menu>
           {#each items as item (item.name)}
-            <Sidebar.MenuItem class="!min-w-16">
+            <Sidebar.MenuItem class="min-w-16!">
               <Sidebar.MenuButton
                 onclick={(e) => {
                   e.currentTarget.blur();
@@ -125,7 +125,7 @@
                     icon={page.url.pathname === item.path
                       ? item.iconActive
                       : item.icon}
-                    class="!w-5 !h-5 ml-[-2px]"
+                    class="w-5! h-5! ml-[-2px]"
                   />
                 {:else}
                   <Badge
@@ -137,7 +137,7 @@
                       icon={page.url.pathname === item.path
                         ? item.iconActive
                         : item.icon}
-                      class="!w-5 !h-5 ml-[-2px]"
+                      class="w-5! h-5! ml-[-2px]"
                     />
                   </Badge>
                 {/if}
@@ -165,7 +165,7 @@
                 icon={$openSearch
                   ? "mingcute:search-3-fill"
                   : "mingcute:search-3-line"}
-                class="!w-5 !h-5 ml-[-2px]"
+                class="w-5! h-5! ml-[-2px]"
               />
               <Label class="cursor-pointer">Search</Label>
             </Sidebar.MenuButton>
@@ -179,7 +179,7 @@
               }}
             >
               <Icon
-                class="!w-6 !h-5 mx-[-3px]"
+                class="w-6! h-5! mx-[-3px]"
                 icon={$openCollection
                   ? "ion:bookmarks"
                   : "ion:bookmarks-outline"}
@@ -201,7 +201,7 @@
                     icon={$openDownloads
                       ? "basil:download-solid"
                       : "basil:download-outline"}
-                    class="!w-6 !h-6 ml-[-3px]"
+                    class="w-6! h-6! ml-[-3px]"
                   />
                 </Badge>
               {:else}
@@ -209,7 +209,7 @@
                   icon={$openDownloads
                     ? "basil:download-solid"
                     : "basil:download-outline"}
-                  class="!w-6 !h-6 ml-[-3px]"
+                  class="w-6! h-6! ml-[-3px]"
                 />
               {/if}
               <Label class="cursor-pointer">Downloads</Label>
@@ -227,7 +227,7 @@
                 icon={$openSettings
                   ? "heroicons:cog-6-tooth-solid"
                   : "heroicons:cog-6-tooth"}
-                class="!w-5 !h-5 ml-[-2px]"
+                class="w-5! h-5! ml-[-2px]"
               />
               <Label class="cursor-pointer">Settings</Label>
             </Sidebar.MenuButton>
@@ -243,7 +243,7 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="!w-5 !h-5 ml-[-2px] "
+                class="w-5! h-5! ml-[-2px] "
               />
               <Label class="cursor-pointer">Add</Label>
             </Sidebar.MenuButton>

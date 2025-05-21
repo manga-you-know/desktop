@@ -96,10 +96,10 @@
           {#each items as item}
             <Command.Item
               class={cn(
-                "w-full flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 select-none",
+                "w-full flex justify-between hover:bg-slate-400! dark:hover:bg-slate-800! select-none",
                 classItem,
                 item === selected
-                  ? "!bg-gray-300 dark:!bg-gray-900"
+                  ? "bg-gray-300! dark:bg-gray-900!"
                   : " dark:aria-selected:bg-inherit"
               )}
               value={item}

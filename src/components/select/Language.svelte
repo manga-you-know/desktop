@@ -67,7 +67,9 @@
           onChange?.();
         }}
       >
-        {selectedLanguage.label}
+        <div class="w-full flex justify-center">
+          {selectedLanguage.label}
+        </div>
         <ChevronsUpDown class="opacity-50" />
       </Button>
     {/snippet}
@@ -79,9 +81,9 @@
           {#each options as language}
             <Command.Item
               class={cn(
-                "hover:!bg-gray-400 dark:hover:!bg-slate-700 ",
+                "hover:bg-gray-400! dark:hover:bg-slate-700! ",
                 language.id === selectedLanguage.id
-                  ? "!bg-white dark:!bg-gray-800 "
+                  ? "bg-white! dark:bg-gray-800! "
                   : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
                 itemClass
               )}

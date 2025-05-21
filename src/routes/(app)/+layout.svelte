@@ -50,7 +50,7 @@
 
 {#if !$isMobile}
   <div class="w-full h-screen flex select-none overflow-hidden relative">
-    <SidebarProv.Provider class="!h-full" open={false}>
+    <SidebarProv.Provider class="h-full!" open={false}>
       <Sidebar />
       <SidebarProv.Inset class="p-2">
         {#key page.route.id}
@@ -80,7 +80,9 @@
     </SidebarProv.Provider>
   </div>
 {:else}
-  <div class="w-screen h-screen flex flex-col select-none overflow-hidden">
+  <div
+    class="dark:bg-black w-screen h-screen flex flex-col select-none overflow-hidden"
+  >
     {@render children?.()}
     <BottomNavigation />
   </div>

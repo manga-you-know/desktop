@@ -87,7 +87,7 @@
 </script>
 
 <AlertDialog.Root bind:open={$openSearch}>
-  <AlertDialog.Content class="overflow-hidden h-[16.2rem] w-[30rem]  p-0 gap-0">
+  <AlertDialog.Content class="overflow-hidden h-[16.2rem] w-120  p-0 gap-0">
     <div
       class={cn(
         "w-full absolute transition-all duration-500 ease-in-out",
@@ -104,7 +104,7 @@
                   ? "lucide:x"
                   : "mingcute:search-2-fill"}
               class={cn(
-                "!w-[1.2rem] !h-[1.2rem]",
+                "w-[1.2rem]! h-[1.2rem]!",
                 searchTerm.length > 0 && !isSearching ? "cursor-pointer" : ""
               )}
               color="gray"
@@ -130,10 +130,10 @@
       </AlertDialog.Header>
       <Separator />
       <div
-        class="w-[30rem] bg-gray-200 dark:bg-gray-900 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
+        class="w-120 bg-gray-200 dark:bg-gray-900 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
       >
         {#if results.length !== 0}
-          <ScrollArea class="w-[30rem] rounded-xl">
+          <ScrollArea class="w-120 rounded-xl">
             {#each results.slice(0, 20) as result}
               <div class="inline-flex w-[98%]">
                 <Button
@@ -226,7 +226,7 @@
                 : ""}
             </div>
             <Icon
-              class="!w-5 !h-5"
+              class="w-5! h-5!"
               icon={favoriteOpen
                 ? isFavorite(favoriteOpen)
                   ? "tabler:bookmark-filled"

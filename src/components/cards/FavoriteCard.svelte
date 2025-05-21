@@ -145,7 +145,7 @@
     <ContextMenu.Trigger>
       <button
         class={cn(
-          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:border dark:hover:border-gray-500 no-blurry",
           favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60"
         )}
         onclick={() => {
@@ -160,7 +160,7 @@
         <img
           src={favorite.cover}
           alt={favorite.name}
-          class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-xl !bg-transparent"
+          class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-xl bg-transparent!"
           id={strNotEmpty(favorite.id)}
           onerror={() => {
             const coverElement = document.getElementById(
@@ -179,7 +179,7 @@
             {variant}
           > -->
           <div
-            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-black bg-gradient-to-b to-50% to-transparent"
+            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-black bg-linear-to-b to-50% to-transparent"
           >
             <Label
               class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-white"
@@ -253,7 +253,7 @@
                 <Icon icon="lucide:chevrons-right" class="w-4 h-4" />
               </Button>
               <Button
-                class="rounded-none my-[-1px]"
+                class="rounded-none -my-px"
                 size="sm"
                 tabindex={-1}
                 {variant}
@@ -288,7 +288,7 @@
     </ContextMenu.Trigger>
     <ContextMenu.Content
       class={twMerge(
-        "!w-14 m-0 dark:bg-black",
+        "w-14! m-0 dark:bg-black",
         $theme === "dark" ? "dark" : ""
       )}
     >
@@ -320,7 +320,7 @@
           e.stopPropagation();
           favorite.is_ultra_favorite = !isUltraFavorite;
           isUltraFavorite = favorite.is_ultra_favorite;
-          await FavoriteDB.setUltraFavorite(favorite);
+          await FavoriteDB.toggleUltraFavorite(favorite);
           await Promise.all([refreshFavorites(), refreshLibrary()]);
         }}
         ><Icon

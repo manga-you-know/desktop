@@ -38,17 +38,22 @@ jobs:
         with:
           node-version: 20
 
+      # in case this thing fails...
+      #- name: Update Cargo.toml
+      #  run: bash myk u ${{  }}
+
       - name: Generate Changelog
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v5.2.1
+        uses: TriPSs/conventional-changelog-action@v6.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           git-user-name: "MangaYouKnow Bot"
           git-user-email: "admin@myk.com"
           config-file-path: ./.github/.config.cjs
-          version-file: "./src-tauri/tauri.conf.json"
+          version-file: "./src-tauri/tauri.conf.json, ./src-tauri/Cargo.toml"
           skip-version-file: false
           skip-git-pull: false
+          # skip-bump: true
           pre-release: false
           preset: conventionalcommits
 
@@ -123,6 +128,3 @@ jobs:
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
           args: ${{ matrix.args }}
-
-      - name: Update Cargo.toml
-        run: bash myk u ${{ needs.changelog.outputs.version }}

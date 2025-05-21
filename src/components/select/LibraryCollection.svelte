@@ -70,7 +70,7 @@
           }}
         >
           <Label
-            class="!w-36 cursor-pointer text-sm text-center ml-[-4px] text-ellipsis    
+            class="w-36! cursor-pointer text-sm text-center ml-[-4px] text-ellipsis    
             {$libraryCollection === undefined ? 'dark:text-gray-400' : ''}"
           >
             {limitStr(
@@ -81,7 +81,7 @@
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[11rem] ml-7 p-0">
+    <Popover.Content class="w-44 ml-7 p-0">
       <Command.Root class="dark:bg-black">
         <Command.Input placeholder="Search collection..." />
         <Command.Empty class="mb-[-68px]">No collection found.</Command.Empty>
@@ -89,9 +89,9 @@
           <Command.Group>
             {#each $collections.reverse() as collection}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 {collection ===
+                class="w-full flex justify-between hover:bg-slate-300! dark:hover:bg-slate-800! {collection ===
                 $libraryCollection
-                  ? '!bg-slate-400 dark:!bg-gray-900'
+                  ? 'bg-slate-400! dark:bg-gray-900!'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={collection.name}
                 onSelect={async () => {

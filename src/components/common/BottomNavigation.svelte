@@ -47,7 +47,7 @@
       onclick={() => goto(item.path)}
     >
       <Icon
-        class="!w-8 !h-8"
+        class="w-8! h-8!"
         icon={page.url.pathname === item.path ? item.iconActive : item.icon}
       />
     </Button>
@@ -58,7 +58,7 @@
     onclick={() => ($openSearch = true)}
   >
     <Icon
-      class="!w-8 !h-8"
+      class="w-8! h-8!"
       icon={$openSearch ? "mingcute:search-fill" : "mingcute:search-line"}
     />
   </Button>
@@ -68,7 +68,7 @@
     onclick={() => ($openSettings = true)}
   >
     <Icon
-      class="!w-8 !h-8"
+      class="w-8! h-8!"
       icon={$openSettings
         ? "heroicons:cog-6-tooth-solid"
         : "heroicons:cog-6-tooth"}

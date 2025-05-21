@@ -62,9 +62,9 @@
           <Command.Group>
             {#each orders as order}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 {order ===
+                class="w-full flex justify-between hover:bg-slate-300! dark:hover:bg-slate-800! {order ===
                 $libraryOrder
-                  ? 'bg-slate-400 dark:!bg-gray-900'
+                  ? 'bg-slate-400 dark:bg-gray-900!'
                   : ' dark:aria-selected:bg-inherit'}"
                 value={order}
                 onSelect={async () => {
@@ -84,7 +84,7 @@
     </Popover.Content>
   </Popover.Root>
   <Button
-    class="w-[20px] ml-[-1px] rounded-l-none"
+    class="w-[20px] -ml-px rounded-l-none"
     variant="secondary"
     onclick={async () => {
       isAscending.set(!$isAscending);

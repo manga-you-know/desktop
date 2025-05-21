@@ -9,7 +9,7 @@
 <PanelModal bind:open bind:shouldCopy {src} {path} />
 
 <Tilt
-  class="hover:scale-[1.546] hover:z-40 no-blurry transition duration-500 [perspective:200px]"
+  class="hover:scale-[1.546] hover:z-40 no-blurry transition duration-500 perspective-[200px]"
 >
   <button
     onclick={() => (open = true)}
@@ -17,7 +17,7 @@
     onmouseleave={() => (shouldCopy = false)}
   >
     <img
-      class="!max-w-[16rem] h-[11rem] object-contain"
+      class="max-w-[16rem]! h-44 object-contain"
       {src}
       alt="favorite panel"
     />

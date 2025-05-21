@@ -10,6 +10,7 @@
     setDiscordActivity,
     stopDiscordPresence,
     loadFavoriteChapter,
+    removeFavorite,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import Icon from "@iconify/svelte";
@@ -113,7 +114,7 @@
   bind:open
   onOpenChange={(open) => {
     if (!open) {
-      loadFavoriteChapter(favorite);
+      if (isUltraFavorite) loadFavoriteChapter(favorite);
       refreshFavorites();
       refreshLibrary();
     }
@@ -128,7 +129,7 @@
       <div class="flex gap-4">
         <Input
           id="name-{favorite.id}"
-          divClass="!w-full"
+          divClass="w-full!"
           class="w-64"
           placeholder="Name"
           floatingLabel
@@ -141,7 +142,7 @@
           <Input
             id="image-{favorite.id}"
             class="w-full rounded-r-none"
-            divClass="!w-full"
+            divClass="w-full!"
             placeholder="Cover"
             floatingLabel
             required
@@ -226,11 +227,12 @@
           isUltraFavorite = !isUltraFavorite;
           favorite.is_ultra_favorite = isUltraFavorite;
           await FavoriteDB.updateFavorite(favorite);
+          removeFavorite(favorite.id.toString());
         }}
       >
         {isUltraFavorite ? "Remove" : "Favorite"}
         <Icon
-          class="!w-5 !h-5 mx-[-5px]"
+          class="w-5! h-5! mx-[-5px]"
           icon={isUltraFavorite
             ? "fluent:star-emphasis-32-filled"
             : "fluent:star-emphasis-32-regular"}

@@ -76,7 +76,7 @@
                 <Pagination.Link
                   {page}
                   class={currentPage === page.value
-                    ? "!bg-white !text-black"
+                    ? "bg-white! text-black!"
                     : "dark:text-white"}
                   isActive={currentPage === page.value}
                   tabindex={-1}

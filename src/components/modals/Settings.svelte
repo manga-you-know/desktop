@@ -107,7 +107,7 @@
               <Checkbox
                 id="auto-update"
                 bind:checked={$autoSearchUpdates}
-                class="flex-shrink-0 mr-2"
+                class="shrink-0 mr-2"
                 onCheckedChange={async () => {
                   await saveSettings();
                 }}
@@ -118,7 +118,7 @@
             </div>
             <div class="flex gap-2 items-center">
               <Separator
-                class="border-y-[12px] border-x-2"
+                class="border-y-12 border-x-2"
                 orientation="vertical"
               />
               <Checkbox
@@ -137,7 +137,7 @@
               <Checkbox
                 id="discord-integration"
                 bind:checked={$discordIntegration}
-                class="flex-shrink-0 mr-2"
+                class="shrink-0 mr-2"
                 onCheckedChange={async () => {
                   await saveSettings();
                   await stopDiscordPresence();
@@ -148,7 +148,7 @@
                 for="discord-integration"
               >
                 Discord <Icon
-                  class="!w-5 !h-5 mr-1 m-0.5"
+                  class="w-5! h-5! mr-1 m-0.5"
                   icon="ic:round-discord"
                 />integration
               </Label>
@@ -178,7 +178,7 @@
             </div>
             <div class="flex gap-2 items-center">
               <Separator
-                class="border-y-[12px] border-x-2"
+                class="border-y-12 border-x-2"
                 orientation="vertical"
               />
               <Checkbox
@@ -203,7 +203,7 @@
           >
             <Icon
               icon="material-symbols:rule-settings-rounded"
-              class="!w-5 !h-5"
+              class="w-5! h-5!"
             />
             Reset all settings
           </Button>
@@ -234,7 +234,7 @@
               <Checkbox
                 id="auto-fullscreen"
                 bind:checked={$autoEnterFullscreen}
-                class="flex-shrink-0 mr-2"
+                class="shrink-0 mr-2"
                 onCheckedChange={async () => {
                   await saveSettings();
                 }}
@@ -260,7 +260,7 @@
               <Checkbox
                 id="use-mpv"
                 bind:checked={$useMpv}
-                class="flex-shrink-0 mr-2"
+                class="shrink-0 mr-2"
                 onCheckedChange={async () => {
                   await saveSettings();
                 }}

@@ -98,7 +98,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <div
   class={twMerge(
-    "dark:bg-black text-black dark:text-white",
+    "dark:bg-[#111113]! text-black dark:text-white",
     $theme === "dark" ? "dark" : ""
   )}
 >

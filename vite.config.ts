@@ -1,11 +1,17 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { vite as vidstack } from "vidstack/plugins";
 import { enhancedImages } from "@sveltejs/enhanced-img";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: [sveltekit(), vidstack({ include: /player\// }), enhancedImages()],
+  plugins: [
+    tailwindcss(),
+    sveltekit(),
+    vidstack({ include: /player\// }),
+    enhancedImages(),
+  ],
   server: {
     host: host || false,
     strictPort: true,

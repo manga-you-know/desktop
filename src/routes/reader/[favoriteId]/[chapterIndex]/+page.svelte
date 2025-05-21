@@ -441,7 +441,7 @@
   <div
     class={cn(
       "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500",
-      $openReadMenu ? "translate-x-0" : "translate-x-[15rem]"
+      $openReadMenu ? "translate-x-0" : "translate-x-60"
     )}
   >
     <Button
@@ -454,7 +454,7 @@
     >
       <Icon
         class={cn(
-          "!w-5 !h-5 transition-all duration-700",
+          "w-5! h-5! transition-all duration-700",
           $openReadMenu ? "rotate-180" : "rotate-0 opacity-30"
         )}
         icon="typcn:chevron-left"
@@ -614,7 +614,7 @@
               .includes(currentlyImagePath)
               ? "tabler:photo-filled"
               : "tabler:photo"}
-            class="!w-5 !h-5"
+            class="w-5! h-5!"
           />
         </Button>
       </div>

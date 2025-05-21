@@ -128,9 +128,9 @@
               {#each sourcesByType[sourceType][language] as source}
                 <Command.Item
                   class={cn(
-                    "flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 ",
+                    "flex justify-between hover:bg-slate-400! dark:hover:bg-slate-800! ",
                     source.name === $selectedSource
-                      ? "!bg-gray-300 dark:!bg-gray-900"
+                      ? "bg-gray-300! dark:bg-gray-900!"
                       : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"
                   )}
                   value={source.name}

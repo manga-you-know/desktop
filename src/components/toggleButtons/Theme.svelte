@@ -13,7 +13,7 @@
 
 <div class="inline-flex items-center justify-start gap-2">
   <Icon
-    class="!w-5 !h-5"
+    class="w-5! h-5!"
     icon={!isDark
       ? "material-symbols:sunny-rounded"
       : "material-symbols:sunny-outline-rounded"}
@@ -26,7 +26,7 @@
     }}
   />
   <Icon
-    class="!w-5 !h-5"
+    class="w-5! h-5!"
     icon={isDark
       ? "material-symbols:dark-mode"
       : "material-symbols:dark-mode-outline"}

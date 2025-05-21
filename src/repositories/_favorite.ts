@@ -295,15 +295,24 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
   }
 }
 
-export async function setUltraFavorite(favorite: Favorite): Promise<void> {
+export async function toggleUltraFavorite(
+  favorite: Favorite
+): Promise<boolean> {
   if (!db) await loadDb();
   try {
-    await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [
-      favorite.is_ultra_favorite,
-      favorite.id,
-    ]);
+    await db.execute(
+      "UPDATE favorite SET is_ultra_favorite = CASE WHEN is_ultra_favorite = 1 THEN 0 ELSE 1 END WHERE id = ?",
+      [favorite.id]
+    );
+
+    const result: { is_ultra_favorite: number }[] = await db.select(
+      "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
+      [favorite.id]
+    );
+    return Boolean(result[0].is_ultra_favorite);
   } catch (error) {
     console.log(error);
+    return false;
   } finally {
     // db.close()
   }

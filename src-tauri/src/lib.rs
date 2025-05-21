@@ -17,7 +17,6 @@ pub fn run() {
             get_base64_image
         ])
         .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
@@ -38,6 +37,7 @@ pub fn run() {
                 Ok(())
             })
             .plugin(tauri_plugin_drpc::init())
+            .plugin(tauri_plugin_clipboard::init())
             .plugin(tauri_plugin_cli::init())
             .plugin(tauri_plugin_window_state::Builder::default().build())
             .plugin(tauri_plugin_updater::Builder::new().build())

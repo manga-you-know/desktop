@@ -64,7 +64,7 @@
   onOpenChange={async (open) => {
     globalChapters.set([]);
     if (!open) {
-      await loadFavoriteChapter(favorite);
+      if (favorite.is_ultra_favorite) await loadFavoriteChapter(favorite);
     }
   }}
 >

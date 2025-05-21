@@ -1,17 +1,16 @@
-import { fontFamily } from "tailwindcss/defaultTheme";
-import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate";
+import defaultTheme from "tailwindcss/defaultTheme";
 import colors from "tailwindcss/colors";
 import layerstack from "@layerstack/tailwind/plugin";
-
-const config: Config = {
+/** @type 
+{import('tailwindcss').Config}
+*/
+export default {
   darkMode: ["class"],
   content: [
     "./src/**/*.{html,js,svelte,ts}",
     "./src/**/*.{html,svelte}",
     "./node_modules/svelte-ux/**/*.{svelte,js}",
   ],
-  safelist: ["dark"],
   theme: {
     container: {
       center: true,
@@ -79,7 +78,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: [...fontFamily.sans],
+        sans: [...defaultTheme.fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
@@ -131,7 +130,5 @@ const config: Config = {
       },
     },
   },
-  plugins: [tailwindcssAnimate, layerstack],
+  plugins: [layerstack],
 };
-
-export default config;
