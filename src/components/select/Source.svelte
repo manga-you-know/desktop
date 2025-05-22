@@ -119,7 +119,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[165px] p-0">
-      <Command.Root class="dark:bg-black">
+      <Command.Root class="dark:bg-background">
         <Command.Input placeholder="Search source..." class="h-9" />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36 scroll-smooth select-none">
@@ -128,9 +128,9 @@
               {#each sourcesByType[sourceType][language] as source}
                 <Command.Item
                   class={cn(
-                    "flex justify-between hover:!bg-slate-400 dark:hover:!bg-slate-800 ",
+                    "flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 ",
                     source.name === $selectedSource
-                      ? "!bg-gray-300 dark:!bg-gray-900"
+                      ? "!bg-gray-300 dark:!bg-secondary"
                       : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"
                   )}
                   value={source.name}

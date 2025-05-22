@@ -72,12 +72,12 @@
     >
       <div class="border-b-4 my-4 text-center relative rounded-3xl">
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
         >
           App
         </span>
       </div>
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
+      <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <Label class="text-md"
             >Current version: <span class="text-xl font-bold">
@@ -86,7 +86,7 @@
           >
           {#if !$isMobile}
             <Button
-              class="w-44 bg-slate-300 dark:bg-[#2d3649] "
+              class="w-44 bg-background/50 "
               variant="ghost"
               disabled={isSearchingUpdates}
               onclick={async () => {
@@ -129,7 +129,7 @@
                   await saveSettings();
                 }}
               />
-              <Label for="notify-update">
+              <Label class="cursor-pointer" for="notify-update">
                 Desktop notication for new updates
               </Label>
             </div>
@@ -161,7 +161,7 @@
                   await saveSettings();
                 }}
               />
-              <Label for="auto-start">
+              <Label class="cursor-pointer" for="auto-start">
                 Minize to tray apps instead of closing
               </Label>
             </div>
@@ -174,7 +174,9 @@
                   await store?.set("auto_start", value);
                 }}
               />
-              <Label for="auto-start">Start app with system</Label>
+              <Label class="cursor-pointer" for="auto-start"
+                >Start app with system</Label
+              >
             </div>
             <div class="flex gap-2 items-center">
               <Separator
@@ -189,13 +191,15 @@
                   await store?.set("start_in_tray", value);
                 }}
               />
-              <Label for="start-in-tray">Start in tray apps</Label>
+              <Label class="cursor-pointer" for="start-in-tray"
+                >Start in tray apps</Label
+              >
             </div>
           {/if}
           <Label>Theme</Label>
           <Theme />
           <Button
-            class="w-44 bg-slate-300 dark:bg-[#2d3649] "
+            class="w-44 bg-background/50 "
             variant="ghost"
             onclick={async () => {
               await resetSettings();
@@ -211,13 +215,13 @@
       </Card.Root>
       <div class="border-b-4 my-5 text-center relative rounded-3xl">
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
         >
           Reader
         </span>
       </div>
 
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
+      <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <Label>Preferable language</Label>
@@ -249,12 +253,12 @@
       {#if !$isMobile}
         <div class="border-b-4 my-4 text-center relative rounded-3xl">
           <span
-            class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold select-none"
+            class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
           >
             Player
           </span>
         </div>
-        <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
+        <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
           <Card.Content class="flex flex-col gap-4">
             <div class="flex items-center">
               <Checkbox
@@ -276,12 +280,12 @@
       {/if}
       <!-- <div class="border-b-4 my-4 text-center relative rounded-3xl">
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-4 dark:text-gray-300 font-bold"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold"
         >
           Others
         </span>
       </div>
-      <Card.Root class="bg-slate-100 dark:bg-[#0e141e] border-0 rounded-3xl">
+      <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
           <Label>Default page</Label>
           <div class="flex">

@@ -1,6 +1,5 @@
-<script lang="ts">
+<script lang="ts" module>
   import { cn } from "$lib/utils";
-  import { theme } from "@/store";
   import { cva, type VariantProps } from "class-variance-authority";
   import type { HTMLButtonAttributes } from "svelte/elements";
 
@@ -13,16 +12,16 @@
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",
           outline:
-            "border border-input bg-background hover:bg-accent hover:text-accent-foreground dark:text-slate-200",
+            "border border-secondary bg-background hover:bg-secondary hover:text-accent-foreground dark:text-slate-200",
           secondary:
             "bg-secondary text-secondary-foreground hover:bg-secondary/80",
           ghost:
-            "hover:bg-accent hover:text-accent-foreground dark:text-slate-200",
+            "hover:bg-secondary hover:text-accent-foreground dark:text-slate-200",
           link: "text-primary underline-offset-4 hover:underline",
           elevated:
             "bg-background shadow-md -translate-y-[3px] shadow-accent transition-all duration-200 border border-border/50 bg-accent text-accent-foreground text-slate-200",
           elevatedHover:
-            "bg-background shadow-none hover:shadow-md hover:shadow-accent  hover:-translate-y-[3px] transition-all duration-200 border border-border/50 hover:bg-accent hover:text-accent-foreground dark:text-slate-200",
+            "bg-background shadow-none hover:shadow-md hover:shadow-accent  hover:-translate-y-[3px] transition-all duration-200 border border-border/50 hover:bg-secondary/80 hover:text-accent-foreground dark:text-slate-200",
         },
         effect: {
           expandIcon: "group gap-0 relative",
@@ -59,6 +58,23 @@
     }
   );
 
+  export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
+  export type ButtonEffect = VariantProps<typeof buttonVariants>["effect"];
+  export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
+  export type ButtonProps = {
+    variant?: ButtonVariant;
+    effect?: ButtonEffect;
+    size?: ButtonSize;
+    icon?: any; // Replace with your icon type
+    iconPlacement?: "left" | "right";
+    class?: string;
+    ref?: HTMLButtonElement;
+  } & HTMLButtonAttributes;
+
+  export let ref: HTMLButtonElement;
+</script>
+
+<script lang="ts">
   interface $$Props extends HTMLButtonAttributes {
     variant?: VariantProps<typeof buttonVariants>["variant"];
     effect?: VariantProps<typeof buttonVariants>["effect"];
@@ -66,6 +82,7 @@
     icon?: any; // Replace with your icon type
     iconPlacement?: "left" | "right";
     class?: string;
+    ref?: HTMLButtonElement;
   }
 
   export let variant: $$Props["variant"] = "default";
@@ -73,12 +90,14 @@
   export let size: $$Props["size"] = "default";
   export let icon: $$Props["icon"] = undefined;
   export let iconPlacement: $$Props["iconPlacement"] = "left";
+  export let ref: $$Props["ref"] = undefined;
 
   export { className as class };
   let className = "";
 </script>
 
 <button
+  bind:this={ref}
   class={cn(buttonVariants({ variant, effect, size }), className)}
   {...$$restProps}
   tabindex={-1}

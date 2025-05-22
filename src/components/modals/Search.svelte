@@ -130,10 +130,10 @@
       </AlertDialog.Header>
       <Separator />
       <div
-        class="w-[30rem] bg-gray-200 dark:bg-gray-900 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
+        class="w-[30rem] bg-gray-200 dark:bg-secondary/50 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
       >
         {#if results.length !== 0}
-          <ScrollArea class="w-[30rem] rounded-xl">
+          <ScrollArea class="w-[30rem] rounded-xl !scrollbar">
             {#each results.slice(0, 20) as result}
               <div class="inline-flex w-[98%]">
                 <Button
@@ -185,7 +185,7 @@
     </div>
     <div
       class={cn(
-        "flex justify-between w-full h-full bg-gray-200 dark:bg-gray-900 p-2 absolute transition-all duration-500 ease-in-out",
+        "flex justify-between w-full h-full bg-gray-200 dark:bg-secondary/50 p-2 absolute transition-all duration-500 ease-in-out",
         isFavoriteOpen ? "translate-x-0" : "translate-x-full"
       )}
     >

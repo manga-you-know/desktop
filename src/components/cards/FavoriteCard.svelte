@@ -144,7 +144,7 @@
     <ContextMenu.Trigger>
       <button
         class={cn(
-          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-slate-900 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
           favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60"
         )}
         onclick={() => {
@@ -178,7 +178,7 @@
             {variant}
           > -->
           <div
-            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-black bg-gradient-to-b to-50% to-transparent"
+            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-background bg-gradient-to-b to-50% to-transparent"
           >
             <Label
               class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-white"
@@ -287,7 +287,7 @@
     </ContextMenu.Trigger>
     <ContextMenu.Content
       class={twMerge(
-        "!w-14 m-0 dark:bg-black",
+        "!w-14 m-0 dark:bg-background",
         $theme === "dark" ? "dark" : ""
       )}
     >
@@ -318,8 +318,8 @@
         onclick={async (e: Event) => {
           e.stopPropagation();
           favorite.is_ultra_favorite = !isUltraFavorite;
-          isUltraFavorite = favorite.is_ultra_favorite;
-          await FavoriteDB.setUltraFavorite(favorite);
+          isUltraFavorite = Boolean(favorite.is_ultra_favorite);
+          await FavoriteDB.toggleUltraFavorite(favorite);
           await Promise.all([refreshFavorites(), refreshLibrary()]);
         }}
         ><Icon

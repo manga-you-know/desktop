@@ -22,7 +22,7 @@
 <!-- <EditFavorite {favorite} bind:open={isEdit} /> -->
 <!-- <AskDelete {favorite} bind:open={isDelete} /> -->
 <button
-  class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-900 hover:bg-gray-800 hover:scale-[0.90] hover:cursor-pointer hover:shadow-lg hover:z-50 transform hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 hover:sticky"
+  class="group relative rounded-xl h-[264px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-secondary hover:bg-gray-800 hover:scale-[0.90] hover:cursor-pointer hover:shadow-lg hover:z-50 transform hover:border-white hover:border-1 focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 hover:sticky"
   onclick={() => (isOpen = true)}
   tabindex={-1}
 >
@@ -83,7 +83,7 @@
 
   <!-- Hover effect overlay -->
   <div
-    class="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"
+    class="absolute inset-0 bg-background opacity-0 group-hover:opacity-50 transition-opacity duration-300"
   ></div>
   <div
     class="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"

@@ -28,6 +28,7 @@
     preferableLanguage,
     isChaptersDescending,
     downloadings,
+    isMobile,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -40,6 +41,7 @@
     refreshFavorites,
     refreshLibrary,
     saveSettings,
+    removeFavorite,
   } from "@/functions";
   import type { Favorite, Chapter, Language as LanguageType } from "@/types";
   import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
@@ -57,7 +59,7 @@
   let searchTerm = $state("");
   let displayedChapters: Chapter[] = $state([]);
   let displayedLocalChapters: Chapter[] = $state([]);
-  let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let isUltraFavorite = $state(Boolean(favorite.is_ultra_favorite));
   let chaptersMode: "web" | "local" = $state("web");
   let jsonChapters: { [key: string]: Chapter } = $state({});
   let chaptersDl = $derived(
@@ -244,62 +246,64 @@
       .toReversed();
   }
 
+  async function onOpened() {
+    isUltraFavorite = Boolean(favorite.is_ultra_favorite);
+    console.log(isUltraFavorite, favorite.name);
+    isFetching = true;
+    setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
+    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
+    globalChapters.set([]);
+    await refreshDownloadeds();
+    refreshJsonChapters();
+    isMulti = $downloadManager.isMultiLanguage(favorite.source);
+    if (isMulti) {
+      const lastReaded = await ReadedDB.getLastReaded(favorite);
+      let chapters: Chapter[] = [];
+      if (lastReaded?.language) {
+        localSelectedLanguage.id = lastReaded.language;
+        localSelectedLanguage.label = LANGUAGE_LABELS[lastReaded.language];
+        [chapters, languageOptions] = await Promise.all([
+          $downloadManager.getChapters(favorite, lastReaded.language),
+          $downloadManager.getFavoriteLanguages(favorite),
+        ]);
+      } else {
+        localSelectedLanguage = $preferableLanguage;
+        [chapters, languageOptions] = await Promise.all([
+          $downloadManager.getChapters(favorite, $preferableLanguage.id),
+          $downloadManager.getFavoriteLanguages(favorite),
+        ]);
+      }
+      globalChapters.set(chapters);
+    } else {
+      localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
+      const result = await $downloadManager.getChapters(favorite);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      globalChapters.set(result);
+    }
+    displayedChapters = $globalChapters;
+    await refreshReadeds(favorite);
+    isFetching = false;
+  }
   $effect(() => {
     if (open) {
-      isFetching = true;
-      setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
-      (async () => {
-        store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
-        globalChapters.set([]);
-        await refreshDownloadeds();
-        refreshJsonChapters();
-        isMulti = $downloadManager.isMultiLanguage(favorite.source);
-        if (isMulti) {
-          const lastReaded = await ReadedDB.getLastReaded(favorite);
-          let chapters: Chapter[] = [];
-          if (lastReaded?.language) {
-            localSelectedLanguage.id = lastReaded.language;
-            localSelectedLanguage.label = LANGUAGE_LABELS[lastReaded.language];
-            [chapters, languageOptions] = await Promise.all([
-              $downloadManager.getChapters(favorite, lastReaded.language),
-              $downloadManager.getFavoriteLanguages(favorite),
-            ]);
-          } else {
-            localSelectedLanguage = $preferableLanguage;
-            [chapters, languageOptions] = await Promise.all([
-              $downloadManager.getChapters(favorite, $preferableLanguage.id),
-              $downloadManager.getFavoriteLanguages(favorite),
-            ]);
-          }
-          globalChapters.set(chapters);
-        } else {
-          localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
-          const result = await $downloadManager.getChapters(favorite);
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          globalChapters.set(result);
-        }
-        displayedChapters = $globalChapters;
-        await refreshReadeds(favorite);
-        isFetching = false;
-      })();
+      onOpened();
     } else {
-      stopDiscordPresence();
     }
   });
 </script>
 
 <Dialog.Root
   bind:open
-  onOpenChange={(open) => {
-    globalChapters.set([]);
-    if (!open) {
-      if (favorite.is_ultra_favorite) loadFavoriteChapter(favorite);
-      refreshFavorites();
-      refreshLibrary();
-    }
+  onOpenChange={() => {
+    if (isUltraFavorite) loadFavoriteChapter(favorite);
+    refreshFavorites();
+    refreshLibrary();
+    stopDiscordPresence();
   }}
 >
-  <Dialog.Content>
+  <Dialog.Content
+    class={$isMobile ? "flex flex-col items-center h-[90vh]" : ""}
+  >
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center dark:text-white">
         {limitStr(favorite.name, 40)}
@@ -308,16 +312,33 @@
         >Change your favorites attributes and save it.</Dialog.Description
       > -->
     </Dialog.Header>
-    <div class="flex">
-      <div class="w-1/2 flex flex-col justify-start items-center pr-10 gap-2">
+    <div
+      class={cn(
+        "flex w-full items-center",
+        $isMobile ? "flex-col justify-start" : "justify-center"
+      )}
+    >
+      <div
+        class={cn(
+          " flex  items-center gap-2",
+          $isMobile
+            ? "w-full justify-between"
+            : "w-1/2 flex-col justify-start pr-10"
+        )}
+      >
         <div class="!w-40 !h-70 flex justify-center">
           <img
             src={favorite.cover}
             alt={favorite.name}
-            class="!w-40 !h-70 object-contain rounded-xl !bg-gray-950"
+            class="!w-40 !h-70 object-contain rounded-xl bg-gray-950!"
           />
         </div>
-        <div class="flex flex-col items-center gap-2">
+        <div
+          class={cn(
+            "flex flex-col items-center",
+            $isMobile ? "justify-end gap-3 p-2  h-full" : "gap-2"
+          )}
+        >
           <Language
             class="mt-3"
             bind:selectedLanguage={localSelectedLanguage}
@@ -351,13 +372,15 @@
               variant="secondary"
               onclick={async (e: Event) => {
                 e.stopPropagation();
-                favorite.is_ultra_favorite = !isUltraFavorite;
-                isUltraFavorite = favorite.is_ultra_favorite;
-                await FavoriteDB.setUltraFavorite(favorite);
+                isUltraFavorite = !isUltraFavorite;
+                favorite.is_ultra_favorite = isUltraFavorite;
+                isUltraFavorite =
+                  await FavoriteDB.toggleUltraFavorite(favorite);
+                removeFavorite(favorite.id.toString());
               }}
             >
               <Icon
-                class="!w-5 !h-5 mx-[-5px]"
+                class="!size-5 mx-[-5px]"
                 icon={isUltraFavorite
                   ? "fluent:star-emphasis-32-filled"
                   : "fluent:star-emphasis-32-regular"}
@@ -378,9 +401,9 @@
           </div>
         </div>
       </div>
-      <div class="w-1/2">
-        <div class="w-[13.5rem] flex flex-col gap-1">
-          <div class="flex gap-1 items-center justify-between">
+      <div class={$isMobile ? "flex justify-center w-full" : "w-1/2"}>
+        <div class="w-54 flex flex-col gap-1">
+          <div class="flex items-center justify-start gap-1">
             <div class="w-20 max-w-20 flex justify-start ml-[-4px]">
               <Input
                 class="w-12 "
@@ -412,22 +435,22 @@
               }}
             >
               <Icon
-                class="!w-6 !h-6"
+                class="!size-6"
                 icon={$isChaptersDescending
                   ? "typcn:arrow-sorted-down"
                   : "typcn:arrow-sorted-up"}
               />
             </Button>
             <div
-              class="flex items-center justify-center mr-1 p-1 gap-1 bg-slate-300 dark:bg-gray-900 rounded-xl z-10"
+              class="flex items-center justify-center mr-1 p-1 gap-1 bg-slate-300 dark:bg-secondary/40 rounded-xl z-10"
             >
               <Button
-                class="w-9 h-9 transition-colors duration-500"
+                class="size-9 transition-colors duration-500"
                 size="sm"
                 onclick={() => (chaptersMode = "web")}
                 variant={chaptersMode === "web" ? "secondary" : "link"}
               >
-                <Icon class="!w-5 !h-5" icon="tabler:world" />
+                <Icon class="!size-5" icon="tabler:world" />
               </Button>
               <Button
                 class="w-9 h-9 transition-colors duration-500"
@@ -435,14 +458,14 @@
                 onclick={() => (chaptersMode = "local")}
                 variant={chaptersMode === "local" ? "secondary" : "link"}
               >
-                <Icon class="!w-5 !h-5" icon="tabler:file-download" />
+                <Icon class="!size-5" icon="tabler:file-download" />
               </Button>
             </div>
           </div>
-          <div class="flex w-full justify-between">
+          <div class="flex w-full justify-start gap-1">
             <Button
               class={cn(
-                "chapter-button flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-gray-900",
+                "chapter-button flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-secondary/50",
                 nextChapter === undefined ? "cursor-default" : ""
               )}
               variant="secondary"
@@ -522,7 +545,7 @@
                     "flex group-hover:underline group-hover:underline-offset-4 truncate",
                     chaptersLength === 0
                       ? "w-[100px] justify-end"
-                      : "w-[4rem] text-start"
+                      : "w-16 text-start"
                   )}
                 >
                   {nextChapter !== undefined
@@ -552,7 +575,7 @@
               >
                 <Icon
                   icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
-                  class="!w-7 !h-7"
+                  class="!size-7"
                 />
               </Button>
             </Button>
@@ -564,7 +587,7 @@
             </Badge>
           </div>
           <div
-            class="bg-secondary rounded-xl relative w-[13.25rem] h-[19rem] overflow-hidden"
+            class="bg-secondary rounded-xl relative !h-[19rem] w-[13.25rem] overflow-hidden"
           >
             <div
               class={cn(
@@ -574,65 +597,65 @@
             >
               {#if isFetching}
                 <div
-                  class="w-[13.25rem] h-full flex flex-col justify-start items-start"
+                  class="w-53 h-full flex flex-col justify-start items-start"
                 >
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
-                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
-                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-32 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
-                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-36 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-28 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-gray-900 animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
-                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                      class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-24 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800"
+                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
@@ -715,13 +738,13 @@
             </div>
             <div
               class={cn(
-                "flex justify-center !h-[19rem] !w-[13.25rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                "flex justify-center !h-[19rem] w-[13.25rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
                 chaptersMode === "local" ? "translate-x-0" : "translate-x-full"
               )}
             >
               {#if displayedLocalChapters.length === 0}
                 <Badge
-                  class="w-33 h-16  m-5  flex justify-center text-center"
+                  class="w-32 h-16  m-5  flex justify-center text-center"
                   variant="destructive"
                 >
                   {searchTerm === ""

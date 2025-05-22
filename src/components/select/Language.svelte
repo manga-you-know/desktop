@@ -39,7 +39,7 @@
     {#snippet child({ props })}
       <Button
         class={cn(
-          "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-[#2d3649] dark:text-white",
+          "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-secondary dark:text-white",
           className
         )}
         variant="outline"
@@ -54,7 +54,7 @@
     {/snippet}
   </Popover.Trigger>
   <Popover.Content class="w-[165px] p-0">
-    <Command.Root class={cn("bg-slate-300 dark:bg-[#2d3649]", classPopover)}>
+    <Command.Root class={cn("bg-slate-300 dark:bg-secondary", classPopover)}>
       <ScrollArea class="h-36">
         <Command.Group>
           {#each options as language}

@@ -60,7 +60,7 @@
     class="absolute top-0 left-0 w-full h-full flex flex-col justify-between items-center"
   >
     <Label
-      class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start text-xs bg-black"
+      class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start text-xs bg-background"
     >
       {chapter.number}: {chapter.title}
     </Label>

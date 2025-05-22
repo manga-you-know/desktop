@@ -114,7 +114,7 @@
 </script>
 
 <div
-  class="dark:bg-black w-screen h-screen max-w-screen max-h-screen flex items-center overflow-hidden"
+  class="dark:bg-background w-screen h-screen max-w-screen max-h-screen flex items-center overflow-hidden"
 >
   <media-player
     class="flex flex-col items-center"
@@ -148,7 +148,7 @@
         <div class="vds-controls-spacer"></div>
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <media-controls-group
-          class="vds-controls-group w-full flex-col p-4 bg-black bg-opacity-50 flex
+          class="vds-controls-group w-full flex-col p-4 bg-background bg-opacity-50 flex
           {showControls ? '' : 'opacity-0'}"
           onmouseenter={() => {
             showControls = true;

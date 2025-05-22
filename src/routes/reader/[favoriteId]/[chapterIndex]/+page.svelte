@@ -422,7 +422,7 @@
   {gotoPage}
   {handleGoChapter}
 />
-<div class="dark:bg-black min-h-screen">
+<div class="dark:bg-background min-h-screen">
   <div
     class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
   >

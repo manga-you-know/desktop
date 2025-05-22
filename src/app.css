@@ -37,7 +37,7 @@
   }
 
   .dark {
-    --background: 20 0% 0%;
+    --background: 240 10% 3.9%;
     --foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -49,7 +49,7 @@
     --input: 217.2 32.6% 17.5%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 240 4% 16%;
     --secondary-foreground: 210 40% 98%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
@@ -74,7 +74,7 @@
 }
 
 .group:has(button:hover) {
-  @apply dark:bg-slate-600 bg-slate-300;
+  @apply dark:bg-background/30 bg-slate-300;
 }
 
 .logo-shadow {
@@ -93,18 +93,18 @@
 
   .scrollbar::-webkit-scrollbar-track {
     border-radius: 100vh;
-    @apply dark:bg-slate-600 bg-slate-200 !px-5;
+    @apply dark:bg-background/40 bg-slate-200 !px-5;
     height: 20px;
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply dark:bg-slate-900 bg-slate-400;
+    @apply dark:bg-background/70 bg-slate-400;
     padding: 10px;
     border-radius: 6px;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply dark:bg-slate-950 bg-slate-300;
+    @apply dark:bg-background/50 bg-slate-300;
   }
 }
 

@@ -59,7 +59,7 @@
 >
   <ContextMenu.Trigger>
     <button
-      class="group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry"
+      class="group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry"
       onclick={() => (isOpen = true)}
     >
       <img
@@ -134,7 +134,10 @@
     </button>
   </ContextMenu.Trigger>
   <ContextMenu.Content
-    class={twMerge("!w-14 m-0 dark:bg-black", $theme === "dark" ? "dark" : "")}
+    class={twMerge(
+      "!w-14 m-0 dark:bg-background",
+      $theme === "dark" ? "dark" : ""
+    )}
   >
     <ContextMenu.Item
       class="gap-4"
@@ -164,7 +167,7 @@
         e.stopPropagation();
         favorite.is_ultra_favorite = !isUltraFavorite;
         isUltraFavorite = favorite.is_ultra_favorite;
-        await FavoriteDB.setUltraFavorite(favorite);
+        await FavoriteDB.toggleUltraFavorite(favorite);
         await refreshFavorites();
       }}
       ><Icon

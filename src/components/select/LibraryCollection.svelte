@@ -82,16 +82,16 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
-      <Command.Root class="dark:bg-black">
+      <Command.Root class="dark:bg-background">
         <Command.Input placeholder="Search collection..." />
         <Command.Empty class="mb-[-68px]">No collection found.</Command.Empty>
         <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
             {#each $collections.reverse() as collection}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 {collection ===
+                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50 {collection ===
                 $libraryCollection
-                  ? '!bg-slate-400 dark:!bg-gray-900'
+                  ? '!bg-slate-400 dark:!bg-secondary'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={collection.name}
                 onSelect={async () => {

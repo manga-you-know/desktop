@@ -39,6 +39,13 @@ function addFavorite(favorite: Favorite) {
   });
 }
 
+export function removeFavorite(favoriteId: string) {
+  favoritesLoaded.update((currentFavorites) => {
+    const { [favoriteId]: removed, ...remainingFavorites } = currentFavorites;
+    return remainingFavorites;
+  });
+}
+
 function updateFavoriteProperty(
   favoriteId: string,
   property: keyof FavoriteLoaded,

@@ -82,16 +82,16 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
-      <Command.Root class="dark:bg-black">
+      <Command.Root class="dark:bg-background">
         <Command.Input placeholder="Search source..." />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
             {#each sources.toReversed() as source}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-slate-800 
+                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50
                 {source === $librarySource
-                  ? '!bg-slate-400 dark:!bg-gray-900'
+                  ? '!bg-slate-400 dark:!bg-secondary'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={source}
                 onSelect={async () => {
