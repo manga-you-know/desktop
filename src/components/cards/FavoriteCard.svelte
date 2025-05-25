@@ -319,7 +319,7 @@
           e.stopPropagation();
           favorite.is_ultra_favorite = !isUltraFavorite;
           isUltraFavorite = Boolean(favorite.is_ultra_favorite);
-          await FavoriteDB.toggleUltraFavorite(favorite);
+          isUltraFavorite = await FavoriteDB.toggleUltraFavorite(favorite);
           await Promise.all([refreshFavorites(), refreshLibrary()]);
         }}
         ><Icon

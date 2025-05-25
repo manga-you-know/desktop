@@ -19,16 +19,15 @@
         "minWidth": 640,
         "center": true,
         "visible": false,
-        "backgroundColor": "#18181b"
+        "backgroundColor": "#18181b",
+        "dragDropEnabled": false
       }
     ],
     "security": {
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "**/*"
-        ]
+        "scope": ["**/*"]
       }
     }
   },

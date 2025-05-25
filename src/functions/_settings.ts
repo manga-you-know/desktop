@@ -23,6 +23,7 @@ import {
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
+import { refreshLibrary } from "@/functions/_database";
 
 let loadedSettings: Store;
 
@@ -92,6 +93,7 @@ export async function loadSettings() {
   if (get(lastPage) !== "/home") {
     goto(get(lastPage));
   }
+  refreshLibrary();
 }
 
 export async function saveSettings() {

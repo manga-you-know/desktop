@@ -2,16 +2,16 @@ import { fetch } from "@tauri-apps/plugin-http";
 import { check, Update } from "@tauri-apps/plugin-updater";
 import { message } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { isMobile, updateInfo, openUpdate, notifyUpdate } from "@/store";
+import { updateInfo, openUpdate, notifyUpdate } from "@/store";
 import { notify, reloadApp } from "@/functions";
 import { get } from "svelte/store";
+import { IS_MOBILE } from "@/constants";
 
 const UPDATE_URL =
   "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json";
 
 const window = getCurrentWindow();
 let isDownloaded = false;
-let lastUpdateFound = "";
 
 async function fetchUpdate(update: Update) {
   let downloaded = 0;
@@ -35,7 +35,7 @@ async function fetchUpdate(update: Update) {
 }
 
 export async function checkForAppUpdates(isUserClick: boolean = false) {
-  if (!get(isMobile)) {
+  if (!IS_MOBILE) {
     const [update, response] = await Promise.all([check(), fetch(UPDATE_URL)]);
     if (update === null && !response.ok) {
       await message("Failed to check for updates.\nPlease try again later.", {
@@ -62,13 +62,12 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
       });
       openUpdate.set(true);
       if (!isFocus) {
-        if (update.version !== lastUpdateFound && get(notifyUpdate)) {
+        if (get(notifyUpdate)) {
           notify(
             `Update v${update.version} avaible!`,
             "Open the app to update"
           );
         }
-        lastUpdateFound = update.version;
       }
     } else if (isUserClick) {
       updateInfo.set({

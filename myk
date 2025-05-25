@@ -2,7 +2,8 @@
 
 case "$1" in
     "u" | "update")
-        bash scripts/update.sh $2
+        version=$(bash scripts/update.sh $2)
+        echo $version
     ;;
     *)
         echo "Commands:"

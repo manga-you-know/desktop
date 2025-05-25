@@ -30,15 +30,16 @@
     useMpv,
     openSearch,
     closeTray,
-    isMobile,
     notifyUpdate,
     discordIntegration,
+    updateInfo,
+    openUpdate,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
   import type { Language as LanguageType } from "@/types";
   import Icon from "@iconify/svelte";
-  import { LANGUAGE_OPTIONS } from "@/constants";
+  import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -84,12 +85,16 @@
               v{version}
             </span></Label
           >
-          {#if !$isMobile}
+          {#if !IS_MOBILE}
             <Button
               class="w-44 bg-background/50 "
               variant="ghost"
               disabled={isSearchingUpdates}
               onclick={async () => {
+                if ($updateInfo.updateAvailable) {
+                  openUpdate.set(true);
+                  return;
+                }
                 isSearchingUpdates = true;
                 await checkForAppUpdates(true);
                 isSearchingUpdates = false;
@@ -233,7 +238,7 @@
               languageOptions={LANGUAGE_OPTIONS}
             />
           </div>
-          {#if !$isMobile}
+          {#if !IS_MOBILE}
             <div class="flex items-center">
               <Checkbox
                 id="auto-fullscreen"
@@ -250,7 +255,7 @@
           {/if}
         </Card.Content>
       </Card.Root>
-      {#if !$isMobile}
+      {#if !IS_MOBILE}
         <div class="border-b-4 my-4 text-center relative rounded-3xl">
           <span
             class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"

@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar, BottomNavigation } from "@/components";
-  import { isMobile, lastPage } from "@/store";
+  import { lastPage } from "@/store";
   import { page } from "$app/state";
   import { fly } from "svelte/transition";
   import { saveSettings } from "@/functions";
+  import { IS_MOBILE } from "@/constants";
 
   type PageId = "home" | "favorites" | "library" | "panels";
 
@@ -48,7 +49,7 @@
   }
 </script>
 
-{#if !$isMobile}
+{#if !IS_MOBILE}
   <div class="w-full h-screen flex select-none overflow-hidden relative">
     <SidebarProv.Provider class="h-full!" open={false}>
       <Sidebar />

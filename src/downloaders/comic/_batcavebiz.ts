@@ -123,7 +123,6 @@ export class BatcaveBizDl implements MangaDl {
       .replace("window.__DATA__ = ", "")
       .replace(";", "");
     const json = JSON.parse(data);
-    console.log(json.images);
     return json.images;
   }
 }

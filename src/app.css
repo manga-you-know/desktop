@@ -74,7 +74,7 @@
 }
 
 .group:has(button:hover) {
-  @apply dark:bg-background/30 bg-slate-300;
+  @apply dark:bg-background/40 bg-slate-300;
 }
 
 .logo-shadow {

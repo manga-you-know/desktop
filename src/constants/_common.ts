@@ -1,3 +1,9 @@
+import { type } from "@tauri-apps/plugin-os";
+
+const os = type();
+
+export const IS_MOBILE = os === "android" || os === "ios";
+
 export const ICONS_TO_LOAD = [
   "lucide:x",
   "lucide:home",

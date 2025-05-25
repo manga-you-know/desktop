@@ -27,7 +27,6 @@
     fitMode,
     viewMode,
     lastPage,
-    isMobile,
     openReadMenu,
     openSearch,
   } from "@/store";
@@ -49,6 +48,7 @@
   import { join, documentDir, downloadDir } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
+  import { IS_MOBILE } from "@/constants";
 
   let { favoriteId, chapterIndex } = page.params;
   let isLocal = page.url.searchParams.has("local");
@@ -543,7 +543,7 @@
         >
           <Icon icon="fluent:image-split-24-filled" />
         </Button>
-        {#if !$isMobile}
+        {#if !IS_MOBILE}
           <div class="inline-flex pointer-events-auto z-50">
             <Button
               class="w-7 rounded-r-none"

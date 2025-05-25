@@ -44,6 +44,7 @@ export function removeFavorite(favoriteId: string) {
     const { [favoriteId]: removed, ...remainingFavorites } = currentFavorites;
     return remainingFavorites;
   });
+  refreshFavorites();
 }
 
 function updateFavoriteProperty(

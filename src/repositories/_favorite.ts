@@ -10,6 +10,12 @@ import {
 import { MarkDB, UserDB } from "@/repositories";
 import type { Favorite, Mark } from "@/types";
 import { get } from "svelte/store";
+import {
+  loadFavoriteChapter,
+  refreshFavorites,
+  refreshLibrary,
+  removeFavorite,
+} from "@/functions";
 
 let db: Database = null!;
 
@@ -165,11 +171,8 @@ export async function getRawFavorites(): Promise<Favorite[]> {
 export async function getUltraFavorites(): Promise<Favorite[]> {
   if (!db) await loadDb();
   try {
-    const favorites: Favorite[] = await db.select(
-      "SELECT * FROM favorite WHERE user_id = ? AND is_ultra_favorite = ?",
-      [defaultUser.id, true]
-    );
-    return favorites;
+    const favorites: Favorite[] = await getRawFavorites();
+    return favorites.filter((f) => f.is_ultra_favorite === "true");
   } catch (error) {
     console.log(error);
     return [];
@@ -295,21 +298,35 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
   }
 }
 
+export async function isUltraFavorite(favoriteId: number) {
+  const result: { is_ultra_favorite: string }[] = await db.select(
+    "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
+    [favoriteId]
+  );
+  return result[0].is_ultra_favorite === "true";
+}
+
 export async function toggleUltraFavorite(
-  favorite: Favorite
+  favorite: Favorite,
+  refresh: boolean = true
 ): Promise<boolean> {
   if (!db) await loadDb();
   try {
-    await db.execute(
-      "UPDATE favorite SET is_ultra_favorite = CASE WHEN is_ultra_favorite = 1 THEN 0 ELSE 1 END WHERE id = ?",
-      [favorite.id]
-    );
+    await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [
+      favorite.is_ultra_favorite,
+      favorite.id,
+    ]);
 
-    const result: { is_ultra_favorite: number }[] = await db.select(
+    const result: { is_ultra_favorite: string }[] = await db.select(
       "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
       [favorite.id]
     );
-    return Boolean(result[0].is_ultra_favorite);
+    if (refresh) {
+      refreshFavorites();
+      refreshLibrary();
+      if (result[0].is_ultra_favorite === "true") loadFavoriteChapter(favorite);
+    }
+    return result[0].is_ultra_favorite === "true";
   } catch (error) {
     console.log(error);
     return false;

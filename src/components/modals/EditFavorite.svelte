@@ -49,7 +49,9 @@
       cover = convertFileSrc(file);
     }
   }
-
+  const loadUltraFavorite = async () => {
+    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
+  };
   async function refreshInfo() {
     isRefreshing = true;
     const favLoad = await $downloadManager.getMangaById(
@@ -92,6 +94,7 @@
   }
 
   $effect(() => {
+    loadUltraFavorite();
     name = favorite.name;
     link = favorite.link;
     cover = favorite.cover;
@@ -113,7 +116,7 @@
   bind:open
   onOpenChange={(open) => {
     if (!open) {
-      loadFavoriteChapter(favorite);
+      if (isUltraFavorite) loadFavoriteChapter(favorite);
       refreshFavorites();
       refreshLibrary();
     }
@@ -225,7 +228,7 @@
         onclick={async () => {
           isUltraFavorite = !isUltraFavorite;
           favorite.is_ultra_favorite = isUltraFavorite;
-          await FavoriteDB.updateFavorite(favorite);
+          await FavoriteDB.toggleUltraFavorite(favorite, false);
         }}
       >
         {isUltraFavorite ? "Remove" : "Favorite"}

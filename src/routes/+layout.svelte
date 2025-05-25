@@ -14,8 +14,8 @@
     autoSearchUpdates,
     closeTray,
     openSearch,
-    isMobile,
     theme,
+    updateInfo,
   } from "@/store";
   import { Tooltip as TooltipPrimitive } from "@/lib/components";
   import {
@@ -34,6 +34,7 @@
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
+  import { IS_MOBILE } from "@/constants";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -41,7 +42,7 @@
     async () => {
       try {
         loadFavoriteChapters();
-        if (!$isMobile && $autoSearchUpdates) {
+        if (!IS_MOBILE && $autoSearchUpdates && !$updateInfo.updateAvailable) {
           checkForAppUpdates();
         }
       } catch (e) {
@@ -85,7 +86,7 @@
     createTray();
     loadFavoriteChapters();
     loadAppIcons();
-    if (!$isMobile && $autoSearchUpdates) {
+    if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
     logNewUser();

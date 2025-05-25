@@ -24,3 +24,6 @@ current_version=$(grep -Eo "\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"" "$TAURI_FIL
 sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" $TAURI_FILE
 
 echo "$current_version -> $new_version ($TAURI_FILE)"
+
+# Return the new version
+echo "$new_version"

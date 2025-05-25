@@ -18,7 +18,7 @@ export interface Favorite {
   status?: string;
   grade?: number;
   author?: string;
-  is_ultra_favorite?: boolean;
+  is_ultra_favorite?: boolean | string;
   description?: string;
   marks?: Mark[];
   readeds?: Chapter[];

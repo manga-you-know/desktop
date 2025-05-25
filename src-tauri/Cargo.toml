@@ -1,8 +1,6 @@
-version = "0.1.0"
-
 [package]
 name = "MangaYouKnow"
-version = "0.6.0"
+version = "0.6.1"
 description = "A manga app!"
 authors = [ "ReiLoko4" ]
 license = "MIT"
@@ -26,7 +24,7 @@ tauri-plugin-fs = "2"
 tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-process = "2"
-tauri-plugin-shell = "2"
+tauri-plugin-shell = "2.2.1"
 tauri-plugin-os = "2"
 lazy_static = "1.5.0"
 once_cell = "1.20.2"

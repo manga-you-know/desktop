@@ -79,9 +79,6 @@
           role="combobox"
           aria-expanded={open}
           tabindex={-1}
-          onscroll={(e) => {
-            console.log(e);
-          }}
           onwheel={(e) => {
             if (e.deltaY < 0) {
               selectedSource.set(

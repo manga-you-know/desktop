@@ -28,7 +28,6 @@
     preferableLanguage,
     isChaptersDescending,
     downloadings,
-    isMobile,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -44,7 +43,11 @@
     removeFavorite,
   } from "@/functions";
   import type { Favorite, Chapter, Language as LanguageType } from "@/types";
-  import { LANGUAGE_LABELS, READSOURCES_LANGUAGE } from "@/constants";
+  import {
+    IS_MOBILE,
+    LANGUAGE_LABELS,
+    READSOURCES_LANGUAGE,
+  } from "@/constants";
   import { limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
   import { load, Store } from "@tauri-apps/plugin-store";
@@ -71,6 +74,11 @@
       }))
       .toReversed()
   );
+  let readedLenghtDisplayed: number = $derived(
+    chaptersMode === "web"
+      ? displayedChapters.filter((c) => isReaded(c, $readeds)).length
+      : displayedLocalChapters.filter((c) => isReaded(c, $readeds)).length
+  );
   let nextChapter: Chapter | undefined = $derived(
     chaptersMode === "web"
       ? $globalChapters
@@ -83,7 +91,6 @@
   let isNextDownloaded = $derived(
     downloaded.map((d) => d.name).includes(nextChapter?.number ?? "")
   );
-
   let store: Store = $state(null!);
   let chaptersLength = $derived(
     chaptersMode === "web" ? $globalChapters.length : chaptersDl.length
@@ -93,6 +100,9 @@
       ? displayedChapters.length
       : displayedLocalChapters.length
   );
+  let isLoaded = $state(false);
+  let isFetching = $state(false);
+
   interface Props {
     favorite: Favorite;
     open: boolean;
@@ -101,8 +111,6 @@
   interface Event {
     stopPropagation: () => void;
   }
-
-  let isFetching = $state(false);
 
   function isDownloading(chapter: Chapter) {
     if ($downloadings[favorite.id] === undefined) return false;
@@ -246,9 +254,12 @@
       .toReversed();
   }
 
+  const loadUltraFavorite = async () => {
+    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
+  };
+
   async function onOpened() {
-    isUltraFavorite = Boolean(favorite.is_ultra_favorite);
-    console.log(isUltraFavorite, favorite.name);
+    loadUltraFavorite();
     isFetching = true;
     setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
     store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
@@ -283,9 +294,10 @@
     displayedChapters = $globalChapters;
     await refreshReadeds(favorite);
     isFetching = false;
+    isLoaded = true;
   }
   $effect(() => {
-    if (open) {
+    if (open && !isLoaded) {
       onOpened();
     } else {
     }
@@ -295,6 +307,7 @@
 <Dialog.Root
   bind:open
   onOpenChange={() => {
+    isLoaded = false;
     if (isUltraFavorite) loadFavoriteChapter(favorite);
     refreshFavorites();
     refreshLibrary();
@@ -302,7 +315,7 @@
   }}
 >
   <Dialog.Content
-    class={$isMobile ? "flex flex-col items-center h-[90vh]" : ""}
+    class={IS_MOBILE ? "flex flex-col items-center h-[90vh]" : ""}
   >
     <Dialog.Header>
       <Dialog.Title class="w-full flex justify-center dark:text-white">
@@ -315,13 +328,13 @@
     <div
       class={cn(
         "flex w-full items-center",
-        $isMobile ? "flex-col justify-start" : "justify-center"
+        IS_MOBILE ? "flex-col justify-start" : "justify-center"
       )}
     >
       <div
         class={cn(
           " flex  items-center gap-2",
-          $isMobile
+          IS_MOBILE
             ? "w-full justify-between"
             : "w-1/2 flex-col justify-start pr-10"
         )}
@@ -336,7 +349,7 @@
         <div
           class={cn(
             "flex flex-col items-center",
-            $isMobile ? "justify-end gap-3 p-2  h-full" : "gap-2"
+            IS_MOBILE ? "justify-end gap-3 p-2  h-full" : "gap-2"
           )}
         >
           <Language
@@ -374,9 +387,10 @@
                 e.stopPropagation();
                 isUltraFavorite = !isUltraFavorite;
                 favorite.is_ultra_favorite = isUltraFavorite;
-                isUltraFavorite =
-                  await FavoriteDB.toggleUltraFavorite(favorite);
-                removeFavorite(favorite.id.toString());
+                isUltraFavorite = await FavoriteDB.toggleUltraFavorite(
+                  favorite,
+                  false
+                );
               }}
             >
               <Icon
@@ -401,12 +415,12 @@
           </div>
         </div>
       </div>
-      <div class={$isMobile ? "flex justify-center w-full" : "w-1/2"}>
+      <div class={IS_MOBILE ? "flex justify-center w-full" : "w-1/2"}>
         <div class="w-54 flex flex-col gap-1">
           <div class="flex items-center justify-start gap-1">
-            <div class="w-20 max-w-20 flex justify-start ml-[-4px]">
+            <div class="w-24 flex justify-start ml-[-6px]">
               <Input
-                class="w-12 "
+                class="w-20"
                 placeholder="Chapter..."
                 oninput={search}
                 floatingLabel
@@ -416,7 +430,7 @@
               {#if searchTerm.length > 0}
                 <Button
                   variant="link"
-                  class="w-2"
+                  class="w-2 ml-[-12px]"
                   onclick={() => {
                     searchTerm = "";
                     search();
@@ -435,10 +449,11 @@
               }}
             >
               <Icon
-                class="!size-6"
-                icon={$isChaptersDescending
-                  ? "typcn:arrow-sorted-down"
-                  : "typcn:arrow-sorted-up"}
+                class={cn(
+                  "!size-6 duration-300 transition-all",
+                  $isChaptersDescending ? "rotate-0" : "rotate-180"
+                )}
+                icon="typcn:arrow-sorted-down"
               />
             </Button>
             <div
@@ -463,144 +478,151 @@
             </div>
           </div>
           <div class="flex w-full justify-start gap-1">
-            <Button
-              class={cn(
-                "chapter-button flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-secondary/50",
-                nextChapter === undefined ? "cursor-default" : ""
-              )}
-              variant="secondary"
-              size="sm"
-              onclick={() => {
-                if (nextChapter) {
-                  const originalIndex =
-                    chaptersMode === "web"
-                      ? $globalChapters.findIndex(
-                          (c) => c.chapter_id === nextChapter.chapter_id
-                        )
-                      : chaptersDl.findIndex(
-                          (c) => c.chapter_id === nextChapter.chapter_id
-                        );
-
-                  goto(`/reader/${favorite.id}/${originalIndex}`);
-                }
-              }}
-            >
-              <div class="flex items-center gap-2">
-                <Tooltip
-                  title={nextChapter !== undefined
-                    ? isDownloading(nextChapter)
-                      ? "Downloading..."
-                      : isNextDownloaded
-                        ? "Open folder"
-                        : "Download"
-                    : "No chapter"}
-                >
-                  <Button
-                    class={cn("h-7 w-7", chaptersLength === 0 ? "hidden" : "")}
-                    variant="ghost"
-                    size="sm"
-                    tabindex={-1}
-                    disabled={nextChapter
-                      ? isDownloading(nextChapter) && !isNextDownloaded
-                      : true}
-                    onclick={async (e) => {
-                      e.stopPropagation();
-                      if (nextChapter === undefined) return;
-                      if (!isNextDownloaded) {
-                        pushDownloading(nextChapter);
-                        await $downloadManager.downloadChapter(
-                          nextChapter,
-                          favorite
-                        );
-                        await refreshDownloadeds();
-                        removeDownloading(nextChapter);
-                        refreshJsonChapters();
-                      } else {
-                        const path = await join(
-                          await downloadDir(),
-                          "Mangas",
-                          favorite.folder_name,
-                          nextChapter.number
-                        );
-                        openPath(path);
-                      }
-                    }}
-                    ><Icon
-                      icon={nextChapter
-                        ? isDownloading(nextChapter) &&
-                          !downloaded
-                            .map((d) => d.name)
-                            .includes(nextChapter?.number ?? "")
-                          ? "line-md:loading-alt-loop"
-                          : isNextDownloaded
-                            ? "lucide:folder-check"
-                            : "lucide:download"
-                        : ""}
-                      class="w-5 h-5"
-                    />
-                  </Button>
-                </Tooltip>
-                <span
-                  class={cn(
-                    "flex group-hover:underline group-hover:underline-offset-4 truncate",
-                    chaptersLength === 0
-                      ? "w-[100px] justify-end"
-                      : "w-16 text-start"
-                  )}
-                >
-                  {nextChapter !== undefined
-                    ? nextChapter.number
-                    : chaptersLength === 0
-                      ? "No chapters..."
-                      : "All clear!"}
-                </span>
-              </div>
+            <div class="w-full flex rounded-xl bg-secondary">
               <Button
-                class="h-7 w-7 "
-                variant="ghost"
+                class={cn(
+                  "chapter-button w-full flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-background/60",
+                  nextChapter === undefined ? "cursor-default" : ""
+                )}
+                variant="secondary"
                 size="sm"
-                tabindex={-1}
-                disabled={nextChapter === undefined}
-                onclick={async (e) => {
-                  e.stopPropagation();
+                onclick={() => {
                   if (nextChapter) {
-                    await addReadedBelow(
-                      nextChapter,
-                      $globalChapters,
-                      favorite
-                    );
-                    await refreshReadeds(favorite);
+                    const originalIndex =
+                      chaptersMode === "web"
+                        ? $globalChapters.findIndex(
+                            (c) => c.chapter_id === nextChapter.chapter_id
+                          )
+                        : chaptersDl.findIndex(
+                            (c) => c.chapter_id === nextChapter.chapter_id
+                          );
+
+                    goto(`/reader/${favorite.id}/${originalIndex}`);
                   }
                 }}
               >
-                <Icon
-                  icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
-                  class="!size-7"
-                />
+                <div class="flex items-center gap-2">
+                  <Tooltip
+                    title={nextChapter !== undefined
+                      ? isDownloading(nextChapter)
+                        ? "Downloading..."
+                        : isNextDownloaded
+                          ? "Open folder"
+                          : "Download"
+                      : "No chapter"}
+                  >
+                    <Button
+                      class={cn(
+                        "h-7 w-7",
+                        chaptersLength === 0 ? "hidden" : ""
+                      )}
+                      variant="ghost"
+                      size="sm"
+                      tabindex={-1}
+                      disabled={nextChapter
+                        ? isDownloading(nextChapter) && !isNextDownloaded
+                        : true}
+                      onclick={async (e) => {
+                        e.stopPropagation();
+                        if (nextChapter === undefined) return;
+                        if (!isNextDownloaded) {
+                          pushDownloading(nextChapter);
+                          await $downloadManager.downloadChapter(
+                            nextChapter,
+                            favorite
+                          );
+                          await refreshDownloadeds();
+                          removeDownloading(nextChapter);
+                          refreshJsonChapters();
+                        } else {
+                          const path = await join(
+                            await downloadDir(),
+                            "Mangas",
+                            favorite.folder_name,
+                            nextChapter.number
+                          );
+                          openPath(path);
+                        }
+                      }}
+                      ><Icon
+                        icon={nextChapter
+                          ? isDownloading(nextChapter) &&
+                            !downloaded
+                              .map((d) => d.name)
+                              .includes(nextChapter?.number ?? "")
+                            ? "line-md:loading-alt-loop"
+                            : isNextDownloaded
+                              ? "lucide:folder-check"
+                              : "lucide:download"
+                          : ""}
+                        class="w-5 h-5"
+                      />
+                    </Button>
+                  </Tooltip>
+                  <span
+                    class={cn(
+                      "flex group-hover:underline group-hover:underline-offset-4 truncate",
+                      chaptersLength === 0
+                        ? "w-[100px] justify-end"
+                        : "w-16 text-start"
+                    )}
+                  >
+                    {nextChapter !== undefined
+                      ? nextChapter.number
+                      : chaptersLength === 0
+                        ? "No chapters..."
+                        : "All clear!"}
+                  </span>
+                </div>
+                <Button
+                  class="h-7 w-7 "
+                  variant="ghost"
+                  size="sm"
+                  tabindex={-1}
+                  disabled={nextChapter === undefined}
+                  onclick={async (e) => {
+                    e.stopPropagation();
+                    if (nextChapter) {
+                      await addReadedBelow(
+                        nextChapter,
+                        $globalChapters,
+                        favorite
+                      );
+                      await refreshReadeds(favorite);
+                    }
+                  }}
+                >
+                  <Icon
+                    icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
+                    class="!size-7"
+                  />
+                </Button>
               </Button>
-            </Button>
+            </div>
             <Badge
               variant="secondary"
-              class="w-12 mr-1 flex justify-center select-none"
+              class="w-20 p-1 mr-1 flex justify-center select-none"
             >
+              <ScrollingValue value={readedLenghtDisplayed} axis="y" />
+              /
               <ScrollingValue value={displayedChaptersLength} axis="y" />
             </Badge>
           </div>
           <div
-            class="bg-secondary rounded-xl relative !h-[19rem] w-[13.25rem] overflow-hidden"
+            class="bg-secondary rounded-xl relative !h-[19rem] w-[14.2rem] overflow-hidden"
           >
             <div
               class={cn(
-                "flex justify-center items-center !h-[19rem] w-[13.25rem] absolute transition-all duration-300 ease-in-out",
+                "flex justify-center items-center !h-[19rem] w-[14.2rem] absolute transition-all duration-300 ease-in-out",
                 chaptersMode === "web" ? "translate-x-0" : "translate-x-full"
               )}
             >
               {#if isFetching}
                 <div
-                  class="w-53 h-full flex flex-col justify-start items-start"
+                  class="w-[14.2rem] h-full flex flex-col justify-start items-start"
                 >
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
@@ -615,7 +637,7 @@
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
@@ -630,7 +652,7 @@
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
@@ -645,7 +667,7 @@
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[205px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
@@ -738,7 +760,7 @@
             </div>
             <div
               class={cn(
-                "flex justify-center !h-[19rem] w-[13.25rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                "flex justify-center !h-[19rem] w-[14.2rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
                 chaptersMode === "local" ? "translate-x-0" : "translate-x-full"
               )}
             >

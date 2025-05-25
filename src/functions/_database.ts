@@ -9,6 +9,7 @@ import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
 import {
   collections,
+  favoritesLoaded,
   libraryFavorites,
   panels,
   readeds,
@@ -23,6 +24,8 @@ import {
 } from "@tauri-apps/plugin-fs";
 import { documentDir, join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { get } from "svelte/store";
+import { removeFavorite } from "@/functions/_favorite";
 
 let db: Database = null!;
 
@@ -120,7 +123,6 @@ export async function deleteReadedAbove(
       if (read) toDelete.push(read);
     }
   }
-  console.log(toDelete);
   await ReadedDB.deleteReadeds(toDelete);
 }
 
@@ -132,6 +134,12 @@ export async function refreshLibrary() {
 export async function refreshFavorites() {
   const favs = await FavoriteDB.getUltraFavorites();
   ultraFavorites.set(favs);
+  const uload = get(favoritesLoaded);
+  for (let id of Object.keys(uload)) {
+    if (!favs.map((f) => f.id.toString()).includes(id)) {
+      removeFavorite(id);
+    }
+  }
 }
 
 export async function refreshReadeds(favorite: Favorite) {

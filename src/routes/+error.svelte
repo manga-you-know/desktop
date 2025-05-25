@@ -4,7 +4,6 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    console.log("debug super fucking especifico");
     goto($lastPage);
   });
 </script>
