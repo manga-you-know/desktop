@@ -50,6 +50,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwind-variants": "^0.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "tauri-plugin-cache-api": "^0.1.4",
     "tauri-plugin-clipboard-api": "^2.1.11",
     "tauri-plugin-drpc": "^1.0.3",
     "ts-node": "^10.9.2",

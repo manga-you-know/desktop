@@ -20,11 +20,11 @@ export const libraryFavorites = writable<Favorite[]>([]);
 export const ultraFavorites = writable<Favorite[]>([]);
 export const libraryQuery = writable<string>("");
 export const librarySource = writable<string>("");
-export const libraryCollection = writable<Mark | undefined>(undefined);
+export const libraryTag = writable<Mark | undefined>(undefined);
 export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
-export const collections = writable<Mark[]>([]);
+export const tags = writable<Mark[]>([]);
 export const panels = writable<
   { src: string; path: string; shouldCopy?: boolean }[]
 >([]);
@@ -42,12 +42,15 @@ export const openSearch = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
 export const openDownloads = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
-export const openCollection = writable<boolean>(false);
+export const openTag = writable<boolean>(false);
 export const isRefreshing = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
+export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
+  "on-hover"
+);
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
 export const discordIntegration = writable<boolean>(false);

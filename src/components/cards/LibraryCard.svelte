@@ -6,7 +6,7 @@
     WatchFavorite,
     EditFavorite,
     AskDelete,
-    PickCollection,
+    PickTags,
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
@@ -51,7 +51,7 @@
 {/if}
 <EditFavorite {favorite} bind:open={isEdit} />
 <AskDelete {favorite} bind:open={isDelete} />
-<PickCollection {favorite} bind:open={isPicking} bind:markeds />
+<PickTags {favorite} bind:open={isPicking} bind:markeds />
 <ContextMenu.Root
   onOpenChange={() => {
     isUltraFavorite = favorite.is_ultra_favorite;
@@ -183,7 +183,7 @@
       }}
     >
       <Icon icon="lucide:bookmark" />
-      <Label>Collections</Label>
+      <Label>Tags</Label>
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item

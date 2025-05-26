@@ -6,8 +6,8 @@
     Popover,
     ScrollArea,
   } from "@/lib/components";
-  import { libraryFavorites, libraryCollection, collections } from "@/store";
-  import { refreshCollections, refreshLibrary } from "@/functions";
+  import { libraryFavorites, libraryTag, tags } from "@/store";
+  import { refreshTags, refreshLibrary } from "@/functions";
   import { MarkDB } from "@/repositories";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
@@ -17,7 +17,7 @@
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
   onMount(async () => {
-    await refreshCollections();
+    await refreshTags();
   });
 </script>
 
@@ -31,31 +31,23 @@
           {...props}
           role="combobox"
           aria-expanded={open}
-          disabled={$collections.length === 0}
+          disabled={$tags.length === 0}
           tabindex={-1}
           onwheel={(e) => {
             if (e.deltaY < 0) {
-              if ($libraryCollection === undefined) {
-                libraryCollection.set($collections.at(0));
+              if ($libraryTag === undefined) {
+                libraryTag.set($tags.at(0));
               } else {
-                libraryCollection.set(
-                  $collections.at(
-                    $collections.findIndex(
-                      (c) => c.id === $libraryCollection.id
-                    ) + 1
-                  )
+                libraryTag.set(
+                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) + 1)
                 );
               }
             } else {
-              if ($libraryCollection === undefined) {
-                libraryCollection.set($collections.at(-1));
+              if ($libraryTag === undefined) {
+                libraryTag.set($tags.at(-1));
               } else {
-                libraryCollection.set(
-                  $collections.at(
-                    $collections.findIndex(
-                      (c) => c.id === $libraryCollection.id
-                    ) - 1
-                  )
+                libraryTag.set(
+                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) - 1)
                 );
               }
             }
@@ -64,45 +56,46 @@
           onmouseup={(e) => {
             if (e.button === 1) {
               open = false;
-              libraryCollection.set(undefined);
+              libraryTag.set(undefined);
               refreshLibrary();
             }
           }}
         >
+          {#if $libraryTag?.icon}
+            <Icon icon={$libraryTag.icon} />
+          {/if}
           <Label
             class="!w-36 cursor-pointer text-sm text-center ml-[-4px] text-ellipsis    
-            {$libraryCollection === undefined ? 'dark:text-gray-400' : ''}"
+            {$libraryTag === undefined ? 'dark:text-gray-400' : ''}"
           >
-            {limitStr(
-              $libraryCollection?.name ?? "Filter by collection...",
-              16
-            )}
+            {limitStr($libraryTag?.name ?? "Filter by tag...", 16)}
           </Label>
         </Button>
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
       <Command.Root class="dark:bg-background">
-        <Command.Input placeholder="Search collection..." />
-        <Command.Empty class="mb-[-68px]">No collection found.</Command.Empty>
+        <Command.Input placeholder="Search tag..." />
+        <Command.Empty class="mb-[-68px]">No tag found.</Command.Empty>
         <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
-            {#each $collections.reverse() as collection}
+            {#each [{ id: -1, user_id: 1, name: "Favorites", icon: "heroicons:star-solid" }, ...$tags.reverse()] as tag}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50 {collection ===
-                $libraryCollection
+                class="w-full flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50 {tag ===
+                $libraryTag
                   ? '!bg-slate-400 dark:!bg-secondary'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
-                value={collection.name}
+                value={tag.name}
                 onSelect={async () => {
-                  libraryCollection.set(collection);
+                  libraryTag.set(tag);
                   open = false;
                   await refreshLibrary();
                 }}
               >
-                <Label class="w-full text-center text-sm"
-                  >{collection.name}</Label
-                >
+                {#if tag.icon}
+                  <Icon icon={tag.icon} />
+                {/if}
+                <Label class="text-center text-sm">{tag.name}</Label>
               </Command.Item>
             {/each}
           </Command.Group>
@@ -113,10 +106,10 @@
   <Button
     variant="secondary"
     class="w-8 rounded-l-none"
-    disabled={$libraryCollection === undefined}
+    disabled={$libraryTag === undefined}
     onclick={() => {
       open = false;
-      libraryCollection.set(undefined);
+      libraryTag.set(undefined);
       refreshLibrary();
     }}
   >

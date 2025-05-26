@@ -59,13 +59,15 @@ jobs:
 
       - name: Update Cargo.toml
         id: update-version
-        run: echo "version=$(bash myk u ${{ steps.changelog.outputs.version }})" >> $GITHUB_OUTPUT
+        run: /
+          echo ${{ steps.changelog.outputs.version }}
+          bash myk u ${{ steps.changelog.outputs.version }})
 
       - name: Commit files
         run: |
           git config --local user.email "admin@myk.com"
           git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml version to v${{ steps.update-version.outputs.version }}"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml version"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -144,3 +146,86 @@ jobs:
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
           args: ${{ matrix.args }}
+  publish-android:
+    name: Publish Android
+    needs: changelog
+    if: ${{ needs.changelog.outputs.skipped != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: sdkmanager "ndk;27.0.11902837"
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build app bundle
+        run: pnpm tauri android build -v
+        env:
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
+
+      - name: Extract android signing key from env
+        run: |
+          echo "${{ secrets.ANDROID_RELEASE_KEYSTORE }}" > src-tauri/gen/android/release.jks.base64
+          base64 -d src-tauri/gen/android/release.jks.base64 > src-tauri/gen/android/release.decrypted.jks
+
+      - name: Sign APK
+        run: |
+          ${{ env.ANDROID_HOME }}/build-tools/34.0.0/apksigner sign --ks src-tauri/gen/android/release.decrypted.jks \
+            --ks-key-alias ${{ secrets.ANDROID_RELEASE_KEY }} \
+            --ks-pass pass:${{ secrets.ANDROID_RELEASE_PASSWORD }} \
+            --key-pass pass:${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }} \
+            --out src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
+      - name: Get Node project version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Rename APK file
+        run: |
+          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
+
+      - name: Upload APK to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: |
+            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
+          tag: v${{ steps.changelog.outputs.version}}
+          overwrite: true
+      # - name: Publish
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     name: App v${{ steps.changelog.outputs.version}}
+      #     tag_name: v${{ steps.changelog.outputs.version}}
+      #     generate_release_notes: true
+      #     files: |
+      #       ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk

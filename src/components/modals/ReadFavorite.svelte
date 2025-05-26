@@ -457,21 +457,21 @@
               />
             </Button>
             <div
-              class="flex items-center justify-center mr-1 p-1 gap-1 bg-slate-300 dark:bg-secondary/40 rounded-xl z-10"
+              class="flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-xl z-10"
             >
               <Button
-                class="size-9 transition-colors duration-500"
+                class="size-9 transition-colors duration-300"
                 size="sm"
                 onclick={() => (chaptersMode = "web")}
-                variant={chaptersMode === "web" ? "secondary" : "link"}
+                variant={chaptersMode === "web" ? "default" : "secondary"}
               >
                 <Icon class="!size-5" icon="tabler:world" />
               </Button>
               <Button
-                class="w-9 h-9 transition-colors duration-500"
+                class="w-9 h-9 transition-colors duration-300"
                 size="sm"
                 onclick={() => (chaptersMode = "local")}
-                variant={chaptersMode === "local" ? "secondary" : "link"}
+                variant={chaptersMode === "local" ? "default" : "secondary"}
               >
                 <Icon class="!size-5" icon="tabler:file-download" />
               </Button>

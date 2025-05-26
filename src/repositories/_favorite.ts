@@ -5,7 +5,7 @@ import {
   libraryOrder,
   isAscending,
   librarySource,
-  libraryCollection,
+  libraryTag,
 } from "@/store";
 import { MarkDB, UserDB } from "@/repositories";
 import type { Favorite, Mark } from "@/types";
@@ -132,9 +132,9 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
     params.push(favoriteQuery, favoriteQuery);
   }
 
-  const libraryMark = get(libraryCollection);
+  const libraryMark = get(libraryTag);
 
-  if (libraryMark !== undefined) {
+  if (libraryMark !== undefined && libraryMark.id !== -1) {
     query +=
       " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
     params.push(libraryMark.id);
@@ -150,6 +150,8 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
 
   try {
     const favorites: Favorite[] = await db.select(query, params);
+    if (libraryMark?.id === -1)
+      return favorites.filter((f) => f.is_ultra_favorite === "true");
     return favorites;
   } catch (error) {
     console.log(error);

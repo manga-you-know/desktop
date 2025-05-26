@@ -13,7 +13,12 @@
 
 <div class="inline-flex items-center justify-start gap-2">
   <Icon
-    class="!w-5 !h-5"
+    class="!size-5 cursor-pointer"
+    onclick={() => {
+      isDark = false;
+      $theme = "light";
+      saveSettings();
+    }}
     icon={!isDark
       ? "material-symbols:sunny-rounded"
       : "material-symbols:sunny-outline-rounded"}
@@ -26,7 +31,12 @@
     }}
   />
   <Icon
-    class="!w-5 !h-5"
+    class="!size-5 cursor-pointer"
+    onclick={() => {
+      isDark = true;
+      $theme = "dark";
+      saveSettings();
+    }}
     icon={isDark
       ? "material-symbols:dark-mode"
       : "material-symbols:dark-mode-outline"}

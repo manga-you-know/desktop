@@ -6,7 +6,7 @@
     LibraryOrder,
     LibrarySearch,
     LibrarySource,
-    LibraryCollection,
+    LibraryTag,
   } from "@/components";
   import { FavoriteDB } from "@/repositories";
   import { libraryFavorites } from "@/store";
@@ -39,7 +39,7 @@
     </Badge>
     <LibrarySearch bind:page bind:favdiv={favoriteDiv} />
     <LibraryOrder />
-    <LibraryCollection />
+    <LibraryTag />
     <LibrarySource />
   </div>
   <div

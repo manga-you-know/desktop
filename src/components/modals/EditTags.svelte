@@ -2,14 +2,14 @@
   import Icon from "@iconify/svelte";
   import { open as openPath } from "@tauri-apps/plugin-shell";
   import { AlertDialog, Button, Input, ScrollArea } from "@/lib/components";
-  import { openCollection, collections } from "@/store";
-  import { refreshCollections } from "@/functions";
+  import { openTag, tags } from "@/store";
+  import { refreshTags } from "@/functions";
   import { MarkDB } from "@/repositories";
   import type { Mark } from "@/types";
   import { toast } from "svelte-sonner";
 
-  openCollection.subscribe(() => {
-    refreshCollections();
+  openTag.subscribe(() => {
+    refreshTags();
   });
 
   function focusInput(id: number) {
@@ -19,102 +19,100 @@
     input?.focus();
   }
 
-  async function addCollection() {
+  async function addTag() {
     if (
-      newCollection === "" ||
-      $collections
+      newTag === "" ||
+      $tags
         .map((cl) => cl.name.toLowerCase())
-        .includes(newCollection.toLowerCase().trim())
+        .includes(newTag.toLowerCase().trim())
     )
       return;
 
-    await MarkDB.addMark(newCollection.trim());
-    await refreshCollections();
-    toast.success(`Collection ${newCollection.trim()} added`);
-    newCollection = "";
+    await MarkDB.addMark(newTag.trim());
+    await refreshTags();
+    toast.success(`Tag ${newTag.trim()} added`);
+    newTag = "";
   }
 
-  async function updateCollection(collection: Mark) {
+  async function updateTag(tag: Mark) {
     editing = null;
     if (
-      collection.name !== "" &&
-      !$collections
-        .filter((cl) => cl.id !== collection.id)
+      tag.name !== "" &&
+      !$tags
+        .filter((cl) => cl.id !== tag.id)
         .map((cl) => cl.name.toLowerCase())
-        .includes(collection.name.toLowerCase().trim())
+        .includes(tag.name.toLowerCase().trim())
     ) {
-      await MarkDB.updateMark(collection);
+      await MarkDB.updateMark(tag);
     }
-    await refreshCollections();
+    await refreshTags();
   }
 
   let editing: number | null = $state(null);
-  let newCollection: string = $state("");
+  let newTag: string = $state("");
   let openDelete = $state(false);
 </script>
 
-<AlertDialog.Root bind:open={$openCollection}>
+<AlertDialog.Root bind:open={$openTag}>
   <AlertDialog.Content class="w-[26rem] px-2">
     <div class="w-[26rem] flex flex-col items-center gap-2">
       <div class="inline-flex gap-2">
         <Input
           class="w-80 ml-[-12px]"
           variant="secondary"
-          placeholder="Create collection..."
+          placeholder="Create tag..."
           floatingLabel
           disabled={editing !== null}
-          bind:value={newCollection}
-          onenter={addCollection}
+          bind:value={newTag}
+          onenter={addTag}
         />
         <Button
           class="w-10"
           variant="secondary"
           disabled={editing !== null}
-          onclick={addCollection}
+          onclick={addTag}
         >
           <Icon class="!w-5 !h-5" icon="lucide:plus" />
         </Button>
       </div>
       <ScrollArea class="h-80 p-0 rounded-xl">
         <div class="flex flex-col gap-1 justify-center pr-3">
-          {#each $collections.reverse() as collection, i (i)}
+          {#each $tags.reverse() as tag, i (i)}
             <div class="inline-flex">
               <Input
-                id={collection.id.toString()}
+                id={tag.id.toString()}
                 class="rounded-r-none w-[17rem]"
                 variant="secondary"
-                bind:value={collection.name}
-                readonly={collection.id !== editing}
+                bind:value={tag.name}
+                readonly={tag.id !== editing}
                 autofocus
-                disabled={editing !== null && collection.id !== editing}
-                onenter={() => updateCollection(collection)}
+                disabled={editing !== null && tag.id !== editing}
+                onenter={() => updateTag(tag)}
               />
               <Button
                 class="rounded-none"
                 onclick={() => {
                   if (editing === null) {
-                    editing = collection.id;
-                    focusInput(collection.id);
+                    editing = tag.id;
+                    focusInput(tag.id);
                   } else {
-                    updateCollection(collection);
+                    updateTag(tag);
                   }
                 }}
-                disabled={editing !== null && collection.id !== editing}
+                disabled={editing !== null && tag.id !== editing}
               >
                 <Icon
-                  icon={editing === collection.id
-                    ? "ion:checkmark-round"
-                    : "ion:edit"}
+                  icon={editing === tag.id ? "ion:checkmark-round" : "ion:edit"}
                 />
               </Button>
               <Button
                 class="rounded-l-none"
                 variant="destructive"
                 onclick={() => {
-                  editing = collection.id;
+                  editing = tag.id;
                   openDelete = true;
                 }}
-                disabled={editing !== null && collection.id !== editing}
+                disabled={editing !== null && tag.id !== editing}
               >
                 <Icon icon="lucide:trash" />
               </Button>
@@ -134,9 +132,9 @@
       <AlertDialog.Header>
         <AlertDialog.Title>Are you sure?</AlertDialog.Title>
         <AlertDialog.Description>
-          This will permanently delete the collection
+          This will permanently delete the tag
           <span class="font-bold">
-            {$collections.find((vl) => vl.id === editing)?.name}
+            {$tags.find((vl) => vl.id === editing)?.name}
           </span>. You'll have to add everything again.
         </AlertDialog.Description>
       </AlertDialog.Header>
@@ -145,12 +143,12 @@
           variant="destructive"
           effect="gooeyLeft"
           onclick={async () => {
-            const mark = $collections.find((mk) => mk.id === editing);
+            const mark = $tags.find((mk) => mk.id === editing);
             if (mark) {
               await MarkDB.deleteMark(mark);
-              await refreshCollections();
+              await refreshTags();
               openDelete = false;
-              toast.warning(`Deleted collection ${mark.name}.`);
+              toast.warning(`Deleted tag ${mark.name}.`);
               editing = null;
             }
           }}>Delete</Button

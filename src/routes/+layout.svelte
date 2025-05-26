@@ -5,7 +5,7 @@
   import {
     AddCustom,
     Downloads,
-    EditCollections,
+    EditTags,
     Search,
     Settings,
     Update,
@@ -109,7 +109,7 @@
   <AddCustom />
   <Downloads />
   <Update />
-  <EditCollections />
+  <EditTags />
   <TooltipPrimitive.Provider>
     {@render children?.()}
   </TooltipPrimitive.Provider>

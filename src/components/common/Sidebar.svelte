@@ -7,7 +7,7 @@
     openSearch,
     openSettings,
     openAdd,
-    openCollection,
+    openTag,
     openDownloads,
     downloadings,
     favoritesLoaded,
@@ -172,23 +172,21 @@
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              class="pr-0 mr-0"
               onclick={(e) => {
                 e.currentTarget.blur();
-                openCollection.set(true);
+                openTag.set(true);
               }}
             >
               <Icon
                 class="!w-6 !h-5 mx-[-3px]"
-                icon={$openCollection
-                  ? "ion:bookmarks"
-                  : "ion:bookmarks-outline"}
+                icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
-              <Label class="cursor-pointer">Collection</Label>
+              <Label class="cursor-pointer">Tags</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
+              class="flex justify-start "
               onclick={(e) => {
                 e.currentTarget.blur();
                 openDownloads.set(true);
@@ -201,7 +199,7 @@
                     icon={$openDownloads
                       ? "basil:download-solid"
                       : "basil:download-outline"}
-                    class="!w-6 !h-6 ml-[-3px]"
+                    class="!size-6 ml-[-3px]"
                   />
                 </Badge>
               {:else}

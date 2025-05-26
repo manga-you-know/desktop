@@ -14,7 +14,7 @@ export { default as CustomType } from "./toggleButtons/CustomType.svelte";
 export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 // Selects
 export { default as LibrarySource } from "./select/LibrarySource.svelte";
-export { default as LibraryCollection } from "./select/LibraryCollection.svelte";
+export { default as LibraryTag } from "./select/LibraryTag.svelte";
 export { default as LibraryOrder } from "./select/LibraryOrder.svelte";
 export { default as Language } from "./select/Language.svelte";
 export { default as Source } from "./select/Source.svelte";
@@ -26,8 +26,6 @@ export { default as LibraryCard } from "./cards/LibraryCard.svelte";
 export { default as FavoritePanel } from "./cards/FavoritePanel.svelte";
 // Modals
 export { default as SuggestionModal } from "./modals/SuggestionModal.svelte";
-export { default as EditCollections } from "./modals/EditCollections.svelte";
-export { default as PickCollection } from "./modals/PickCollection.svelte";
 export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";
 export { default as ChaptersMenu } from "./modals/ChaptersMenu.svelte";
 export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";
@@ -36,6 +34,8 @@ export { default as PanelModal } from "./modals/PanelModal.svelte";
 export { default as AddCustom } from "./modals/AddCustom.svelte";
 export { default as Downloads } from "./modals/Downloads.svelte";
 export { default as AskDelete } from "./modals/AskDelete.svelte";
+export { default as EditTags } from "./modals/EditTags.svelte";
+export { default as PickTags } from "./modals/PickTags.svelte";
 export { default as Settings } from "./modals/Settings.svelte";
 export { default as AskSure } from "./modals/AskSure.svelte";
 export { default as Search } from "./modals/Search.svelte";

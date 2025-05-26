@@ -47,7 +47,7 @@
         }
       ]
     },
-
+    "cache:default",
     "sql:default",
     "sql:allow-close",
     "sql:allow-execute",

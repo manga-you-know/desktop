@@ -34,12 +34,14 @@
     discordIntegration,
     updateInfo,
     openUpdate,
+    sidebarBehavior,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
   import type { Language as LanguageType } from "@/types";
   import Icon from "@iconify/svelte";
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
+  import { useSidebar } from "@/lib/components/ui/sidebar";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -199,6 +201,50 @@
               <Label class="cursor-pointer" for="start-in-tray"
                 >Start in tray apps</Label
               >
+            </div>
+            <Label>Sidebar</Label>
+            <div
+              class="flex w-[21rem] items-center justify-center mr-2 p-2 gap-2 bg-slate-300 dark:bg-background/70 rounded-2xl z-10"
+            >
+              <Button
+                class="h-9 transition-colors duration-300"
+                size="sm"
+                onclick={() => {
+                  $sidebarBehavior = "expand";
+                  saveSettings();
+                }}
+                variant={$sidebarBehavior === "expand"
+                  ? "default"
+                  : "secondary"}
+              >
+                Expanded
+              </Button>
+              <Button
+                class="h-9 transition-colors duration-300"
+                size="sm"
+                onclick={() => {
+                  $sidebarBehavior = "collapse";
+                  saveSettings();
+                }}
+                variant={$sidebarBehavior === "collapse"
+                  ? "default"
+                  : "secondary"}
+              >
+                Collapsed
+              </Button>
+              <Button
+                class="h-9 transition-colors duration-300"
+                size="sm"
+                onclick={() => {
+                  $sidebarBehavior = "on-hover";
+                  saveSettings();
+                }}
+                variant={$sidebarBehavior === "on-hover"
+                  ? "default"
+                  : "secondary"}
+              >
+                Expand on hover
+              </Button>
             </div>
           {/if}
           <Label>Theme</Label>

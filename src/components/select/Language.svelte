@@ -48,7 +48,9 @@
         aria-expanded={open}
         disabled={inverseDisabled ? !disabled : disabled}
       >
-        {selectedLanguage.label}
+        <div class="w-full flex justify-center">
+          {selectedLanguage.label}
+        </div>
         <ChevronsUpDown class="opacity-50" />
       </Button>
     {/snippet}

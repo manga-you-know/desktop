@@ -9,7 +9,7 @@ mod utils;
 pub fn run() {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![
+        .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
             get_aniplay_chapters,
@@ -17,6 +17,7 @@ pub fn run() {
             get_base64_image
         ])
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_cache::init())
         .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())

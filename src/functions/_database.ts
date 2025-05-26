@@ -8,7 +8,7 @@ import {
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
 import {
-  collections,
+  tags,
   favoritesLoaded,
   libraryFavorites,
   panels,
@@ -147,9 +147,9 @@ export async function refreshReadeds(favorite: Favorite) {
   readeds.set(newReadeds);
 }
 
-export async function refreshCollections() {
-  const newCollections = await MarkDB.getMarks();
-  collections.set(newCollections);
+export async function refreshTags() {
+  const newTags = await MarkDB.getMarks();
+  tags.set(newTags);
 }
 
 export async function refreshPanels() {
