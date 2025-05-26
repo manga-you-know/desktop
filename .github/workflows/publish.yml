@@ -57,24 +57,6 @@ jobs:
           pre-release: false
           preset: conventionalcommits
 
-      - name: Update Cargo.toml
-        id: update-version
-        run: /
-          echo ${{ steps.changelog.outputs.version }}
-          bash myk u ${{ steps.changelog.outputs.version }}
-
-      - name: Commit files
-        run: |
-          git config --local user.email "admin@myk.com"
-          git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml version"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-
       - run: |
           rm -rf node_modules
           rm package.json
@@ -209,16 +191,33 @@ jobs:
 
       - name: Rename APK file
         run: |
-          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
+          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version}}.apk
 
       - name: Upload APK to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: |
-            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
-          tag: v${{ steps.changelog.outputs.version}}
+            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version}}.apk
+          tag: v${{ needs.changelog.outputs.version}}
           overwrite: true
+      - name: Update Cargo.toml
+        id: update-version
+        run: /
+          echo ${{ needs.changelog.outputs.version }}
+          bash myk u ${{ needs.changelog.outputs.version }}
+
+      - name: Commit files
+        run: |
+          git config --local user.email "admin@myk.com"
+          git config --local user.name "manga-you-know[bot]"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml version"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
       # - name: Publish
       #   uses: softprops/action-gh-release@v1
       #   with:
