@@ -61,7 +61,7 @@ jobs:
         id: update-version
         run: /
           echo ${{ steps.changelog.outputs.version }}
-          bash myk u ${{ steps.changelog.outputs.version }})
+          bash myk u ${{ steps.changelog.outputs.version }}
 
       - name: Commit files
         run: |
