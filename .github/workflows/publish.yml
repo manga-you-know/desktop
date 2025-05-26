@@ -130,7 +130,7 @@ jobs:
           args: ${{ matrix.args }}
 
   publish-android:
-    name: Release (Android universal)
+    name: Release (Android-universal)
     needs: changelog
     if: ${{ needs.changelog.outputs.skipped != 'true' }}
     runs-on: ubuntu-latest
