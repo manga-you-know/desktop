@@ -18,7 +18,6 @@ pub fn run() {
         ])
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_cache::init())
-        .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
@@ -27,9 +26,9 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_http::init());
-    #[cfg(desktop)]
-    {
-        builder = builder
+        #[cfg(desktop)]
+        {
+            builder = builder
             .setup(|app| {
                 let window = app.get_webview_window("main").unwrap();
                 let args: Vec<String> = std::env::args().collect();
@@ -38,6 +37,7 @@ pub fn run() {
                 }
                 Ok(())
             })
+            .plugin(tauri_plugin_clipboard::init())
             .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
             .plugin(tauri_plugin_window_state::Builder::default().build())

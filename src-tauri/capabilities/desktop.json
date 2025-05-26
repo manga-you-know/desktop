@@ -2,14 +2,8 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop",
   "description": "persmissions just for Desktop",
-  "windows": [
-    "*"
-  ],
-  "platforms": [
-    "macOS",
-    "windows",
-    "linux"
-  ],
+  "windows": ["*"],
+  "platforms": ["macOS", "windows", "linux"],
   "permissions": [
     "core:window:default",
     "core:window:allow-start-dragging",
@@ -23,6 +17,8 @@
     "core:window:allow-destroy",
     "core:window:allow-show",
     "core:window:allow-hide",
+    "clipboard:write-all",
+    "clipboard:read-all",
     "drpc:default",
     "global-shortcut:default",
     "autostart:default",

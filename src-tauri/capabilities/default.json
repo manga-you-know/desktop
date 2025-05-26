@@ -332,8 +332,6 @@
     "fs:scope",
     "fs:write-all",
     "fs:write-files",
-    "clipboard:write-all",
-    "clipboard:read-all",
     "core:image:default",
     "notification:default",
     "fs:default",
