@@ -146,6 +146,7 @@ jobs:
           releaseBody: ${{ needs.changelog.outputs.changelog }}
           includeUpdaterJson: true
           args: ${{ matrix.args }}
+
   publish-android:
     name: Publish Android
     needs: changelog
@@ -156,9 +157,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
+      - uses: oven-sh/setup-bun@v2
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -175,7 +174,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: 20
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -183,10 +182,10 @@ jobs:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Build app bundle
-        run: pnpm tauri android build -v
+        run: bun tauri android build -v
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.11902837
 
