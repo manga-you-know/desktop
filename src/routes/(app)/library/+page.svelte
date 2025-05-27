@@ -11,6 +11,8 @@
   import { FavoriteDB } from "@/repositories";
   import { libraryFavorites } from "@/store";
   import type { Favorite } from "@/types";
+  import { cn } from "@/lib/utils";
+  import { IS_MOBILE } from "@/constants";
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);
   let page = $state(1);
@@ -33,7 +35,12 @@
 </script>
 
 <div class="h-full overflow-hidden flex flex-col">
-  <div class="w-full h-14 p-2 gap-2 flex items-center relative top-0">
+  <div
+    class={cn(
+      "flex flex-wrap w-full  p-2 gap-2 justify-center items-center relative top-0",
+      IS_MOBILE ? "h-28" : "h-14"
+    )}
+  >
     <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="secondary">
       {count}
     </Badge>
@@ -45,10 +52,12 @@
   <div
     bind:this={favoriteDiv}
     bind:clientWidth={favdivWidth}
-    class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
+    class="h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
     {#each displayedFavorites as favorite, i (i)}
-      <LibraryCard {favorite} />
+      <div class="last">
+        <LibraryCard {favorite} />
+      </div>
     {/each}
   </div>
 

@@ -1,20 +1,20 @@
 [package]
 name = "MangaYouKnow"
-version = "0.6.2"
+version = "0.6.3"
 description = "A manga app!"
-authors = [ "ReiLoko4" ]
+authors = ["ReiLoko4"]
 license = "MIT"
 repository = "https://github.com/manga-you-know/desktop"
 edition = "2021"
-rust-version = "1.84.1"
+rust-version = "1.87.0"
 
 [lib]
 name = "app_lib"
-crate-type = [ "staticlib", "cdylib", "lib" ]
+crate-type = ["staticlib", "cdylib", "lib"]
 
 [build-dependencies.tauri-build]
 version = "2"
-features = [ ]
+features = []
 
 [dependencies]
 serde_json = "1.0"
@@ -32,23 +32,23 @@ tauri-plugin-cache = "0.1.5"
 
 [dependencies.serde]
 version = "1.0"
-features = [ "derive" ]
+features = ["derive"]
 
 [dependencies.tauri]
 version = "2"
-features = [ "protocol-asset", "tray-icon", "image-png", "image-ico" ]
+features = ["protocol-asset", "tray-icon", "image-png", "image-ico"]
 
 [dependencies.tauri-plugin-sql]
 version = "2"
-features = [ "postgres", "sqlite" ]
+features = ["postgres", "sqlite"]
 
 [dependencies.tauri-plugin-notification]
 version = "2"
-features = [ "windows7-compat" ]
+features = ["windows7-compat"]
 
 [dependencies.tauri-plugin-http]
 version = "2"
-features = [ "unsafe-headers" ]
+features = ["unsafe-headers"]
 
 [target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
 tauri-plugin-autostart = "2"

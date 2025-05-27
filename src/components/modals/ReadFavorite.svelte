@@ -328,14 +328,14 @@
     <div
       class={cn(
         "flex w-full items-center",
-        IS_MOBILE ? "flex-col justify-start" : "justify-center"
+        IS_MOBILE ? "flex-col justify-start gap-2" : "justify-center"
       )}
     >
       <div
         class={cn(
-          " flex  items-center gap-2",
+          " flex items-center gap-2",
           IS_MOBILE
-            ? "w-full justify-between"
+            ? "w-full justify-center"
             : "w-1/2 flex-col justify-start pr-10"
         )}
       >
@@ -426,6 +426,7 @@
                 floatingLabel
                 variant="link"
                 bind:value={searchTerm}
+                tabindex={IS_MOBILE ? -1 : 1}
               />
               {#if searchTerm.length > 0}
                 <Button
@@ -609,75 +610,94 @@
             </Badge>
           </div>
           <div
-            class="bg-secondary rounded-xl relative !h-[19rem] w-[14.2rem] overflow-hidden"
+            class={cn(
+              "bg-secondary rounded-xl relative overflow-hidden",
+              IS_MOBILE ? "!h-[40vh] w-[24rem]" : "!h-[19rem] w-[14.2rem] "
+            )}
           >
             <div
               class={cn(
-                "flex justify-center items-center !h-[19rem] w-[14.2rem] absolute transition-all duration-300 ease-in-out",
-                chaptersMode === "web" ? "translate-x-0" : "translate-x-full"
+                "flex justify-center items-center absolute transition-all duration-300 ease-in-out",
+                chaptersMode === "web" ? "translate-x-0" : "translate-x-full",
+                IS_MOBILE ? "!h-[40vh] w-[24rem]" : "!h-[19rem] w-[14.2rem] "
               )}
             >
               {#if isFetching}
                 <div
-                  class="w-[14.2rem] h-full flex flex-col justify-start items-start"
+                  class={cn(
+                    "h-full flex flex-col justify-start items-start",
+                    IS_MOBILE ? "w-[24rem] " : "w-[14.2rem] "
+                  )}
                 >
                   <div
-                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class={cn(
+                      "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                      IS_MOBILE ? "w-[350px]" : "w-[220px]"
+                    )}
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-full h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[80%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-24 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[60%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class={cn(
+                      "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                      IS_MOBILE ? "w-[350px]" : "w-[220px]"
+                    )}
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-32 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[65%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[75%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class={cn(
+                      "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                      IS_MOBILE ? "w-[350px]" : "w-[220px]"
+                    )}
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-36 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[70%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-28 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[50%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
                   <div
-                    class="flex items-center gap-1 p-2 w-[220px] h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse"
+                    class={cn(
+                      "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                      IS_MOBILE ? "w-[350px]" : "w-[220px]"
+                    )}
                   >
                     <div
                       class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                     ></div>
                     <div class="w-full gap-0.5 flex flex-col">
                       <div
-                        class="w-24 h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[55%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div
-                        class="w-36 h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-[70%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                     </div>
                   </div>
@@ -760,8 +780,9 @@
             </div>
             <div
               class={cn(
-                "flex justify-center !h-[19rem] w-[14.2rem] absolute left-0 top-0 transition-all duration-300 ease-in-out",
-                chaptersMode === "local" ? "translate-x-0" : "translate-x-full"
+                "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                chaptersMode === "local" ? "translate-x-0" : "translate-x-full",
+                IS_MOBILE ? "!h-[40vh] w-[24rem]" : "!h-[19rem] w-[14.2rem]"
               )}
             >
               {#if displayedLocalChapters.length === 0}

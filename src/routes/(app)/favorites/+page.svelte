@@ -14,6 +14,8 @@
     saveSettings,
   } from "@/functions";
   import Icon from "@iconify/svelte";
+  import { cn } from "@/lib/utils";
+  import { IS_MOBILE } from "@/constants";
 
   onMount(async () => {
     await refreshFavorites();
@@ -21,9 +23,14 @@
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
-  <div class="h-14 flex relative top-0">
-    <div class="flex items-center gap-2">
-      <div>
+  <div
+    class={cn(
+      "flex relative top-0",
+      IS_MOBILE ? "h-24 justify-center" : "h-14"
+    )}
+  >
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex">
         <Badge
           class="font-bold h-8 w-22 rounded-xl rounded-r-none mr-0"
           variant="secondary"
@@ -58,17 +65,21 @@
         />
         Refresh
       </Button>
-      <Switch
-        id="showOnlyNew"
-        bind:checked={$showOnlyNew}
-        onCheckedChange={saveSettings}
-      />
-      <Label class="dark:text-white" for="showOnlyNew">Only new chapters</Label>
+      <div class="flex gap-2 items-center">
+        <Switch
+          id="showOnlyNew"
+          bind:checked={$showOnlyNew}
+          onCheckedChange={saveSettings}
+        />
+        <Label class="dark:text-white" for="showOnlyNew"
+          >Only new chapters</Label
+        >
+      </div>
     </div>
   </div>
 
   <div
-    class="h-full flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
+    class="h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
   >
     {#each $ultraFavorites as favorite}
       <FavoriteCard {favorite} />

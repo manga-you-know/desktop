@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Badge, Tooltip, Label } from "@/lib/components";
+  import { Button, Badge, Tooltip, Label, ContextMenu } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import {
     ReadFavorite,
@@ -10,11 +10,11 @@
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
-  import { ContextMenu } from "@/lib/components";
   import { refreshFavorites } from "@/functions";
   import { downloadManager, theme } from "@/store";
-  import { twMerge } from "tailwind-merge";
+  import { cn } from "@/lib/utils";
   import type { MarkFavorites } from "@/types";
+  import { IS_MOBILE } from "@/constants";
 
   interface Props {
     favorite: Favorite;
@@ -27,6 +27,7 @@
   let isOpen = $state(false);
   let isEdit = $state(false);
   let isDelete = $state(false);
+  let isContext = $state(false);
   let isPicking = $state(false);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
   let readeds: Readed[] = $state([]);
@@ -53,13 +54,18 @@
 <AskDelete {favorite} bind:open={isDelete} />
 <PickTags {favorite} bind:open={isPicking} bind:markeds />
 <ContextMenu.Root
+  bind:open={isContext}
   onOpenChange={() => {
     isUltraFavorite = favorite.is_ultra_favorite;
   }}
 >
   <ContextMenu.Trigger>
     <button
-      class="group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform hover:scale-[1.08] hover:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry"
+      class={cn(
+        "group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
+        IS_MOBILE ? "" : "hover:scale-[1.08]",
+        isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
+      )}
       onclick={() => (isOpen = true)}
     >
       <img
@@ -88,7 +94,12 @@
           </Label>
         </Badge>
         <div
-          class="w-full h-8 flex justify-center mb-2 p-1 transform translate-y-full opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100"
+          class={cn(
+            "w-full h-8 flex justify-center mb-2 p-1 transform  transition-all duration-300 ease-in-out ",
+            IS_MOBILE
+              ? ""
+              : "opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0"
+          )}
         >
           <div class="inline-flex rounded-md shadow-sm" role="group">
             <Button
@@ -133,12 +144,7 @@
       </div>
     </button>
   </ContextMenu.Trigger>
-  <ContextMenu.Content
-    class={twMerge(
-      "!w-14 m-0 dark:bg-background",
-      $theme === "dark" ? "dark" : ""
-    )}
-  >
+  <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
     <ContextMenu.Item
       class="gap-4"
       onclick={(e: Event) => {

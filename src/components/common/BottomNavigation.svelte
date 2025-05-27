@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { Button, Label, Sidebar } from "@/lib/components";
+  import { useSidebar } from "@/lib/components/ui/sidebar";
   import { openSearch, openSettings } from "@/store";
   import Icon from "@iconify/svelte";
 
@@ -37,6 +38,8 @@
     //   icon: "heroicons:cog-6-tooth",
     // },
   ];
+
+  const sidebar = useSidebar();
 </script>
 
 <div class="flex">
@@ -65,13 +68,8 @@
   <Button
     class="flex-1 h-24 rounded-none"
     variant="secondary"
-    onclick={() => ($openSettings = true)}
+    onclick={() => sidebar.toggle()}
   >
-    <Icon
-      class="!w-8 !h-8"
-      icon={$openSettings
-        ? "heroicons:cog-6-tooth-solid"
-        : "heroicons:cog-6-tooth"}
-    />
+    <Icon class="!w-8 !h-8" icon="lucide:menu" />
   </Button>
 </div>

@@ -30,6 +30,8 @@
     logNewUser,
     loadAppIcons,
     reloadApp,
+    refreshLibrary,
+    refreshFavorites,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
@@ -86,6 +88,8 @@
     createTray();
     loadFavoriteChapters();
     loadAppIcons();
+    refreshLibrary();
+    refreshFavorites();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
@@ -99,7 +103,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <div
   class={twMerge(
-    "dark:bg-[#111113]! text-black dark:text-white",
+    "!bg-background text-black dark:text-white",
     $theme === "dark" ? "dark" : ""
   )}
 >

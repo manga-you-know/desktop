@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { Sidebar, Label, Avatar } from "@/lib/components";
+  import { Sidebar, Label, Avatar, Separator } from "@/lib/components";
   import { Badge } from "svelte-ux";
   import {
     openSearch,
@@ -14,6 +14,8 @@
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading } from "@/types";
+  import { useSidebar } from "@/lib/components/ui/sidebar";
+  import { IS_MOBILE } from "@/constants";
 
   const items = [
     {
@@ -95,11 +97,15 @@
 
     requestAnimationFrame(animate);
   }
+
+  let { variant }: { variant: "sidebar" | "inset" | "floating" } = $props();
+
+  const sidebar = useSidebar();
 </script>
 
 <Sidebar.Root
   class="pl-[2.5px] hover:bg-sidebar pr-0"
-  variant="inset"
+  {variant}
   collapsible="icon"
   onmouseenter={() => {}}
   onmouseleave={() => {}}
@@ -109,13 +115,12 @@
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
-        <Sidebar.Menu>
+        <Sidebar.Menu class="flex flex-col gap-2">
           {#each items as item (item.name)}
             <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton
                 onclick={(e) => {
                   e.currentTarget.blur();
-
                   goto(item.path);
                 }}
                 tabindex={-1}
@@ -148,16 +153,20 @@
         </Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>
+    <Separator class="bg-secondary w-[95%]" />
     <Sidebar.Group>
       <Sidebar.GroupContent>
-        <Sidebar.Menu>
+        <Sidebar.Menu class="flex flex-col gap-2">
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(true);
+                openTag.set(false);
+                openDownloads.set(false);
                 openSettings.set(false);
                 openAdd.set(false);
+                if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
             >
@@ -174,7 +183,12 @@
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
+                openSearch.set(false);
                 openTag.set(true);
+                openDownloads.set(false);
+                openSettings.set(false);
+                openAdd.set(false);
+                if (IS_MOBILE) sidebar.toggle();
               }}
             >
               <Icon
@@ -189,7 +203,12 @@
               class="flex justify-start "
               onclick={(e) => {
                 e.currentTarget.blur();
+                openSearch.set(false);
+                openTag.set(false);
                 openDownloads.set(true);
+                openSettings.set(false);
+                openAdd.set(false);
+                if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
             >
@@ -217,7 +236,12 @@
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
+                openSearch.set(false);
+                openTag.set(false);
                 openSettings.set(true);
+                openAdd.set(false);
+                openDownloads.set(false);
+                if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
             >
@@ -235,7 +259,12 @@
             <Sidebar.MenuButton
               onclick={(e) => {
                 e.currentTarget.blur();
+                openSearch.set(false);
+                openTag.set(false);
+                openSettings.set(false);
                 openAdd.set(true);
+                openDownloads.set(false);
+                if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
             >

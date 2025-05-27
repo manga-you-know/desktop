@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { Tilt, ScrollingValue } from "svelte-ux";
   import { toast } from "svelte-sonner";
-  import { Button, Badge, Label } from "@/lib/components";
+  import { Button, Badge, Label, ContextMenu } from "@/lib/components";
   import {
     ReadFavorite,
     EditFavorite,
@@ -21,7 +21,6 @@
     theme,
   } from "@/store";
   import { FavoriteDB, MarkFavoriteDB, ReadedDB } from "@/repositories";
-  import { ContextMenu } from "@/lib/components";
   import {
     refreshFavorites,
     isReaded,
@@ -33,18 +32,19 @@
   import type { Favorite, Chapter, Readed } from "@/types";
   import { goto } from "$app/navigation";
   import { strNotEmpty } from "@/utils";
-  import { twMerge } from "tailwind-merge";
+  import { cn } from "@/lib/utils";
   import type { MarkFavorites } from "@/types";
   import Icon from "@iconify/svelte";
-  import { cn } from "@/lib/utils";
+  import { IS_MOBILE } from "@/constants";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
   let isEdit = $state(false);
   let isDelete = $state(false);
+  let isContext = $state(false);
   let isPicking = $state(false);
-  let markeds: MarkFavorites[] = $state([]);
   let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let markeds: MarkFavorites[] = $state([]);
   let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);
   let variant: "destructive" | "secondary" | "default" | "outline" | undefined =
@@ -137,15 +137,21 @@
   <AskDelete {favorite} bind:open={isDelete} />
   <PickTags {favorite} bind:open={isPicking} bind:markeds />
   <ContextMenu.Root
+    bind:open={isContext}
     onOpenChange={() => {
+      console.log(isContext);
       isUltraFavorite = favorite.is_ultra_favorite;
     }}
   >
     <ContextMenu.Trigger>
       <button
         class={cn(
-          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform hover:scale-[1.08] focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
-          favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60"
+          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+          favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
+          IS_MOBILE ? "" : "hover:scale-[1.08]",
+          isContext
+            ? "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
+            : ""
         )}
         onclick={() => {
           if (favoriteLoad.nextChapter === null) {
@@ -189,10 +195,14 @@
           <!-- </Badge> -->
 
           <div
-            class="w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start
-            {favoriteLoad.toReadCount > 0
-              ? 'opacity-100 translate-x-0 '
-              : 'opacity-0 translate-x-[-40%]'} group-hover:opacity-100"
+            class={cn(
+              "w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start",
+              favoriteLoad.toReadCount > 0
+                ? "opacity-100 translate-x-0"
+                : IS_MOBILE
+                  ? ""
+                  : "opacity-0 translate-x-[-40%] group-hover:opacity-100"
+            )}
           >
             <Tooltip
               text="{favoriteLoad.chapters.length -
@@ -212,8 +222,8 @@
                   <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
                 {:else if favoriteLoad.toReadCount > 0}
                   <Label tabindex={-1}>
-                    <ScrollingValue axis="y"
-                      >+{favoriteLoad.toReadCount ?? 0}
+                    <ScrollingValue axis="y">
+                      +{favoriteLoad.toReadCount ?? 0}
                     </ScrollingValue>
                   </Label>
                 {:else}
@@ -223,7 +233,12 @@
             </Tooltip>
           </div>
           <div
-            class="w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out translate-y-[20%] opacity-0 duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+            class={cn(
+              "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
+              IS_MOBILE
+                ? " "
+                : "translate-y-[20%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+            )}
           >
             <Badge
               {variant}
@@ -235,7 +250,12 @@
             </Badge>
           </div>
           <div
-            class="w-full h-22 flex flex-col justify-end items-end p-1 transform translate-x-[40%] opacity-0 transition-all duration-300 ease-in-out group-hover:translate-x-0 group-hover:opacity-100"
+            class={cn(
+              "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
+              IS_MOBILE
+                ? ""
+                : "translate-x-[40%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+            )}
           >
             <div
               class="flex flex-col mr-0.5 justify-end rounded-xl shadow-sm"
@@ -285,12 +305,7 @@
         </div>
       </button>
     </ContextMenu.Trigger>
-    <ContextMenu.Content
-      class={twMerge(
-        "!w-14 m-0 dark:bg-background",
-        $theme === "dark" ? "dark" : ""
-      )}
-    >
+    <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
       <ContextMenu.Item
         class="gap-4"
         onclick={(e: Event) => {

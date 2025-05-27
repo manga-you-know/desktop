@@ -129,8 +129,8 @@ jobs:
           includeUpdaterJson: true
           args: ${{ matrix.args }}
 
-  publish-android:
-    name: Release (Android-universal)
+  release-android:
+    name: Release (android-universal)
     needs: changelog
     if: ${{ needs.changelog.outputs.skipped != 'true' }}
     runs-on: ubuntu-latest
@@ -165,6 +165,11 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Set env consts
+        run: bun create-env
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: Build app bundle
         run: bun tauri android build -v
@@ -227,3 +232,50 @@ jobs:
       #     generate_release_notes: true
       #     files: |
       #       ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
+
+  release-ios:
+    name: Release (ios)
+    needs: changelog
+    if: ${{ needs.changelog.outputs.skipped != 'true' }}
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Set env consts
+        run: bun create-env
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Init iOS
+        run: bun tauri ios init
+
+      - name: Commit files
+        run: |
+          git config --local user.email "admin@myk.com"
+          git config --local user.name "manga-you-know[bot]"
+          git commit -a -m "Init iOS project"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Build app bundle
+        run: bun tauri ios build -v

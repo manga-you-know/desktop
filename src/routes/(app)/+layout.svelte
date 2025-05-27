@@ -52,11 +52,11 @@
 {#if !IS_MOBILE}
   <div class="w-full h-screen flex select-none overflow-hidden relative">
     <SidebarProv.Provider class="h-full!" open={false}>
-      <Sidebar />
+      <Sidebar variant="inset" />
       <SidebarProv.Inset class="p-2">
         {#key page.route.id}
           <div
-            class="h-[99vh] absolute pb-5"
+            class="h-[99vh] w-full absolute pb-5"
             in:fly={{
               y: getTransitionY(
                 getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
@@ -81,10 +81,35 @@
     </SidebarProv.Provider>
   </div>
 {:else}
-  <div
-    class="dark:bg-background w-screen h-screen flex flex-col select-none overflow-hidden"
-  >
-    {@render children?.()}
-    <BottomNavigation />
-  </div>
+  <SidebarProv.Provider class="h-full!" controlledOpen>
+    <Sidebar variant="floating" />
+    <div
+      class="dark:bg-background !w-screen !h-screen !max-h-screen flex flex-col justify-end select-none !overflow-hidden"
+    >
+      {#key page.route.id}
+        <div
+          class="!h-[90vh] !max-h-[90vh] !max-w-screen absolute pb-5 mb-20"
+          in:fly={{
+            x: getTransitionY(
+              getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
+              getPageId($lastPage.replace("/", "")),
+              true
+            ),
+            duration: 300,
+          }}
+          out:fly={{
+            x: getTransitionY(
+              getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
+              getPageId($lastPage.replace("/", "")),
+              false
+            ),
+            duration: 300,
+          }}
+        >
+          {@render children?.()}
+        </div>
+      {/key}
+      <BottomNavigation />
+    </div>
+  </SidebarProv.Provider>
 {/if}

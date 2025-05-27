@@ -11,6 +11,7 @@
   import { FavoriteDB } from "@/repositories";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import { IS_MOBILE } from "@/constants";
 
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
@@ -83,7 +84,10 @@
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
       <Command.Root class="dark:bg-background">
-        <Command.Input placeholder="Search source..." />
+        <Command.Input
+          placeholder="Search source..."
+          tabindex={IS_MOBILE ? -1 : 1}
+        />
         <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
