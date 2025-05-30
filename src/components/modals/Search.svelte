@@ -20,6 +20,7 @@
   import { cn } from "@/lib/utils";
   import { limitStr } from "@/utils";
   import Icon from "@iconify/svelte";
+  import { IsMobile } from "@/lib/hooks";
 
   let isSearching = $state(false);
   let isFavoriteOpen = $state(false);
@@ -71,6 +72,7 @@
   openSearch.subscribe(async (open) => {
     isFavoriteOpen = false;
     if (open) {
+      refreshRawFavorites();
       await new Promise((resolve) => setTimeout(resolve, 50));
       const input = document.querySelector(
         `input[id="search-input"]`
@@ -81,13 +83,22 @@
       await stopDiscordPresence();
     }
   });
+
+  const isMobileInstance = new IsMobile();
+  const isMobile = $derived(isMobileInstance.current);
+
   onMount(async () => {
     await refreshRawFavorites();
   });
 </script>
 
 <AlertDialog.Root bind:open={$openSearch}>
-  <AlertDialog.Content class="overflow-hidden h-[16.2rem] w-[30rem]  p-0 gap-0">
+  <AlertDialog.Content
+    class={cn(
+      "overflow-hidden p-0 gap-0",
+      isMobile ? "h-[36rem] w-[26rem] top-[32vh]" : "h-[16.2rem] w-[30rem]"
+    )}
+  >
     <div
       class={cn(
         "w-full absolute transition-all duration-500 ease-in-out",
@@ -117,6 +128,7 @@
             />
           </div>
           <Input
+            class={isMobile ? "w-[7.5rem]" : ""}
             id="search-input"
             variant="link"
             autofocus
@@ -130,7 +142,10 @@
       </AlertDialog.Header>
       <Separator />
       <div
-        class="w-[30rem] bg-gray-200 dark:bg-secondary/50 py-1 pl-1 h-52 flex gap-2 rounded-b-xl"
+        class={cn(
+          "bg-gray-200 dark:bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-xl",
+          isMobile ? "w-[26rem] h-[33rem]" : "w-[30rem] h-52"
+        )}
       >
         {#if results.length !== 0}
           <ScrollArea class="w-[30rem] rounded-xl !scrollbar">
@@ -145,7 +160,9 @@
                     favoriteOpen = result;
                   }}
                 >
-                  <span class="ml-2 truncate">{limitStr(result.name, 50)}</span>
+                  <span class="ml-2 truncate"
+                    >{limitStr(result.name, isMobile ? 45 : 50)}</span
+                  >
                 </Button>
                 <Button
                   onclick={async () => saveResult(result)}

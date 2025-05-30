@@ -341,6 +341,7 @@
       >
         <div class="!w-40 !h-70 flex justify-center">
           <img
+            draggable={false}
             src={favorite.cover}
             alt={favorite.name}
             class="!w-40 !h-70 object-contain rounded-xl bg-gray-950!"

@@ -13,7 +13,7 @@ import type {
 } from "@/types";
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
-export const favoritesLoaded = writable<{ [key: string]: FavoriteLoaded }>({});
+export const favoritesLoaded = writable<Record<string, FavoriteLoaded>>({});
 export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
 export const libraryFavorites = writable<Favorite[]>([]);
@@ -49,7 +49,7 @@ export const selectedSource = writable<string>(MANGASOURCES[2].name);
 export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
-  "on-hover"
+  "expand"
 );
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);

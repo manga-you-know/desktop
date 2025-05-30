@@ -55,21 +55,21 @@
 <PickTags {favorite} bind:open={isPicking} bind:markeds />
 <ContextMenu.Root
   bind:open={isContext}
-  onOpenChange={() => {
-    isUltraFavorite = favorite.is_ultra_favorite;
+  onOpenChange={async () => {
+    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
   }}
 >
   <ContextMenu.Trigger>
     <button
       class={cn(
-        "group relative rounded-lg h-[271px] max-h-[264] w-[168px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
+        "group relative rounded-2xl h-[271px] max-h-[264] w-[158px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
         isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
       )}
       onclick={() => (isOpen = true)}
     >
       <img
-        class="w-[155px] h-[235px] min-w-[155px] max-w-[155px] min-h-[235px] max-h-[235px] mt-[26px] object-contain rounded-b-md dark:!bg-gray-600"
+        class="w-[148px] h-[235px] min-w-[148px] max-w-[148px] min-h-[235px] max-h-[235px] mt-[26px] object-contain rounded-b-2xl rounded-t-lg !bg-primary/20"
         src={favorite.cover}
         alt={favorite.name}
         id={favorite.id?.toString() || ""}
@@ -86,7 +86,7 @@
         class="w-full h-full fixed flex flex-col justify-between items-center"
       >
         <Badge
-          class="w-40 max-w-40 flex justify-center rounded-sm"
+          class="w-[150px] max-w-[148px] flex justify-center rounded-b-lg"
           variant="secondary"
         >
           <Label class="text-sm truncate">

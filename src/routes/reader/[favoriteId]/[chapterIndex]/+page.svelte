@@ -219,6 +219,13 @@
     toast.success("Images joined!", { duration: 600 });
   }
 
+  function imgOnError(id: string) {
+    const coverElement = document.getElementById(id);
+    if (coverElement instanceof HTMLImageElement) {
+      coverElement.src = "/myk.png";
+    }
+  }
+
   function gotoPage(page: string) {
     currentlyCount = 1;
     totalPage = 1;
@@ -632,6 +639,8 @@
       <div class="flex flex-col items-center">
         {#each images as image, index}
           <img
+            id={index.toString()}
+            onerror={() => imgOnError(index.toString())}
             src={image}
             alt="Page {index + 1}"
             class="select-none"
@@ -691,6 +700,8 @@
       <div class="h-full w-full overflow-auto">
         <div class="min-h-full w-full flex items-center justify-center">
           <img
+            id={currentlyCount.toString()}
+            onerror={() => imgOnError(currentlyCount.toString())}
             src={currentlyImage}
             alt="manga"
             class="object-contain h-screen transition-all duration-200"
@@ -703,6 +714,8 @@
           class="min-h-full w-full flex items-center content-center place-content-center justify-center"
         >
           <img
+            id={currentlyCount.toString()}
+            onerror={() => imgOnError(currentlyCount.toString())}
             src={currentlyImage}
             alt="manga"
             class="select-none transition-all duration-200"
@@ -727,6 +740,13 @@
   </div>
 </div>
 
-{#each images as image}
-  <img class="hidden" src={image} alt="Prefetched" data-sveltekit-prefetch />
+{#each images as image, i (i)}
+  <img
+    id={i.toString()}
+    onerror={() => imgOnError(i.toString())}
+    class="hidden"
+    src={image}
+    alt="Prefetched"
+    data-sveltekit-prefetch
+  />
 {/each}

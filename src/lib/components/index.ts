@@ -34,4 +34,4 @@ export { Avatar } from "./ui/avatar";
 //common
 export { Toaster } from "./ui/sonner";
 //variants
-export * from "./ui/button";
+export * from "./ui/enhanced-button";

@@ -19,7 +19,7 @@
     <div
       class="h-full sm:mt-12 flex flex-col justify-center items-center gap-2"
     >
-      <span class="font-[Minecraft] text-xl text-[#88105a]">
+      <span class="font-[minecraftia] text-xl text-[#88105a]">
         Welcome to MangaYouKnow!
       </span>
       <p class="flex flex-wrap mt-2 font-[Minecraft] text-sm dark:text-white">

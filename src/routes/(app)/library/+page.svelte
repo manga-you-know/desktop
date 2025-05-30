@@ -13,18 +13,17 @@
   import type { Favorite } from "@/types";
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
-  let favoriteDiv: HTMLDivElement = $state(null!);
-  let favdivWidth: number = $state(0);
+  let libraryDiv: HTMLDivElement = $state(null!);
+  let libdivWidth: number = $state(0);
   let page = $state(1);
-  let perPage = $derived(Math.floor(favdivWidth / 178) * 3);
+  let perPage = $derived(Math.floor(libdivWidth / 168) * 3);
   const count = $derived($libraryFavorites.length);
-  let displayedFavorites: Favorite[] = $derived(
+  let displayedLibrary: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
-  libraryFavorites.subscribe(async (_) => {
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    if (displayedFavorites.length === 0 && page > 1) {
-      page -= 1;
+  $effect(() => {
+    if (displayedLibrary.length === 0 && page > 1) {
+      page = Math.ceil($libraryFavorites.length / perPage);
     }
   });
   const siblingCount = 1;
@@ -32,32 +31,41 @@
     const newFavorites = await FavoriteDB.getLibraryFavorites();
     libraryFavorites.set(newFavorites);
   });
+  function extraSpaceCards(): number {
+    const x = perPage / 3;
+    const n = displayedLibrary.length;
+    if (n <= x) return x - n;
+    if (n <= 2 * x) return 2 * x - n;
+    if (n <= 3 * x) return 3 * x - n;
+    return 0;
+  }
 </script>
 
 <div class="h-full overflow-hidden flex flex-col">
   <div
     class={cn(
-      "flex flex-wrap w-full  p-2 gap-2 justify-center items-center relative top-0",
+      "flex flex-wrap w-full p-2 gap-2 justify-center items-center relative top-0",
       IS_MOBILE ? "h-28" : "h-14"
     )}
   >
     <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="secondary">
       {count}
     </Badge>
-    <LibrarySearch bind:page bind:favdiv={favoriteDiv} />
+    <LibrarySearch bind:page bind:favdiv={libraryDiv} />
     <LibraryOrder />
     <LibraryTag />
     <LibrarySource />
   </div>
   <div
-    bind:this={favoriteDiv}
-    bind:clientWidth={favdivWidth}
+    bind:this={libraryDiv}
+    bind:clientWidth={libdivWidth}
     class="h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
-    {#each displayedFavorites as favorite, i (i)}
-      <div class="last">
-        <LibraryCard {favorite} />
-      </div>
+    {#each displayedLibrary as favorite, i (i)}
+      <LibraryCard {favorite} />
+    {/each}
+    {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n}
+      <div class="w-[158px] h-[271px] p-1"></div>
     {/each}
   </div>
 
@@ -68,7 +76,7 @@
       {perPage}
       {siblingCount}
       bind:page
-      onPageChange={() => favoriteDiv.scrollTo({ top: 0 })}
+      onPageChange={() => libraryDiv.scrollTo({ top: 0 })}
     >
       {#snippet children({ pages, currentPage })}
         <Pagination.Content tabindex={-1}>

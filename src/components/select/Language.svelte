@@ -42,9 +42,24 @@
           "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-secondary dark:text-white",
           className
         )}
-        variant="outline"
         {...props}
+        variant="outline"
         role="combobox"
+        onwheel={(e) => {
+          e.preventDefault();
+          if (e.deltaY < 0) {
+            selectedLanguage =
+              options.at(
+                options.findIndex((v) => v.id === selectedLanguage.id) - 1
+              ) ?? options[0];
+          } else {
+            selectedLanguage =
+              options.at(
+                options.findIndex((v) => v.id === selectedLanguage.id) + 1
+              ) ?? options[0];
+          }
+          onChange?.();
+        }}
         aria-expanded={open}
         disabled={inverseDisabled ? !disabled : disabled}
       >

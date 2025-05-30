@@ -6,6 +6,7 @@
   import { fly } from "svelte/transition";
   import { saveSettings } from "@/functions";
   import { IS_MOBILE } from "@/constants";
+  import { IsMobile } from "@/lib/hooks";
 
   type PageId = "home" | "favorites" | "library" | "panels";
 
@@ -47,9 +48,11 @@
       return isEntering ? -200 : 200;
     }
   }
+  const isMobileInstance = new IsMobile();
+  const isMobile = $derived(isMobileInstance.current);
 </script>
 
-{#if !IS_MOBILE}
+{#if !isMobile}
   <div class="w-full h-screen flex select-none overflow-hidden relative">
     <SidebarProv.Provider class="h-full!" open={false}>
       <Sidebar variant="inset" />

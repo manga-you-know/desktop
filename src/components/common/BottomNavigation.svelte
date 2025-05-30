@@ -47,7 +47,10 @@
     <Button
       class="flex-1 h-24 rounded-none"
       variant="secondary"
-      onclick={() => goto(item.path)}
+      onclick={(e) => {
+        e.currentTarget.blur();
+        goto(item.path);
+      }}
     >
       <Icon
         class="!w-8 !h-8"
@@ -58,17 +61,23 @@
   <Button
     class="flex-1 h-24 rounded-none"
     variant="secondary"
-    onclick={() => ($openSearch = true)}
+    onclick={(e) => {
+      e.currentTarget.blur();
+      $openSearch = true;
+    }}
   >
     <Icon
       class="!w-8 !h-8"
-      icon={$openSearch ? "mingcute:search-fill" : "mingcute:search-line"}
+      icon={$openSearch ? "mingcute:search-3-fill" : "mingcute:search-3-line"}
     />
   </Button>
   <Button
     class="flex-1 h-24 rounded-none"
     variant="secondary"
-    onclick={() => sidebar.toggle()}
+    onclick={(e) => {
+      e.currentTarget.blur();
+      sidebar.toggle();
+    }}
   >
     <Icon class="!w-8 !h-8" icon="lucide:menu" />
   </Button>

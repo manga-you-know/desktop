@@ -12,10 +12,6 @@
 
 <AlertDialogPrimitive.Cancel
   bind:ref
-  class={cn(
-    buttonVariants({ variant: "outline" }),
-    "rounded-xl mt-2 sm:mt-0",
-    className
-  )}
+  class={cn(buttonVariants({ variant: "outline" }), className)}
   {...restProps}
 />

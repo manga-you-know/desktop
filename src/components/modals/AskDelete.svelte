@@ -3,8 +3,10 @@
   import { AlertDialog, Button } from "@/lib/components";
   import { FavoriteDB } from "@/repositories";
   import { refreshLibrary, refreshFavorites } from "@/functions";
-  import type { Favorite } from "@/types";
   import { toast } from "svelte-sonner";
+  import { IS_MOBILE } from "@/constants";
+  import { cn } from "@/lib/utils";
+  import type { Favorite } from "@/types";
 
   interface Props {
     favorite: Favorite;
@@ -24,8 +26,11 @@
         within it.
       </AlertDialog.Description>
     </AlertDialog.Header>
-    <AlertDialog.Footer>
+    <AlertDialog.Footer
+      class={cn("flex-row", IS_MOBILE ? "w-full !justify-center" : "")}
+    >
       <Button
+        class={IS_MOBILE ? "w-full" : ""}
         variant="destructive"
         effect="gooeyLeft"
         onclick={async () => {
@@ -35,7 +40,9 @@
           await Promise.all([refreshLibrary(), refreshFavorites()]);
         }}>Delete</Button
       >
-      <AlertDialog.Cancel class="dark:text-white">Cancel</AlertDialog.Cancel>
+      <AlertDialog.Cancel class={IS_MOBILE ? "w-full" : ""}
+        >Cancel</AlertDialog.Cancel
+      >
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

@@ -133,6 +133,7 @@ export class MangaSeeDl implements MangaDl {
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
+    console.log(mangaId);
     const response = await fetch(`${this.baseUrl}/manga/${mangaId}`, {});
     //@ts-ignore
     if (response.status !== 200) {

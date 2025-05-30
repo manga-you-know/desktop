@@ -16,7 +16,6 @@
     globalChapters,
     favoritesLoaded,
     preferableLanguage,
-    showOnlyNew,
     useMpv,
     theme,
   } from "@/store";
@@ -127,244 +126,241 @@
   // });
 </script>
 
-{#if favoriteLoad?.toReadCount > 0 || !$showOnlyNew}
-  {#if favorite.type === "anime"}
-    <WatchFavorite {favorite} bind:open={isOpen} />
-  {:else}
-    <ReadFavorite {favorite} bind:open={isOpen} />
-  {/if}
-  <EditFavorite {favorite} bind:open={isEdit} />
-  <AskDelete {favorite} bind:open={isDelete} />
-  <PickTags {favorite} bind:open={isPicking} bind:markeds />
-  <ContextMenu.Root
-    bind:open={isContext}
-    onOpenChange={() => {
-      console.log(isContext);
-      isUltraFavorite = favorite.is_ultra_favorite;
-    }}
-  >
-    <ContextMenu.Trigger>
-      <button
-        class={cn(
-          "group relative rounded-xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
-          favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
-          IS_MOBILE ? "" : "hover:scale-[1.08]",
-          isContext
-            ? "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
-            : ""
-        )}
-        onclick={() => {
-          if (favoriteLoad.nextChapter === null) {
-            isOpen = true;
-          } else {
-            gotoNext();
+{#if favorite.type === "anime"}
+  <WatchFavorite {favorite} bind:open={isOpen} />
+{:else}
+  <ReadFavorite {favorite} bind:open={isOpen} />
+{/if}
+<EditFavorite {favorite} bind:open={isEdit} />
+<AskDelete {favorite} bind:open={isDelete} />
+<PickTags {favorite} bind:open={isPicking} bind:markeds />
+<ContextMenu.Root
+  bind:open={isContext}
+  onOpenChange={async () => {
+    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
+  }}
+>
+  <ContextMenu.Trigger>
+    <button
+      class={cn(
+        "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+        favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
+        IS_MOBILE ? "" : "hover:scale-[1.08]",
+        isContext
+          ? "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
+          : ""
+      )}
+      onclick={() => {
+        if (favoriteLoad.nextChapter === null) {
+          isOpen = true;
+        } else {
+          gotoNext();
+        }
+      }}
+      tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
+    >
+      <img
+        src={favorite.cover}
+        alt={favorite.name}
+        class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-2xl !bg-transparent"
+        id={strNotEmpty(favorite.id)}
+        onerror={() => {
+          const coverElement = document.getElementById(
+            strNotEmpty(favorite.id)
+          );
+          if (coverElement instanceof HTMLImageElement) {
+            coverElement.src = "/myk.png";
           }
         }}
-        tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
+      />
+      <div
+        class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center m-[-5.5px]"
       >
-        <img
-          src={favorite.cover}
-          alt={favorite.name}
-          class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-xl !bg-transparent"
-          id={strNotEmpty(favorite.id)}
-          onerror={() => {
-            const coverElement = document.getElementById(
-              strNotEmpty(favorite.id)
-            );
-            if (coverElement instanceof HTMLImageElement) {
-              coverElement.src = "/myk.png";
-            }
-          }}
-        />
-        <div
-          class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center m-[-5.5px]"
-        >
-          <!-- <Badge
+        <!-- <Badge
             class=" w-40 max-w-40 flex justify-center rounded-xl bg-"
             {variant}
           > -->
-          <div
-            class="h-52 w-[168px] max-w-[168px] flex justify-center from-slate-400 dark:from-background bg-gradient-to-b to-50% to-transparent"
+        <div
+          class="h-52 w-[168px] max-w-[168px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+        >
+          <Label
+            class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
           >
-            <Label
-              class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-white"
-            >
-              {favorite.name}
-            </Label>
-          </div>
-          <!-- </Badge> -->
+            {favorite.name}
+          </Label>
+        </div>
+        <!-- </Badge> -->
 
-          <div
-            class={cn(
-              "w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start",
-              favoriteLoad.toReadCount > 0
-                ? "opacity-100 translate-x-0"
-                : IS_MOBILE
-                  ? ""
-                  : "opacity-0 translate-x-[-40%] group-hover:opacity-100"
-            )}
-          >
-            <Tooltip
-              text="{favoriteLoad.chapters.length -
-                favoriteLoad.toReadCount}/{favoriteLoad.chapters.length}"
-            >
-              <Badge
-                class={cn(
-                  "min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default",
-                  favoriteLoad.toReadCount > 0
-                    ? "group-hover:ring-2 group-hover:scale-[0.9] ring-white  transition-all duration-500"
-                    : ""
-                )}
-                {variant}
-                tabindex={-1}
-              >
-                {#if favoriteLoad.isLoading}
-                  <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
-                {:else if favoriteLoad.toReadCount > 0}
-                  <Label tabindex={-1}>
-                    <ScrollingValue axis="y">
-                      +{favoriteLoad.toReadCount ?? 0}
-                    </ScrollingValue>
-                  </Label>
-                {:else}
-                  <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
-                {/if}
-              </Badge>
-            </Tooltip>
-          </div>
-          <div
-            class={cn(
-              "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
-              IS_MOBILE
-                ? " "
-                : "translate-y-[20%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
-            )}
+        <div
+          class={cn(
+            "w-full h-full px-[5px] fixed transform transition-all duration-300 ease-in-out group-hover:translate-x-0 flex flex-col justify-end items-start",
+            favoriteLoad.toReadCount > 0
+              ? "opacity-100 translate-x-0"
+              : IS_MOBILE
+                ? ""
+                : "opacity-0 translate-x-[-40%] group-hover:opacity-100"
+          )}
+        >
+          <Tooltip
+            text="{favoriteLoad.chapters.length -
+              favoriteLoad.toReadCount}/{favoriteLoad.chapters.length}"
           >
             <Badge
+              class={cn(
+                "min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default",
+                favoriteLoad.toReadCount > 0
+                  ? "group-hover:ring-2 group-hover:scale-[0.9] ring-white  transition-all duration-500"
+                  : ""
+              )}
               {variant}
-              class="w-14 mb-1 flex justify-center text-xs px-[-0.2px]"
+              tabindex={-1}
             >
-              {`${
-                favoriteLoad.chapters.length - favoriteLoad.toReadCount
-              }/${favoriteLoad.chapters.length}`}
+              {#if favoriteLoad.isLoading}
+                <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
+              {:else if favoriteLoad.toReadCount > 0}
+                <Label tabindex={-1}>
+                  <ScrollingValue axis="y">
+                    +{favoriteLoad.toReadCount ?? 0}
+                  </ScrollingValue>
+                </Label>
+              {:else}
+                <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
+              {/if}
             </Badge>
-          </div>
-          <div
-            class={cn(
-              "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
-              IS_MOBILE
-                ? ""
-                : "translate-x-[40%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-            )}
+          </Tooltip>
+        </div>
+        <div
+          class={cn(
+            "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
+            IS_MOBILE
+              ? " "
+              : "translate-y-[20%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+          )}
+        >
+          <Badge
+            {variant}
+            class="w-14 mb-1 flex justify-center text-xs px-[-0.2px]"
           >
-            <div
-              class="flex flex-col mr-0.5 justify-end rounded-xl shadow-sm"
-              role="group"
+            {`${
+              favoriteLoad.chapters.length - favoriteLoad.toReadCount
+            }/${favoriteLoad.chapters.length}`}
+          </Badge>
+        </div>
+        <div
+          class={cn(
+            "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
+            IS_MOBILE
+              ? ""
+              : "translate-x-[40%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+          )}
+        >
+          <div
+            class="flex flex-col mr-0.5 justify-end rounded-xl shadow-sm"
+            role="group"
+          >
+            <Button
+              class="rounded-b-none rounded-t-xl"
+              size="sm"
+              tabindex={-1}
+              disabled={favoriteLoad.nextChapter === null}
+              onclick={gotoNext}
+              {variant}
             >
-              <Button
-                class="rounded-b-none rounded-t-xl"
-                size="sm"
-                tabindex={-1}
-                disabled={favoriteLoad.nextChapter === null}
-                onclick={gotoNext}
-                {variant}
-              >
-                <Icon icon="lucide:chevrons-right" class="w-4 h-4" />
-              </Button>
-              <Button
-                class="rounded-none my-[-1px]"
-                size="sm"
-                tabindex={-1}
-                {variant}
-                onclick={(e) => {
-                  e.stopPropagation();
-                  isOpen = true;
-                }}
-              >
-                <Icon
-                  icon={favorite.type === "anime"
-                    ? "lucide:tv-minimal-play"
-                    : "lucide:book-open-text"}
-                  class="w-4 h-4"
-                />
-              </Button>
-              <Button
-                class="rounded-t-none rounded-b-xl"
-                size="sm"
-                tabindex={-1}
-                onclick={(e: Event) => {
-                  e.stopPropagation();
-                  isEdit = true;
-                }}
-                {variant}
-              >
-                <Icon icon="lucide:square-pen" class="w-4 h-4" />
-              </Button>
-            </div>
+              <Icon icon="lucide:chevrons-right" class="w-4 h-4" />
+            </Button>
+            <Button
+              class="rounded-none my-[-1px]"
+              size="sm"
+              tabindex={-1}
+              {variant}
+              onclick={(e) => {
+                e.stopPropagation();
+                isOpen = true;
+              }}
+            >
+              <Icon
+                icon={favorite.type === "anime"
+                  ? "lucide:tv-minimal-play"
+                  : "lucide:book-open-text"}
+                class="w-4 h-4"
+              />
+            </Button>
+            <Button
+              class="rounded-t-none rounded-b-xl"
+              size="sm"
+              tabindex={-1}
+              onclick={(e: Event) => {
+                e.stopPropagation();
+                isEdit = true;
+              }}
+              {variant}
+            >
+              <Icon icon="lucide:square-pen" class="w-4 h-4" />
+            </Button>
           </div>
         </div>
-      </button>
-    </ContextMenu.Trigger>
-    <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
-      <ContextMenu.Item
-        class="gap-4"
-        onclick={(e: Event) => {
-          e.stopPropagation();
-          isOpen = true;
-        }}
-        ><Icon
-          icon={favorite.type === "anime"
-            ? "lucide:tv-minimal-play"
-            : "lucide:book-open-text"}
-        />
-        <Label>Open</Label>
-      </ContextMenu.Item>
-      <ContextMenu.Item
-        class="gap-4"
-        onclick={(e: Event) => {
-          e.stopPropagation();
-          isEdit = true;
-        }}
-        ><Icon icon="lucide:square-pen" />
-        <Label>Edit</Label>
-      </ContextMenu.Item>
-      <ContextMenu.Item
-        class="gap-4"
-        onclick={async (e: Event) => {
-          e.stopPropagation();
-          favorite.is_ultra_favorite = !isUltraFavorite;
-          isUltraFavorite = Boolean(favorite.is_ultra_favorite);
-          isUltraFavorite = await FavoriteDB.toggleUltraFavorite(favorite);
-          await Promise.all([refreshFavorites(), refreshLibrary()]);
-        }}
-        ><Icon
-          icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
-        />
-        <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
-      </ContextMenu.Item>
-      <ContextMenu.Item
-        class="gap-4"
-        onclick={async (e: Event) => {
-          markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
-          isPicking = true;
-        }}
-      >
-        <Icon icon="lucide:bookmark" />
-        <Label>Tags</Label>
-      </ContextMenu.Item>
-      <ContextMenu.Separator />
-      <ContextMenu.Item
-        class="gap-4"
-        onclick={(e: Event) => {
-          e.stopPropagation();
-          isDelete = true;
-        }}
-        ><Icon icon="lucide:trash" />
-        <Label>Delete</Label>
-      </ContextMenu.Item>
-    </ContextMenu.Content>
-  </ContextMenu.Root>
-{/if}
+      </div>
+    </button>
+  </ContextMenu.Trigger>
+  <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isOpen = true;
+      }}
+      ><Icon
+        icon={favorite.type === "anime"
+          ? "lucide:tv-minimal-play"
+          : "lucide:book-open-text"}
+      />
+      <Label>Open</Label>
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isEdit = true;
+      }}
+      ><Icon icon="lucide:square-pen" />
+      <Label>Edit</Label>
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={async (e: Event) => {
+        e.stopPropagation();
+        favorite.is_ultra_favorite = !isUltraFavorite;
+        isUltraFavorite = Boolean(favorite.is_ultra_favorite);
+        isUltraFavorite = await FavoriteDB.toggleUltraFavorite(favorite);
+        await Promise.all([refreshFavorites(), refreshLibrary()]);
+      }}
+      ><Icon
+        icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
+      />
+      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={async (e: Event) => {
+        markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
+        isPicking = true;
+      }}
+    >
+      <Icon icon="lucide:bookmark" />
+      <Label>Tags</Label>
+    </ContextMenu.Item>
+    <ContextMenu.Separator />
+    <ContextMenu.Item
+      class="gap-4"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isDelete = true;
+      }}
+      ><Icon icon="lucide:trash" />
+      <Label>Delete</Label>
+    </ContextMenu.Item>
+  </ContextMenu.Content>
+</ContextMenu.Root>
 {#each nextChaptersImages as image}
   <img class="hidden" src={image} alt="Prefetched" data-sveltekit-prefetch />
 {/each}

@@ -141,6 +141,13 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
+      - name: Setting variables
+        uses: actions/github-script@v6
+        id: var
+        with:
+          script: |
+            core.setOutput('version', '${{ needs.changelog.outputs.tag }}'.toLowerCase().replaceAll('v', ''));
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -196,27 +203,28 @@ jobs:
 
       - name: Rename APK file
         run: |
-          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version}}.apk
+          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.var.version }}.apk
 
       - name: Upload APK to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: |
-            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version}}.apk
-          tag: v${{ needs.changelog.outputs.version}}
+            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.var.version }}.apk
+          tag: ${{ needs.changelog.outputs.tag }}
           overwrite: true
+
       - name: Update Cargo.toml
         id: update-version
         run: /
-          echo ${{ needs.changelog.outputs.version }}
-          bash myk u ${{ needs.changelog.outputs.version }}
+          echo ${{ steps.var.version }}
+          bash myk u ${{ steps.var.version }}
 
       - name: Commit files
         run: |
           git config --local user.email "admin@myk.com"
           git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml version"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml to ${{ needs.changelog.outputs.tag }}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -269,7 +277,8 @@ jobs:
         run: |
           git config --local user.email "admin@myk.com"
           git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Init iOS project"
+          git add .
+          git commit -m "Init iOS project"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
