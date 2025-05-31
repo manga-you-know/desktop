@@ -48,7 +48,7 @@
       IS_MOBILE ? "h-28" : "h-14"
     )}
   >
-    <Badge class="h-10 w-12 flex justify-center rounded-xl" variant="secondary">
+    <Badge class="h-10 w-12 flex justify-center" variant="secondary">
       {count}
     </Badge>
     <LibrarySearch bind:page bind:favdiv={libraryDiv} />

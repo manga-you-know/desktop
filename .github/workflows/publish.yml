@@ -50,7 +50,7 @@ jobs:
           version-file: "./src-tauri/tauri.conf.json"
           skip-version-file: false
           skip-git-pull: true
-          skip-tag: true
+          skip-tag: false
           skip-commit: true
           skip-bump: true
           git-push: false
@@ -141,12 +141,38 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
+      - name: TESTING
+        uses: actions/github-script@v6
+        id: we-hafta-test
+        with:
+          script: |
+            echo ${{ needs.changelog.outputs.tag}}
+            echo ${{ needs.changelog.outputs.version}}
+
       - name: Setting variables
         uses: actions/github-script@v6
         id: var
         with:
           script: |
             core.setOutput('version', '${{ needs.changelog.outputs.tag }}'.toLowerCase().replaceAll('v', ''));
+
+      - name: Update Cargo.toml
+        id: update-version
+        run: /
+          echo ${{ steps.var.version }}
+          bash myk u ${{ steps.var.version }}
+
+      - name: Commit files
+        run: |
+          git config --local user.email "admin@myk.com"
+          git config --local user.name "manga-you-know[bot]"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml to ${{ needs.changelog.outputs.tag }}"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -214,23 +240,6 @@ jobs:
           tag: ${{ needs.changelog.outputs.tag }}
           overwrite: true
 
-      - name: Update Cargo.toml
-        id: update-version
-        run: /
-          echo ${{ steps.var.version }}
-          bash myk u ${{ steps.var.version }}
-
-      - name: Commit files
-        run: |
-          git config --local user.email "admin@myk.com"
-          git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml to ${{ needs.changelog.outputs.tag }}"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
       # - name: Publish
       #   uses: softprops/action-gh-release@v1
       #   with:
@@ -269,22 +278,6 @@ jobs:
         run: bun create-env
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-      - name: Init iOS
-        run: bun tauri ios init
-
-      - name: Commit files
-        run: |
-          git config --local user.email "admin@myk.com"
-          git config --local user.name "manga-you-know[bot]"
-          git add .
-          git commit -m "Init iOS project"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
 
       - name: Build app bundle
         run: bun tauri ios build -v

@@ -103,7 +103,7 @@
         >
           <div class="inline-flex rounded-md shadow-sm" role="group">
             <Button
-              class="rounded-r-none rounded-l-xl"
+              class="rounded-r-none rounded-l-3xl"
               variant="secondary"
               size="sm"
               tabindex={-1}
@@ -128,7 +128,7 @@
               <Icon icon="lucide:square-pen" class="w-4 h-4" />
             </Button>
             <Button
-              class="rounded-l-none rounded-r-xl"
+              class="rounded-l-none rounded-r-3xl"
               variant="secondary"
               size="sm"
               tabindex={-1}

@@ -366,10 +366,10 @@
       if (key === "-" || (event.ctrlKey && key === "-")) {
         $zoomLevel = Math.max(50, $zoomLevel - 10);
       }
-      if (key === ">") {
+      if (key === ">" && !isTheLastChapter) {
         handleGoChapter("next");
       }
-      if (key === "<") {
+      if (key === "<" && !isTheFirstChapter) {
         handleGoChapter("prev");
       }
 

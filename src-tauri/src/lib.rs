@@ -26,6 +26,14 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_store::Builder::new().build());
+    #[cfg(mobile)] 
+    {
+        builder = builder
+        .setup(|app| {
+            app.handle().plugin(tauri_plugin_app_events::init())?;
+            Ok(())
+        });
+    }
     #[cfg(desktop)]
     {
         builder = builder

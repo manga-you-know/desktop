@@ -259,14 +259,14 @@
             role="group"
           >
             <Button
-              class="rounded-b-none rounded-t-xl"
+              class="rounded-b-none rounded-t-3xl"
               size="sm"
               tabindex={-1}
               disabled={favoriteLoad.nextChapter === null}
               onclick={gotoNext}
               {variant}
             >
-              <Icon icon="lucide:chevrons-right" class="w-4 h-4" />
+              <Icon icon="lucide:chevrons-right" class="!size-4" />
             </Button>
             <Button
               class="rounded-none my-[-1px]"
@@ -282,11 +282,11 @@
                 icon={favorite.type === "anime"
                   ? "lucide:tv-minimal-play"
                   : "lucide:book-open-text"}
-                class="w-4 h-4"
+                class="!size-4"
               />
             </Button>
             <Button
-              class="rounded-t-none rounded-b-xl"
+              class="rounded-t-none rounded-b-3xl"
               size="sm"
               tabindex={-1}
               onclick={(e: Event) => {
@@ -295,7 +295,7 @@
               }}
               {variant}
             >
-              <Icon icon="lucide:square-pen" class="w-4 h-4" />
+              <Icon icon="lucide:square-pen" class="mt-[-7px] !size-4" />
             </Button>
           </div>
         </div>

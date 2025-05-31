@@ -101,7 +101,7 @@
             saveSettings();
           }}
         />
-        <Label class="dark:text-white" for="showOnlyNew"
+        <Label class="dark:text-white cursor-pointer" for="showOnlyNew"
           >Only new chapters</Label
         >
       </div>

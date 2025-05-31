@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "mobile",
+  "description": "Capability for the main window on mobile platform",
+  "windows": ["*"],
+  "permissions": ["app-events:default"],
+  "platforms": ["android", "iOS"]
+}
