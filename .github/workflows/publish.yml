@@ -150,7 +150,7 @@ jobs:
 
       - name: Update Cargo.toml
         id: update-version
-        run: /
+        run: |
           bash myk u ${{ needs.changelog.outputs.version }}
 
       - name: Commit files
