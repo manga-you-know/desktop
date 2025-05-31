@@ -51,7 +51,7 @@ jobs:
           skip-version-file: false
           skip-git-pull: true
           skip-tag: false
-          skip-commit: true
+          skip-commit: false
           skip-bump: true
           git-push: false
           pre-release: false
