@@ -148,23 +148,6 @@ jobs:
           script: |
             core.setOutput('version', '${{ needs.changelog.outputs.tag }}'.toLowerCase().replaceAll('v', ''));
 
-      - name: Update Cargo.toml
-        id: update-version
-        run: |
-          bash myk u ${{ needs.changelog.outputs.version }}
-
-      - name: Commit files
-        run: |
-          git config --local user.email "admin@myk.com"
-          git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml to next version"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -231,6 +214,22 @@ jobs:
           tag: ${{ needs.changelog.outputs.tag }}
           overwrite: true
 
+      - name: Update Cargo.toml
+        id: update-version
+        run: |
+          bash myk u ${{ needs.changelog.outputs.version }}
+
+      - name: Commit files
+        run: |
+          git config --local user.email "admin@myk.com"
+          git config --local user.name "manga-you-know[bot]"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml to next version"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
       # - name: Publish
       #   uses: softprops/action-gh-release@v1
       #   with:
