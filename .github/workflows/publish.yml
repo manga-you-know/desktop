@@ -157,7 +157,7 @@ jobs:
         run: |
           git config --local user.email "admin@myk.com"
           git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml to ${{ needs.changelog.outputs.tag }}"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml to next version"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
