@@ -1,25 +1,29 @@
 #!/bin/sh
 
-TOML_FILE="./MangaYouKnowDesktop/src-tauri/Cargo.toml"
+TOML_FILE="./src-tauri/Cargo.toml"
+TAURI_FILE="./src-tauri/tauri.conf.json"
 
-# Verifica se a nova versão foi fornecida
 if [ -z "$1" ]; then
-  echo "Erro: Por favor, forneça a nova versão. Exemplo: ./update.sh 1.2.3"
+  echo "Use: ./update.sh 1.2.3"
   exit 1
 fi
 
 new_version=$1
 
-# Verifica se a versão informada está no formato correto (x.y.z)
 if ! echo "$new_version" | grep -Eq "^[0-9]+\.[0-9]+\.[0-9]+$"; then
-  echo "Erro: A versão informada deve estar no formato x.y.z. Exemplo: 1.2.3"
+  echo "Use: 1.2.3"
   exit 1
 fi
 
-# Extrai a versão atual do .toml
 current_version=$(grep -E "^version = \"[0-9]+\.[0-9]+\.[0-9]+\"" $TOML_FILE | cut -d '"' -f 2)
-
-# Substitui a versão no arquivo .toml
 sed -i "s/version = \"$current_version\"/version = \"$new_version\"/" $TOML_FILE
 
-echo "Updated from $current_version to $new_version in $TOML_FILE."
+echo "$current_version -> $new_version ($TOML_FILE)"
+
+current_version=$(grep -Eo "\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"" "$TAURI_FILE" | cut -d '"' -f 4)
+sed -i "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/" $TAURI_FILE
+
+echo "$current_version -> $new_version ($TAURI_FILE)"
+
+# Return the new version
+echo "$new_version"
