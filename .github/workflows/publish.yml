@@ -141,14 +141,6 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - name: TESTING
-        uses: actions/github-script@v6
-        id: we-hafta-test
-        with:
-          script: |
-            echo ${{ needs.changelog.outputs.tag}}
-            echo ${{ needs.changelog.outputs.version}}
-
       - name: Setting variables
         uses: actions/github-script@v6
         id: var
@@ -159,8 +151,8 @@ jobs:
       - name: Update Cargo.toml
         id: update-version
         run: /
-          echo ${{ steps.var.version }}
-          bash myk u ${{ steps.var.version }}
+          echo ${{ needs.changelog.outputs.version }}
+          bash myk u ${{ needs.changelog.outputs.version }}
 
       - name: Commit files
         run: |
@@ -229,14 +221,14 @@ jobs:
 
       - name: Rename APK file
         run: |
-          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.var.version }}.apk
+          mv ./src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version }}.apk
 
       - name: Upload APK to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: |
-            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.var.version }}.apk
+            ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ needs.changelog.outputs.version }}.apk
           tag: ${{ needs.changelog.outputs.tag }}
           overwrite: true
 
