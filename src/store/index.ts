@@ -14,6 +14,7 @@ import type {
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
 export const favoritesLoaded = writable<Record<string, FavoriteLoaded>>({});
+export const coversLoaded = writable<Record<string, string>>({});
 export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
 export const libraryFavorites = writable<Favorite[]>([]);

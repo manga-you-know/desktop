@@ -7,6 +7,7 @@
   import { IS_MOBILE } from "@/constants";
   import { cn } from "@/lib/utils";
   import type { Favorite } from "@/types";
+  import { removeCard } from "@/components/animations";
 
   interface Props {
     favorite: Favorite;
@@ -34,15 +35,17 @@
         variant="destructive"
         effect="gooeyLeft"
         onclick={async () => {
-          await FavoriteDB.deleteFavorite(favorite);
           open = false;
-          toast.warning(`${favorite.name} deleted with success.`);
-          await Promise.all([refreshLibrary(), refreshFavorites()]);
+          removeCard(favorite.id.toString(), async () => {
+            await FavoriteDB.deleteFavorite(favorite);
+            toast.success(`${favorite.name} deleted with success.`);
+            await Promise.all([refreshLibrary(), refreshFavorites()]);
+          });
         }}>Delete</Button
       >
-      <AlertDialog.Cancel class={IS_MOBILE ? "w-full" : ""}
-        >Cancel</AlertDialog.Cancel
-      >
+      <AlertDialog.Cancel class={IS_MOBILE ? "w-full" : ""}>
+        Cancel
+      </AlertDialog.Cancel>
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

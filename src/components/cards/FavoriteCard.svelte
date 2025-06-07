@@ -18,6 +18,7 @@
     preferableLanguage,
     useMpv,
     theme,
+    coversLoaded,
   } from "@/store";
   import { FavoriteDB, MarkFavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -146,9 +147,7 @@
         "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
         favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
-        isContext
-          ? "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
-          : ""
+        isContext && "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
       )}
       onclick={() => {
         if (favoriteLoad.nextChapter === null) {
@@ -160,7 +159,7 @@
       tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
     >
       <img
-        src={favorite.cover}
+        src={$coversLoaded[favorite.cover] ?? favorite.cover}
         alt={favorite.name}
         class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-2xl !bg-transparent"
         id={strNotEmpty(favorite.id)}

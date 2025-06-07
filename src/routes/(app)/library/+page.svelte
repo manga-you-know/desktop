@@ -9,10 +9,16 @@
     LibraryTag,
   } from "@/components";
   import { FavoriteDB } from "@/repositories";
-  import { libraryFavorites } from "@/store";
+  import {
+    coversLoaded,
+    downloadManager,
+    favoritesLoaded,
+    libraryFavorites,
+  } from "@/store";
   import type { Favorite } from "@/types";
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
+  import { get, has, set } from "tauri-plugin-cache-api";
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
   let page = $state(1);
@@ -27,9 +33,32 @@
     }
   });
   const siblingCount = 1;
+
+  async function loadImage(cover: string, url: string) {
+    $coversLoaded[cover] = cover;
+    // if (cover.includes("asset.localhost")) return;
+    // if (await has(cover)) {
+    //   $coversLoaded[cover] = (await get<string>(cover)) ?? cover;
+    // } else {
+    //   const imageB64 = await $downloadManager.getBase64Image(
+    //     cover,
+    //     `https://${url.split("/")[2]}/`
+    //   );
+    //   $coversLoaded[cover] = imageB64;
+    //   await set(cover, imageB64);
+    // }
+  }
+
+  async function loadAllImages() {
+    await Promise.all(
+      $libraryFavorites.map((fv) => loadImage(fv.cover, fv.link))
+    );
+  }
+
   onMount(async () => {
     const newFavorites = await FavoriteDB.getLibraryFavorites();
     libraryFavorites.set(newFavorites);
+    loadAllImages();
   });
   function extraSpaceCards(): number {
     const x = perPage / 3;
@@ -61,9 +90,11 @@
     bind:clientWidth={libdivWidth}
     class="h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
   >
+    <!-- {#key displayedLibrary} -->
     {#each displayedLibrary as favorite, i (i)}
       <LibraryCard {favorite} />
     {/each}
+    <!-- {/key} -->
     {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n}
       <div class="w-[158px] h-[271px] p-1"></div>
     {/each}

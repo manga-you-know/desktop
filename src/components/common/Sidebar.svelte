@@ -11,11 +11,13 @@
     openDownloads,
     downloadings,
     favoritesLoaded,
+    theme,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading } from "@/types";
   import { useSidebar } from "@/lib/components/ui/sidebar";
   import { IS_MOBILE } from "@/constants";
+  import { saveSettings } from "@/functions";
 
   const items = [
     {
@@ -279,10 +281,35 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  <Sidebar.Footer class="flex items-center ">
+  <Sidebar.Group>
+    <Sidebar.GroupContent>
+      <Sidebar.Menu class="flex flex-col gap-2">
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton
+            onclick={(e) => {
+              e.currentTarget.blur();
+              $theme = $theme === "dark" ? "light" : "dark";
+              saveSettings();
+            }}
+            tabindex={-1}
+          >
+            <Icon
+              icon={$theme === "dark"
+                ? "material-symbols:sunny-outline-rounded"
+                : "material-symbols:dark-mode-outline"}
+              class="!size-5 ml-[-2px]"
+            />
+            <Label class="cursor-pointer">Theme</Label>
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.GroupContent>
+  </Sidebar.Group>
+  <Sidebar.Footer class="flex items-center">
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+
     <img
       bind:this={imgElement}
       draggable={false}

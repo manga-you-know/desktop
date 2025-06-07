@@ -247,7 +247,9 @@ export class DownloadManager {
   async getBase64Image(url: string, referer: string): Promise<string> {
     const img =
       "data:image/png;base64," +
-      (await invoke("get_base64_image", { url: url, referer: referer }));
+      (await retry(() =>
+        invoke("get_base64_image", { url: url, referer: referer })
+      ));
     if (await this.isValidBase64Image(img)) return img;
     throw Error("Invalid base64 image.");
   }

@@ -96,7 +96,7 @@
   <AlertDialog.Content
     class={cn(
       "overflow-hidden p-0 gap-0",
-      isMobile ? "h-[36rem] w-[26rem] top-[32vh]" : "h-[16.2rem] w-[30rem]"
+      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30rem]"
     )}
   >
     <div

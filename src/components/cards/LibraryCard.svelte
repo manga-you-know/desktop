@@ -11,10 +11,14 @@
   import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
   import { refreshFavorites } from "@/functions";
-  import { downloadManager, theme } from "@/store";
+  import { coversLoaded, downloadManager } from "@/store";
   import { cn } from "@/lib/utils";
   import type { MarkFavorites } from "@/types";
   import { IS_MOBILE } from "@/constants";
+  import { onMount } from "svelte";
+  import { onNavigate } from "$app/navigation";
+  import {} from "@/components/animations";
+  import { fade } from "svelte/transition";
 
   interface Props {
     favorite: Favorite;
@@ -43,6 +47,12 @@
         ? await $downloadManager.getChapters(favorite)
         : await $downloadManager.getEpisodes(favorite);
   }
+
+  onMount(() => {
+    if ($coversLoaded[favorite.cover] === undefined) {
+      $coversLoaded[favorite.cover] === favorite.cover;
+    }
+  });
 </script>
 
 {#if favorite.type === "anime"}
@@ -61,32 +71,35 @@
 >
   <ContextMenu.Trigger>
     <button
+      id="library-{favorite.id}"
       class={cn(
-        "group relative rounded-2xl h-[271px] max-h-[264] w-[158px] max-w-[168px] flex flex-col p-1 items-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
+        "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[168px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
         isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
       )}
       onclick={() => (isOpen = true)}
     >
-      <img
-        class="w-[148px] h-[235px] min-w-[148px] max-w-[148px] min-h-[235px] max-h-[235px] mt-[26px] object-contain rounded-b-2xl rounded-t-lg !bg-primary/20"
-        src={favorite.cover}
-        alt={favorite.name}
-        id={favorite.id?.toString() || ""}
-        onerror={() => {
-          const coverElement = document.getElementById(
-            favorite.id?.toString() || ""
-          );
-          if (coverElement instanceof HTMLImageElement) {
-            coverElement.src = "/myk.png";
-          }
-        }}
-      />
+      <div class="flex items-center justify-center h-[224px] mt-[30px]">
+        <img
+          class="w-[146px] min-w-[146px] max-w-[146px] max-h-[224px] object-contain rounded-xl"
+          src={$coversLoaded[favorite.cover] ?? favorite.cover}
+          alt={favorite.name}
+          id={favorite.id?.toString() || ""}
+          onerror={() => {
+            const coverElement = document.getElementById(
+              favorite.id?.toString() || ""
+            );
+            if (coverElement instanceof HTMLImageElement) {
+              coverElement.src = "/myk.png";
+            }
+          }}
+        />
+      </div>
       <div
         class="w-full h-full fixed flex flex-col justify-between items-center"
       >
         <Badge
-          class="w-[150px] max-w-[148px] flex justify-center rounded-b-lg"
+          class="w-[150px] max-w-[148px] flex justify-center rounded-xl"
           variant="secondary"
         >
           <Label class="text-sm truncate">
@@ -96,9 +109,8 @@
         <div
           class={cn(
             "w-full h-8 flex justify-center mb-2 p-1 transform  transition-all duration-300 ease-in-out ",
-            IS_MOBILE
-              ? ""
-              : "opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0"
+            !IS_MOBILE &&
+              "opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0"
           )}
         >
           <div class="inline-flex rounded-md shadow-sm" role="group">

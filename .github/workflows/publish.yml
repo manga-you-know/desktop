@@ -82,7 +82,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -134,6 +135,8 @@ jobs:
     needs: changelog
     if: ${{ needs.changelog.outputs.skipped != 'true' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     permissions:
       contents: write
     steps:
@@ -141,12 +144,22 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - name: Setting variables
-        uses: actions/github-script@v6
-        id: var
+      - name: Update Cargo.toml
+        id: update-version
+        run: |
+          bash myk u ${{ needs.changelog.outputs.version }}
+
+      - name: Commit files
+        run: |
+          git config --local user.email "admin@myk.com"
+          git config --local user.name "manga-you-know[bot]"
+          git commit -a -m "Bump tauri.conf.json and Cargo.toml to next version"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          script: |
-            core.setOutput('version', '${{ needs.changelog.outputs.tag }}'.toLowerCase().replaceAll('v', ''));
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -214,22 +227,6 @@ jobs:
           tag: ${{ needs.changelog.outputs.tag }}
           overwrite: true
 
-      - name: Update Cargo.toml
-        id: update-version
-        run: |
-          bash myk u ${{ needs.changelog.outputs.version }}
-
-      - name: Commit files
-        run: |
-          git config --local user.email "admin@myk.com"
-          git config --local user.name "manga-you-know[bot]"
-          git commit -a -m "Bump tauri.conf.json and Cargo.toml to next version"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
       # - name: Publish
       #   uses: softprops/action-gh-release@v1
       #   with:
@@ -240,34 +237,34 @@ jobs:
       #     files: |
       #       ./src-tauri/gen/android/app/build/outputs/apk/universal/release/MangaYouKnow-${{ steps.changelog.outputs.version}}.apk
 
-  release-ios:
-    name: Release (ios)
-    needs: changelog
-    if: ${{ needs.changelog.outputs.skipped != 'true' }}
-    runs-on: macos-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
+  # release-ios:
+  #   name: Release (ios)
+  #   needs: changelog
+  #   if: ${{ needs.changelog.outputs.skipped != 'true' }}
+  #   runs-on: macos-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+  #     - uses: oven-sh/setup-bun@v2
+  #     - name: setup node
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+  #     - name: install Rust stable
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
 
-      - name: Install dependencies
-        run: bun install
+  #     - name: Install dependencies
+  #       run: bun install
 
-      - name: Set env consts
-        run: bun create-env
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  #     - name: Set env consts
+  #       run: bun create-env
+  #       env:
+  #         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Build app bundle
-        run: bun tauri ios build -v
+  #     - name: Build app bundle
+  #       run: bun tauri ios build -v

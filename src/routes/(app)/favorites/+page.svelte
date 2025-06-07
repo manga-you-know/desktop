@@ -23,29 +23,28 @@
   let page = $state(1);
   let perPage = $derived(Math.floor(favdivWidth / 168) * 3);
   let favoritesWithChapter: Favorite[] = $derived(
-    $ultraFavorites
-      .filter((fv) => $favoritesLoaded[fv.id.toString()]?.nextChapter)
-      .slice((page - 1) * perPage, page * perPage)
+    $ultraFavorites.filter(
+      (fv) => $favoritesLoaded[fv.id.toString()]?.nextChapter
+    )
   );
   let displayedFavorites: Favorite[] = $derived(
     !$showOnlyNew
       ? $ultraFavorites.slice((page - 1) * perPage, page * perPage)
-      : favoritesWithChapter
+      : favoritesWithChapter.slice((page - 1) * perPage, page * perPage)
   );
   const count = $derived($ultraFavorites.length);
-
+  const extraSpace: number = $derived(
+    perPage >= displayedFavorites.length
+      ? perPage - displayedFavorites.length
+      : perPage * 2 >= displayedFavorites.length
+        ? perPage * 2 - displayedFavorites.length
+        : perPage * 3 >= displayedFavorites.length
+          ? perPage * 3 - displayedFavorites.length
+          : 0
+  );
   onMount(async () => {
     await refreshFavorites();
   });
-
-  function extraSpaceCards(): number {
-    const x = perPage / 3;
-    const n = displayedFavorites.length;
-    if (n <= x) return x - n;
-    if (n <= 2 * x) return 2 * x - n;
-    if (n <= 3 * x) return 3 * x - n;
-    return 0;
-  }
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
@@ -116,7 +115,7 @@
     {#each displayedFavorites as favorite}
       <FavoriteCard {favorite} />
     {/each}
-    {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n}
+    {#each Array.from({ length: extraSpace }, (_, i) => i) as n (n)}
       <div class="w-[158px] h-[271px] p-1"></div>
     {/each}
   </div>

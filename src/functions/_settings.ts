@@ -73,7 +73,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   is_chapters_descending: { store: isChaptersDescending, default: true },
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
-  sidebar_behavior: { store: sidebarBehavior, default: "on-hover" },
+  sidebar_behavior: { store: sidebarBehavior, default: "expand" },
 } as const;
 
 async function connectSettings() {

@@ -320,7 +320,7 @@
           floatingLabel
           variant="link"
           bind:value={searchTerm}
-          tabindex={isMobile ? -1 : 1}
+          tabindex={IS_MOBILE ? -1 : 1}
         />
         {#if searchTerm.length > 0}
           <Button
