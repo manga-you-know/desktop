@@ -65,7 +65,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={ref}
-    class="text-sidebar-foreground group peer hidden md:block"
+    class="text-sidebar-foreground group peer hidden ssm:block"
     data-state={sidebar.state}
     data-collapsible={sidebar.state === "collapsed" ? collapsible : ""}
     data-variant={variant}
@@ -86,7 +86,7 @@
     ></div>
     <div
       class={cn(
-        "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex",
+        "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear ssm:flex",
         side === "left"
           ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
           : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",

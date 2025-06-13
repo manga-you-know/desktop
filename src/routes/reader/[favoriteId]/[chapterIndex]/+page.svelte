@@ -5,7 +5,7 @@
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     preloadNextChapter,
     stopDiscordPresence,
     setDiscordActivity,
@@ -138,7 +138,7 @@
     currentlyImage = "/myk.png";
     setFullscreen(false);
     if (favorite) {
-      loadFavoriteChapter(favorite);
+      loadFavoriteChapters(favorite);
     }
     goto($lastPage);
     stopDiscordPresence();
@@ -279,7 +279,7 @@
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (favorite) {
-      loadFavoriteChapter(favorite);
+      loadFavoriteChapters(favorite);
     }
     if (!isLocal) {
       images = await $downloadManager.getBase64Images(
@@ -311,7 +311,7 @@
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (favorite) {
-      loadFavoriteChapter(favorite);
+      loadFavoriteChapters(favorite);
     }
     if (!isLocal) {
       images = await $downloadManager.getBase64Images(

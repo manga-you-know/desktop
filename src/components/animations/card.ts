@@ -5,7 +5,9 @@ export function removeCard(id: string, onComplete?: () => Promise<void>) {
     `button[id="library-${id}"]`
   ) as HTMLButtonElement;
 
-  if (!button) return;
+  if (!button) {
+    onComplete?.();
+  }
   button.style.transition = "opacity 0.3s ease-out, transform 0.3s ease-out";
   button.style.opacity = "0";
   button.style.transform = "scale(0.5)";

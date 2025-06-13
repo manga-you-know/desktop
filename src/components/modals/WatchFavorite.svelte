@@ -10,7 +10,7 @@
   import { EpisodeButton } from "@/components";
   import {
     isReaded,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     refreshReadeds,
     stopDiscordPresence,
     setDiscordActivity,
@@ -64,7 +64,7 @@
   onOpenChange={async (open) => {
     globalChapters.set([]);
     if (!open) {
-      await loadFavoriteChapter(favorite);
+      await loadFavoriteChapters(favorite);
     }
   }}
 >

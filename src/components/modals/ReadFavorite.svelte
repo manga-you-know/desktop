@@ -33,7 +33,7 @@
   import {
     addReadedBelow,
     isReaded,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     refreshReadeds,
     stopDiscordPresence,
     setDiscordActivity,
@@ -512,7 +512,7 @@
   bind:open
   onOpenChange={() => {
     isLoaded = false;
-    if (isUltraFavorite) loadFavoriteChapter(favorite);
+    if (isUltraFavorite) loadFavoriteChapters(favorite);
     refreshFavorites();
     refreshLibrary();
     stopDiscordPresence();

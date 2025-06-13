@@ -21,6 +21,9 @@ const config: Config = {
       },
     },
     extend: {
+      screens: {
+        ssm: "620px",
+      },
       transitionDuration: {
         "200": "200ms",
         "400": "400ms",

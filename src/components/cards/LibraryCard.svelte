@@ -73,27 +73,29 @@
     <button
       id="library-{favorite.id}"
       class={cn(
-        "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[168px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
+        "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg hover:z-30 transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
         isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
       )}
       onclick={() => (isOpen = true)}
     >
       <div class="flex items-center justify-center h-[224px] mt-[30px]">
-        <img
-          class="w-[146px] min-w-[146px] max-w-[146px] max-h-[224px] object-contain rounded-xl"
-          src={$coversLoaded[favorite.cover] ?? favorite.cover}
-          alt={favorite.name}
-          id={favorite.id?.toString() || ""}
-          onerror={() => {
-            const coverElement = document.getElementById(
-              favorite.id?.toString() || ""
-            );
-            if (coverElement instanceof HTMLImageElement) {
-              coverElement.src = "/myk.png";
-            }
-          }}
-        />
+        {#key $coversLoaded[favorite.cover]}
+          <img
+            class="w-[146px] min-w-[146px] max-w-[146px] max-h-[224px] object-contain rounded-xl"
+            src={$coversLoaded[favorite.cover] ?? favorite.cover}
+            alt={favorite.name}
+            id={favorite.id?.toString() || ""}
+            onerror={() => {
+              const coverElement = document.getElementById(
+                favorite.id?.toString() || ""
+              );
+              if (coverElement instanceof HTMLImageElement) {
+                coverElement.src = "/myk.png";
+              }
+            }}
+          />
+        {/key}
       </div>
       <div
         class="w-full h-full fixed flex flex-col justify-between items-center"

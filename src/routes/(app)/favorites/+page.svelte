@@ -9,7 +9,7 @@
     isRefreshing,
   } from "@/store";
   import {
-    loadFavoriteChapters,
+    loadFavoritesChapters,
     refreshFavorites,
     saveSettings,
   } from "@/functions";
@@ -21,7 +21,7 @@
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);
   let page = $state(1);
-  let perPage = $derived(Math.floor(favdivWidth / 168) * 3);
+  let perPage = $derived(Math.floor(favdivWidth / 169) * 3);
   let favoritesWithChapter: Favorite[] = $derived(
     $ultraFavorites.filter(
       (fv) => $favoritesLoaded[fv.id.toString()]?.nextChapter
@@ -80,7 +80,7 @@
         variant="secondary"
         class="rounded-xl h-8"
         disabled={$isRefreshing}
-        onclick={() => loadFavoriteChapters()}
+        onclick={() => loadFavoritesChapters()}
       >
         <Icon
           icon={$isRefreshing

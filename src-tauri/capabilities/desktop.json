@@ -19,7 +19,6 @@
     "core:window:allow-hide",
     "clipboard:write-all",
     "clipboard:read-all",
-    "drpc:default",
     "global-shortcut:default",
     "autostart:default",
     "global-shortcut:allow-is-registered",

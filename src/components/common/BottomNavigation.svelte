@@ -22,8 +22,8 @@
     {
       name: "Library",
       path: "/library",
-      iconActive: "solar:book-2-bold",
-      icon: "solar:book-2-outline",
+      iconActive: "material-symbols:book-ribbon-rounded",
+      icon: "material-symbols:book-ribbon-outline-rounded",
     },
     // {
     //   name: "Search",

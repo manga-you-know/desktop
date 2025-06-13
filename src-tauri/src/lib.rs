@@ -2,8 +2,17 @@
 use tauri::Manager;
 use utils::hashmap::{get_data, set_data};
 use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
+// use webview2_com::{
+//     Microsoft::Web::WebView2::Win32::{
+//         ICoreWebView2WebResourceRequest, COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+//     },
+//     WebResourceRequestedEventHandler,
+// };
+// use windows::{core::HSTRING, Win32::System::WinRT::EventRegistrationToken};
 
 mod utils;
+
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -43,10 +52,39 @@ pub fn run() {
             if args.contains(&"--flag1".to_string()) {
                 window.hide().unwrap();
             }
+            // window
+            //     .with_webview(|webview| unsafe {
+            //         let core = webview.controller().CoreWebView2().unwrap();
+            //         let mut _token: EventRegistrationToken = EventRegistrationToken::default();
+            //         core.AddWebResourceRequestedFilter(
+            //             &HSTRING::from("*"),
+            //             COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+            //         )
+            //         .unwrap();
+            //         core.add_WebResourceRequested(
+            //             &WebResourceRequestedEventHandler::create(Box::new(
+            //                 move |_webview, args| {
+            //                     if let Some(args) = args {
+            //                         let request: ICoreWebView2WebResourceRequest =
+            //                             args.Request().unwrap();
+            //                         request
+            //                             .Headers()
+            //                             .unwrap()
+            //                             .SetHeader(&HSTRING::from("Origin"), &HSTRING::from("https://github.com/"))
+            //                             .unwrap();
+            //                     }
+            //                     Ok(())
+            //                 },
+            //             )),
+            //             &mut _token,
+            //         )
+            //         .unwrap();
+            //     })
+            //     .unwrap();
             Ok(())
         })
         .plugin(tauri_plugin_clipboard::init())
-        .plugin(tauri_plugin_drpc::init())
+        // .plugin(tauri_plugin_drpc::init())
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_updater::Builder::new().build())

@@ -15,6 +15,7 @@
     closeTray,
     openSearch,
     theme,
+    undoTasks,
     updateInfo,
   } from "@/store";
   import { Tooltip as TooltipPrimitive } from "@/lib/components";
@@ -32,18 +33,20 @@
     reloadApp,
     refreshLibrary,
     refreshFavorites,
+    loadFavoritesChapters,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
   import { IS_MOBILE } from "@/constants";
+  import { toast } from "svelte-sonner";
 
   let { children } = $props();
   const window = getCurrentWindow();
   const interval = setInterval(
     async () => {
       try {
-        loadFavoriteChapters();
+        loadFavoritesChapters();
         if (!IS_MOBILE && $autoSearchUpdates && !$updateInfo.updateAvailable) {
           checkForAppUpdates();
         }
@@ -54,13 +57,22 @@
     1000 * 60 * 10
   );
   function handleKeydown(e: KeyboardEvent) {
+    const isCtrl = e.metaKey || e.ctrlKey;
     if (e.key === "F11") {
       toggleFullscreen();
     }
+
     if (e.key === "Escape") {
       setFullscreen(false);
     }
-    if (e.key.toUpperCase() === "K" && (e.metaKey || e.ctrlKey)) {
+
+    if (e.key.toUpperCase() === "Z" && isCtrl) {
+      const task = $undoTasks.pop();
+      if (task === undefined) return;
+      task.do();
+      toast.info(task.message);
+    }
+    if (e.key.toUpperCase() === "K" && isCtrl) {
       openSearch.set(!$openSearch);
     }
 
@@ -86,7 +98,7 @@
     loadDatabase();
     loadSettings();
     createTray();
-    loadFavoriteChapters();
+    loadFavoritesChapters();
     loadAppIcons();
     refreshLibrary();
     refreshFavorites();

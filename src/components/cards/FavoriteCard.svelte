@@ -26,7 +26,7 @@
     isReaded,
     openPlayer,
     addReadedBelow,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     refreshLibrary,
   } from "@/functions";
   import type { Favorite, Chapter, Readed } from "@/types";
@@ -63,7 +63,7 @@
         chapters: [],
         readeds: [],
         toReadCount: 0,
-        startLoading: () => loadFavoriteChapter(favorite),
+        startLoading: () => loadFavoriteChapters(favorite),
         nextChapter: null,
       };
     }
@@ -105,7 +105,7 @@
           }),
           favorite
         );
-        await loadFavoriteChapter(favorite);
+        await loadFavoriteChapters(favorite);
       } else {
         goto(`/player/${favorite.id}/${chapter.number}`);
       }

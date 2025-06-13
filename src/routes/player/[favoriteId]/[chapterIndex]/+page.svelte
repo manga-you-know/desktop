@@ -25,7 +25,7 @@
   import {
     addReadedBelow,
     goDefaultPage,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     setFullscreen,
     toggleFullscreen,
   } from "@/functions";
@@ -248,7 +248,7 @@
                   class="vds-button"
                   variant="ghost"
                   onclick={() => {
-                    if (favorite) loadFavoriteChapter(favorite);
+                    if (favorite) loadFavoriteChapters(favorite);
                     goDefaultPage();
                   }}
                 >

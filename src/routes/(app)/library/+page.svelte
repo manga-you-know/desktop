@@ -22,7 +22,7 @@
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
   let page = $state(1);
-  let perPage = $derived(Math.floor(libdivWidth / 168) * 3);
+  let perPage = $derived(Math.floor(libdivWidth / 169) * 3);
   const count = $derived($libraryFavorites.length);
   let displayedLibrary: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)

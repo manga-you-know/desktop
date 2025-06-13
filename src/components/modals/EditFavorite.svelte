@@ -9,7 +9,7 @@
     refreshFavorites,
     setDiscordActivity,
     stopDiscordPresence,
-    loadFavoriteChapter,
+    loadFavoriteChapters,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import Icon from "@iconify/svelte";
@@ -116,7 +116,7 @@
   bind:open
   onOpenChange={(open) => {
     if (!open) {
-      if (isUltraFavorite) loadFavoriteChapter(favorite);
+      if (isUltraFavorite) loadFavoriteChapters(favorite);
       refreshFavorites();
       refreshLibrary();
     }

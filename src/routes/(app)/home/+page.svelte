@@ -2,7 +2,7 @@
   import { Carousel, SuggestionCard } from "@/components";
   import { Button, Label } from "@/lib/components";
   import { Item } from "@/lib/components/ui/carousel";
-  import { SHOUNENS, SPORTS } from "@/constants";
+  import { SHOUNENS, SEINEN } from "@/constants";
   import type { Favorite } from "@/types";
   import { FavoriteDB } from "@/repositories";
   import { openSearch } from "@/store";
@@ -35,7 +35,7 @@
     />
   </div>
   <div class="w-full h-full mt-12">
-    <Label class="text-bold text-xl">Shounen</Label>
+    <Label class="text-bold text-2xl pl-4">Shounen</Label>
     <Carousel speed={1.2}>
       {#each Array(20).fill(SHOUNENS.flat()).flat() as suggestion}
         <Item class="max-w-44 w-44">
@@ -43,9 +43,9 @@
         </Item>
       {/each}
     </Carousel>
-    <Label class="text-bold text-xl">Sports</Label>
+    <Label class="text-bold text-2xl pl-4">Seinen</Label>
     <Carousel reversed={true} speed={1.2}>
-      {#each Array(20).fill(SPORTS.flat()).flat() as suggestion}
+      {#each Array(20).fill(SEINEN.flat()).flat() as suggestion}
         <Item class="max-w-44 w-44">
           <SuggestionCard {suggestion} />
         </Item>

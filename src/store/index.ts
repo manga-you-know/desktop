@@ -14,6 +14,9 @@ import type {
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
 export const favoritesLoaded = writable<Record<string, FavoriteLoaded>>({});
+export const undoTasks = writable<
+  { do: (() => void) | (() => Promise<void>); message: string }[]
+>([]);
 export const coversLoaded = writable<Record<string, string>>({});
 export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
@@ -40,6 +43,7 @@ export const openUpdate = writable<boolean>(false);
 export const openMenuChapters = writable<boolean>(false);
 export const openReadMenu = writable<boolean>(true);
 export const openSearch = writable<boolean>(false);
+export const openInfo = writable<boolean>(false);
 export const openSettings = writable<boolean>(false);
 export const openDownloads = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);

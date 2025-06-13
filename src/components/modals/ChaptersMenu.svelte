@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    loadFavoriteChapter,
+    loadFavoriteChapters,
     saveSettings,
     stopDiscordPresence,
     setFullscreen,

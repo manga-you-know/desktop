@@ -2,12 +2,17 @@
   import Icon from "@iconify/svelte";
   import { AlertDialog, Button } from "@/lib/components";
   import { FavoriteDB } from "@/repositories";
-  import { refreshLibrary, refreshFavorites } from "@/functions";
+  import {
+    refreshLibrary,
+    refreshFavorites,
+    loadFavoriteChapters,
+  } from "@/functions";
   import { toast } from "svelte-sonner";
   import { IS_MOBILE } from "@/constants";
   import { cn } from "@/lib/utils";
   import type { Favorite } from "@/types";
   import { removeCard } from "@/components/animations";
+  import { undoTasks } from "@/store";
 
   interface Props {
     favorite: Favorite;
@@ -37,12 +42,22 @@
         onclick={async () => {
           open = false;
           removeCard(favorite.id.toString(), async () => {
-            await FavoriteDB.deleteFavorite(favorite);
+            const undo = await FavoriteDB.deleteFavorite(favorite);
             toast.success(`${favorite.name} deleted with success.`);
+            $undoTasks.push({
+              do: async () => {
+                await FavoriteDB.undoDeleteFavorite(undo);
+                await Promise.all([refreshLibrary(), refreshFavorites()]);
+                if (favorite.is_ultra_favorite) loadFavoriteChapters(favorite);
+              },
+              message: "Undo delete of " + favorite.name,
+            });
             await Promise.all([refreshLibrary(), refreshFavorites()]);
           });
-        }}>Delete</Button
+        }}
       >
+        Delete
+      </Button>
       <AlertDialog.Cancel class={IS_MOBILE ? "w-full" : ""}>
         Cancel
       </AlertDialog.Cancel>

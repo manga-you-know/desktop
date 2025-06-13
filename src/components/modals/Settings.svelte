@@ -73,7 +73,9 @@
     <ScrollArea
       class="h-[80vh] rounded-3xl select-none my-2 pr-3 scroll-smooth"
     >
-      <div class="border-b-4 my-4 text-center relative rounded-3xl">
+      <div
+        class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
+      >
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
         >
@@ -162,13 +164,13 @@
             </div> -->
             <div class="flex gap-2 items-center">
               <Checkbox
-                id="auto-start"
+                id="minimize"
                 bind:checked={$closeTray}
                 onCheckedChange={async () => {
                   await saveSettings();
                 }}
               />
-              <Label class="cursor-pointer" for="auto-start">
+              <Label class="cursor-pointer" for="minimize">
                 Minize to tray apps instead of closing
               </Label>
             </div>
@@ -230,7 +232,7 @@
                   ? "default"
                   : "secondary"}
               >
-                Collapsed
+                Compact
               </Button>
               <Button
                 class="h-9 transition-colors duration-300"
@@ -264,7 +266,9 @@
           </Button>
         </Card.Content>
       </Card.Root>
-      <div class="border-b-4 my-5 text-center relative rounded-3xl">
+      <div
+        class="border-b-4 border-secondary my-5 text-center relative rounded-3xl"
+      >
         <span
           class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
         >
@@ -302,7 +306,9 @@
         </Card.Content>
       </Card.Root>
       {#if !IS_MOBILE}
-        <div class="border-b-4 my-4 text-center relative rounded-3xl">
+        <div
+          class="border-b-4 border-secondary my-4 text-center relative rounded-3xl"
+        >
           <span
             class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
           >

@@ -32,7 +32,7 @@ function addFavorite(favorite: Favorite) {
         chapters: [],
         readeds: [],
         toReadCount: 0,
-        startLoading: () => loadFavoriteChapter(favorite),
+        startLoading: () => loadFavoriteChapters(favorite),
         nextChapter: null,
       },
     };
@@ -82,20 +82,20 @@ export async function preloadNextChapter(
   preloadChapter(chapters[currentlyChapterIndex - 1]);
 }
 
-export async function loadFavoriteChapters(
+export async function loadFavoritesChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
   isRefreshing.set(true);
   const favorites = await FavoriteDB.getUltraFavorites();
   dl.clearChaptersCache();
-  await Promise.all(favorites.map(loadFavoriteChapter));
+  await Promise.all(favorites.map(loadFavoriteChapters));
   if (rerenderFavoritesOption) {
     await rerenderFavorites();
   }
   isRefreshing.set(false);
 }
 
-export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
+export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   const loadedFavorite = get(favoritesLoaded)[strNotEmpty(favorite.id)];
   if (!loadedFavorite) {
     addFavorite(favorite);
@@ -150,7 +150,7 @@ export async function loadFavoriteChapter(favorite: Favorite): Promise<void> {
       chapters: [],
       readeds: [],
       toReadCount: 0,
-      startLoading: () => loadFavoriteChapter(favorite),
+      startLoading: () => loadFavoriteChapters(favorite),
       nextChapter: null,
     };
 

@@ -11,7 +11,7 @@ import { MarkDB, UserDB } from "@/repositories";
 import type { Favorite, Mark } from "@/types";
 import { get } from "svelte/store";
 import {
-  loadFavoriteChapter,
+  loadFavoriteChapters,
   refreshFavorites,
   refreshLibrary,
   removeFavorite,
@@ -326,7 +326,8 @@ export async function toggleUltraFavorite(
     if (refresh) {
       refreshFavorites();
       refreshLibrary();
-      if (result[0].is_ultra_favorite === "true") loadFavoriteChapter(favorite);
+      if (result[0].is_ultra_favorite === "true")
+        loadFavoriteChapters(favorite);
     }
     return result[0].is_ultra_favorite === "true";
   } catch (error) {
@@ -352,9 +353,29 @@ export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
   }
 }
 
-export async function deleteFavorite(favorite: Favorite): Promise<void> {
+export async function deleteFavorite(favorite: Favorite): Promise<{
+  favorite: Favorite;
+  markFavorites: { favorite_id: number; mark_id: number }[];
+  readed: { favorite_id: number; chapter_id: string }[];
+}> {
   if (!db) await loadDb();
   try {
+    const markFavorites = await db.select<
+      { favorite_id: number; mark_id: number }[]
+    >("SELECT favorite_id, mark_id FROM mark_favorites WHERE favorite_id = ?", [
+      favorite.id,
+    ]);
+    const readed = await db.select<
+      {
+        favorite_id: number;
+        chapter_id: string;
+        language?: string;
+      }[]
+    >(
+      "SELECT favorite_id, chapter_id, language FROM readed WHERE favorite_id = ?",
+      [favorite.id]
+    );
+
     await db.execute(
       `
       BEGIN TRANSACTION;
@@ -365,11 +386,68 @@ export async function deleteFavorite(favorite: Favorite): Promise<void> {
     `,
       [favorite.id, favorite.id, favorite.id]
     );
+
+    return {
+      favorite,
+      markFavorites,
+      readed,
+    };
   } catch (error) {
     console.log(error);
     await db.execute("ROLLBACK;");
-  } finally {
-    // db.close()
+    throw error;
+  }
+}
+
+export async function undoDeleteFavorite(data: {
+  favorite: Favorite;
+  markFavorites: { favorite_id: number; mark_id: number }[];
+  readed: { favorite_id: number; chapter_id: string; language?: string }[];
+}): Promise<void> {
+  if (!db) await loadDb();
+  try {
+    await db.execute(
+      `
+      BEGIN TRANSACTION;
+      INSERT INTO favorite (id, user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id, is_ultra_favorite) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      ${data.markFavorites.map(() => "INSERT INTO mark_favorites (favorite_id, mark_id) VALUES (?, ?);").join("")}
+      ${data.readed.map(() => "INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?);").join("")}
+      COMMIT;
+    `,
+      [
+        data.favorite.id,
+        data.favorite.user_id,
+        data.favorite.name,
+        data.favorite.folder_name,
+        data.favorite.cover,
+        data.favorite.link,
+        data.favorite.source,
+        data.favorite.source_id,
+        data.favorite.type,
+        data.favorite.extra_name,
+        data.favorite.title_color,
+        data.favorite.card_color,
+        data.favorite.grade,
+        data.favorite.author,
+        data.favorite.description,
+        data.favorite.status,
+        data.favorite.mal_id,
+        data.favorite.anilist_id,
+        data.favorite.is_ultra_favorite,
+        ...data.markFavorites.flatMap((mf) => [mf.favorite_id, mf.mark_id]),
+        ...data.readed.flatMap((r) => [
+          r.favorite_id,
+          r.chapter_id,
+          data.favorite.source,
+          r.language ?? "default",
+        ]),
+      ]
+    );
+  } catch (error) {
+    console.log(error);
+    await db.execute("ROLLBACK;");
+    throw error;
   }
 }
 

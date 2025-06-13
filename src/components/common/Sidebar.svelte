@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { Sidebar, Label, Avatar, Separator } from "@/lib/components";
   import { Badge } from "svelte-ux";
+  import { Sidebar, Label, Avatar, Separator } from "@/lib/components";
   import {
     openSearch,
     openSettings,
@@ -12,6 +12,7 @@
     downloadings,
     favoritesLoaded,
     theme,
+    openInfo,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading } from "@/types";
@@ -35,8 +36,8 @@
     {
       name: "Library",
       path: "/library",
-      iconActive: "solar:book-2-bold",
-      icon: "solar:book-2-outline",
+      iconActive: "material-symbols:book-ribbon-rounded",
+      icon: "material-symbols:book-ribbon-outline-rounded",
     },
     {
       name: "Panels",
@@ -121,6 +122,9 @@
           {#each items as item (item.name)}
             <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton
+                variant={page.url.pathname === item.path
+                  ? "outline"
+                  : "default"}
                 onclick={(e) => {
                   e.currentTarget.blur();
                   goto(item.path);
@@ -132,7 +136,7 @@
                     icon={page.url.pathname === item.path
                       ? item.iconActive
                       : item.icon}
-                    class="!w-5 !h-5 ml-[-2px]"
+                    class="!size-7 ml-[-10px]"
                   />
                 {:else}
                   <Badge
@@ -144,7 +148,7 @@
                       icon={page.url.pathname === item.path
                         ? item.iconActive
                         : item.icon}
-                      class="!w-5 !h-5 ml-[-2px]"
+                      class="!size-7 ml-[-10px]"
                     />
                   </Badge>
                 {/if}
@@ -161,6 +165,7 @@
         <Sidebar.Menu class="flex flex-col gap-2">
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
+              variant={$openSearch ? "outline" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(true);
@@ -168,6 +173,7 @@
                 openDownloads.set(false);
                 openSettings.set(false);
                 openAdd.set(false);
+                openInfo.set(false);
                 if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
@@ -176,25 +182,27 @@
                 icon={$openSearch
                   ? "mingcute:search-3-fill"
                   : "mingcute:search-3-line"}
-                class="!w-5 !h-5 ml-[-2px]"
+                class="!size-7 ml-[-10px]"
               />
               <Label class="cursor-pointer">Search</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
+              variant={$openTag ? "outline" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(false);
                 openTag.set(true);
-                openDownloads.set(false);
-                openSettings.set(false);
+                openInfo.set(false);
                 openAdd.set(false);
+                openSettings.set(false);
+                openDownloads.set(false);
                 if (IS_MOBILE) sidebar.toggle();
               }}
             >
               <Icon
-                class="!w-6 !h-5 mx-[-3px]"
+                class="!size-7 ml-[-10px]"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
               <Label class="cursor-pointer">Tags</Label>
@@ -203,13 +211,15 @@
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
               class="flex justify-start "
+              variant={$openDownloads ? "outline" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(false);
                 openTag.set(false);
-                openDownloads.set(true);
-                openSettings.set(false);
                 openAdd.set(false);
+                openInfo.set(false);
+                openSettings.set(false);
+                openDownloads.set(true);
                 if (IS_MOBILE) sidebar.toggle();
               }}
               tabindex={-1}
@@ -220,7 +230,7 @@
                     icon={$openDownloads
                       ? "basil:download-solid"
                       : "basil:download-outline"}
-                    class="!size-6 ml-[-3px]"
+                    class="!size-9 ml-[-14px]"
                   />
                 </Badge>
               {:else}
@@ -228,32 +238,10 @@
                   icon={$openDownloads
                     ? "basil:download-solid"
                     : "basil:download-outline"}
-                  class="!w-6 !h-6 ml-[-3px]"
+                  class="!size-9 ml-[-14px]"
                 />
               {/if}
               <Label class="cursor-pointer">Downloads</Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
-          <Sidebar.MenuItem>
-            <Sidebar.MenuButton
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(false);
-                openTag.set(false);
-                openSettings.set(true);
-                openAdd.set(false);
-                openDownloads.set(false);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              <Icon
-                icon={$openSettings
-                  ? "heroicons:cog-6-tooth-solid"
-                  : "heroicons:cog-6-tooth"}
-                class="!w-5 !h-5 ml-[-2px]"
-              />
-              <Label class="cursor-pointer">Settings</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
 
@@ -265,6 +253,7 @@
                 openTag.set(false);
                 openSettings.set(false);
                 openAdd.set(true);
+                openInfo.set(false);
                 openDownloads.set(false);
                 if (IS_MOBILE) sidebar.toggle();
               }}
@@ -272,7 +261,7 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="!w-5 !h-5 ml-[-2px] "
+                class="!size-7 ml-[-2px] "
               />
               <Label class="cursor-pointer">Add</Label>
             </Sidebar.MenuButton>
@@ -281,11 +270,66 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
+
   <Sidebar.Group>
     <Sidebar.GroupContent>
-      <Sidebar.Menu class="flex flex-col gap-2">
+      <Sidebar.Menu
+        class="flex flex-row-reverse justify-center gap-1 transition-[gap] duration-300 ease-in-out
+	       group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2"
+      >
+        <!-- <Sidebar.MenuItem>
+          <Sidebar.MenuButton
+            class="size-10"
+            variant={$openInfo ? "outline" : "default"}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              openSearch.set(false);
+              openTag.set(false);
+              openSettings.set(false);
+              openAdd.set(false);
+              openInfo.set(true);
+              openDownloads.set(false);
+              if (IS_MOBILE) sidebar.toggle();
+            }}
+            tabindex={-1}
+          >
+            <Icon
+              icon={$openInfo
+                ? "material-symbols:info-rounded"
+                : "material-symbols:info-outline-rounded"}
+              class="!size-7 ml-[-10px]"
+            />
+            <Label class="cursor-pointer">Info</Label>
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem> -->
         <Sidebar.MenuItem>
           <Sidebar.MenuButton
+            class="size-10"
+            variant={$openSettings ? "outline" : "default"}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              openSearch.set(false);
+              openTag.set(false);
+              openSettings.set(true);
+              openAdd.set(false);
+              openInfo.set(false);
+              openDownloads.set(false);
+              if (IS_MOBILE) sidebar.toggle();
+            }}
+            tabindex={-1}
+          >
+            <Icon
+              icon={$openSettings
+                ? "heroicons:cog-6-tooth-solid"
+                : "heroicons:cog-6-tooth"}
+              class="!size-7 ml-[-10px]"
+            />
+            <Label class="cursor-pointer">Settings</Label>
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton
+            class="size-10"
             onclick={(e) => {
               e.currentTarget.blur();
               $theme = $theme === "dark" ? "light" : "dark";
@@ -297,7 +341,7 @@
               icon={$theme === "dark"
                 ? "material-symbols:sunny-outline-rounded"
                 : "material-symbols:dark-mode-outline"}
-              class="!size-5 ml-[-2px]"
+              class="!size-7 ml-[-10px]"
             />
             <Label class="cursor-pointer">Theme</Label>
           </Sidebar.MenuButton>
@@ -309,12 +353,11 @@
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-
     <img
       bind:this={imgElement}
       draggable={false}
       onclick={rotateImage}
-      class="w-24 min-w-10 ml-[2px]"
+      class="w-24 min-w-10 ml-[-2px]"
       src="/icon.png"
       alt="icon"
     />
