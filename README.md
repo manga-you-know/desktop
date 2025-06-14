@@ -3,7 +3,7 @@
 <img height="25px" style="border-radius: 10%" src="/static/icon.png" />
 MangaYouKnow</H1>
 
-https://github.com/user-attachments/assets/5ca8bb1d-dbb1-4c70-88a9-e218499113f9
+<img height="450px" src="/docs/assets/demo.gif" />
 
 </div>
 
