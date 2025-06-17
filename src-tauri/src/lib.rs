@@ -2,14 +2,14 @@
 use tauri::Manager;
 use utils::hashmap::{get_data, set_data};
 use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
-use webview2_com::{
-    Microsoft::Web::WebView2::Win32::{
-        ICoreWebView2WebResourceRequest, COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
-    },
-    WebResourceRequestedEventHandler,
-};
-use windows::core::HSTRING;
-use windows::Win32::System::Com::MachineGlobalObjectTableRegistrationToken;
+// use webview2_com::{
+//     Microsoft::Web::WebView2::Win32::{
+//         ICoreWebView2WebResourceRequest, COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+//     },
+//     WebResourceRequestedEventHandler,
+// };
+// use windows::core::HSTRING;
+// use windows::Win32::System::Com::MachineGlobalObjectTableRegistrationToken;
 
 mod utils;
 
@@ -51,42 +51,42 @@ pub fn run() {
                 if args.contains(&"--flag1".to_string()) {
                     window.hide().unwrap();
                 }
-                #[cfg(target_os = "windows")]
-                {
-                    window
-                        .with_webview(|webview| unsafe {
-                            let core = webview.controller().CoreWebView2().unwrap();
-                            core.AddWebResourceRequestedFilter(
-                                &HSTRING::from("*"),
-                                COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
-                            )
-                            .unwrap();
-                            let mut _token: MachineGlobalObjectTableRegistrationToken =
-                                MachineGlobalObjectTableRegistrationToken::default();
-                            core.add_WebResourceRequested(
-                                &WebResourceRequestedEventHandler::create(Box::new(
-                                    move |_webview, args| {
-                                        if let Some(args) = args {
-                                            let request: ICoreWebView2WebResourceRequest =
-                                                args.Request().unwrap();
-                                            request
-                                                .Headers()
-                                                .unwrap()
-                                                .SetHeader(
-                                                    &HSTRING::from("Origin"),
-                                                    &HSTRING::from("https://github.com/"),
-                                                )
-                                                .unwrap();
-                                        }
-                                        Ok(())
-                                    },
-                                )),
-                                &mut _token as *mut _ as *mut i64,
-                            )
-                            .unwrap();
-                        })
-                        .unwrap();
-                }
+                // #[cfg(target_os = "windows")]
+                // {
+                //     window
+                //         .with_webview(|webview| unsafe {
+                //             let core = webview.controller().CoreWebView2().unwrap();
+                //             core.AddWebResourceRequestedFilter(
+                //                 &HSTRING::from("*"),
+                //                 COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
+                //             )
+                //             .unwrap();
+                //             let mut _token: MachineGlobalObjectTableRegistrationToken =
+                //                 MachineGlobalObjectTableRegistrationToken::default();
+                //             core.add_WebResourceRequested(
+                //                 &WebResourceRequestedEventHandler::create(Box::new(
+                //                     move |_webview, args| {
+                //                         if let Some(args) = args {
+                //                             let request: ICoreWebView2WebResourceRequest =
+                //                                 args.Request().unwrap();
+                //                             request
+                //                                 .Headers()
+                //                                 .unwrap()
+                //                                 .SetHeader(
+                //                                     &HSTRING::from("Origin"),
+                //                                     &HSTRING::from("https://github.com/"),
+                //                                 )
+                //                                 .unwrap();
+                //                         }
+                //                         Ok(())
+                //                     },
+                //                 )),
+                //                 &mut _token as *mut _ as *mut i64,
+                //             )
+                //             .unwrap();
+                //         })
+                //         .unwrap();
+                // }
                 Ok(())
             })
             .plugin(tauri_plugin_clipboard::init())
