@@ -20,6 +20,7 @@
     "@tauri-apps/plugin-http": "~2",
     "@tauri-apps/plugin-log": "~2.0.2",
     "@tauri-apps/plugin-notification": "~2.0.0",
+    "@tauri-apps/plugin-opener": "~2",
     "@tauri-apps/plugin-os": "~2.2.1",
     "@tauri-apps/plugin-process": "~2.2.1",
     "@tauri-apps/plugin-shell": "~2.2.1",
@@ -65,6 +66,7 @@
   "devDependencies": {
     "@iconify-json/basil": "^1.2.2",
     "@iconify-json/carbon": "^1.2.8",
+    "@iconify-json/devicon-plain": "^1.2.28",
     "@iconify-json/eos-icons": "^1.2.2",
     "@iconify-json/f7": "^1.2.2",
     "@iconify-json/fluent": "^1.2.19",
@@ -78,6 +80,7 @@
     "@iconify-json/material-symbols": "^1.2.20",
     "@iconify-json/mdi": "^1.2.1",
     "@iconify-json/mingcute": "^1.2.2",
+    "@iconify-json/simple-icons": "^1.2.38",
     "@iconify-json/solar": "^1.2.2",
     "@iconify-json/streamline": "^1.2.2",
     "@iconify-json/tabler": "^1.2.17",

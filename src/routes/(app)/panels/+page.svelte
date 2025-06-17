@@ -23,7 +23,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-  class="h-full flex flex-wrap content-start gap-5 scroll-smooth overflow-y-auto overflow-x-hidden p-7"
+  class="h-full flex flex-wrap justify-center items-center gap-5 scroll-smooth overflow-y-auto overflow-x-hidden p-7"
 >
   {#each $panels as panel}
     <FavoritePanel

@@ -53,13 +53,15 @@
 </script>
 
 {#if !isMobile}
-  <div class="w-full h-screen flex select-none overflow-hidden relative">
-    <SidebarProv.Provider class="h-full!" open={false}>
+  <div class="w-full flex select-none overflow-hidden relative">
+    <SidebarProv.Provider class="h-full" open={false}>
       <Sidebar variant="inset" />
       <SidebarProv.Inset class="p-2">
         {#key page.route.id}
+          <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
           <div
-            class="h-[99vh] w-full absolute pb-5"
+            class="h-[calc(100vh-2.8rem)] w-full absolute pb-5"
+            tabindex={-1}
             in:fly={{
               y: getTransitionY(
                 getPageId(page.route.id?.replace("/(app)/", "") ?? ""),

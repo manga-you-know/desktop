@@ -86,7 +86,7 @@
             {#each [{ id: -1, user_id: 1, name: "Favorites", icon: "heroicons:star-solid" }, ...$tags.reverse()] as tag}
               <Command.Item
                 class={cn(
-                  "w-full flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
+                  "w-full rounded-xl flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
                   tag === $libraryTag
                     ? "!bg-slate-400 dark:!bg-secondary"
                     : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"

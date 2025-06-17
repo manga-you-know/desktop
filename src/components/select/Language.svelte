@@ -71,7 +71,7 @@
     {/snippet}
   </Popover.Trigger>
   <Popover.Content class="w-[165px] p-0">
-    <Command.Root class={cn("bg-slate-300 dark:bg-secondary", classPopover)}>
+    <Command.Root class={cn("bg-secondary", classPopover)}>
       <ScrollArea class="h-36">
         <Command.Group>
           {#each options as language}

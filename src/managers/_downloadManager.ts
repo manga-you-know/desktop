@@ -187,7 +187,6 @@ export class DownloadManager {
     favorite: Favorite,
     language?: string
   ): Promise<Chapter[]> {
-    console.log(favorite);
     const sourceDl = this.getImageBasedSource(favorite.source);
     try {
       return language !== undefined

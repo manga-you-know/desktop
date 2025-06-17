@@ -18,6 +18,7 @@ export * as ToggleGroup from "./ui/toggle-group";
 export * as RadioGroup from "./ui/radio-group";
 export * as Drawer from "./ui/drawer";
 export * as Sheet from "./ui/sheet";
+export * as Menubar from "./ui/menubar";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";

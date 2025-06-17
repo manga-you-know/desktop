@@ -8,17 +8,18 @@
     EditTags,
     Search,
     Settings,
+    TitleBar,
     Update,
   } from "@/components";
   import {
     autoSearchUpdates,
     closeTray,
+    isFullscreen,
     openSearch,
     theme,
     undoTasks,
     updateInfo,
   } from "@/store";
-  import { Tooltip as TooltipPrimitive } from "@/lib/components";
   import {
     checkForAppUpdates,
     initDatabase,
@@ -34,12 +35,14 @@
     refreshLibrary,
     refreshFavorites,
     loadFavoritesChapters,
+    verifyDecorations,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
   import { IS_MOBILE } from "@/constants";
   import { toast } from "svelte-sonner";
+  import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -89,6 +92,7 @@
       window.destroy();
       interval.unref();
     }
+    saveWindowState(StateFlags.ALL);
   });
   async function loadDatabase() {
     await initDatabase();
@@ -102,10 +106,11 @@
     loadAppIcons();
     refreshLibrary();
     refreshFavorites();
+    logNewUser();
+    verifyDecorations();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
-    logNewUser();
   });
   onDestroy(() => {
     clearInterval(interval);
@@ -126,7 +131,18 @@
   <Downloads />
   <Update />
   <EditTags />
-  <TooltipPrimitive.Provider>
+  {#if IS_MOBILE}
     {@render children?.()}
-  </TooltipPrimitive.Provider>
+  {:else}
+    <div class="flex flex-col overflow-hidden">
+      <TitleBar />
+      <div
+        class={$isFullscreen
+          ? "max-h-screen overflow-hidden"
+          : "max-h-[calc(100vh-2.5rem)] overflow-hidden"}
+      >
+        {@render children?.()}
+      </div>
+    </div>
+  {/if}
 </div>

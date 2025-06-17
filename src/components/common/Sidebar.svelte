@@ -107,14 +107,14 @@
 </script>
 
 <Sidebar.Root
-  class="pl-[2.5px] hover:bg-sidebar pr-0"
+  class="pl-[2.5px] pt-7 hover:bg-sidebar pr-0"
   {variant}
   collapsible="icon"
   onmouseenter={() => {}}
   onmouseleave={() => {}}
 >
   <Sidebar.Header></Sidebar.Header>
-  <Sidebar.Content class="!overflow-hidden">
+  <Sidebar.Content class="overflow-hidden">
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
@@ -200,6 +200,7 @@
                 openDownloads.set(false);
                 if (IS_MOBILE) sidebar.toggle();
               }}
+              tabindex={-1}
             >
               <Icon
                 class="!size-7 ml-[-10px]"

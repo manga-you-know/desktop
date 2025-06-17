@@ -1,6 +1,6 @@
 // Commons
 export { default as BottomNavigation } from "./common/BottomNavigation.svelte";
-export { default as Decoration } from "./common/Decoration.svelte";
+export { default as TitleBar } from "./common/TitleBar.svelte";
 export { default as Carousel } from "./common/Carousel.svelte";
 export { default as Tooltip } from "./common/Tooltip.svelte";
 export { default as Sidebar } from "./common/Sidebar.svelte";

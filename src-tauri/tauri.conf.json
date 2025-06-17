@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-  "version": "0.6.8",
+  "version": "0.7.0",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
@@ -14,12 +14,13 @@
     "windows": [
       {
         "title": "MangaYouKnow",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 720,
         "minHeight": 400,
         "minWidth": 640,
         "center": true,
         "visible": false,
+        "decorations": false,
         "backgroundColor": "#18181b",
         "dragDropEnabled": true
       }

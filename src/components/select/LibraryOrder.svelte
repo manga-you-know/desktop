@@ -62,7 +62,7 @@
           <Command.Group>
             {#each orders as order}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50 {order ===
+                class="w-full flex justify-between rounded-xl hover:!bg-slate-300 dark:hover:!bg-secondary/50 {order ===
                 $libraryOrder
                   ? 'bg-slate-400 dark:!bg-secondary'
                   : ' dark:aria-selected:bg-inherit'}"

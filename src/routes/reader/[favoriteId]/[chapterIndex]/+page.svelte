@@ -361,10 +361,10 @@
         resetImages();
       }
       if (key === "+" || (event.ctrlKey && key === "=")) {
-        $zoomLevel = Math.min(200, $zoomLevel + 10);
+        $zoomLevel = $zoomLevel + 10;
       }
       if (key === "-" || (event.ctrlKey && key === "-")) {
-        $zoomLevel = Math.max(50, $zoomLevel - 10);
+        $zoomLevel = $zoomLevel - 10;
       }
       if (key === ">" && !isTheLastChapter) {
         handleGoChapter("next");
@@ -429,9 +429,14 @@
   {gotoPage}
   {handleGoChapter}
 />
-<div class="dark:bg-background min-h-screen">
+<div
+  class={cn(
+    "bg-background h-screen",
+    !$isFullscreen && "h-[calc(100vh-2.5rem)]"
+  )}
+>
   <div
-    class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
+    class="fixed w-screen h-full z-50 pointer-events-none flex justify-end items-center"
   >
     {#if currentlyCount === totalPage}
       <Button
@@ -704,7 +709,10 @@
             onerror={() => imgOnError(currentlyCount.toString())}
             src={currentlyImage}
             alt="manga"
-            class="object-contain h-screen transition-all duration-200"
+            class={cn(
+              "object-contain transition-all duration-200",
+              $isFullscreen ? "h-screen" : "h-[calc(100vh-2.5rem)] "
+            )}
           />
         </div>
       </div>

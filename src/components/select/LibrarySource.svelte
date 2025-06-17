@@ -93,7 +93,7 @@
           <Command.Group>
             {#each sources.toReversed() as source}
               <Command.Item
-                class="w-full flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50
+                class="w-full rounded-xl flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50
                 {source === $librarySource
                   ? '!bg-slate-400 dark:!bg-secondary'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"

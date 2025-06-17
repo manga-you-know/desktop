@@ -1,3 +1,4 @@
+export * from "./_common";
 export type { Mark } from "./_mark";
 export type { Readed } from "./_readed";
 export type { Source } from "./_source";

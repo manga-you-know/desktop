@@ -5,7 +5,8 @@ import {
   discordIntegration,
 } from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
-import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
+import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
+import { readFile } from "@tauri-apps/plugin-fs";
 import {
   Activity,
   Button,
@@ -14,7 +15,7 @@ import {
 } from "tauri-plugin-drpc/activity";
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
-import { defaultWindowIcon } from "@tauri-apps/api/app";
+import { defaultWindowIcon, getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "@tauri-apps/plugin-store";
@@ -35,19 +36,29 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 
 const currentWindow = getCurrentWindow();
+let isMaximized = false;
 
 export async function getEnv(key: string): Promise<string> {
   return await invoke("get_env", { name: key });
 }
 
 export async function toggleFullscreen() {
-  await currentWindow.setFullscreen(!(await currentWindow.isFullscreen()));
-  isFullscreen.set(await currentWindow.isFullscreen());
+  const isFullscreenNow = await currentWindow.isFullscreen();
+  const isMaximizedNow = await currentWindow.isMaximized();
+  if (!isFullscreenNow && isMaximizedNow) await currentWindow.unmaximize();
+  await currentWindow.setFullscreen(!isFullscreenNow);
+  if (isFullscreenNow && isMaximized) await currentWindow.maximize();
+  isMaximized = isMaximizedNow;
+  isFullscreen.set(!isFullscreenNow);
 }
 
 export async function setFullscreen(value: boolean) {
+  const isMaximizedNow = await currentWindow.isMaximized();
+  if (value && isMaximizedNow) await currentWindow.unmaximize();
   await currentWindow.setFullscreen(value);
-  isFullscreen.set(await currentWindow.isFullscreen());
+  if (!value && isMaximized) await currentWindow.maximize();
+  isMaximized = isMaximizedNow;
+  isFullscreen.set(value);
 }
 
 export async function copyText(text: string, textType?: string) {
@@ -88,26 +99,41 @@ export function loadAppIcons() {
   loadIcons(ICONS_TO_LOAD);
 }
 
+export async function sendMessageDiscord(message: string) {
+  await fetch(DISCORD_WEBHOOK_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      content: message,
+    }),
+  });
+}
+
+export async function sendLogDiscord() {
+  const favsLength = (await FavoriteDB.getRawFavorites()).length;
+  await sendMessageDiscord(`
+### User logged! S2
+- Date: **${Date()}**
+- Version: **${await getVersion()}**
+- Platform: **${titleCase(type())}**
+- Favorites: **${favsLength}** of em!`);
+}
+
 export async function logNewUser() {
   const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged_1");
+  const hasLogged = await loadedSettings.get<boolean>("has_logged_2");
   if (!hasLogged) {
-    const favsLength = (await FavoriteDB.getRawFavorites()).length;
-    fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: `/
-### New user logged! 
-- Date: **${Date()}**
-- Platform: **${titleCase(type())}**
-- Favorites: **${favsLength}** of em!
-          `,
-      }),
-    });
-    await loadedSettings.set("has_logged_1", true);
+    sendLogDiscord();
+    await loadedSettings.set("has_logged_2", true);
+  }
+}
+
+export async function verifyDecorations() {
+  if (await currentWindow.isDecorated()) {
+    await currentWindow.setDecorations(false);
+    await saveWindowState(StateFlags.ALL);
   }
 }
 
