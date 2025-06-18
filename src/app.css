@@ -93,18 +93,39 @@
 
   .scrollbar::-webkit-scrollbar-track {
     border-radius: 100vh;
-    @apply dark:bg-background/40 bg-slate-200 !px-5;
+    @apply bg-secondary/40 px-5;
     height: 20px;
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply dark:bg-background/70 bg-slate-400;
-    padding: 10px;
+    @apply bg-secondary;
+    pointer-events: auto;
+    padding: 8px;
     border-radius: 6px;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply dark:bg-background/50 bg-slate-300;
+    @apply bg-secondary/80;
+  }
+
+  .scrollbar-chapters::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .scrollbar-chapters::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    @apply bg-background/20 px-5;
+    height: 20px;
+  }
+
+  .scrollbar-chapters::-webkit-scrollbar-thumb {
+    @apply bg-accent;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  .scrollbar-chapters::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent/80;
   }
 }
 

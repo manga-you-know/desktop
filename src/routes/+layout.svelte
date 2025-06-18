@@ -14,6 +14,7 @@
   import {
     autoSearchUpdates,
     closeTray,
+    customTitlebar,
     isFullscreen,
     openSearch,
     theme,
@@ -135,9 +136,11 @@
     {@render children?.()}
   {:else}
     <div class="flex flex-col overflow-hidden">
-      <TitleBar />
+      {#if $customTitlebar}
+        <TitleBar />
+      {/if}
       <div
-        class={$isFullscreen
+        class={$isFullscreen || !$customTitlebar
           ? "max-h-screen overflow-hidden"
           : "max-h-[calc(100vh-2.5rem)] overflow-hidden"}
       >

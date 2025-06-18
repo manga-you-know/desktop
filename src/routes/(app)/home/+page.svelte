@@ -11,7 +11,7 @@
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 
 <div
-  class="w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
+  class="scrollbar w-[99.2%] h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
 >
   <div
     class="w-full h-full flex justify-center flex-col-reverse sm:flex-row items-center pt-[30px] gap-10 md:mr-20"

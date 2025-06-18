@@ -29,6 +29,7 @@
     lastPage,
     openReadMenu,
     openSearch,
+    customTitlebar,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -432,7 +433,7 @@
 <div
   class={cn(
     "bg-background h-screen",
-    !$isFullscreen && "h-[calc(100vh-2.5rem)]"
+    !$isFullscreen && $customTitlebar && "h-[calc(100vh-2.5rem)]"
   )}
 >
   <div
@@ -636,9 +637,9 @@
 
   {#if $viewMode === "scroll"}
     <div
-      class="w-full overflow-y-auto"
+      class="w-full overflow-y-auto scrollbar"
       bind:this={pagesDiv}
-      style="height: 100vh ;"
+      style="height: 100vh;"
       onscroll={handleScroll}
     >
       <div class="flex flex-col items-center">
@@ -711,13 +712,15 @@
             alt="manga"
             class={cn(
               "object-contain transition-all duration-200",
-              $isFullscreen ? "h-screen" : "h-[calc(100vh-2.5rem)] "
+              $isFullscreen || !$customTitlebar
+                ? "h-screen"
+                : "h-[calc(100vh-2.5rem)] "
             )}
           />
         </div>
       </div>
     {:else}
-      <div class="h-full w-full overflow-auto">
+      <div class="h-full w-full overflow-auto scrollbar">
         <div
           class="min-h-full w-full flex items-center content-center place-content-center justify-center"
         >

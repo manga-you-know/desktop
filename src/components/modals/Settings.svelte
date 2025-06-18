@@ -35,13 +35,12 @@
     updateInfo,
     openUpdate,
     sidebarBehavior,
+    customTitlebar,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
-  import type { Language as LanguageType } from "@/types";
-  import Icon from "@iconify/svelte";
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
-  import { useSidebar } from "@/lib/components/ui/sidebar";
+  import Icon from "@iconify/svelte";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -117,9 +116,7 @@
                 id="auto-update"
                 bind:checked={$autoSearchUpdates}
                 class="flex-shrink-0 mr-2"
-                onCheckedChange={async () => {
-                  await saveSettings();
-                }}
+                onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="auto-update">
                 Auto check for updates
@@ -134,9 +131,7 @@
                 id="notify-update"
                 disabled={!$autoSearchUpdates}
                 bind:checked={$notifyUpdate}
-                onCheckedChange={async () => {
-                  await saveSettings();
-                }}
+                onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="notify-update">
                 Desktop notication for new updates
@@ -166,9 +161,7 @@
               <Checkbox
                 id="minimize"
                 bind:checked={$closeTray}
-                onCheckedChange={async () => {
-                  await saveSettings();
-                }}
+                onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="minimize">
                 Minize to tray apps instead of closing
@@ -183,9 +176,9 @@
                   await store?.set("auto_start", value);
                 }}
               />
-              <Label class="cursor-pointer" for="auto-start"
-                >Start app with system</Label
-              >
+              <Label class="cursor-pointer" for="auto-start">
+                Start app with system
+              </Label>
             </div>
             <div class="flex gap-2 items-center">
               <Separator
@@ -200,9 +193,9 @@
                   await store?.set("start_in_tray", value);
                 }}
               />
-              <Label class="cursor-pointer" for="start-in-tray"
-                >Start in tray apps</Label
-              >
+              <Label class="cursor-pointer" for="start-in-tray">
+                Start in tray apps
+              </Label>
             </div>
             <Label>Sidebar</Label>
             <div
@@ -247,6 +240,31 @@
               >
                 Expand on hover
               </Button>
+            </div>
+            <div class="flex flex-col gap-2 justify-center">
+              <Label class="cursor-pointer" for="custom-titlebar">
+                Custom Titlebar
+              </Label>
+              <div class="flex gap-2 items-center">
+                <Label
+                  class="cursor-pointer"
+                  onclick={() => {
+                    customTitlebar.set(false);
+                    saveSettings();
+                  }}>OFF</Label
+                >
+                <Switch
+                  bind:checked={$customTitlebar}
+                  onCheckedChange={saveSettings}
+                />
+                <Label
+                  class="cursor-pointer"
+                  onclick={() => {
+                    customTitlebar.set(true);
+                    saveSettings();
+                  }}>ON</Label
+                >
+              </div>
             </div>
           {/if}
           <Label>Theme</Label>
@@ -294,9 +312,7 @@
                 id="auto-fullscreen"
                 bind:checked={$autoEnterFullscreen}
                 class="flex-shrink-0 mr-2"
-                onCheckedChange={async () => {
-                  await saveSettings();
-                }}
+                onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="auto-fullscreen"
                 >Auto enter in fullscreen</Label
@@ -322,9 +338,7 @@
                 id="use-mpv"
                 bind:checked={$useMpv}
                 class="flex-shrink-0 mr-2"
-                onCheckedChange={async () => {
-                  await saveSettings();
-                }}
+                onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="use-mpv">
                 Use MPV player <span class="text-gray-500">

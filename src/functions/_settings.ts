@@ -21,12 +21,15 @@ import {
   notifyUpdate,
   discordIntegration,
   sidebarBehavior,
+  customTitlebar,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
 import { refreshLibrary } from "@/functions/_database";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 let loadedSettings: Store;
+const window = getCurrentWindow();
 
 type SettingValue =
   | string
@@ -49,7 +52,6 @@ interface SettingConfig {
   default: SettingValue;
 }
 
-// Define the settings schema
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   selected_source: { store: selectedSource, default: "WeebCentral" },
   auto_search_updates: { store: autoSearchUpdates, default: true },
@@ -74,6 +76,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "expand" },
+  custom_titlebar: { store: customTitlebar, default: true },
 } as const;
 
 async function connectSettings() {
@@ -95,10 +98,16 @@ export async function loadSettings() {
       store.set(data[key] ?? defaultValue);
     }
   );
-  if (get(lastPage) !== "/home") {
-    goto(get(lastPage));
-  }
   refreshLibrary();
+  if (get(lastPage) !== "/home") goto(get(lastPage));
+  const isDecorated = await window.isDecorated();
+  if (get(customTitlebar)) {
+    if (isDecorated) window.setDecorations(false);
+  } else {
+    if (!isDecorated) {
+      window.setDecorations(true);
+    }
+  }
 }
 
 export async function saveSettings() {
@@ -108,6 +117,14 @@ export async function saveSettings() {
       loadedSettings.set(key, get(store))
     )
   );
+  const isDecorated = await window.isDecorated();
+  if (get(customTitlebar)) {
+    if (isDecorated) window.setDecorations(false);
+  } else {
+    if (!isDecorated) {
+      window.setDecorations(true);
+    }
+  }
 }
 
 export async function resetSettings() {

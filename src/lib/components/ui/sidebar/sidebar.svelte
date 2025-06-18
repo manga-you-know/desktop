@@ -5,7 +5,7 @@
   import type { HTMLAttributes } from "svelte/elements";
   import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
   import { useSidebar } from "./context.svelte.js";
-  import { sidebarBehavior } from "@/store";
+  import { customTitlebar, sidebarBehavior } from "@/store";
 
   let {
     ref = $bindable(null),
@@ -76,7 +76,8 @@
     <!-- This is what handles the sidebar gap on desktop -->
     <div
       class={cn(
-        "relative min-h-[calc(100vh-2.5rem)] w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear",
+        "relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear",
+        $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         "group-data-[collapsible=offcanvas]:w-0",
         "group-data-[side=right]:rotate-180",
         variant === "floating" || variant === "inset"
@@ -86,7 +87,8 @@
     ></div>
     <div
       class={cn(
-        "fixed inset-y-0 z-10 hidden min-h-[calc(100vh-2.5rem)] w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear ssm:flex",
+        "fixed inset-y-0 z-10 hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear ssm:flex",
+        $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         side === "left"
           ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
           : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",

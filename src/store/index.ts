@@ -48,6 +48,7 @@ export const openSettings = writable<boolean>(false);
 export const openDownloads = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
 export const openTag = writable<boolean>(false);
+export const customTitlebar = writable<boolean>(true);
 export const isRefreshing = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);

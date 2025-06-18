@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { open as openPath } from "@tauri-apps/plugin-shell";
+  import { openPath } from "@tauri-apps/plugin-opener";
   import { downloadDir, join } from "@tauri-apps/api/path";
   import { VList } from "virtua/svelte";
   import {
@@ -732,7 +732,7 @@
                 </Badge>
               {:else}
                 <VList
-                  class="scrollbar overflow-x-hidden scroll-smooth"
+                  class="scrollbar-chapters overflow-x-hidden scroll-smooth"
                   data={$isChaptersDescending || searchTerm !== ""
                     ? displayedChapters
                     : displayedChapters.toReversed()}
@@ -811,7 +811,7 @@
                 </Badge>
               {:else}
                 <VList
-                  class="scrollbar overflow-x-hidden scroll-smooth"
+                  class="scrollbar-chapters overflow-x-hidden scroll-smooth"
                   data={$isChaptersDescending || searchTerm !== ""
                     ? displayedLocalChapters
                     : displayedLocalChapters.toReversed()}

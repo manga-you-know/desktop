@@ -28,9 +28,6 @@
     downloadPath = await downloadDir();
     documentsPath = await documentDir();
   });
-  $effect(() => {
-    console.log(page.route.id);
-  });
 </script>
 
 <div
@@ -51,10 +48,10 @@
         <Menubar.Content>
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={() => openPath(appPath)}
+            onclick={async () => openPath(await join(downloadPath, "mangas"))}
           >
-            <Label>Appdata</Label>
-            <Icon class="!size-5" icon="material-symbols:settings-rounded" />
+            <Label>Downloads</Label>
+            <Icon class="!size-5" icon="mingcute:folder-download-fill" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
@@ -66,10 +63,10 @@
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={async () => openPath(await join(downloadPath, "mangas"))}
+            onclick={() => openPath(appPath)}
           >
-            <Label>Downloads</Label>
-            <Icon class="!size-5" icon="mingcute:folder-download-fill" />
+            <Label>Appdata</Label>
+            <Icon class="!size-5" icon="material-symbols:settings-rounded" />
           </Menubar.Item>
         </Menubar.Content>
       </Menubar.Menu>

@@ -108,7 +108,7 @@
   </div>
 
   <div
-    class="h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
+    class="scrollbar w-[99.2%] h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-auto overflow-x-hidden pb-5"
     bind:this={favoriteDiv}
     bind:clientWidth={favdivWidth}
   >

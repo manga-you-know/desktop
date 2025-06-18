@@ -13,12 +13,14 @@
     favoritesLoaded,
     theme,
     openInfo,
+    customTitlebar,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading } from "@/types";
   import { useSidebar } from "@/lib/components/ui/sidebar";
   import { IS_MOBILE } from "@/constants";
   import { saveSettings } from "@/functions";
+  import { cn } from "@/lib/utils";
 
   const items = [
     {
@@ -107,7 +109,7 @@
 </script>
 
 <Sidebar.Root
-  class="pl-[2.5px] pt-7 hover:bg-sidebar pr-0"
+  class={cn("pl-[2.5px] hover:bg-sidebar pr-0", $customTitlebar && "pt-7")}
   {variant}
   collapsible="icon"
   onmouseenter={() => {}}

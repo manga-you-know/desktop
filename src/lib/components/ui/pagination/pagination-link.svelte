@@ -5,7 +5,7 @@
   import { buttonVariants } from "@/lib/components";
 
   let {
-    ref = $bindable(null),
+    ref = $bindable(null!),
     class: className,
     size = "icon",
     isActive = false,

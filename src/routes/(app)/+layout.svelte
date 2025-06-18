@@ -1,12 +1,13 @@
 <script lang="ts">
   import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar, BottomNavigation } from "@/components";
-  import { lastPage } from "@/store";
+  import { customTitlebar, lastPage } from "@/store";
   import { page } from "$app/state";
   import { fly } from "svelte/transition";
   import { saveSettings } from "@/functions";
   import { IS_MOBILE } from "@/constants";
   import { IsMobile } from "@/lib/hooks";
+  import { cn } from "@/lib/utils";
 
   type PageId = "home" | "favorites" | "library" | "panels";
 
@@ -60,8 +61,10 @@
         {#key page.route.id}
           <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
           <div
-            class="h-[calc(100vh-2.8rem)] w-full absolute pb-5"
-            tabindex={-1}
+            class={cn(
+              "w-full absolute pb-5",
+              $customTitlebar ? "h-[calc(100vh-2.8rem)]" : "h-[99vh]"
+            )}
             in:fly={{
               y: getTransitionY(
                 getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
