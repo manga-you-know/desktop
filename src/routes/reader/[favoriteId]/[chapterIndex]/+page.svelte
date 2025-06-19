@@ -138,7 +138,7 @@
   function goHome() {
     currentlyImage = "/myk.png";
     setFullscreen(false);
-    if (favorite) {
+    if (favorite.is_ultra_favorite) {
       loadFavoriteChapters(favorite);
     }
     goto($lastPage);
