@@ -45,6 +45,11 @@
   onMount(async () => {
     await refreshFavorites();
   });
+  $effect(() => {
+    if (displayedFavorites.length === 0 && page > 1) {
+      page = Math.ceil($ultraFavorites.length / perPage);
+    }
+  });
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
@@ -116,48 +121,51 @@
       <FavoriteCard {favorite} />
     {/each}
     {#each Array.from({ length: extraSpace }, (_, i) => i) as n (n)}
-      <div class="w-[158px] h-[271px] p-1"></div>
+      <div class="w-[158px] h-[234px] p-1"></div>
     {/each}
-  </div>
-  {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
-    <Pagination.Root
-      class="mt-2"
-      {count}
-      {perPage}
-      siblingCount={1}
-      bind:page
-      onPageChange={() => favoriteDiv.scrollTo({ top: 0 })}
-    >
-      {#snippet children({ pages, currentPage })}
-        <Pagination.Content tabindex={-1}>
-          <Pagination.Item>
-            <Pagination.PrevButton class="dark:text-white" tabindex={-1} />
-          </Pagination.Item>
-          {#each pages as page (page.key)}
-            {#if page.type === "ellipsis"}
-              <Pagination.Item tabindex={-1}>
-                <Pagination.Ellipsis class="dark:text-white" />
-              </Pagination.Item>
-            {:else}
+    {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
+      <div
+        class="bg-sidebar flex rounded-3xl smh:rounded-b-none smh:absolute smh:bottom-[11px] mt-20 smh:mt-0 py-2 smh:pb-1 px-2"
+      >
+        <Pagination.Root
+          {count}
+          {perPage}
+          siblingCount={1}
+          bind:page
+          onPageChange={() => favoriteDiv.scrollTo({ top: 0 })}
+        >
+          {#snippet children({ pages, currentPage })}
+            <Pagination.Content tabindex={-1}>
               <Pagination.Item>
-                <Pagination.Link
-                  {page}
-                  class={currentPage === page.value
-                    ? "!bg-white !text-black"
-                    : "dark:text-white"}
-                  isActive={currentPage === page.value}
-                  tabindex={-1}
-                >
-                  {page.value}
-                </Pagination.Link>
+                <Pagination.PrevButton class="dark:text-white" tabindex={-1} />
               </Pagination.Item>
-            {/if}
-          {/each}
-          <Pagination.Item>
-            <Pagination.NextButton class="dark:text-white" tabindex={-1} />
-          </Pagination.Item>
-        </Pagination.Content>
-      {/snippet}
-    </Pagination.Root>
-  {/if}
+              {#each pages as page (page.key)}
+                {#if page.type === "ellipsis"}
+                  <Pagination.Item tabindex={-1}>
+                    <Pagination.Ellipsis class="dark:text-white" />
+                  </Pagination.Item>
+                {:else}
+                  <Pagination.Item>
+                    <Pagination.Link
+                      {page}
+                      class={currentPage === page.value
+                        ? "!bg-white !text-black"
+                        : "dark:text-white"}
+                      isActive={currentPage === page.value}
+                      tabindex={-1}
+                    >
+                      {page.value}
+                    </Pagination.Link>
+                  </Pagination.Item>
+                {/if}
+              {/each}
+              <Pagination.Item>
+                <Pagination.NextButton class="dark:text-white" tabindex={-1} />
+              </Pagination.Item>
+            </Pagination.Content>
+          {/snippet}
+        </Pagination.Root>
+      </div>
+    {/if}
+  </div>
 </div>

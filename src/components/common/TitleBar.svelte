@@ -14,7 +14,8 @@
     join,
   } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
-  import { isFullscreen } from "@/store";
+  import { isFullscreen, isMaximized } from "@/store";
+  import { setFullscreen } from "@/functions";
 
   const window = getCurrentWindow();
   let version = $state("0.0.0");
@@ -130,14 +131,28 @@
       class="size-9 rounded-lg pointer-events-auto"
       variant="ghost"
       onclick={async () => {
+        if ($isFullscreen) {
+          await setFullscreen(false);
+          isMaximized.set(await window.isMaximized());
+          return;
+        }
         if (await window.isMaximized()) {
           await window.unmaximize();
+          isMaximized.set(false);
         } else {
           await window.maximize();
+          isMaximized.set(true);
         }
       }}
     >
-      <Icon class="!size-5" icon="uil:square-shape" />
+      <Icon
+        class="!size-6"
+        icon={$isFullscreen
+          ? "ic:round-fullscreen-exit"
+          : $isMaximized
+            ? "fluent:square-multiple-16-regular"
+            : "fluent:square-12-regular"}
+      />
     </Button>
     <Button
       class="size-9 rounded-lg pointer-events-auto hover:bg-red-900 transition-colors duration-300"

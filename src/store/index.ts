@@ -70,6 +70,7 @@ export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);
 export const isFullscreen = writable<boolean>(false);
+export const isMaximized = writable<boolean>(false);
 export const fitMode = writable<"" | "width">(IS_MOBILE ? "" : "width");
 export const viewMode = writable<"single" | "scroll">("single");
 export const zoomLevel = writable<number>(100);

@@ -465,11 +465,14 @@
         openReadMenu.set(!$openReadMenu);
         saveSettings();
       }}
+      onmouseenter={() => {
+        openReadMenu.set(true);
+      }}
     >
       <Icon
         class={cn(
-          "!w-5 !h-5 transition-all duration-700",
-          $openReadMenu ? "rotate-180" : "rotate-0 opacity-30"
+          "!size-5 transition-all duration-700",
+          $openReadMenu ? "rotate-180" : "rotate-0 opacity-50"
         )}
         icon="typcn:chevron-left"
       />
@@ -556,46 +559,44 @@
         >
           <Icon icon="fluent:image-split-24-filled" />
         </Button>
-        {#if !IS_MOBILE}
-          <div class="inline-flex pointer-events-auto z-50">
-            <Button
-              class="w-7 rounded-r-none"
-              size="sm"
-              variant="secondary"
-              disabled={$fitMode !== "" && $viewMode !== "scroll"}
-              onclick={() => {
-                $zoomLevel = Math.max(50, $zoomLevel - 10);
-                saveSettings();
-              }}
-            >
-              <Icon icon="lucide:minus" />
-            </Button>
-            <Button
-              class="w-[40px] p-0 flex justify-center rounded-none"
-              size="sm"
-              variant="secondary"
-              disabled={$fitMode !== "" && $viewMode !== "scroll"}
-              onclick={() => {
-                $zoomLevel = 100;
-                saveSettings();
-              }}
-            >
-              {$zoomLevel}%
-            </Button>
-            <Button
-              class="w-7 rounded-l-none"
-              size="sm"
-              variant="secondary"
-              disabled={$fitMode !== "" && $viewMode !== "scroll"}
-              onclick={() => {
-                $zoomLevel = Math.min(200, $zoomLevel + 10);
-                saveSettings();
-              }}
-            >
-              <Icon icon="lucide:plus" />
-            </Button>
-          </div>
-        {/if}
+        <div class="inline-flex pointer-events-auto z-50">
+          <Button
+            class="w-7 rounded-r-none"
+            size="sm"
+            variant="secondary"
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
+            onclick={() => {
+              $zoomLevel = Math.max(50, $zoomLevel - 10);
+              saveSettings();
+            }}
+          >
+            <Icon icon="lucide:minus" />
+          </Button>
+          <Button
+            class="w-[40px] p-0 flex justify-center rounded-none"
+            size="sm"
+            variant="secondary"
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
+            onclick={() => {
+              $zoomLevel = 100;
+              saveSettings();
+            }}
+          >
+            {$zoomLevel}%
+          </Button>
+          <Button
+            class="w-7 rounded-l-none"
+            size="sm"
+            variant="secondary"
+            disabled={$fitMode !== "" && $viewMode !== "scroll"}
+            onclick={() => {
+              $zoomLevel = Math.min(200, $zoomLevel + 10);
+              saveSettings();
+            }}
+          >
+            <Icon icon="lucide:plus" />
+          </Button>
+        </div>
       </div>
       <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
         <div class="inline-flex">
@@ -628,7 +629,7 @@
               .includes(currentlyImagePath)
               ? "tabler:photo-filled"
               : "tabler:photo"}
-            class="!w-5 !h-5"
+            class="!size-5"
           />
         </Button>
       </div>

@@ -16,6 +16,7 @@
     closeTray,
     customTitlebar,
     isFullscreen,
+    isMaximized,
     openSearch,
     theme,
     undoTasks,
@@ -99,20 +100,26 @@
     await initDatabase();
     await migrateDatabase();
   }
+  async function loadScreenState() {
+    isMaximized.set(await window.isMaximized());
+    isFullscreen.set(await window.isFullscreen());
+  }
   onMount(async () => {
     loadDatabase();
-    loadSettings();
+    logNewUser();
     createTray();
-    loadFavoritesChapters();
+    loadSettings();
     loadAppIcons();
     refreshLibrary();
+    loadScreenState();
     refreshFavorites();
-    logNewUser();
     verifyDecorations();
+    loadFavoritesChapters();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
   });
+  window.listen("tauri://drag-over", loadScreenState);
   onDestroy(() => {
     clearInterval(interval);
   });

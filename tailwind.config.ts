@@ -23,6 +23,9 @@ const config: Config = {
     extend: {
       screens: {
         ssm: "620px",
+        smh: {
+          raw: "(max-height: 1000px)",
+        },
       },
       transitionDuration: {
         "200": "200ms",
