@@ -27,6 +27,7 @@ import { goto } from "$app/navigation";
 import type { Language } from "@/types";
 import { refreshLibrary } from "@/functions/_database";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 
 let loadedSettings: Store;
 const window = getCurrentWindow();
@@ -85,6 +86,14 @@ async function connectSettings() {
 
 async function ensureConnected() {
   if (!loadedSettings) await connectSettings();
+}
+
+export function saveScreenState() {
+  saveWindowState(StateFlags.FULLSCREEN);
+  saveWindowState(StateFlags.SIZE);
+  saveWindowState(StateFlags.DECORATIONS);
+  saveWindowState(StateFlags.MAXIMIZED);
+  saveWindowState(StateFlags.POSITION);
 }
 
 export async function loadSettings() {

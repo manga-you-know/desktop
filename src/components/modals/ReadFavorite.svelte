@@ -565,6 +565,7 @@
               );
               await refreshReadeds(favorite);
               await new Promise((resolve) => setTimeout(resolve, 10));
+              displayedChapters = result;
               globalChapters.set(result);
               isFetching = false;
             }}

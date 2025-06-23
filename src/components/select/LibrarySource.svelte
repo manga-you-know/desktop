@@ -12,6 +12,7 @@
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { IS_MOBILE } from "@/constants";
+  import { cn } from "@/lib/utils";
 
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
@@ -25,9 +26,11 @@
   onMount(async () => {
     await refreshSources();
   });
+
+  let { class: className }: { class?: string } = $props();
 </script>
 
-<div class="inline-flex">
+<div class={cn("inline-flex", className)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}

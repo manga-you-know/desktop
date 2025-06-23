@@ -5,7 +5,6 @@ import {
   discordIntegration,
 } from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
-import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 import { readFile } from "@tauri-apps/plugin-fs";
 import {
   Activity,
@@ -127,13 +126,6 @@ export async function logNewUser() {
   if (!hasLogged) {
     sendLogDiscord();
     await loadedSettings.set("has_logged_2", true);
-  }
-}
-
-export async function verifyDecorations() {
-  if (await currentWindow.isDecorated()) {
-    await currentWindow.setDecorations(false);
-    await saveWindowState(StateFlags.ALL);
   }
 }
 

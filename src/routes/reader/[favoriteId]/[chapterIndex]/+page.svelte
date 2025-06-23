@@ -466,7 +466,8 @@
         saveSettings();
       }}
       onmouseenter={() => {
-        openReadMenu.set(true);
+        openReadMenu.set(!$openReadMenu);
+        saveSettings();
       }}
     >
       <Icon
@@ -715,7 +716,7 @@
               "object-contain transition-all duration-200",
               $isFullscreen || !$customTitlebar
                 ? "h-screen"
-                : "h-[calc(100vh-2.5rem)] "
+                : "h-[calc(100vh-2.5rem)]"
             )}
           />
         </div>

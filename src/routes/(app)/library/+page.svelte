@@ -21,6 +21,7 @@
   import { get, has, set } from "tauri-plugin-cache-api";
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
+  let showedFilter = $state(0);
   let page = $state(1);
   let perPage = $derived(Math.floor(libdivWidth / 169) * 3);
   const count = $derived($libraryFavorites.length);
@@ -81,19 +82,34 @@
   >
     <div
       class={cn(
-        "bg-sidebar flex-wrap flex rounded-b-3xl p-2 gap-2 justify-center items-center absolute top-[-8px] z-20",
-        IS_MOBILE ? "h-28" : "h-14"
+        "bg-sidebar flex !max-w-[80svw] mb-[-15px] rounded-3xl mt-0.5 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        IS_MOBILE ? "h-28 flex-wrap" : "h-14"
       )}
     >
-      <Badge class="h-10 w-12 flex justify-center" variant="secondary">
+      <Badge
+        class="h-10 w-12 flex justify-center items-center"
+        variant="secondary"
+      >
         {count}
       </Badge>
       <LibrarySearch bind:page bind:favdiv={libraryDiv} />
       <LibraryOrder />
-      <LibraryTag />
-      <LibrarySource />
+      <LibraryTag
+        class={showedFilter === 0 ? "!inline-flex" : "hidden md:inline-flex"}
+      />
+      <LibrarySource
+        class={showedFilter === 1 ? "!inline-flex" : "hidden md:inline-flex"}
+      />
+      <Button
+        class="md:hidden flex items-start !w-9"
+        variant="secondary"
+        onclick={() => {
+          if (showedFilter === 1) showedFilter = 0;
+          else showedFilter++;
+        }}>...</Button
+      >
     </div>
-    <div class="w-full h-12"></div>
+    <div class="w-full h-0 smh:h-14"></div>
     <!-- {#key displayedLibrary} -->
     {#each displayedLibrary as favorite, i (i)}
       <LibraryCard {favorite} />
@@ -103,8 +119,9 @@
       <div class="w-[158px] h-[271px] p-1"></div>
     {/each}
     {#if $libraryFavorites.length > perPage}
+      <div class="w-full h-11"></div>
       <div
-        class="bg-sidebar flex rounded-3xl smh:rounded-b-none smh:absolute smh:bottom-[11px] mt-3 smh:mt-0 py-2 smh:pb-1 px-2"
+        class="bg-sidebar flex rounded-3xl smh:rounded-b-none mt-[-15px] absolute bottom-5 smh:bottom-2 smh:mt-3 p-2 smh:pb-1 transition-all"
       >
         <Pagination.Root
           {count}

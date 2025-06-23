@@ -133,15 +133,12 @@
       onclick={async () => {
         if ($isFullscreen) {
           await setFullscreen(false);
-          isMaximized.set(await window.isMaximized());
           return;
         }
         if (await window.isMaximized()) {
           await window.unmaximize();
-          isMaximized.set(false);
         } else {
           await window.maximize();
-          isMaximized.set(true);
         }
       }}
     >

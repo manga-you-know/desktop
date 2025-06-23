@@ -37,14 +37,13 @@
     refreshLibrary,
     refreshFavorites,
     loadFavoritesChapters,
-    verifyDecorations,
+    saveScreenState,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
   import { IS_MOBILE } from "@/constants";
   import { toast } from "svelte-sonner";
-  import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -94,8 +93,9 @@
       window.destroy();
       interval.unref();
     }
-    saveWindowState(StateFlags.ALL);
+    saveScreenState();
   });
+
   async function loadDatabase() {
     await initDatabase();
     await migrateDatabase();
@@ -104,6 +104,7 @@
     isMaximized.set(await window.isMaximized());
     isFullscreen.set(await window.isFullscreen());
   }
+
   onMount(async () => {
     loadDatabase();
     logNewUser();
@@ -113,13 +114,16 @@
     refreshLibrary();
     loadScreenState();
     refreshFavorites();
-    verifyDecorations();
     loadFavoritesChapters();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
   });
-  window.listen("tauri://drag-over", loadScreenState);
+  function screenJob() {
+    loadScreenState();
+    // saveScreenState();
+  }
+  window.onResized(screenJob);
   onDestroy(() => {
     clearInterval(interval);
   });

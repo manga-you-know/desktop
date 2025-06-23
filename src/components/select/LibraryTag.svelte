@@ -21,9 +21,10 @@
   onMount(async () => {
     await refreshTags();
   });
+  let { class: className }: { class?: string } = $props();
 </script>
 
-<div class="inline-flex">
+<div class={cn("inline-flex", className)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}

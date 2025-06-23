@@ -92,7 +92,6 @@ export class MangaFireDl implements MangaDl {
         const langID = $(a).attr("data-code")?.toLowerCase() ?? "";
         languages.push({
           id: langID,
-          // label: $(a).text(),
           label: LANGUAGE_LABELS[langID] ?? $(a).attr("data-title") ?? "",
         });
       });
@@ -104,25 +103,24 @@ export class MangaFireDl implements MangaDl {
     language: string = "en"
   ): Promise<Chapter[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/read/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`
+      `${this.baseUrl}/ajax/manga/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
     }
-    const responseJson: { result: { html: string } } = await response.json();
-    const $ = cheerio.load(responseJson.result.html);
+    const responseJson: { result: string } = await response.json();
+    const $ = cheerio.load(responseJson.result);
+    console.log(response.url);
+    console.log(responseJson.result);
     const chapters: Chapter[] = [];
     $("li").each((_, li) => {
       const a = $(li).find("a");
-      let title = $(a).attr("title") ?? "";
-      if (/u([\da-fA-F]{4})/.test(title)) {
-        const uriEncodedText = title.replace(/u([\da-fA-F]{4})/g, "%$1");
-        title = decodeURIComponent(uriEncodedText);
-      }
+      const title = $(li).find("span").text();
+      const cptNumber = $(li).attr("data-number") ?? "";
       chapters.push({
-        number: $(a).attr("data-number") ?? "",
-        title: title,
-        chapter_id: $(a).attr("data-id") ?? "",
+        number: cptNumber,
+        title: title.split(`Chapter ${cptNumber}: `)[1],
+        chapter_id: $(a).attr("href")?.replace("/read/", "") ?? "",
         source: "MangaFire",
         language: language,
       });
@@ -131,16 +129,18 @@ export class MangaFireDl implements MangaDl {
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
-    const response = await fetch(
-      `${this.baseUrl}/ajax/read/chapter/${chapterId}`
-    );
+    const response = await fetch(`${this.baseUrl}/read/${chapterId}`);
     if (response.status !== 200) {
       throw new Error(
         `Failed to get chapter images ${chapterId} ${response.status}`
       );
     }
+    console.log(await response.text());
     const responseJson: { result: { images: string[][] } } =
       await response.json();
+    const responseImages = await fetch(
+      `${this.baseUrl}/ajax/read/chapter/${chapterId}`
+    );
     return responseJson.result.images.map((image) => image[0]);
   }
 }
