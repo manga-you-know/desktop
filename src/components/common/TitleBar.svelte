@@ -38,11 +38,13 @@
       $isFullscreen &&
       "h-0 translate-y-[-3rem]"
   )}
-  data-tauri-drag-region
+  data-tauri-drag-region={!$isFullscreen}
 >
   <div class="h-full flex items-center select-none">
     <img src="/icon.png" alt="logo" class="h-6" data-tauri-drag-region />
-    <Label class="p-3" data-tauri-drag-region>MangaYouKnow</Label>
+    <Label class="p-3" data-tauri-drag-region={!$isFullscreen}
+      >MangaYouKnow</Label
+    >
     <Menubar.Root>
       <Menubar.Menu>
         <Menubar.Trigger>Folders</Menubar.Trigger>

@@ -20,6 +20,7 @@
         "minWidth": 640,
         "center": true,
         "visible": false,
+        "transparent": true,
         "decorations": false,
         "backgroundColor": "#18181b",
         "dragDropEnabled": true

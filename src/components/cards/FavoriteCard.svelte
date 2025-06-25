@@ -258,7 +258,7 @@
             role="group"
           >
             <Button
-              class="rounded-b-none rounded-t-3xl"
+              class="rounded-b-none rounded-t-2xl"
               size="sm"
               tabindex={-1}
               disabled={favoriteLoad.nextChapter === null}
@@ -285,7 +285,7 @@
               />
             </Button>
             <Button
-              class="rounded-t-none rounded-b-3xl"
+              class="rounded-t-none rounded-b-2xl"
               size="sm"
               tabindex={-1}
               onclick={(e: Event) => {
@@ -303,60 +303,66 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
     <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between"
+      onclick={async (e: Event) => {
+        e.stopPropagation();
+        favorite.is_ultra_favorite = !isUltraFavorite;
+        isUltraFavorite = favorite.is_ultra_favorite;
+        await FavoriteDB.toggleUltraFavorite(favorite);
+        await refreshFavorites();
+      }}
+    >
+      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+      <Icon
+        class="!size-5 mr-[-2px]"
+        icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
+      />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
       onclick={(e: Event) => {
         e.stopPropagation();
         isOpen = true;
       }}
-      ><Icon
+    >
+      <Label>Open</Label>
+      <Icon
+        class="!size-4 !h-5"
         icon={favorite.type === "anime"
           ? "lucide:tv-minimal-play"
           : "lucide:book-open-text"}
       />
-      <Label>Open</Label>
     </ContextMenu.Item>
     <ContextMenu.Item
-      class="gap-4"
-      onclick={(e: Event) => {
-        e.stopPropagation();
-        isEdit = true;
-      }}
-      ><Icon icon="lucide:square-pen" />
-      <Label>Edit</Label>
-    </ContextMenu.Item>
-    <ContextMenu.Item
-      class="gap-4"
-      onclick={async (e: Event) => {
-        e.stopPropagation();
-        favorite.is_ultra_favorite = !isUltraFavorite;
-        isUltraFavorite = Boolean(favorite.is_ultra_favorite);
-        isUltraFavorite = await FavoriteDB.toggleUltraFavorite(favorite);
-        await Promise.all([refreshFavorites(), refreshLibrary()]);
-      }}
-      ><Icon
-        icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
-      />
-      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
-    </ContextMenu.Item>
-    <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between"
       onclick={async (e: Event) => {
         markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
         isPicking = true;
       }}
     >
-      <Icon icon="lucide:bookmark" />
       <Label>Tags</Label>
+      <Icon class="!size-5 mr-[-2px]" icon="lucide:bookmark" />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isEdit = true;
+      }}
+    >
+      <Label>Edit</Label>
+      <Icon class="!size-4 !h-5" icon="lucide:square-pen" />
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between hover:!bg-destructive transition-colors duration-300"
       onclick={(e: Event) => {
         e.stopPropagation();
         isDelete = true;
       }}
-      ><Icon icon="lucide:trash" />
+    >
       <Label>Delete</Label>
+      <Icon class="!size-4 !h-5" icon="lucide:trash" />
     </ContextMenu.Item>
   </ContextMenu.Content>
 </ContextMenu.Root>

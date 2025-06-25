@@ -115,7 +115,6 @@
     } else if (isTheFirstChapter) {
       percentageText = "0";
     }
-
     setDiscordActivity(
       `Reading [${name}]`,
       `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
@@ -279,7 +278,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite) {
+    if (favorite.is_ultra_favorite) {
       loadFavoriteChapters(favorite);
     }
     if (!isLocal) {
@@ -311,7 +310,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite) {
+    if (favorite.is_ultra_favorite) {
       loadFavoriteChapters(favorite);
     }
     if (!isLocal) {

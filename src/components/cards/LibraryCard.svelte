@@ -73,7 +73,7 @@
     <button
       id="library-{favorite.id}"
       class={cn(
-        "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg focus:border-white focus:border-1 no-blurry",
+        "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border-1 dark:focus:bg-gray-800 focus:shadow-lg no-blurry",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
         isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
       )}
@@ -117,7 +117,7 @@
         >
           <div class="inline-flex rounded-md shadow-sm" role="group">
             <Button
-              class="rounded-r-none rounded-l-3xl"
+              class="rounded-r-none rounded-l-2xl"
               variant="secondary"
               size="sm"
               tabindex={-1}
@@ -142,7 +142,7 @@
               <Icon icon="lucide:square-pen" class="w-4 h-4" />
             </Button>
             <Button
-              class="rounded-l-none rounded-r-3xl"
+              class="rounded-l-none rounded-r-2xl"
               variant="secondary"
               size="sm"
               tabindex={-1}
@@ -160,29 +160,7 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
     <ContextMenu.Item
-      class="gap-4"
-      onclick={(e: Event) => {
-        e.stopPropagation();
-        isOpen = true;
-      }}
-      ><Icon
-        icon={favorite.type === "anime"
-          ? "lucide:tv-minimal-play"
-          : "lucide:book-open-text"}
-      />
-      <Label>Open</Label>
-    </ContextMenu.Item>
-    <ContextMenu.Item
-      class="gap-4"
-      onclick={(e: Event) => {
-        e.stopPropagation();
-        isEdit = true;
-      }}
-      ><Icon icon="lucide:square-pen" />
-      <Label>Edit</Label>
-    </ContextMenu.Item>
-    <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between"
       onclick={async (e: Event) => {
         e.stopPropagation();
         favorite.is_ultra_favorite = !isUltraFavorite;
@@ -190,30 +168,58 @@
         await FavoriteDB.toggleUltraFavorite(favorite);
         await refreshFavorites();
       }}
-      ><Icon
+    >
+      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+      <Icon
+        class="!size-5 mr-[-2px]"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
       />
-      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
     </ContextMenu.Item>
     <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isOpen = true;
+      }}
+    >
+      <Label>Open</Label>
+      <Icon
+        class="!size-4 !h-5"
+        icon={favorite.type === "anime"
+          ? "lucide:tv-minimal-play"
+          : "lucide:book-open-text"}
+      />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
       onclick={async (e: Event) => {
         markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
         isPicking = true;
       }}
     >
-      <Icon icon="lucide:bookmark" />
       <Label>Tags</Label>
+      <Icon class="!size-5 mr-[-2px]" icon="lucide:bookmark" />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        isEdit = true;
+      }}
+    >
+      <Label>Edit</Label>
+      <Icon class="!size-4 !h-5" icon="lucide:square-pen" />
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="gap-4"
+      class="flex justify-between hover:!bg-destructive transition-colors duration-300"
       onclick={(e: Event) => {
         e.stopPropagation();
         isDelete = true;
       }}
-      ><Icon icon="lucide:trash" />
+    >
       <Label>Delete</Label>
+      <Icon class="!size-4 !h-5" icon="lucide:trash" />
     </ContextMenu.Item>
   </ContextMenu.Content>
 </ContextMenu.Root>

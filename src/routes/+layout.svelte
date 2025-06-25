@@ -132,7 +132,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <div
   class={twMerge(
-    "!bg-background text-black dark:text-white",
+    "!bg-background text-black dark:text-white !rounded-3xl",
     $theme === "dark" ? "dark" : ""
   )}
 >

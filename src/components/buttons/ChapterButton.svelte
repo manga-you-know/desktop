@@ -3,6 +3,7 @@
   import { Tooltip } from "svelte-ux";
   import { Button } from "@/lib/components";
   import type { Chapter } from "@/types";
+  import { cn } from "@/lib/utils";
 
   interface Event {
     stopPropagation: () => void;
@@ -30,7 +31,10 @@
 </script>
 
 <Button
-  class="chapter-button w-full flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-gray-200 dark:hover:bg-background/70"
+  class={cn(
+    "chapter-button w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
+    isReaded && "opacity-60"
+  )}
   variant="secondary"
   size="sm"
   bind:onclick
