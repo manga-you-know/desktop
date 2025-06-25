@@ -319,27 +319,21 @@ export class DownloadManager {
     return new Promise((resolve, reject) => {
       const img1 = new Image();
       const img2 = new Image();
-
       img1.onload = () => {
         img2.onload = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-
           if (!ctx) {
             reject(new Error("Could not get canvas context"));
             return;
           }
-
           const newWidth = img1.width + img2.width;
           const newHeight = Math.max(img1.height, img2.height);
-
           canvas.width = newWidth;
           canvas.height = newHeight;
-
           // Draw images side by side
           ctx.drawImage(img2, 0, 0);
           ctx.drawImage(img1, img2.width, 0);
-
           resolve(canvas.toDataURL("image/jpeg"));
         };
 

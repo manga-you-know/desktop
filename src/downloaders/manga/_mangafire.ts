@@ -15,7 +15,7 @@ export class MangaFireDl implements MangaDl {
     "Accept-Encoding": "gzip, deflate, br, zstd",
     "Sec-GPC": "1",
     Connection: "keep-alive",
-    Referer: "https://https://mangafire.to",
+    Referer: "https://mangafire.to",
     "Upgrade-Insecure-Requests": "1",
     "Sec-Fetch-Dest": "document",
     "Sec-Fetch-Mode": "navigate",
@@ -103,24 +103,20 @@ export class MangaFireDl implements MangaDl {
     language: string = "en"
   ): Promise<Chapter[]> {
     const response = await fetch(
-      `${this.baseUrl}/ajax/manga/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`
+      `${this.baseUrl}/ajax/read/${mangaId.split(".")[1]}/chapter/${language.toLowerCase()}`
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
     }
-    const responseJson: { result: string } = await response.json();
-    const $ = cheerio.load(responseJson.result);
-    console.log(response.url);
-    console.log(responseJson.result);
+    const responseJson: { result: { html: string } } = await response.json();
+    const $ = cheerio.load(responseJson.result.html.replaceAll("\\", ""));
     const chapters: Chapter[] = [];
     $("li").each((_, li) => {
       const a = $(li).find("a");
-      const title = $(li).find("span").text();
-      const cptNumber = $(li).attr("data-number") ?? "";
       chapters.push({
-        number: cptNumber,
-        title: title.split(`Chapter ${cptNumber}: `)[1],
-        chapter_id: $(a).attr("href")?.replace("/read/", "") ?? "",
+        number: a.attr("data-number") ?? "",
+        title: a.attr("title") ?? "",
+        chapter_id: a.attr("data-id") ?? "",
         source: "MangaFire",
         language: language,
       });
@@ -129,18 +125,18 @@ export class MangaFireDl implements MangaDl {
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/read/${chapterId}`);
+    const response = await fetch(
+      `${this.baseUrl}/ajax/read/chapter/${chapterId}`
+    );
     if (response.status !== 200) {
       throw new Error(
         `Failed to get chapter images ${chapterId} ${response.status}`
       );
     }
-    console.log(await response.text());
     const responseJson: { result: { images: string[][] } } =
       await response.json();
-    const responseImages = await fetch(
-      `${this.baseUrl}/ajax/read/chapter/${chapterId}`
+    return responseJson.result.images.map((image) =>
+      image[0].replaceAll("\\", "").replace("mfcdn1", "mfcdn2")
     );
-    return responseJson.result.images.map((image) => image[0]);
   }
 }

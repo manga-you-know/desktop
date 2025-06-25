@@ -43,7 +43,10 @@ pub async fn get_aniplay_episode(
 
 #[tauri::command(async)]
 pub async fn get_base64_image(url: &str, referer: &str) -> Result<String, String> {
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
+        .build()
+        .map_err(|e| e.to_string())?;
     if referer == "https://mangadex.org" {
         let res = client.get(url).send().await.map_err(|e| e.to_string())?;
         let bytes = res.bytes().await.map_err(|e| e.to_string())?;
@@ -52,6 +55,7 @@ pub async fn get_base64_image(url: &str, referer: &str) -> Result<String, String
     } else {
         let res = client
             .get(url)
+            .header("Accept", "*/*")
             .header("Referer", referer)
             .header("Origin", referer)
             .send()
