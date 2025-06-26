@@ -77,6 +77,10 @@ export function isReaded(chapter: Chapter, readeds: Readed[]) {
   );
 }
 
+export function isReadedMap(chapter: Chapter, readedsMap: Map<string, Readed>) {
+  return readedsMap.get(`${chapter.chapter_id}_${chapter.language}`);
+}
+
 export async function isFavorite(favorite: Favorite): Promise<boolean> {
   const rawFavs = await FavoriteDB.getRawFavorites();
   return rawFavs.some(
@@ -93,7 +97,9 @@ export async function addReadedBelow(
   dontDelete?: boolean
 ) {
   const localReadeds = readeds ?? (await ReadedDB.getReadeds(favorite));
-  const readed = isReaded(chapter, localReadeds);
+  const readedMap = createReadedMap(readeds ?? []);
+  const key = `${chapter.chapter_id}_${chapter.language}`;
+  const readed = readedMap.get(key);
   if (readed) {
     if (!dontDelete) {
       await deleteReadedAbove(readed, chapters, localReadeds);
@@ -104,9 +110,11 @@ export async function addReadedBelow(
   let isForAdd = false;
   for (const chapterI of chapters) {
     if (chapterI.chapter_id === chapter.chapter_id) isForAdd = true;
-    if (isForAdd) if (!isReaded(chapterI, localReadeds)) toAdd.push(chapterI);
+    if (!readedMap.get(chapterI.chapter_id)) toAdd.push(chapterI);
   }
-  await ReadedDB.createReadeds(toAdd, favorite.id);
+  if (toAdd.length) {
+    await ReadedDB.createReadeds(toAdd, favorite.id);
+  }
 }
 
 export async function deleteReadedAbove(
@@ -116,14 +124,25 @@ export async function deleteReadedAbove(
 ) {
   const toDelete: Readed[] = [];
   let isForDelete = false;
-  for (const chapter of [...chapters].reverse()) {
-    if (chapter.chapter_id === readed.chapter_id) isForDelete = true;
+  const readedMap = createReadedMap(readeds);
+  for (let i = chapters.length - 1; i >= 0; i--) {
+    const chapter = chapters[i];
+    if (chapter.chapter_id.toString() === readed.chapter_id.toString())
+      isForDelete = true;
     if (isForDelete) {
-      const read = isReaded(chapter, readeds);
+      const read = isReadedMap(chapter, readedMap);
       if (read) toDelete.push(read);
     }
   }
   await ReadedDB.deleteReadeds(toDelete);
+}
+
+function createReadedMap(readeds: Readed[]): Map<string, Readed> {
+  const map = new Map<string, Readed>();
+  for (const r of readeds) {
+    map.set(`${r.chapter_id}_${r.language}`, r);
+  }
+  return map;
 }
 
 export async function refreshLibrary() {

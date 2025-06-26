@@ -41,7 +41,7 @@ export async function createReadeds(
       favoriteID,
       chapter.chapter_id,
       chapter.source,
-      chapter.language,
+      chapter.language ?? "default",
     ]);
     await db.execute(
       `INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES ${placeholders}`,
@@ -95,7 +95,12 @@ export async function updateReaded(readed: Readed): Promise<void> {
   try {
     await db.execute(
       "UPDATE readed SET chapter_id = ?, source = ?, language = ? WHERE id = ?",
-      [readed.chapter_id, readed.source, readed.language, readed.id]
+      [
+        readed.chapter_id,
+        readed.source,
+        readed.language ?? "default",
+        readed.id,
+      ]
     );
   } catch (error) {
     console.log(error);
@@ -119,7 +124,7 @@ export async function deleteReadeds(readeds: Readed[]): Promise<void> {
   if (!db) await loadDb();
   try {
     const placeholders = readeds.map(() => "?").join(", ");
-    const values = readeds.map((readed) => readed.id);
+    const values = readeds.map((readed) => Number(readed.id));
     await db.execute(
       `DELETE FROM readed WHERE id IN (${placeholders})`,
       values

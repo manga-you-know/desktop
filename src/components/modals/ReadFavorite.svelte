@@ -785,7 +785,8 @@
                         await addReadedBelow(
                           chapter,
                           $globalChapters,
-                          favorite
+                          favorite,
+                          $readeds
                         );
                         await refreshReadeds(favorite);
                       }}

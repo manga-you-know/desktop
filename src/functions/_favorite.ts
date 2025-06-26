@@ -180,10 +180,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   if (chaptersToRead.length > 0) {
     const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
     if (valToRead) {
-      if (
-        chaptersToRead.length > valToRead.chaptersToRead &&
-        chapters.length !== valToRead.chapters
-      ) {
+      if (chaptersToRead.length > valToRead.chaptersToRead) {
         const newToRead =
           chaptersToRead.length - Number(valToRead.chaptersToRead);
         await notify(

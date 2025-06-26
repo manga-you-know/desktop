@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: "macos-latest" # Arm based macs
+          - platform: "macos-15" # Arm based macs
             args: "--target aarch64-apple-darwin"
           - platform: "macos-15" # Intel based macs
             args: "--target x86_64-apple-darwin"

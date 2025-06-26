@@ -43,14 +43,13 @@
       "certificateThumbprint": null,
       "digestAlgorithm": null,
       "nsis": {
-        "installMode": "both",
         "installerIcon": "./icons/icon.ico",
         "sidebarImage": "./icons/banner@164x314.png",
         "headerImage": "./icons/banner@150x57.png"
       },
       "wix": {
-        "language": "en-US",
-        "bannerPath": "./icons/banner@513x58.png"
+        "bannerPath": "./icons/banner@493x58.png",
+        "dialogImagePath": "./icons/banner@493x312.png"
       },
       "signCommand": null,
       "timestampUrl": null,
