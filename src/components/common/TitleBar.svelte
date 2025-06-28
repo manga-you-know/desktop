@@ -36,7 +36,7 @@
     "bg-sidebar flex items-center justify-between w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
     page.route.id?.startsWith("/reader") &&
       $isFullscreen &&
-      "h-0 translate-y-[-3rem]"
+      "h-0 -translate-y-[3rem]"
   )}
   data-tauri-drag-region={!$isFullscreen}
 >

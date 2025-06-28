@@ -138,7 +138,7 @@
                     icon={page.url.pathname === item.path
                       ? item.iconActive
                       : item.icon}
-                    class="!size-7 ml-[-10px]"
+                    class="!size-7 -ml-[10px]"
                   />
                 {:else}
                   <Badge
@@ -150,7 +150,7 @@
                       icon={page.url.pathname === item.path
                         ? item.iconActive
                         : item.icon}
-                      class="!size-7 ml-[-10px]"
+                      class="!size-7 -ml-[10px]"
                     />
                   </Badge>
                 {/if}
@@ -184,7 +184,7 @@
                 icon={$openSearch
                   ? "mingcute:search-3-fill"
                   : "mingcute:search-3-line"}
-                class="!size-7 ml-[-10px]"
+                class="!size-7 -ml-[10px]"
               />
               <Label class="cursor-pointer">Search</Label>
             </Sidebar.MenuButton>
@@ -205,7 +205,7 @@
               tabindex={-1}
             >
               <Icon
-                class="!size-7 ml-[-10px]"
+                class="!size-7 -ml-[10px]"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
               <Label class="cursor-pointer">Tags</Label>
@@ -233,7 +233,7 @@
                     icon={$openDownloads
                       ? "basil:download-solid"
                       : "basil:download-outline"}
-                    class="!size-9 ml-[-14px]"
+                    class="!size-9 -ml-[14px]"
                   />
                 </Badge>
               {:else}
@@ -241,7 +241,7 @@
                   icon={$openDownloads
                     ? "basil:download-solid"
                     : "basil:download-outline"}
-                  class="!size-9 ml-[-14px]"
+                  class="!size-9 -ml-[14px]"
                 />
               {/if}
               <Label class="cursor-pointer">Downloads</Label>
@@ -264,7 +264,7 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="!size-7 ml-[-2px] "
+                class="!size-7 -ml-[2px] "
               />
               <Label class="cursor-pointer">Add</Label>
             </Sidebar.MenuButton>
@@ -300,7 +300,7 @@
               icon={$openInfo
                 ? "material-symbols:info-rounded"
                 : "material-symbols:info-outline-rounded"}
-              class="!size-7 ml-[-10px]"
+              class="!size-7 -ml-[10px]"
             />
             <Label class="cursor-pointer">Info</Label>
           </Sidebar.MenuButton>
@@ -325,7 +325,7 @@
               icon={$openSettings
                 ? "heroicons:cog-6-tooth-solid"
                 : "heroicons:cog-6-tooth"}
-              class="!size-7 ml-[-10px]"
+              class="!size-7 -ml-[10px]"
             />
             <Label class="cursor-pointer">Settings</Label>
           </Sidebar.MenuButton>
@@ -344,7 +344,7 @@
               icon={$theme === "dark"
                 ? "material-symbols:sunny-outline-rounded"
                 : "material-symbols:dark-mode-outline"}
-              class="!size-7 ml-[-10px]"
+              class="!size-7 -ml-[10px]"
             />
             <Label class="cursor-pointer">Theme</Label>
           </Sidebar.MenuButton>
@@ -360,7 +360,7 @@
       bind:this={imgElement}
       draggable={false}
       onclick={rotateImage}
-      class="w-24 min-w-10 ml-[-2px]"
+      class="w-24 min-w-10 -ml-[2px]"
       src="/icon.png"
       alt="icon"
     />

@@ -130,7 +130,7 @@
               <Icon icon="lucide:bookmark" class="w-4 h-4" />
             </Button>
             <Button
-              class="rounded-none !mx-[-1px]"
+              class="rounded-none !-mx-[1px]"
               variant="secondary"
               size="sm"
               tabindex={-1}
@@ -171,7 +171,7 @@
     >
       <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
       <Icon
-        class="!size-5 mr-[-2px]"
+        class="!size-5 -mr-[2px]"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
       />
     </ContextMenu.Item>
@@ -198,7 +198,7 @@
       }}
     >
       <Label>Tags</Label>
-      <Icon class="!size-5 mr-[-2px]" icon="lucide:bookmark" />
+      <Icon class="!size-5 -mr-[2px]" icon="lucide:bookmark" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"

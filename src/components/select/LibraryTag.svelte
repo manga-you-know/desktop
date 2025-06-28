@@ -67,7 +67,7 @@
             <Icon icon={$libraryTag.icon} />
           {/if}
           <Label
-            class="!w-36 cursor-pointer text-sm text-center ml-[-4px] text-ellipsis    
+            class="!w-36 cursor-pointer text-sm text-center -ml-[4px] text-ellipsis    
             {$libraryTag === undefined ? 'dark:text-gray-400' : ''}"
           >
             {limitStr($libraryTag?.name ?? "Filter by tag...", 16)}
@@ -81,7 +81,7 @@
           placeholder="Search tag..."
           tabindex={IS_MOBILE ? -1 : 1}
         />
-        <Command.Empty class="mb-[-68px]">No tag found.</Command.Empty>
+        <Command.Empty class="-mb-[68px]">No tag found.</Command.Empty>
         <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
             {#each [{ id: -1, user_id: 1, name: "Favorites", icon: "heroicons:star-solid" }, ...$tags.reverse()] as tag}

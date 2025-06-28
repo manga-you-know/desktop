@@ -71,7 +71,7 @@
           )} Favorites
         </Badge>
         <Badge
-          class="font-bold h-8 w-22 rounded-xl rounded-l-none ml-[-2px]"
+          class="font-bold h-8 w-22 rounded-xl rounded-l-none -ml-[2px]"
           variant="secondary"
         >
           + {Object.values($favoritesLoaded).reduce(

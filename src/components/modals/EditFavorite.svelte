@@ -233,7 +233,7 @@
       >
         {isUltraFavorite ? "Remove" : "Favorite"}
         <Icon
-          class="!w-5 !h-5 mx-[-5px]"
+          class="!w-5 !h-5 -mx-[5px]"
           icon={isUltraFavorite
             ? "fluent:star-emphasis-32-filled"
             : "fluent:star-emphasis-32-regular"}

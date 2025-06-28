@@ -312,7 +312,7 @@
     class={cn("flex items-center justify-start gap-1", isMobile && "flex-col")}
   >
     <div class="flex">
-      <div class="w-24 flex justify-start ml-[-6px]">
+      <div class="w-24 flex justify-start -ml-[6px]">
         <Input
           class="w-20"
           placeholder="Chapter..."
@@ -325,7 +325,7 @@
         {#if searchTerm.length > 0}
           <Button
             variant="link"
-            class="w-2 ml-[-12px]"
+            class="w-2 -ml-[12px]"
             onclick={() => {
               searchTerm = "";
               search();
@@ -596,7 +596,7 @@
               }}
             >
               <Icon
-                class="!size-5 mx-[-5px]"
+                class="!size-5 -mx-[5px]"
                 icon={isUltraFavorite
                   ? "fluent:star-emphasis-32-filled"
                   : "fluent:star-emphasis-32-regular"}

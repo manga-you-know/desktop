@@ -75,7 +75,7 @@
           }}
         >
           <Label
-            class="w-full text-sm text-center ml-[-4px] cursor-pointer {$librarySource ===
+            class="w-full text-sm text-center -ml-[4px] cursor-pointer {$librarySource ===
             ''
               ? 'dark:text-gray-400'
               : ''}"
@@ -91,7 +91,7 @@
           placeholder="Search source..."
           tabindex={IS_MOBILE ? -1 : 1}
         />
-        <Command.Empty class="mb-[-68px]">No source found.</Command.Empty>
+        <Command.Empty class="-mb-[68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36">
           <Command.Group>
             {#each sources.toReversed() as source}

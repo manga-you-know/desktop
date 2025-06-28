@@ -173,7 +173,7 @@
         }}
       />
       <div
-        class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center m-[-5.5px]"
+        class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center -m-[5.5px]"
       >
         <!-- <Badge
             class=" w-40 max-w-40 flex justify-center rounded-xl bg-"
@@ -197,7 +197,7 @@
               ? "opacity-100 translate-x-0"
               : IS_MOBILE
                 ? ""
-                : "opacity-0 translate-x-[-40%] group-hover:opacity-100"
+                : "opacity-0 -translate-x-[40%] group-hover:opacity-100"
           )}
         >
           <Tooltip
@@ -238,7 +238,7 @@
         >
           <Badge
             {variant}
-            class="w-14 mb-1 flex justify-center text-xs px-[-0.2px]"
+            class="w-14 mb-1 flex justify-center text-xs -px-[0.2px]"
           >
             {`${
               favoriteLoad.chapters.length - favoriteLoad.toReadCount
@@ -268,7 +268,7 @@
               <Icon icon="lucide:chevrons-right" class="!size-4" />
             </Button>
             <Button
-              class="rounded-none my-[-1px]"
+              class="rounded-none -my-[1px]"
               size="sm"
               tabindex={-1}
               {variant}
@@ -294,7 +294,7 @@
               }}
               {variant}
             >
-              <Icon icon="lucide:square-pen" class="mt-[-7px] !size-4" />
+              <Icon icon="lucide:square-pen" class="-mt-[7px] !size-4" />
             </Button>
           </div>
         </div>
@@ -314,7 +314,7 @@
     >
       <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
       <Icon
-        class="!size-5 mr-[-2px]"
+        class="!size-5 -mr-[2px]"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
       />
     </ContextMenu.Item>
@@ -341,7 +341,7 @@
       }}
     >
       <Label>Tags</Label>
-      <Icon class="!size-5 mr-[-2px]" icon="lucide:bookmark" />
+      <Icon class="!size-5 -mr-[2px]" icon="lucide:bookmark" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"

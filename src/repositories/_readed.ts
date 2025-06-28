@@ -124,9 +124,9 @@ export async function deleteReadeds(readeds: Readed[]): Promise<void> {
   if (!db) await loadDb();
   try {
     const placeholders = readeds.map(() => "?").join(", ");
-    const values = readeds.map((readed) => Number(readed.id));
+    const values = readeds.map((readed) => readed.chapter_id);
     await db.execute(
-      `DELETE FROM readed WHERE id IN (${placeholders})`,
+      `DELETE FROM readed WHERE chapter_id IN (${placeholders})`,
       values
     );
   } catch (error) {

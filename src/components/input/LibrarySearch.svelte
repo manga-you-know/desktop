@@ -60,7 +60,7 @@
   tabindex={-1}
 >
   <Icon
-    class="!size-5 mr-[-10px] mx-[-4px]"
+    class="!size-5 -mr-[10px] -mx-[4px]"
     icon={$libraryQuery === "" ? "uil:search" : "lucide:x"}
   />
   <div

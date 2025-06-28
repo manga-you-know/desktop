@@ -100,17 +100,16 @@ export async function addReadedBelow(
   const readedMap = createReadedMap(readeds ?? []);
   const key = `${chapter.chapter_id}_${chapter.language}`;
   const readed = readedMap.get(key);
-  if (readed) {
-    if (!dontDelete) {
-      await deleteReadedAbove(readed, chapters, localReadeds);
-    }
+  if (readed !== undefined) {
+    if (!dontDelete) await deleteReadedAbove(readed, chapters, localReadeds);
     return;
   }
   const toAdd = [];
   let isForAdd = false;
   for (const chapterI of chapters) {
     if (chapterI.chapter_id === chapter.chapter_id) isForAdd = true;
-    if (!readedMap.get(chapterI.chapter_id)) toAdd.push(chapterI);
+    if (readedMap.get(chapterI.chapter_id) === undefined && isForAdd)
+      toAdd.push(chapterI);
   }
   if (toAdd.length) {
     await ReadedDB.createReadeds(toAdd, favorite.id);

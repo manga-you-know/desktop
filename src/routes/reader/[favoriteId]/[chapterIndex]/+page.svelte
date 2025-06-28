@@ -73,7 +73,7 @@
   );
   let currentlyImage = $state("/myk.png");
   let currentlyImagePath = $derived(
-    `${favorite.id}~${favorite.folder_name}~${chapter.number}~${currentlyCount}.png`
+    `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`
   );
   let downloadedImages: DirEntry[] = $state([]);
   // svelte-ignore non_reactive_update
@@ -117,7 +117,7 @@
     }
     setDiscordActivity(
       `Reading [${name}]`,
-      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
   function prevPage() {
@@ -148,7 +148,7 @@
     currentlyImage = "/myk.png";
     images = ["/myk.png"];
     currentlyCount = 1;
-    totalPage = 1;
+    totalPage = 0;
     scrollToTop();
     await goto(
       `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
@@ -168,7 +168,7 @@
           recursive: true,
         });
         await copyFile(
-          `Mangas/${favorite.folder_name}/${chapter.number}/${(
+          `Mangas/${favorite.folder_name}/${chapter?.number}/${(
             currentlyCount - 1
           )
             .toString()
@@ -228,7 +228,7 @@
 
   function gotoPage(page: string) {
     currentlyCount = 1;
-    totalPage = 1;
+    totalPage = 0;
     currentlyImage = "/myk.png";
     images = ["/myk.png"];
     scrollToTop();
@@ -265,7 +265,7 @@
     chapter = $globalChapters[Number(chapterIndex)];
     if (!isLocal) {
       toast.loading(
-        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter.number}`
+        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`
       );
       images = await $downloadManager.getChapterImages(chapter);
     } else {
@@ -431,25 +431,27 @@
 />
 <div
   class={cn(
-    "bg-background h-screen",
+    "bg-background h-screen overflow-hidden",
     !$isFullscreen && $customTitlebar && "h-[calc(100vh-2.5rem)]"
   )}
 >
   <div
     class="fixed w-screen h-full z-50 pointer-events-none flex justify-end items-center"
   >
-    {#if currentlyCount === totalPage}
-      <Button
-        class="h-24 pointer-events-auto"
-        disabled={isTheLastChapter}
-        variant={isTheLastChapter ? "outline" : "default"}
-        onclick={() => handleGoChapter("next")}
-      >
-        <Icon
-          icon={isTheLastChapter ? "lucide:circle-x" : "lucide:arrow-right"}
-        />
-      </Button>
-    {/if}
+    <Button
+      effect="ringHover"
+      class={cn(
+        "h-24 mr-2 pointer-events-auto transition-all",
+        currentlyCount === totalPage ? "translate-x-0" : "translate-x-16"
+      )}
+      disabled={isTheLastChapter}
+      variant={isTheLastChapter ? "outline" : "default"}
+      onclick={() => handleGoChapter("next")}
+    >
+      <Icon
+        icon={isTheLastChapter ? "lucide:circle-x" : "lucide:arrow-right"}
+      />
+    </Button>
   </div>
   <div
     class={cn(
@@ -479,7 +481,10 @@
     </Button>
     <div class="flex flex-col items-end justify-end gap-1 p-1">
       <div class="flex gap-1">
-        <Badge class="w-10 h-9 place-content-center" variant="secondary">
+        <Badge
+          class="w-10 h-9 rounded-xl place-content-center"
+          variant="secondary"
+        >
           {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
           !isFinite(Math.round((currentlyCount / totalPage) * 100))
             ? 0
@@ -487,7 +492,10 @@
               ? 100
               : Math.round((currentlyCount / totalPage) * 100)}%
         </Badge>
-        <Badge class="w-12 h-9  place-content-center" variant="secondary">
+        <Badge
+          class="w-12 h-9 rounded-xl  place-content-center"
+          variant="secondary"
+        >
           {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
         </Badge>
         <Button
@@ -601,7 +609,7 @@
       <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
         <div class="inline-flex">
           <Badge
-            class="w-[133px]  flex justify-center rounded-r-none"
+            class="w-[133px] flex justify-center rounded-l-xl rounded-r-none"
             variant="secondary"
           >
             {favorite?.name
@@ -611,10 +619,10 @@
               : ""}
           </Badge>
           <Badge
-            class="w-12 rounded-l-none flex justify-center items-center ml-0.5 px-2"
+            class="w-12 rounded-l-none rounded-r-xl flex justify-center items-center ml-0.5 px-2"
             variant="secondary"
           >
-            {chapter.number.toString()}
+            {chapter?.number.toString()}
           </Badge>
         </div>
         <Button
@@ -657,34 +665,57 @@
       </div>
     </div>
   {:else}
-    <button
-      class="fixed inset-0 flex cursor-default"
-      style="z-index: 40;"
-      use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
-      onfocus={(e) => {
-        e.currentTarget.blur();
-      }}
-      tabindex={-1}
-      onswipe={handleSwipe}
-      onclick={(e) => {
-        nextPage();
-        e.currentTarget.blur();
-      }}
-      oncontextmenu={(e) => {
-        e.preventDefault();
-        prevPage();
-      }}
-      onwheel={(e) => {
-        if ($fitMode !== "") {
+    {#if $fitMode === "width"}
+      <!-- svelte-ignore a11y_consider_explicit_label -->
+      <button
+        class="fixed inset-0 flex cursor-default"
+        style="z-index: 40;"
+        use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+        onfocus={(e) => {
+          e.currentTarget.blur();
+        }}
+        tabindex={-1}
+        onswipe={handleSwipe}
+        onclick={(e) => {
+          nextPage();
+          e.currentTarget.blur();
+        }}
+        oncontextmenu={(e) => {
+          e.preventDefault();
+          prevPage();
+        }}
+        onwheel={(e) => {
           if (e.deltaY > 0) {
             nextPage();
           } else {
             prevPage();
           }
-        }
-      }}
-    >
-      <!-- <button
+        }}
+      >
+      </button>
+    {:else}
+      <!-- svelte-ignore a11y_consider_explicit_label -->
+      <button
+        class="fixed inset-0 flex cursor-default"
+        style="z-index: 40;"
+        use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+        onfocus={(e) => {
+          e.currentTarget.blur();
+        }}
+        tabindex={-1}
+        onswipe={handleSwipe}
+        onclick={(e) => {
+          nextPage();
+          e.currentTarget.blur();
+        }}
+        oncontextmenu={(e) => {
+          e.preventDefault();
+          prevPage();
+        }}
+      >
+      </button>
+    {/if}
+    <!-- <button
         aria-label="Forward"
         class="w-[50%] cursor-default outline-none border-none bg-transparent"
         tabindex="-1"
@@ -702,9 +733,8 @@
           e.currentTarget.blur();
         }}
       ></button> -->
-    </button>
     {#if $fitMode === "width"}
-      <div class="h-full w-full overflow-auto">
+      <div class="h-full w-full overflow-hidden">
         <div class="min-h-full w-full flex items-center justify-center">
           <img
             id={currentlyCount.toString()}
@@ -721,9 +751,9 @@
         </div>
       </div>
     {:else}
-      <div class="h-full w-full overflow-auto scrollbar">
+      <div class="h-full w-full overflow-y-auto scrollbar">
         <div
-          class="min-h-full w-full flex items-center content-center place-content-center justify-center"
+          class="min-h-full flex items-center content-center place-content-center justify-center"
         >
           <img
             id={currentlyCount.toString()}
@@ -737,19 +767,6 @@
       </div>
     {/if}
   {/if}
-
-  <div
-    class="fixed w-screen h-screen z-50 pointer-events-none flex justify-end items-center"
-  >
-    {#if currentlyCount === totalPage && !isTheLastChapter}
-      <Button
-        class=" pointer-events-auto"
-        onclick={() => handleGoChapter("next")}
-      >
-        <Icon icon="lucide:arrow-right" />
-      </Button>
-    {/if}
-  </div>
 </div>
 
 {#each images as image, i (i)}

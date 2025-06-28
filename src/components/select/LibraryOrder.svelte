@@ -84,7 +84,7 @@
     </Popover.Content>
   </Popover.Root>
   <Button
-    class="w-[20px] ml-[-1px] rounded-l-none"
+    class="w-[20px] -ml-[1px] rounded-l-none"
     variant="secondary"
     onclick={async () => {
       isAscending.set(!$isAscending);

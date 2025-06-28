@@ -13,7 +13,7 @@
     Manga
   </Button>
   <Button
-    class="rounded-none mx-[-0.5px]"
+    class="rounded-none -mx-[0.5px]"
     variant={selectedType === "anime" ? "elevated" : "elevatedHover"}
     onclick={() => (selectedType = "anime")}
   >

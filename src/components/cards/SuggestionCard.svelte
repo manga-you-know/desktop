@@ -32,14 +32,14 @@
     alt={suggestion.name}
   />
   <div
-    class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center m-[-5.5px]"
+    class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center -m-[5.5px]"
   >
     <!-- <Badge
       class=" w-40 max-w-40 flex justify-center rounded-xl bg-"
       {variant}
     > -->
     <div
-      class="h-[244px] w-[160px] max-w-[168px] mt-[-1px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+      class="h-[244px] w-[160px] max-w-[168px] -mt-[1px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
     >
       <Label
         class="max-w-[150px] mt-[12px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
@@ -65,7 +65,7 @@
           <Icon icon="lucide:book-open-text" class="w-4 h-4" />
         </Button>
         <Button
-          class="rounded-none !mx-[-0.7px]"
+          class="rounded-none !-mx-[0.7px]"
           variant="secondary"
           size="sm"
           tabindex={-1}

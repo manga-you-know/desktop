@@ -82,7 +82,7 @@
   >
     <div
       class={cn(
-        "bg-sidebar flex !max-w-[80svw] mb-[-15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "bg-sidebar flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14"
       )}
     >
@@ -121,7 +121,7 @@
     {#if $libraryFavorites.length > perPage}
       <div class="w-full h-11"></div>
       <div
-        class="bg-sidebar flex rounded-3xl smh:rounded-b-none mt-[-15px] absolute bottom-5 smh:bottom-2 smh:mt-3 p-2 smh:pb-1 transition-all"
+        class="bg-sidebar flex rounded-3xl smh:rounded-b-none -mt-[15px] absolute bottom-5 smh:bottom-2 smh:mt-3 p-2 smh:pb-1 transition-all"
       >
         <Pagination.Root
           {count}

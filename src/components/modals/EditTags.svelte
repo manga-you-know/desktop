@@ -58,7 +58,7 @@
     <div class="w-[26rem] flex flex-col items-center gap-2">
       <div class="inline-flex gap-2">
         <Input
-          class="w-80 ml-[-12px]"
+          class="w-80 -ml-[12px]"
           variant="secondary"
           placeholder="Create tag..."
           floatingLabel
