@@ -76,8 +76,7 @@
     `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`
   );
   let downloadedImages: DirEntry[] = $state([]);
-  // svelte-ignore non_reactive_update
-  let pagesDiv: HTMLDivElement;
+  let pagesDiv: HTMLDivElement = $state(null!);
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
