@@ -73,7 +73,7 @@
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}
         <Button
-          class="min-w-[165px] max-w-[165px] justify-between select-none rounded-r-none "
+          class="bg-background/60 border-secondary/70 hover-secondary/70 min-w-[165px] max-w-[165px] justify-between select-none rounded-r-none "
           variant="outline"
           {...props}
           role="combobox"
