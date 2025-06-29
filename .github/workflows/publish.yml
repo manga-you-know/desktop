@@ -49,7 +49,7 @@ jobs:
           config-file-path: ./.github/.config.cjs
           version-file: "./src-tauri/tauri.conf.json"
           skip-version-file: false
-          skip-git-pull: true
+          skip-git-pull: false
           skip-tag: false
           skip-commit: false
           skip-bump: true

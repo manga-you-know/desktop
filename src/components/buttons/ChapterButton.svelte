@@ -77,7 +77,7 @@
       tabindex={-1}
       bind:onclick={onreadclick}
     >
-      <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="w-5 h-5" />
+      <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="size-5" />
     </Button>
   </Tooltip>
 </Button>

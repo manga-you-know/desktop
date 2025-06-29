@@ -34,6 +34,7 @@ function addFavorite(favorite: Favorite) {
         toReadCount: 0,
         startLoading: () => loadFavoriteChapters(favorite),
         nextChapter: null,
+        nextImages: [],
       },
     };
   });
@@ -69,17 +70,17 @@ export async function rerenderFavorites(): Promise<void> {
   await refreshFavorites();
 }
 
-export async function preloadChapter(chapter: Chapter): Promise<void> {
+export async function preloadChapter(chapter: Chapter): Promise<string[]> {
   var images = await dl.getChapterImages(chapter);
-  images = await dl.getBase64Images(images, dl.getBaseUrl(chapter.source));
+  return await dl.getBase64Images(images, dl.getBaseUrl(chapter.source));
 }
 
 export async function preloadNextChapter(
   currentlyChapterIndex: number,
   chapters: Chapter[]
-): Promise<void> {
-  if (currentlyChapterIndex === 0) return;
-  preloadChapter(chapters[currentlyChapterIndex - 1]);
+): Promise<string[]> {
+  if (currentlyChapterIndex === 0) return [];
+  return await preloadChapter(chapters[currentlyChapterIndex - 1]);
 }
 
 export async function loadFavoritesChapters(
@@ -201,6 +202,23 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
       chaptersToRead.length
     );
   }
+
+  const fetchNext = async () => {
+    if (nextChapter !== null) {
+      const nextImages = await preloadChapter(nextChapter);
+      favoritesLoaded.update((currentFavorites) => {
+        const favoriteId = strNotEmpty(favorite.id);
+        return {
+          ...currentFavorites,
+          [favoriteId]: {
+            ...currentFavorites[favoriteId],
+            nextImages,
+          },
+        };
+      });
+    }
+  };
+  fetchNext();
 }
 
 export async function getValueToRead(favorite: Favorite): Promise<

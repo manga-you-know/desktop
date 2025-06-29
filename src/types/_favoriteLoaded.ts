@@ -8,4 +8,5 @@ export interface FavoriteLoaded {
   toReadCount: number;
   startLoading: VoidFunction;
   nextChapter: Chapter | null;
+  nextImages: string[];
 }

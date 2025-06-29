@@ -6,7 +6,6 @@
   import {
     addReadedBelow,
     loadFavoriteChapters,
-    preloadNextChapter,
     stopDiscordPresence,
     setDiscordActivity,
     setFullscreen,
@@ -30,6 +29,7 @@
     openReadMenu,
     openSearch,
     customTitlebar,
+    favoritesLoaded,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -101,6 +101,16 @@
       const estimatedPage = Math.ceil((scrollPercentage / 100) * totalPage);
       currentlyCount = Math.max(1, Math.min(estimatedPage, totalPage));
     }
+  }
+
+  async function preloadNextChapter(): Promise<void> {
+    if (Number(chapterIndex) === 0) return;
+    const chapterToFetch = $globalChapters[Number(chapterIndex) - 1];
+    var images = await $downloadManager.getChapterImages(chapterToFetch);
+    await $downloadManager.getBase64Images(
+      images,
+      $downloadManager.getBaseUrl(chapterToFetch.source)
+    );
   }
 
   function setChapterActivity(name: string) {
@@ -287,7 +297,7 @@
       );
       backupImages = [...images];
       currentlyImage = images[currentlyCount - 1];
-      preloadNextChapter(Number(chapterIndex), $globalChapters);
+      preloadNextChapter();
     }
   });
 
@@ -297,8 +307,18 @@
     }
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
+    let alreadyB64 = false;
     if (!isLocal) {
-      images = await $downloadManager.getChapterImages(chapter);
+      if (favorite.is_ultra_favorite) {
+        if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
+          images = $favoritesLoaded[favorite.id.toString()]?.nextImages;
+          alreadyB64 = true;
+        } else {
+          images = await $downloadManager.getChapterImages(chapter);
+        }
+      } else {
+        images = await $downloadManager.getChapterImages(chapter);
+      }
     } else {
       images = await getLocalChapterImages();
     }
@@ -313,13 +333,15 @@
       loadFavoriteChapters(favorite);
     }
     if (!isLocal) {
-      images = await $downloadManager.getBase64Images(
-        images,
-        $downloadManager.getBaseUrl(favorite.source)
-      );
-      backupImages = [...images];
+      if (!alreadyB64) {
+        images = await $downloadManager.getBase64Images(
+          images,
+          $downloadManager.getBaseUrl(favorite.source)
+        );
+        backupImages = [...images];
+      }
       currentlyImage = images[currentlyCount - 1];
-      preloadNextChapter(Number(chapterIndex), $globalChapters);
+      preloadNextChapter();
     }
   });
 
@@ -340,8 +362,7 @@
         if (key === "enter") {
           if (currentlyCount === totalPage && !isTheLastChapter) {
             handleGoChapter("next");
-          }
-          nextPage();
+          } else nextPage();
         }
       }
       if (key === "backspace") {
