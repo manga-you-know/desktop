@@ -263,8 +263,8 @@
     loadUltraFavorite();
     isFetching = true;
     setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
-    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
     globalChapters.set([]);
+    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
     await refreshDownloadeds();
     refreshJsonChapters();
     isMulti = $downloadManager.isMultiLanguage(favorite.source);
@@ -406,6 +406,7 @@
                   );
 
             goto(`/reader/${favorite.id}/${originalIndex}`);
+            open = false;
           }
         }}
       >
@@ -758,6 +759,7 @@
                           (c) => c.chapter_id === chapter.chapter_id
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}`);
+                        open = false;
                       }}
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();
@@ -835,6 +837,7 @@
                           (c) => c.chapter_id === chapter.chapter_id
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}?local`);
+                        open = false;
                       }}
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();

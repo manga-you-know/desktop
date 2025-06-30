@@ -11,7 +11,7 @@ import {
   // MangaDl
   MangaDexDl,
   MangaReaderToDl,
-  MangaSeeDl,
+  // MangaSeeDl,
   TCBScansDl,
   MangaPillDl,
   TaosectDl,
@@ -56,7 +56,6 @@ export class DownloadManager {
     this.mangaSources = {
       TCB: new TCBScansDl(),
       Taosect: new TaosectDl(),
-      MangaSee: new MangaSeeDl(),
       MangaDex: new MangaDexDl(),
       MangaPill: new MangaPillDl(),
       MangaFire: new MangaFireDl(),
@@ -72,18 +71,22 @@ export class DownloadManager {
       AnimeOwl: new AnimeOwlDl(),
     };
     this.search = this.search.bind(this);
-    this._getChapters = this._getChapters.bind(this);
     this.getEpisodes = this.getEpisodes.bind(this);
-    this.getEpisodeContent = this.getEpisodeContent.bind(this);
+    this._getChapters = this._getChapters.bind(this);
+    this.getBase64Image = this.getBase64Image.bind(this);
+    this.getBase64Images = this.getBase64Images.bind(this);
     this.getChapterImages = this.getChapterImages.bind(this);
+    this.getEpisodeContent = this.getEpisodeContent.bind(this);
     this.getFavoriteLanguages = this.getFavoriteLanguages.bind(this);
 
     this.search = memoize(this.search, (query, source) => `${query}:${source}`);
     this.getFavoriteLanguages = memoize(this.getFavoriteLanguages);
     this.getChapters = memoizeExpiring(this._getChapters, 600);
     this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
+    this.getBase64Image = memoize(this.getBase64Image);
     this.getChapterImages = memoize(this.getChapterImages);
     this.getEpisodeContent = memoize(this.getEpisodeContent);
+    this.getBase64Images = memoize(this.getBase64Images);
     this.getMangaById = memoize(this.getMangaById);
     this.getMangaByUrl = memoize(this.getMangaByUrl);
   }
@@ -169,12 +172,11 @@ export class DownloadManager {
   ) {
     const sourceNames = this.getSourcesNames(type);
     for (let source of sourceNames) {
-      if (source === sourceToExclude) {
-        continue;
-      }
+      if (source === sourceToExclude) continue;
       this.search(query, source);
     }
   }
+
   async getFavoriteLanguages(favorite: Favorite): Promise<Language[]> {
     const sourceDl = this.getImageBasedSource(favorite.source);
     return await retry(

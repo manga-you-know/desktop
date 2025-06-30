@@ -65,6 +65,7 @@
         toReadCount: 0,
         startLoading: () => loadFavoriteChapters(favorite),
         nextChapter: null,
+        nextImages: [],
       };
     }
     if (!favoriteLoad.isLoaded && !favoriteLoad.isLoading) {

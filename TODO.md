@@ -20,6 +20,7 @@
 - NOVELS
 - MANWHA
 - Improve updates for Linux
+- Make chapters only readed in the last page
 
 ## Bugs & fixes
 

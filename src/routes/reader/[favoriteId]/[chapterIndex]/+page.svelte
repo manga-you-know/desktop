@@ -265,6 +265,16 @@
     return [];
   }
 
+  async function loadB64() {
+    images = await $downloadManager.getBase64Images(
+      images,
+      $downloadManager.getBaseUrl(favorite.source)
+    );
+    backupImages = [...images];
+    currentlyImage = images[currentlyCount - 1];
+    preloadNextChapter();
+  }
+
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
@@ -277,6 +287,7 @@
         `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`
       );
       images = await $downloadManager.getChapterImages(chapter);
+      loadB64();
     } else {
       images = await getLocalChapterImages();
     }
@@ -289,15 +300,6 @@
     readeds.set(newReadeds);
     if (favorite.is_ultra_favorite) {
       loadFavoriteChapters(favorite);
-    }
-    if (!isLocal) {
-      images = await $downloadManager.getBase64Images(
-        images,
-        $downloadManager.getBaseUrl(favorite.source)
-      );
-      backupImages = [...images];
-      currentlyImage = images[currentlyCount - 1];
-      preloadNextChapter();
     }
   });
 
@@ -307,17 +309,17 @@
     }
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
-    let alreadyB64 = false;
     if (!isLocal) {
       if (favorite.is_ultra_favorite) {
         if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
           images = $favoritesLoaded[favorite.id.toString()]?.nextImages;
-          alreadyB64 = true;
         } else {
           images = await $downloadManager.getChapterImages(chapter);
+          loadB64();
         }
       } else {
         images = await $downloadManager.getChapterImages(chapter);
+        loadB64();
       }
     } else {
       images = await getLocalChapterImages();
@@ -331,17 +333,6 @@
     readeds.set(newReadeds);
     if (favorite.is_ultra_favorite) {
       loadFavoriteChapters(favorite);
-    }
-    if (!isLocal) {
-      if (!alreadyB64) {
-        images = await $downloadManager.getBase64Images(
-          images,
-          $downloadManager.getBaseUrl(favorite.source)
-        );
-        backupImages = [...images];
-      }
-      currentlyImage = images[currentlyCount - 1];
-      preloadNextChapter();
     }
   });
 

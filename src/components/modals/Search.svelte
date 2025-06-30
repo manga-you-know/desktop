@@ -115,7 +115,7 @@
         isResultOpen ? "-translate-x-full" : "translate-x-0'"
       )}
     >
-      <AlertDialog.Header>
+      <AlertDialog.Header class="bg-accent border-secondary border-1">
         <div class="flex w-full items-center ml-3 my-1">
           <div class="w-5 h-5 mr-2">
             <Icon
@@ -272,7 +272,13 @@
             <Button
               class="bg-background/60 border-0.5 rounded-l-none items-center"
               variant="outline"
-              onclick={() => (isFavoriteOpen = true)}
+              onclick={() => {
+                if (favoriteOpen !== null) {
+                  favoriteOpen = isFavorite(favoriteOpen) ?? favoriteOpen;
+                }
+                isFavoriteOpen = true;
+                openSearch.set(false);
+              }}
               disabled={!(favoriteOpen ? isFavorite(favoriteOpen) : false)}
             >
               <Icon
