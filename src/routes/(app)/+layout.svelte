@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar, BottomNavigation } from "@/components";
-  import { customTitlebar, lastPage } from "@/store";
+  import { customTitlebar, lastPage, sidebarBehavior } from "@/store";
   import { page } from "$app/state";
   import { fly } from "svelte/transition";
   import { saveSettings } from "@/functions";
@@ -55,7 +55,7 @@
 
 {#if !isMobile}
   <div class="w-full flex select-none overflow-hidden relative">
-    <SidebarProv.Provider class="h-full" open={false}>
+    <SidebarProv.Provider class="h-full" open={$sidebarBehavior === "expand"}>
       <Sidebar variant="inset" />
       <SidebarProv.Inset class="p-2">
         {#key page.route.id}
@@ -89,7 +89,7 @@
     </SidebarProv.Provider>
   </div>
 {:else}
-  <SidebarProv.Provider class="h-full!" controlledOpen>
+  <SidebarProv.Provider class="h-full!" open={false} controlledOpen>
     <Sidebar variant="floating" />
     <div
       class="dark:bg-background !w-screen !h-screen !max-h-screen flex flex-col justify-end select-none !overflow-hidden"

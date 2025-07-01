@@ -2,6 +2,7 @@
   import { page } from "$app/state";
   import { swipe, type SwipeCustomEvent } from "svelte-gestures";
   import { toast } from "svelte-sonner";
+  import { draggable } from "@neodrag/svelte";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
     addReadedBelow,
@@ -77,6 +78,7 @@
   );
   let downloadedImages: DirEntry[] = $state([]);
   let pagesDiv: HTMLDivElement = $state(null!);
+  let menuFromTop: number = $state(0);
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -442,7 +444,7 @@
 />
 <div
   class={cn(
-    "bg-background h-screen overflow-hidden",
+    "bg-white dark:bg-background h-screen overflow-hidden",
     !$isFullscreen && $customTitlebar && "h-[calc(100vh-2.5rem)]"
   )}
 >
@@ -466,191 +468,215 @@
   </div>
   <div
     class={cn(
-      "fixed w-screen flex justify-end items-center z-50 pointer-events-none transition-all duration-500",
+      "fixed h-screen w-screen flex justify-end items-start z-50 pointer-events-none transition-all duration-500 ",
       $openReadMenu ? "translate-x-0" : "translate-x-[15rem]"
     )}
   >
-    <Button
-      class="w-3 rounded-l-full rounded-r-none pointer-events-auto"
-      variant="ghost"
-      onclick={(_) => {
-        openReadMenu.set(!$openReadMenu);
-        saveSettings();
-      }}
-      onmouseenter={() => {
-        openReadMenu.set(!$openReadMenu);
-        saveSettings();
+    <div
+      class="flex h-36 mt-[{menuFromTop}px] absolute"
+      use:draggable={{
+        axis: "y",
+        handle: ".handle",
+        bounds: { top: 5, bottom: 10 },
       }}
     >
-      <Icon
-        class={cn(
-          "!size-5 transition-all duration-700",
-          $openReadMenu ? "rotate-180" : "rotate-0 opacity-50"
-        )}
-        icon="typcn:chevron-left"
-      />
-    </Button>
-    <div class="flex flex-col items-end justify-end gap-1 p-1">
-      <div class="flex gap-1">
-        <Badge
-          class="w-10 h-9 rounded-xl place-content-center"
-          variant="secondary"
-        >
-          {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
-          !isFinite(Math.round((currentlyCount / totalPage) * 100))
-            ? 0
-            : currentlyCount === 1 && totalPage === 1
-              ? 100
-              : Math.round((currentlyCount / totalPage) * 100)}%
-        </Badge>
-        <Badge
-          class="w-12 h-9 rounded-xl  place-content-center"
-          variant="secondary"
-        >
-          {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
-        </Badge>
+      <div class="flex flex-col gap-3 justify-center">
         <Button
-          class="pointer-events-auto z-50"
-          size="sm"
-          variant="secondary"
-          onclick={toggleFullscreen}
+          class="w-3 rounded-l-full rounded-r-none pointer-events-auto"
+          variant="ghost"
+          onclick={(_) => {
+            openReadMenu.set(!$openReadMenu);
+            saveSettings();
+          }}
+          onmouseenter={() => {
+            openReadMenu.set(!$openReadMenu);
+            saveSettings();
+          }}
         >
-          <Icon icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"} />
+          <Icon
+            class={cn(
+              "!size-5 transition-all duration-700",
+              $openReadMenu ? "rotate-180" : "rotate-0 opacity-50"
+            )}
+            icon="typcn:chevron-left"
+          />
         </Button>
+        <Button
+          class={cn(
+            "w-10 cursor-move pointer-events-auto handle",
+            !$openReadMenu && "invisible"
+          )}
+          variant="ghost"
+        >
+          <Icon class="!size-5" icon="ic:round-drag-indicator" />
+        </Button>
+      </div>
+      <div class="flex flex-col items-end justify-end gap-1 p-1">
+        <div class="flex gap-1">
+          <Badge
+            class="w-10 h-9 rounded-xl place-content-center"
+            variant="secondary"
+          >
+            {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
+            !isFinite(Math.round((currentlyCount / totalPage) * 100))
+              ? 0
+              : currentlyCount === 1 && totalPage === 1
+                ? 100
+                : Math.round((currentlyCount / totalPage) * 100)}%
+          </Badge>
+          <Badge
+            class="w-12 h-9 rounded-xl  place-content-center"
+            variant="secondary"
+          >
+            {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
+          </Badge>
+          <Button
+            class="pointer-events-auto z-50"
+            size="sm"
+            variant="secondary"
+            onclick={toggleFullscreen}
+          >
+            <Icon
+              icon={$isFullscreen ? "lucide:minimize" : "lucide:maximize"}
+            />
+          </Button>
 
-        <Button
-          class="pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          onclick={() => ($openMenuChapters = true)}
-        >
-          <Icon icon="lucide:menu" />
-        </Button>
-        <Button
-          class="w-11 pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          onclick={goHome}
-        >
-          <Icon icon="lucide:home" />
-        </Button>
-      </div>
-      <div class="flex gap-1 z-30">
-        <Button
-          class="h-9 pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          disabled={$viewMode === "scroll"}
-          onclick={() => {
-            if ($fitMode === "") {
-              $fitMode = "width";
-            } else {
-              $fitMode = "";
-            }
-            saveSettings();
-          }}
-        >
-          <Icon
-            icon={$fitMode === "width"
-              ? "tabler:arrow-autofit-content-filled"
-              : "tabler:arrow-autofit-content"}
-          />
-        </Button>
-        <Button
-          class="h-9 pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          onclick={() => {
-            $viewMode = $viewMode === "scroll" ? "single" : "scroll";
-            saveSettings();
-          }}
-        >
-          <Icon
-            icon={$viewMode === "scroll" ? "lucide:scroll" : "lucide:book-open"}
-          />
-        </Button>
-        <Button
-          class="h-9 pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          disabled={isLocal}
-          onclick={joinCurrentlyImageToNext}
-        >
-          <Icon icon="fluent:image-split-24-filled" />
-        </Button>
-        <div class="inline-flex pointer-events-auto z-50">
           <Button
-            class="w-7 rounded-r-none"
+            class="pointer-events-auto"
             size="sm"
             variant="secondary"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = Math.max(50, $zoomLevel - 10);
-              saveSettings();
-            }}
+            onclick={() => ($openMenuChapters = true)}
           >
-            <Icon icon="lucide:minus" />
+            <Icon icon="lucide:menu" />
           </Button>
           <Button
-            class="w-[40px] p-0 flex justify-center rounded-none"
+            class="w-11 pointer-events-auto"
             size="sm"
             variant="secondary"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = 100;
-              saveSettings();
-            }}
+            onclick={goHome}
           >
-            {$zoomLevel}%
-          </Button>
-          <Button
-            class="w-7 rounded-l-none"
-            size="sm"
-            variant="secondary"
-            disabled={$fitMode !== "" && $viewMode !== "scroll"}
-            onclick={() => {
-              $zoomLevel = Math.min(200, $zoomLevel + 10);
-              saveSettings();
-            }}
-          >
-            <Icon icon="lucide:plus" />
+            <Icon icon="lucide:home" />
           </Button>
         </div>
-      </div>
-      <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
-        <div class="inline-flex">
-          <Badge
-            class="w-[133px] flex justify-center rounded-l-xl rounded-r-none"
+        <div class="flex gap-1 z-30">
+          <Button
+            class="h-9 pointer-events-auto"
+            size="sm"
             variant="secondary"
+            disabled={$viewMode === "scroll"}
+            onclick={() => {
+              if ($fitMode === "") {
+                $fitMode = "width";
+              } else {
+                $fitMode = "";
+              }
+              saveSettings();
+            }}
           >
-            {favorite?.name
-              ? favorite.name.length > 17
-                ? favorite.name.substring(0, 17) + "..."
-                : favorite.name
-              : ""}
-          </Badge>
-          <Badge
-            class="w-12 rounded-l-none rounded-r-xl flex justify-center items-center ml-0.5 px-2"
+            <Icon
+              icon={$fitMode === "width"
+                ? "tabler:arrow-autofit-content-filled"
+                : "tabler:arrow-autofit-content"}
+            />
+          </Button>
+          <Button
+            class="h-9 pointer-events-auto"
+            size="sm"
             variant="secondary"
+            onclick={() => {
+              $viewMode = $viewMode === "scroll" ? "single" : "scroll";
+              saveSettings();
+            }}
           >
-            {chapter?.number.toString()}
-          </Badge>
+            <Icon
+              icon={$viewMode === "scroll"
+                ? "lucide:scroll"
+                : "lucide:book-open"}
+            />
+          </Button>
+          <Button
+            class="h-9 pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            disabled={isLocal}
+            onclick={joinCurrentlyImageToNext}
+          >
+            <Icon icon="fluent:image-split-24-filled" />
+          </Button>
+          <div class="inline-flex pointer-events-auto z-50">
+            <Button
+              class="w-7 rounded-r-none"
+              size="sm"
+              variant="secondary"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = Math.max(50, $zoomLevel - 10);
+                saveSettings();
+              }}
+            >
+              <Icon icon="lucide:minus" />
+            </Button>
+            <Button
+              class="w-[40px] p-0 flex justify-center rounded-none"
+              size="sm"
+              variant="secondary"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = 100;
+                saveSettings();
+              }}
+            >
+              {$zoomLevel}%
+            </Button>
+            <Button
+              class="w-7 rounded-l-none"
+              size="sm"
+              variant="secondary"
+              disabled={$fitMode !== "" && $viewMode !== "scroll"}
+              onclick={() => {
+                $zoomLevel = Math.min(200, $zoomLevel + 10);
+                saveSettings();
+              }}
+            >
+              <Icon icon="lucide:plus" />
+            </Button>
+          </div>
         </div>
-        <Button
-          class="w-10 pointer-events-auto"
-          size="sm"
-          variant="secondary"
-          onclick={favoriteImage}
-        >
-          <Icon
-            icon={downloadedImages
-              .map((img) => img.name)
-              .includes(currentlyImagePath)
-              ? "tabler:photo-filled"
-              : "tabler:photo"}
-            class="!size-5"
-          />
-        </Button>
+        <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
+          <div class="inline-flex">
+            <Badge
+              class="w-[133px] flex justify-center rounded-l-xl rounded-r-none"
+              variant="secondary"
+            >
+              {favorite?.name
+                ? favorite.name.length > 17
+                  ? favorite.name.substring(0, 17) + "..."
+                  : favorite.name
+                : ""}
+            </Badge>
+            <Badge
+              class="w-12 rounded-l-none rounded-r-xl flex justify-center items-center ml-0.5 px-2"
+              variant="secondary"
+            >
+              {chapter?.number.toString()}
+            </Badge>
+          </div>
+          <Button
+            class="w-10 pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            onclick={favoriteImage}
+          >
+            <Icon
+              icon={downloadedImages
+                .map((img) => img.name)
+                .includes(currentlyImagePath)
+                ? "tabler:photo-filled"
+                : "tabler:photo"}
+              class="!size-5"
+            />
+          </Button>
+        </div>
       </div>
     </div>
   </div>
@@ -746,7 +772,9 @@
       ></button> -->
     {#if $fitMode === "width"}
       <div class="h-full w-full overflow-hidden">
-        <div class="min-h-full w-full flex items-center justify-center">
+        <div
+          class="min-h-full w-full flex items-center justify-center overflow-hidden"
+        >
           <img
             id={currentlyCount.toString()}
             onerror={() => imgOnError(currentlyCount.toString())}

@@ -14,6 +14,7 @@
     isDownloaded: boolean;
     isDownloading: boolean;
     isReaded: boolean;
+    noDownload?: boolean;
     onclick?: () => void;
     ondownloadclick?: (e: Event) => void;
     onreadclick?: (e: Event) => void;

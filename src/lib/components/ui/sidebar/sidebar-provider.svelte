@@ -14,7 +14,7 @@
 
   let {
     ref = $bindable(null),
-    open = $bindable(true),
+    open = $bindable(false),
     onOpenChange = () => {},
     controlledOpen = false,
     class: className,

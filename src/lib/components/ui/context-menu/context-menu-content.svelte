@@ -18,7 +18,7 @@
     bind:ref
     class={cn(
       "bg-secondary text-popover-foreground z-50 min-w-[8rem] rounded-xl border border-sidebar p-1 shadow-md focus:outline-none",
-      $theme === "dark" ? "dark" : "",
+      $theme === "dark" && "dark",
       className
     )}
     {...restProps}

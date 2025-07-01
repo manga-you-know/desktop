@@ -12,9 +12,9 @@
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",
           outline:
-            "border border-secondary bg-background hover:bg-secondary hover:text-secondary-foreground/60 dark:text-slate-200",
+            "border border-secondary bg-background/30 hover:bg-secondary dark:text-slate-200",
           secondary:
-            "bg-secondary text-secondary-foreground hover:text-secondary-foreground/60 hover:bg-secondary/80 dark:text-slate-200",
+            "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:text-slate-200",
           ghost:
             "hover:bg-secondary hover:text-secondary-foreground/80 dark:text-slate-200",
           link: "text-primary underline-offset-4 hover:underline",

@@ -8,8 +8,6 @@
   import { openSearch } from "@/store";
 </script>
 
-<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
-
 <div
   class="scrollbar w-[99.2%] h-full flex flex-col items-center overflow-x-hidden overflow-y-auto"
 >
@@ -37,7 +35,7 @@
   <div class="w-full h-full mt-12">
     <Label class="text-bold text-2xl pl-4">Shounen</Label>
     <Carousel speed={1.2}>
-      {#each Array(20).fill(SHOUNENS.flat()).flat() as suggestion}
+      {#each Array(2).fill(SHOUNENS.flat()).flat() as suggestion}
         <Item class="max-w-44 w-44">
           <SuggestionCard {suggestion} />
         </Item>
@@ -45,7 +43,7 @@
     </Carousel>
     <Label class="text-bold text-2xl pl-4">Seinen</Label>
     <Carousel reversed={true} speed={1.2}>
-      {#each Array(20).fill(SEINEN.flat()).flat() as suggestion}
+      {#each Array(2).fill(SEINEN.flat()).flat() as suggestion}
         <Item class="max-w-44 w-44">
           <SuggestionCard {suggestion} />
         </Item>

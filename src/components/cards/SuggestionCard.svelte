@@ -22,7 +22,7 @@
 <!-- <EditFavorite {favorite} bind:open={isEdit} /> -->
 <!-- <AskDelete {favorite} bind:open={isDelete} /> -->
 <button
-  class="group relative rounded-2xl h-[244px] max-h-[264] w-[160px] max-w-[160px] flex flex-col p-1 items-center justify-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-secondary hover:bg-gray-800 hover:scale-[0.95] hover:cursor-pointer hover:shadow-lg hover:absolute transform hover:border-1 focus:bg-gray-800 focus:shadow-lg"
+  class="group relative rounded-2xl h-[244px] max-h-[264px] w-[160px] max-w-[160px] flex flex-col p-1 items-center justify-center transition-transform duration-300 ease-in-out border border-transparent outline-none bg-secondary hover:bg-gray-800 hover:scale-[0.95] hover:cursor-pointer hover:shadow-lg hover:absolute transform hover:border-1 focus:shadow-lg"
   onclick={() => (isOpen = true)}
   tabindex={-1}
 >

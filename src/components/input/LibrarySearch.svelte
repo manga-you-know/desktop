@@ -65,7 +65,7 @@
   />
   <div
     class="relative transition-all duration-500 ease-in-out {showInput
-      ? 'max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0'
+      ? 'max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0'
       : 'max-w-[0px] opacity-0 overflow-hidden'}"
   >
     <Input

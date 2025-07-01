@@ -9,7 +9,6 @@
     openAdd,
     openTag,
     openDownloads,
-    downloadings,
     favoritesLoaded,
     theme,
     openInfo,
@@ -64,13 +63,6 @@
   let rotation: number = 0;
   let imgElement: HTMLImageElement | null = null;
   let isAnimating: boolean = false;
-  let downloadingCount = $derived(
-    Object.values<Downloading>($downloadings).reduce(
-      (a1, a2) => a1 + a2.downloading.length,
-
-      0
-    )
-  );
   let favoritesWithChapterCount = $derived(
     Object.values($favoritesLoaded)
       .map((fv) => (fv.nextChapter !== null ? 1 : 0))
@@ -211,43 +203,6 @@
               <Label class="cursor-pointer">Tags</Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
-          <Sidebar.MenuItem>
-            <Sidebar.MenuButton
-              class="flex justify-start "
-              variant={$openDownloads ? "outline" : "default"}
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(false);
-                openTag.set(false);
-                openAdd.set(false);
-                openInfo.set(false);
-                openSettings.set(false);
-                openDownloads.set(true);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              {#if downloadingCount > 0}
-                <Badge class="dark:text-black" value={downloadingCount} small>
-                  <Icon
-                    icon={$openDownloads
-                      ? "basil:download-solid"
-                      : "basil:download-outline"}
-                    class="!size-9 -ml-[14px]"
-                  />
-                </Badge>
-              {:else}
-                <Icon
-                  icon={$openDownloads
-                    ? "basil:download-solid"
-                    : "basil:download-outline"}
-                  class="!size-9 -ml-[14px]"
-                />
-              {/if}
-              <Label class="cursor-pointer">Downloads</Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
-
           <Sidebar.MenuItem class="hidden">
             <Sidebar.MenuButton
               onclick={(e) => {

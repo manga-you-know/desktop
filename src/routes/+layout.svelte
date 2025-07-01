@@ -130,10 +130,11 @@
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
+<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 <div
   class={twMerge(
     "!bg-background text-black dark:text-white !rounded-3xl",
-    $theme === "dark" ? "dark" : ""
+    $theme === "dark" && "dark"
   )}
 >
   <Toaster theme={$theme} toastOptions={{}} richColors duration={2700} />

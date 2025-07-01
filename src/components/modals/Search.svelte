@@ -8,7 +8,12 @@
     Separator,
   } from "@/lib/components";
   import { ReadFavorite, Source, WatchFavorite } from "@/components";
-  import { openSearch, downloadManager, selectedSource } from "@/store";
+  import {
+    openSearch,
+    downloadManager,
+    selectedSource,
+    searchTerm,
+  } from "@/store";
   import { FavoriteDB } from "@/repositories";
   import {
     refreshLibrary,
@@ -26,7 +31,6 @@
   let isResultOpen = $state(false);
   let isFavoriteOpen = $state(false);
   let favoriteOpen: Favorite | null = $state(null);
-  let searchTerm = $state("");
   let results: Favorite[] = $state([]);
   let rawFavorites: Favorite[] = $state([]);
 
@@ -40,14 +44,14 @@
   }
   async function search() {
     await new Promise((resolve) => setTimeout(resolve, 5));
-    if (searchTerm.length === 0) {
+    if ($searchTerm.length === 0) {
       results = [];
       isSearching = false;
       return;
     }
     isSearching = true;
     results = await $downloadManager.search(
-      searchTerm.toLowerCase(),
+      $searchTerm.toLowerCase(),
       $selectedSource
     );
     isSearching = false;
@@ -79,6 +83,7 @@
         `input[id="search-input"]`
       ) as HTMLInputElement;
       input?.focus();
+      if ($searchTerm.length > 0) search();
       await setDiscordActivity("Searching mangas...");
     } else {
       await stopDiscordPresence();
@@ -105,7 +110,7 @@
   <AlertDialog.Content
     overlayClass="bg-black/40"
     class={cn(
-      "overflow-hidden p-0 gap-0 bg-background/65 border-0.5",
+      "overflow-hidden p-0 gap-0 !bg-background/65 border-0.5",
       isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30rem]"
     )}
   >
@@ -121,28 +126,28 @@
             <Icon
               icon={isSearching
                 ? "eos-icons:bubble-loading"
-                : searchTerm.length > 0
+                : $searchTerm.length > 0
                   ? "lucide:x"
                   : "mingcute:search-2-fill"}
               class={cn(
                 "!w-[1.2rem] !h-[1.2rem]",
-                searchTerm.length > 0 && !isSearching ? "cursor-pointer" : ""
+                $searchTerm.length > 0 && !isSearching ? "cursor-pointer" : ""
               )}
               color="gray"
               onclick={() => {
-                if (searchTerm.length > 0 && !isSearching) {
-                  searchTerm = "";
+                if ($searchTerm.length > 0 && !isSearching) {
+                  $searchTerm = "";
                   results = [];
                 }
               }}
             />
           </div>
           <Input
-            class={isMobile ? "w-[7.5rem]" : ""}
+            class={cn("text-sm font-medium", isMobile && "w-[7.5rem]")}
             id="search-input"
             variant="link"
             autofocus
-            bind:value={searchTerm}
+            bind:value={$searchTerm}
             placeholder="Search..."
             floatingLabel
             oninput={search}
@@ -150,10 +155,9 @@
           <Source />
         </div>
       </AlertDialog.Header>
-      <Separator />
       <div
         class={cn(
-          "bg-gray-200 dark:bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-xl ",
+          "bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-xl ",
           isMobile ? "w-[26rem] h-[33rem]" : "w-[30rem] h-52"
         )}
       >
@@ -199,7 +203,7 @@
           <div class="flex h-full w-full justify-center items-center">
             <Icon icon="lucide:error" class="w-5 h-5" color="gray" />
             <span class="text-sm text-gray-500 select-none"
-              >{searchTerm.length === 0
+              >{$searchTerm.length === 0
                 ? "Type anything..."
                 : isSearching
                   ? "Searching..."
@@ -277,7 +281,6 @@
                   favoriteOpen = isFavorite(favoriteOpen) ?? favoriteOpen;
                 }
                 isFavoriteOpen = true;
-                openSearch.set(false);
               }}
               disabled={!(favoriteOpen ? isFavorite(favoriteOpen) : false)}
             >

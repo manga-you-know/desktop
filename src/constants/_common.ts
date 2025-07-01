@@ -83,6 +83,7 @@ export const ICONS_TO_LOAD = [
   "ic:round-minus",
   "ic:round-discord",
   "ic:round-photo-library",
+  "ic:round-drag-indicator",
   "ic:baseline-folder-copy",
   "ic:baseline-content-copy",
   "ic:round-fullscreen-exit",

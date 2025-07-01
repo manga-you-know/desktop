@@ -22,12 +22,13 @@
   } from "@/lib/components";
   import { ChapterButton, Language } from "@/components";
   import {
-    downloadManager,
-    globalChapters,
     readeds,
+    openSearch,
+    downloadings,
+    globalChapters,
+    downloadManager,
     preferableLanguage,
     isChaptersDescending,
-    downloadings,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -41,6 +42,7 @@
     refreshLibrary,
     saveSettings,
     removeFavorite,
+    copyText,
   } from "@/functions";
   import type { Favorite, Chapter, Language as LanguageType } from "@/types";
   import {
@@ -407,6 +409,7 @@
 
             goto(`/reader/${favorite.id}/${originalIndex}`);
             open = false;
+            openSearch.set(false);
           }
         }}
       >
@@ -521,8 +524,17 @@
 >
   <Dialog.Content class={isMobile ? "flex flex-col items-center h-[90vh]" : ""}>
     <Dialog.Header>
-      <Dialog.Title class="w-full flex justify-center dark:text-white">
+      <Dialog.Title
+        class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none"
+        onclick={() => {
+          copyText(favorite.name);
+        }}
+      >
         {limitStr(favorite.name, 40)}
+        <Icon
+          class="!size-0 ml-2  group-hover:!size-4 transition-all duration-300"
+          icon="ic:baseline-content-copy"
+        />
       </Dialog.Title>
       <!-- <Dialog.Description
         >Change your favorites attributes and save it.</Dialog.Description
@@ -760,6 +772,7 @@
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}`);
                         open = false;
+                        openSearch.set(false);
                       }}
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();
@@ -838,6 +851,7 @@
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}?local`);
                         open = false;
+                        openSearch.set(false);
                       }}
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();
@@ -863,15 +877,5 @@
         </div>
       </div>
     </div>
-    <!-- <Dialog.Footer>
-      <Button
-        effect="ringHover"
-        onclick={() => {
-          open = false;
-        }}
-      >
-        <Icon icon="lucide:check" />Confirm
-      </Button>
-    </Dialog.Footer> -->
   </Dialog.Content>
 </Dialog.Root>

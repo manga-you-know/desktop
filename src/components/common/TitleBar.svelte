@@ -14,14 +14,21 @@
     join,
   } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
-  import { isFullscreen, isMaximized } from "@/store";
+  import { downloadings, isFullscreen, isMaximized } from "@/store";
   import { setFullscreen } from "@/functions";
+  import type { Downloading } from "@/types";
 
   const window = getCurrentWindow();
   let version = $state("0.0.0");
   let appPath = $state("");
   let downloadPath = $state("");
   let documentsPath = $state("");
+  let downloadingCount = $derived(
+    Object.values<Downloading>($downloadings).reduce(
+      (a1, a2) => a1 + a2.downloading.length,
+      0
+    )
+  );
 
   onMount(async () => {
     version = await getVersion();
@@ -41,14 +48,19 @@
   data-tauri-drag-region={!$isFullscreen}
 >
   <div class="h-full flex items-center select-none">
-    <img src="/icon.png" alt="logo" class="h-6" data-tauri-drag-region />
-    <Label class="p-3" data-tauri-drag-region={!$isFullscreen}
-      >MangaYouKnow</Label
-    >
+    <img
+      src="/icon.png"
+      alt="logo"
+      class="h-6"
+      data-tauri-drag-region={!$isFullscreen}
+    />
+    <Label class="p-3" data-tauri-drag-region={!$isFullscreen}>
+      MangaYouKnow
+    </Label>
     <Menubar.Root>
       <Menubar.Menu>
         <Menubar.Trigger>Folders</Menubar.Trigger>
-        <Menubar.Content>
+        <Menubar.Content class="z-50">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={async () => openPath(await join(downloadPath, "mangas"))}
@@ -75,7 +87,7 @@
       </Menubar.Menu>
       <Menubar.Menu>
         <Menubar.Trigger>About</Menubar.Trigger>
-        <Menubar.Content>
+        <Menubar.Content class="z-50">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openUrl("https://github.com/ReiLoko4")}
@@ -119,6 +131,14 @@
         </Menubar.Content>
       </Menubar.Menu>
     </Menubar.Root>
+    <Label
+      class={cn(
+        "ml-8 dark!text-gray-400 hidden underline select-none",
+        downloadingCount > 0 && "block"
+      )}
+      data-tauri-drag-region={!$isFullscreen}
+      >{downloadingCount} downloading...
+    </Label>
   </div>
 
   <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">

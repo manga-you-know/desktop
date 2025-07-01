@@ -8,8 +8,8 @@
 - Reader controlers
 - Overall preloading
 - Yellow filter for reader
-- Open chapters
-- Menu chapters
+  - Open chapters
+  - Menu chapters
 - Acessibility & user feedback
 - Suggestions
 - Favorite panels (storing the images in base64 may be better)
@@ -24,6 +24,5 @@
 
 ## Bugs & fixes
 
-- Size of the menu of chapters when reading
 - MacOS not Building
 - Mobile doesn't really works

@@ -14,6 +14,9 @@
     downloadManager,
     favoritesLoaded,
     libraryFavorites,
+    libraryQuery,
+    openSearch,
+    searchTerm,
   } from "@/store";
   import type { Favorite } from "@/types";
   import { cn } from "@/lib/utils";
@@ -78,7 +81,7 @@
   <div
     bind:this={libraryDiv}
     bind:clientWidth={libdivWidth}
-    class="scrollbar w-[99.2%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-auto pb-5"
+    class="scrollbar w-[99.2%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
   >
     <div
       class={cn(
@@ -106,11 +109,29 @@
         onclick={() => {
           if (showedFilter === 1) showedFilter = 0;
           else showedFilter++;
-        }}>...</Button
-      >
+        }}
+        >...
+      </Button>
     </div>
     <div class="w-full h-0 smh:h-14"></div>
     <!-- {#key displayedLibrary} -->
+    {#if displayedLibrary.length === 0}
+      <div class="w-full flex justify-center mt-4">
+        <Badge
+          class="text-sm h-20 bg-blue-400 hover:bg-blue-300/40 transition-colors duration-300"
+          >Nothing was found. You can try finding "<span class="text-gray-200"
+            >{$libraryQuery}</span
+          >" in <Button
+            class="-ml-2"
+            variant="link"
+            onclick={() => {
+              searchTerm.set($libraryQuery);
+              openSearch.set(true);
+            }}>Search</Button
+          ></Badge
+        >
+      </div>
+    {/if}
     {#each displayedLibrary as favorite, i (i)}
       <LibraryCard {favorite} />
     {/each}

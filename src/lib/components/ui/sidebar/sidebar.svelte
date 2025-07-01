@@ -5,7 +5,7 @@
   import type { HTMLAttributes } from "svelte/elements";
   import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
   import { useSidebar } from "./context.svelte.js";
-  import { customTitlebar, sidebarBehavior } from "@/store";
+  import { customTitlebar } from "@/store";
 
   let {
     ref = $bindable(null),
@@ -22,14 +22,6 @@
   } = $props();
 
   const sidebar = useSidebar();
-  sidebarBehavior.subscribe((mode) => {
-    if (mode === "collapse" || mode === "on-hover") {
-      sidebar.setOpen(false);
-    }
-    if (mode === "expand") {
-      sidebar.setOpen(true);
-    }
-  });
 </script>
 
 {#if collapsible === "none"}
