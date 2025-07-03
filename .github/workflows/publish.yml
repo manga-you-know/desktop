@@ -68,9 +68,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: "macos-15" # Arm based macs
+          - platform: "macos-latest" # Arm based macs
             args: "--target aarch64-apple-darwin"
-          - platform: "macos-15" # Intel based macs
+          - platform: "macos-latest" # Intel based macs
             args: "--target x86_64-apple-darwin"
           - platform: "ubuntu-22.04"
             args: ""
@@ -93,7 +93,7 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-15' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
@@ -102,7 +102,7 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Fix Python dependencies (MacOS only)
-        if: matrix.platform == 'macos-15'
+        if: matrix.platform == 'macos-latest'
         run: |
           brew install python@3.11
           brew install python-setuptools

@@ -86,7 +86,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[11rem] ml-7 p-0">
-      <Command.Root class="dark:bg-background">
+      <Command.Root>
         <Command.Input
           placeholder="Search source..."
           tabindex={IS_MOBILE ? -1 : 1}

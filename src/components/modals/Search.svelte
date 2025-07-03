@@ -111,7 +111,7 @@
     overlayClass="bg-black/40"
     class={cn(
       "overflow-hidden p-0 gap-0 !bg-background/65 border-0.5",
-      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30rem]"
+      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30.5rem]"
     )}
   >
     <div
@@ -122,7 +122,7 @@
     >
       <AlertDialog.Header class="bg-accent border-secondary border-1">
         <div class="flex w-full items-center ml-3 my-1">
-          <div class="w-5 h-5 mr-2">
+          <div class="size-5 mr-2">
             <Icon
               icon={isSearching
                 ? "eos-icons:bubble-loading"
@@ -130,8 +130,8 @@
                   ? "lucide:x"
                   : "mingcute:search-2-fill"}
               class={cn(
-                "!w-[1.2rem] !h-[1.2rem]",
-                $searchTerm.length > 0 && !isSearching ? "cursor-pointer" : ""
+                "!size-[1.2rem]",
+                $searchTerm.length > 0 && !isSearching && "cursor-pointer"
               )}
               color="gray"
               onclick={() => {
@@ -155,10 +155,11 @@
           <Source />
         </div>
       </AlertDialog.Header>
+      <Separator />
       <div
         class={cn(
-          "bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-xl ",
-          isMobile ? "w-[26rem] h-[33rem]" : "w-[30rem] h-52"
+          "bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-3xl ",
+          isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52"
         )}
       >
         {#if results.length !== 0}

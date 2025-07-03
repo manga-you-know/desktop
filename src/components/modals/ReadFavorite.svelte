@@ -20,7 +20,7 @@
     Badge,
     Skeleton,
   } from "@/lib/components";
-  import { ChapterButton, Language } from "@/components";
+  import { ChapterButton, Image, Language } from "@/components";
   import {
     readeds,
     openSearch,
@@ -50,7 +50,7 @@
     LANGUAGE_LABELS,
     READSOURCES_LANGUAGE,
   } from "@/constants";
-  import { limitStr } from "@/utils";
+  import { imageFail, limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
   import { load, Store } from "@tauri-apps/plugin-store";
   import { Tooltip } from "svelte-ux";
@@ -356,21 +356,35 @@
     </div>
     <div class="flex">
       <div
-        class="flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-2xl z-10"
+        class="relative flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-2xl z-10"
       >
+        <div class="z-[1] absolute w-full h-9">
+          <div
+            class={cn(
+              "size-9 bg-white mx-1 rounded-xl transition-all duration-300 translate-x-0",
+              chaptersMode === "local" && "translate-x-10"
+            )}
+          ></div>
+        </div>
         <Button
-          class="size-9 transition-colors duration-300"
+          class={cn(
+            "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+            chaptersMode === "web" && "!text-black"
+          )}
           size="sm"
           onclick={() => (chaptersMode = "web")}
-          variant={chaptersMode === "web" ? "default" : "secondary"}
+          variant="secondary"
         >
           <Icon class="!size-5" icon="tabler:world" />
         </Button>
         <Button
-          class="w-9 h-9 transition-colors duration-300"
+          class={cn(
+            "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+            chaptersMode === "local" && "!text-black"
+          )}
           size="sm"
           onclick={() => (chaptersMode = "local")}
-          variant={chaptersMode === "local" ? "default" : "secondary"}
+          variant="secondary"
         >
           <Icon class="!size-5" icon="tabler:file-download" />
         </Button>
@@ -522,12 +536,12 @@
     stopDiscordPresence();
   }}
 >
-  <Dialog.Content class={isMobile ? "flex flex-col items-center h-[90vh]" : ""}>
+  <Dialog.Content class={cn(isMobile && "flex flex-col items-center h-[90vh]")}>
     <Dialog.Header>
       <Dialog.Title
-        class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none"
+        class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
         onclick={() => {
-          copyText(favorite.name);
+          copyText(favorite.name, "title");
         }}
       >
         {limitStr(favorite.name, 40)}
@@ -552,12 +566,12 @@
           isMobile ? "w-full justify-center " : "justify-start pr-10"
         )}
       >
-        <div class="!w-40 !h-70 flex justify-center">
-          <img
+        <div class="w-40 h-70 flex justify-center">
+          <Image
             draggable={false}
             src={favorite.cover}
             alt={favorite.name}
-            class="!w-40 !h-70 object-contain rounded-xl bg-gray-950!"
+            class="w-40 h-70 object-contain rounded-xl bg-gray-950!"
           />
         </div>
         <div

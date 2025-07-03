@@ -9,7 +9,7 @@
 <PanelModal bind:open bind:shouldCopy {src} {path} />
 
 <Tilt
-  class="hover:scale-[1.546] hover:z-40 no-blurry transition duration-500 [perspective:200px]"
+  class="hover:scale-[1.546] hover:z-10 no-blurry transition duration-500 [perspective:200px]"
 >
   <button
     onclick={() => (open = true)}

@@ -5,7 +5,7 @@
   import { cn } from "$lib/utils.js";
 
   export const inputVariants = tv({
-    base: "flex h-10 text-sm font-medium rounded-xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
+    base: "flex h-10 text-sm font-medium rounded-2xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
     variants: {
       variant: {
         default:
@@ -74,7 +74,8 @@
   class={cn(
     divClass,
     "relative focus-visible:ring-0 ring-0",
-    disabled ? "cursor-default" : "!cursor-text"
+    disabled ? "cursor-default" : "!cursor-text",
+    variant === "link" && "underline"
   )}
   onclick={() => {
     if (!disabled) {
@@ -110,7 +111,7 @@
       class={cn(
         labelClass,
         disabled ? "cursor-not-allowed" : "cursor-text",
-        value === "" ? "!translate-y-0 !top-[30%] !scale-100" : "",
+        value === "" && "!translate-y-0 !top-[25%] !scale-100",
         "text-sm font-medium absolute select-none text-gray-800 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-gray-900 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
       )}
       >{placeholder}

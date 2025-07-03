@@ -17,10 +17,22 @@
   import { IS_MOBILE } from "@/constants";
 
   let open = $state(false);
+  let searchTag = $state("");
+  let shouldAdd = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
+
   onMount(async () => {
     await refreshTags();
   });
+
+  async function createTag() {
+    if (shouldAdd) {
+      await MarkDB.addMark(searchTag);
+      searchTag = "";
+      await refreshTags();
+    }
+  }
+
   let { class: className }: { class?: string } = $props();
 </script>
 
@@ -30,7 +42,7 @@
       {#snippet child({ props })}
         <Button
           variant="outline"
-          class="w-36 justify-between rounded-r-none focus:none "
+          class="w-36 justify-between rounded-r-none focus:none"
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -75,13 +87,24 @@
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[11rem] ml-7 p-0">
-      <Command.Root class="dark:bg-background">
+    <Popover.Content class="w-[11rem] max-h-44 ml-7 p-0">
+      <Command.Root onValueChange={(v) => (shouldAdd = v.length === 0)}>
         <Command.Input
+          bind:value={searchTag}
+          class="text-sm"
           placeholder="Search tag..."
+          onkeydown={(e) => {
+            if (e.key === "Enter") createTag();
+          }}
           tabindex={IS_MOBILE ? -1 : 1}
         />
-        <Command.Empty class="-mb-[68px]">No tag found.</Command.Empty>
+        <Command.Empty class="-mb-[68px] p-2 text-sm text-wrap">
+          {#if searchTag.length > 0}
+            Press enter to create <span class="font-bold">{searchTag}</span>
+          {:else}
+            Nothing here... try typing.
+          {/if}
+        </Command.Empty>
         <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
             {#each [{ id: -1, user_id: 1, name: "Favorites", icon: "heroicons:star-solid" }, ...$tags.reverse()] as tag}

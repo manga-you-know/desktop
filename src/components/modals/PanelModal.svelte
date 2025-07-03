@@ -2,6 +2,8 @@
   import { AskSure, Select } from "@/components";
   import { copyImageFromPath, copyText, refreshPanels } from "@/functions";
   import { AlertDialog, Button } from "@/lib/components";
+  import { cn } from "@/lib/utils";
+  import { customTitlebar } from "@/store";
   import Icon from "@iconify/svelte";
   import { remove } from "@tauri-apps/plugin-fs";
 
@@ -23,9 +25,16 @@
 
 <AlertDialog.Root bind:open onOpenChange={(value) => (shouldCopy = value)}>
   <AlertDialog.Content
-    class="max-w-full w-auto h-[97vh] mx-auto flex flex-col justify-center"
+    class={cn(
+      "max-w-[90vw] w-auto h-[92vh] mx-auto flex flex-col justify-center",
+      $customTitlebar && "mt-5"
+    )}
   >
-    <img class="h-[90%] object-contain" {src} alt="a imag" />
+    <img
+      class="h-[82vh] max-h-[82vh] max-w-[80vw] object-contain"
+      {src}
+      alt="a imag"
+    />
     <div class="flex justify-center gap-2">
       <Button
         class="w-[40%]"

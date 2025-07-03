@@ -41,6 +41,7 @@
   import { Language, Theme } from "@/components";
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
   import Icon from "@iconify/svelte";
+  import { cn } from "@/lib/utils";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -76,7 +77,7 @@
         class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
       >
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-6 dark:text-gray-300 font-bold select-none"
         >
           App
         </span>
@@ -90,8 +91,8 @@
           >
           {#if !IS_MOBILE}
             <Button
-              class="w-44 bg-background/50 "
-              variant="ghost"
+              class="w-44 "
+              effect="ringHover"
               disabled={isSearchingUpdates}
               onclick={async () => {
                 if ($updateInfo.updateAvailable) {
@@ -199,44 +200,59 @@
             </div>
             <Label>Sidebar</Label>
             <div
-              class="flex w-[21rem] items-center justify-center mr-2 p-2 gap-2 bg-slate-300 dark:bg-background/70 rounded-2xl z-10"
+              class="flex relative w-[21rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
             >
+              <div class="z-[1] absolute w-full h-9">
+                <div
+                  class={cn(
+                    "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[5.5rem] translate-x-0",
+                    $sidebarBehavior === "collapse" && "w-20 translate-x-24",
+                    $sidebarBehavior === "on-hover" && "w-32 translate-x-48"
+                  )}
+                ></div>
+              </div>
               <Button
-                class="h-9 transition-colors duration-300"
+                class={cn(
+                  "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent",
+                  $sidebarBehavior === "expand" &&
+                    "!text-secondary hover:bg-background/20"
+                )}
                 size="sm"
+                variant="secondary"
                 onclick={() => {
                   $sidebarBehavior = "expand";
                   saveSettings();
                 }}
-                variant={$sidebarBehavior === "expand"
-                  ? "default"
-                  : "secondary"}
               >
                 Expanded
               </Button>
               <Button
-                class="h-9 transition-colors duration-300"
+                class={cn(
+                  "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent ",
+                  $sidebarBehavior === "collapse" &&
+                    "!text-secondary hover:bg-background/20"
+                )}
                 size="sm"
+                variant="secondary"
                 onclick={() => {
                   $sidebarBehavior = "collapse";
                   saveSettings();
                 }}
-                variant={$sidebarBehavior === "collapse"
-                  ? "default"
-                  : "secondary"}
               >
                 Compact
               </Button>
               <Button
-                class="h-9 transition-colors duration-300"
+                class={cn(
+                  "z-[2] h-9 transition-colors duration-300 bg-transparent",
+                  $sidebarBehavior === "on-hover" &&
+                    "!text-secondary hover:bg-background/20"
+                )}
                 size="sm"
+                variant="secondary"
                 onclick={() => {
                   $sidebarBehavior = "on-hover";
                   saveSettings();
                 }}
-                variant={$sidebarBehavior === "on-hover"
-                  ? "default"
-                  : "secondary"}
               >
                 Expand on hover
               </Button>
@@ -270,8 +286,8 @@
           <Label>Theme</Label>
           <Theme />
           <Button
-            class="w-44 bg-background/50 "
-            variant="ghost"
+            class="w-44"
+            effect="ringHover"
             onclick={async () => {
               await resetSettings();
             }}
@@ -288,7 +304,7 @@
         class="border-b-4 border-secondary my-5 text-center relative rounded-3xl"
       >
         <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+          class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
         >
           Reader
         </span>
@@ -326,7 +342,7 @@
           class="border-b-4 border-secondary my-4 text-center relative rounded-3xl"
         >
           <span
-            class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+            class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
           >
             Player
           </span>

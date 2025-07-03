@@ -4,6 +4,7 @@ export { default as TitleBar } from "./common/TitleBar.svelte";
 export { default as Carousel } from "./common/Carousel.svelte";
 export { default as Tooltip } from "./common/Tooltip.svelte";
 export { default as Sidebar } from "./common/Sidebar.svelte";
+export { default as Image } from "./common/Image.svelte";
 // Buttons
 export { default as ChapterButton } from "./buttons/ChapterButton.svelte";
 export { default as EpisodeButton } from "./buttons/EpisodeButton.svelte";

@@ -152,6 +152,7 @@
       loadFavoriteChapters(favorite);
     }
     goto($lastPage);
+    openMenuChapters.set(false);
     stopDiscordPresence();
   }
 

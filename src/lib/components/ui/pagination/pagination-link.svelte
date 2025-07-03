@@ -9,6 +9,7 @@
     class: className,
     size = "icon",
     isActive = false,
+    variant,
     page,
     children,
     ...restProps
@@ -27,7 +28,7 @@
   {page}
   class={cn(
     buttonVariants({
-      variant: isActive ? "outline" : "ghost",
+      variant,
       size,
     }),
     className

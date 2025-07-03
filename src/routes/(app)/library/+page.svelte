@@ -22,6 +22,7 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import { get, has, set } from "tauri-plugin-cache-api";
+
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
   let showedFilter = $state(0);
@@ -31,7 +32,6 @@
   let displayedLibrary: Favorite[] = $derived(
     $libraryFavorites.slice((page - 1) * perPage, page * perPage)
   );
-
   const siblingCount = 1;
 
   async function loadImage(cover: string, url: string) {
@@ -85,12 +85,12 @@
   >
     <div
       class={cn(
-        "bg-sidebar flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14"
       )}
     >
       <Badge
-        class="h-10 w-12 flex justify-center items-center"
+        class="h-10 w-12 flex justify-center items-center bg-secondary/70 hover:bg-secondary/50"
         variant="secondary"
       >
         {count}
@@ -119,17 +119,15 @@
       <div class="w-full flex justify-center mt-4">
         <Badge
           class="text-sm h-20 bg-blue-400 hover:bg-blue-300/40 transition-colors duration-300"
-          >Nothing was found. You can try finding "<span class="text-gray-200"
-            >{$libraryQuery}</span
-          >" in <Button
-            class="-ml-2"
-            variant="link"
-            onclick={() => {
-              searchTerm.set($libraryQuery);
-              openSearch.set(true);
-            }}>Search</Button
-          ></Badge
-        >
+          onclick={() => {
+            searchTerm.set($libraryQuery);
+            openSearch.set(true);
+          }}
+          >Nothing was found. You can try finding "<span class="text-gray-200">
+            {$libraryQuery}
+          </span>" in
+          <span class="ml-1 text-gray-200 underline">Search</span>
+        </Badge>
       </div>
     {/if}
     {#each displayedLibrary as favorite, i (i)}
@@ -140,9 +138,9 @@
       <div class="w-[158px] h-[271px] p-1"></div>
     {/each}
     {#if $libraryFavorites.length > perPage}
-      <div class="w-full h-11"></div>
+      <div class="w-full h-10"></div>
       <div
-        class="bg-sidebar flex rounded-3xl smh:rounded-b-none -mt-[15px] absolute bottom-5 smh:bottom-2 smh:mt-3 p-2 smh:pb-1 transition-all"
+        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
       >
         <Pagination.Root
           {count}
@@ -165,9 +163,8 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      class={currentPage === page.value
-                        ? "!bg-white !text-black"
-                        : "dark:text-white"}
+                      variant={currentPage === page.value ? "default" : "ghost"}
+                      effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}
                     >

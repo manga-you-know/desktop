@@ -48,11 +48,11 @@
       <Sheet.Title
         class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none"
         onclick={() => {
-          copyText(favorite?.name ?? "");
+          copyText(favorite?.name ?? "", "title");
         }}
       >
         <Icon
-          class="!size-0 mr-2  group-hover:!size-7 transition-all duration-300"
+          class="!size-0 mr-2  group-hover:!size-6 transition-all duration-300"
           icon="ic:baseline-content-copy"
         />
         {limitStr(favorite?.name ?? "", 80)}
@@ -135,12 +135,12 @@
         >
           <div class="flex items-center gap-2">
             <span
-              class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start"
+              class="group-hover:underline group-hover:underline-offset-4 truncate w-14 text-ellipsis text-start"
             >
               {chapter.number}
             </span>
             <span
-              class="group-hover:underline group-hover:underline-offset-4 truncate w-42 text-start"
+              class="group-hover:underline group-hover:underline-offset-4 truncate w-48 text-ellipsis text-start"
             >
               {chapter?.title ?? "No title provided."}
             </span>

@@ -1,3 +1,5 @@
+import type { StringChain } from "lodash";
+
 export function isEmpty(obj: any): boolean {
   return Object.keys(obj).length === 0;
 }
@@ -8,6 +10,13 @@ export function titleCase(str: string): string {
 
 export function strNotEmpty(str: string | number | undefined): string {
   return str?.toString() ?? "";
+}
+
+export function imageFail(id: string) {
+  const coverElement = document.getElementById(id);
+  if (coverElement instanceof HTMLImageElement) {
+    coverElement.src = "/myk.png";
+  }
 }
 
 export function limitStr(text: string, max: number = 17): string {

@@ -3,6 +3,7 @@
   import { FavoriteDB } from "@/repositories";
   import { libraryFavorites, libraryQuery } from "@/store";
   import { Button, Input } from "@/lib/components";
+  import { cn } from "@/lib/utils";
 
   interface Props {
     showInput?: boolean;
@@ -51,7 +52,7 @@
 </script>
 
 <Button
-  class="transition duration-200"
+  class="bg-secondary/60 hover:bg-secondary/40 transition duration-200"
   id="button-search"
   variant="secondary"
   onclick={handleSearch}
@@ -64,14 +65,23 @@
     icon={$libraryQuery === "" ? "uil:search" : "lucide:x"}
   />
   <div
-    class="relative transition-all duration-500 ease-in-out {showInput
-      ? 'max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0'
-      : 'max-w-[0px] opacity-0 overflow-hidden'}"
+    class={cn(
+      "relative transition-all duration-500 ease-in-out ",
+      showInput
+        ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0"
+        : "max-w-[0px] opacity-0 overflow-hidden"
+    )}
   >
     <Input
+      class={cn(
+        "transition-all duration-500 ease-in-out border-none outline-none ring-none",
+        showInput
+          ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem]"
+          : "max-w-[0px]"
+      )}
+      bind:value={$libraryQuery}
       variant="link"
       id="favorite-search"
-      bind:value={$libraryQuery}
       oninput={updateFavorites}
       onfocusout={handleOut}
       floatingLabel

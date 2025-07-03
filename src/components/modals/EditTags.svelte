@@ -128,7 +128,7 @@
       if (!value) editing = null;
     }}
   >
-    <AlertDialog.Content class="w-[28rem]">
+    <AlertDialog.Content class="w-[28rem]" overlayClass="bg-black/30">
       <AlertDialog.Header>
         <AlertDialog.Title>Are you sure?</AlertDialog.Title>
         <AlertDialog.Description>

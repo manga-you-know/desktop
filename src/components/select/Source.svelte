@@ -116,7 +116,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[165px] p-0">
-      <Command.Root class="dark:bg-background">
+      <Command.Root>
         <Command.Input placeholder="Search source..." class="h-9" />
         <Command.Empty class="-mb-[68px]">No source found.</Command.Empty>
         <ScrollArea class="h-36 scroll-smooth select-none">

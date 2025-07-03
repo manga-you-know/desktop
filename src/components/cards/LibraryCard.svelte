@@ -7,6 +7,7 @@
     EditFavorite,
     AskDelete,
     PickTags,
+    Image,
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
@@ -81,19 +82,11 @@
     >
       <div class="flex items-center justify-center h-[224px] mt-[30px]">
         {#key $coversLoaded[favorite.cover]}
-          <img
+          <Image
             class="w-[146px] min-w-[146px] max-w-[146px] max-h-[224px] object-contain rounded-xl"
             src={$coversLoaded[favorite.cover] ?? favorite.cover}
             alt={favorite.name}
             id={favorite.id?.toString() || ""}
-            onerror={() => {
-              const coverElement = document.getElementById(
-                favorite.id?.toString() || ""
-              );
-              if (coverElement instanceof HTMLImageElement) {
-                coverElement.src = "/myk.png";
-              }
-            }}
           />
         {/key}
       </div>
@@ -158,7 +151,7 @@
       </div>
     </button>
   </ContextMenu.Trigger>
-  <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
+  <ContextMenu.Content>
     <ContextMenu.Item
       class="flex justify-between"
       onclick={async (e: Event) => {

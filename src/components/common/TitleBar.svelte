@@ -60,7 +60,7 @@
     <Menubar.Root>
       <Menubar.Menu>
         <Menubar.Trigger>Folders</Menubar.Trigger>
-        <Menubar.Content class="z-50">
+        <Menubar.Content class="z-[51]">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={async () => openPath(await join(downloadPath, "mangas"))}
@@ -87,7 +87,7 @@
       </Menubar.Menu>
       <Menubar.Menu>
         <Menubar.Trigger>About</Menubar.Trigger>
-        <Menubar.Content class="z-50">
+        <Menubar.Content class="z-[51]">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openUrl("https://github.com/ReiLoko4")}

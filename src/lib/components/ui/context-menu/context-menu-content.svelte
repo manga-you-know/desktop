@@ -17,7 +17,7 @@
   <ContextMenuPrimitive.Content
     bind:ref
     class={cn(
-      "bg-secondary text-popover-foreground z-50 min-w-[8rem] rounded-xl border border-sidebar p-1 shadow-md focus:outline-none",
+      "bg-secondary/60 backdrop-blur-sm text-popover-foreground z-50 min-w-[10rem] rounded-xl border border-sidebar p-1 shadow-md focus:outline-none",
       $theme === "dark" && "dark",
       className
     )}

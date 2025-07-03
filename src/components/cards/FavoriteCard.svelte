@@ -145,7 +145,7 @@
   <ContextMenu.Trigger>
     <button
       class={cn(
-        "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg hover:z-30 transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+        "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
         favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
         isContext && "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
@@ -302,7 +302,7 @@
       </div>
     </button>
   </ContextMenu.Trigger>
-  <ContextMenu.Content class="!w-14 m-0 dark:bg-background">
+  <ContextMenu.Content>
     <ContextMenu.Item
       class="flex justify-between"
       onclick={async (e: Event) => {

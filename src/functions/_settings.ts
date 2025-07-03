@@ -54,7 +54,7 @@ interface SettingConfig {
 }
 
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
-  selected_source: { store: selectedSource, default: "WeebCentral" },
+  selected_source: { store: selectedSource, default: "MangaFire" },
   auto_search_updates: { store: autoSearchUpdates, default: true },
   preferable_language: {
     store: preferableLanguage,

@@ -120,20 +120,21 @@
   >
     {#if displayedFavorites.length === 0}
       <div class="flex w-full justify-center mt-10">
-        <Badge class="flex flex-col text-sm h-12" variant="destructive">
+        <Badge
+          class="flex flex-col text-sm h-12"
+          variant="destructive"
+          onclick={() => openSearch.set(true)}
+        >
           {#if !$showOnlyNew || $ultraFavorites.length === 0}
             There's no favorite. You can click on the star in the chapters <br
             />
             modal to achieve that. Or you can find something at
-            <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <span
-              onclick={() => openSearch.set(true)}
               class="absolute cursor-pointer hover:underline mt-5 ml-[21rem]"
               >Search</span
             >
           {:else}
-            Everything's been readed, my champ
+            Looks like you've been reading a lot... all done!
           {/if}
         </Badge>
       </div>
@@ -145,8 +146,9 @@
       <div class="w-[158px] h-[234px] p-1"></div>
     {/each}
     {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
+      <div class="w-full smh:h-10"></div>
       <div
-        class="bg-sidebar flex rounded-3xl smh:rounded-b-none smh:absolute smh:bottom-[11px] mt-20 smh:mt-0 py-2 smh:pb-1 px-2"
+        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl smh:absolute smh:bottom-6 mt-20 smh:mt-0 py-2 px-2"
       >
         <Pagination.Root
           {count}
@@ -169,9 +171,8 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      class={currentPage === page.value
-                        ? "!bg-white !text-black"
-                        : "dark:text-white"}
+                      variant={currentPage === page.value ? "default" : "ghost"}
+                      effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}
                     >

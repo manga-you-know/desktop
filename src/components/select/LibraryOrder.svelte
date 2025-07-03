@@ -57,7 +57,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class="w-[110px] ml-7 p-0 ">
-      <Command.Root class="dark:bg-background">
+      <Command.Root>
         <Command.List>
           <Command.Group>
             {#each orders as order}

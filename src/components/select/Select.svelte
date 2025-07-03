@@ -90,7 +90,7 @@
     {/snippet}
   </Popover.Trigger>
   <Popover.Content class={cn("w-[110px]  p-0", classPopup)}>
-    <Command.Root class="dark:bg-background">
+    <Command.Root>
       <Command.List>
         <Command.Group>
           {#each items as item}
