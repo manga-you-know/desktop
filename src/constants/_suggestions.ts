@@ -8,7 +8,8 @@ export const SHOUNENS: Suggestion[] = [
 
 		Twenty-two years later, a young man by the name of Monkey D. Luffy is ready to embark on his own adventure, searching for One Piece and striving to become the new Pirate King. Armed with just a straw hat, a small boat, and an elastic body, he sets out on a fantastic journey to gather his own crew and a worthy ship that will take them across the Grand Line to claim the greatest status on the high seas.`,
     folder_name: "one-piece",
-    cover: "https://pbs.twimg.com/media/Gj9TPROWAAAmT1W?format=jpg",
+    cover:
+      "https://static.wikia.nocookie.net/onepiece/images/d/d8/Volume_112.png",
     sources: [
       {
         source_id: "a1c7c817-4e59-43b7-9365-09675a149a6f",

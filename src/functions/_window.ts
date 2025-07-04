@@ -122,10 +122,10 @@ export async function sendLogDiscord() {
 
 export async function logNewUser() {
   const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged_2");
-  if (!hasLogged) {
+  const hasLogged = await loadedSettings.get<boolean>("has_logged_3");
+  if (hasLogged === undefined) {
     sendLogDiscord();
-    await loadedSettings.set("has_logged_2", true);
+    await loadedSettings.set("has_logged_3", true);
   }
 }
 
