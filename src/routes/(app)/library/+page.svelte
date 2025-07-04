@@ -13,6 +13,7 @@
     coversLoaded,
     downloadManager,
     favoritesLoaded,
+    isAscending,
     libraryFavorites,
     libraryQuery,
     openSearch,
@@ -30,7 +31,11 @@
   let perPage = $derived(Math.floor(libdivWidth / 169) * 3);
   const count = $derived($libraryFavorites.length);
   let displayedLibrary: Favorite[] = $derived(
-    $libraryFavorites.slice((page - 1) * perPage, page * perPage)
+    $isAscending
+      ? $libraryFavorites.slice((page - 1) * perPage, page * perPage)
+      : $libraryFavorites
+          .toReversed()
+          .slice((page - 1) * perPage, page * perPage)
   );
   const siblingCount = 1;
 

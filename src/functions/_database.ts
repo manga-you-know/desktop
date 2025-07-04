@@ -96,8 +96,11 @@ export async function addReadedBelow(
   readeds?: Readed[],
   dontDelete?: boolean
 ) {
-  const localReadeds = readeds ?? (await ReadedDB.getReadeds(favorite));
-  const readedMap = createReadedMap(readeds ?? []);
+  const localReadeds =
+    readeds === undefined
+      ? (readeds ?? [])
+      : await ReadedDB.getReadeds(favorite);
+  const readedMap = createReadedMap(localReadeds);
   const key = `${chapter.chapter_id}_${chapter.language}`;
   const readed = readedMap.get(key);
   if (readed !== undefined) {

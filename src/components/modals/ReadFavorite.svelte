@@ -610,8 +610,7 @@
           </Button>
           <div class="flex gap-2">
             <Button
-              class=""
-              variant="secondary"
+              variant="outline"
               onclick={async (e: Event) => {
                 e.stopPropagation();
                 isUltraFavorite = !isUltraFavorite;
@@ -630,7 +629,7 @@
               />
             </Button>
             <Button
-              class=""
+              effect="ringHover"
               onclick={downloadAll}
               disabled={$downloadings[favorite.id]?.isDownloadingAll ?? false}
             >

@@ -7,7 +7,7 @@
     ScrollArea,
     Separator,
   } from "@/lib/components";
-  import { ReadFavorite, Source, WatchFavorite } from "@/components";
+  import { ReadFavorite, Source, WatchFavorite, Image } from "@/components";
   import {
     openSearch,
     downloadManager,
@@ -230,7 +230,7 @@
         <Icon icon="ion:caret-back" />
       </Button>
       <div class="flex w-full px-2 justify-between select-none">
-        <img
+        <Image
           class="max-w-[170px] object-contain rounded-xl"
           src={favoriteOpen?.cover ?? "/myk.png"}
           alt="Result cover"

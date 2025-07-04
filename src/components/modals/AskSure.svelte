@@ -5,14 +5,20 @@
   interface Props {
     open: boolean;
     message: string;
+    overlayClass?: string;
     onokay: () => Promise<void>;
   }
 
-  let { open = $bindable(false), message, onokay }: Props = $props();
+  let {
+    open = $bindable(false),
+    message,
+    overlayClass,
+    onokay,
+  }: Props = $props();
 </script>
 
 <AlertDialog.Root bind:open>
-  <AlertDialog.Content>
+  <AlertDialog.Content {overlayClass}>
     <AlertDialog.Header>
       <AlertDialog.Title>Are you sure?</AlertDialog.Title>
       <AlertDialog.Description>

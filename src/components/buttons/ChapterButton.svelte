@@ -64,11 +64,20 @@
         />
       </Button>
     </Tooltip>
-    <span
-      class="group-hover:underline group-hover:underline-offset-4 truncate w-24 text-start"
-    >
-      {chapter.number}
-    </span>
+    <div class="flex items-center gap-2">
+      <span
+        class="group-hover:underline group-hover:underline-offset-4 truncate w-9 text-start"
+      >
+        {chapter.number}
+      </span>
+      <Tooltip title={chapter?.title}>
+        <span
+          class="group-hover:underline group-hover:underline-offset-4 truncate w-20 text-start"
+        >
+          {chapter?.title}
+        </span>
+      </Tooltip>
+    </div>
   </div>
   <Tooltip title={isReaded ? "Remove readed" : "Mark as read"}>
     <Button

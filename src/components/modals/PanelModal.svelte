@@ -31,7 +31,7 @@
     )}
   >
     <img
-      class="h-[82vh] max-h-[82vh] max-w-[80vw] object-contain"
+      class="h-[82vh] max-h-[82vh] max-w-[80vw] object-contain rounded-xl"
       {src}
       alt="a imag"
     />
@@ -69,6 +69,7 @@
   <AskSure
     bind:open={openDelete}
     message={"This will delete this panel from your folder."}
+    overlayClass="bg-black/40"
     onokay={async () => {
       await remove(path);
       await refreshPanels();

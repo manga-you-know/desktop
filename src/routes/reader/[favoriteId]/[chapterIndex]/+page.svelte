@@ -46,7 +46,7 @@
   import { goto, afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
-  import { ChaptersMenu } from "@/components";
+  import { ChaptersMenu, Image } from "@/components";
   import { join, documentDir, downloadDir } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
@@ -295,7 +295,7 @@
       images = await getLocalChapterImages();
     }
     backupImages = [...images];
-    currentlyImage = images[0];
+    currentlyImage = images[currentlyCount - 1];
     totalPage = images.length;
     setChapterActivity(favorite.name);
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
@@ -374,6 +374,10 @@
       if (key === "w" && ctrl) {
         resetImages();
       }
+      if (key === "w" && !ctrl) {
+        fitMode.set($fitMode === "" ? "width" : "");
+        saveSettings();
+      }
       if (key === "+" || (event.ctrlKey && key === "=")) {
         $zoomLevel = $zoomLevel + 10;
       }
@@ -388,13 +392,15 @@
       }
 
       if (key === "v") {
+        const pageToGo = currentlyCount;
         $viewMode = $viewMode === "single" ? "scroll" : "single";
+        currentlyCount = pageToGo;
+        currentlyImage = images[currentlyCount - 1];
         saveSettings();
       }
 
       if (key === "f") {
-        fitMode.set($fitMode === "" ? "width" : "");
-        saveSettings();
+        toggleFullscreen();
       }
       if (key === "a") {
         openReadMenu.set(!$openReadMenu);
@@ -691,7 +697,7 @@
     >
       <div class="flex flex-col items-center">
         {#each images as image, index}
-          <img
+          <Image
             id={index.toString()}
             onerror={() => imgOnError(index.toString())}
             src={image}
@@ -776,7 +782,7 @@
         <div
           class="min-h-full w-full flex items-center justify-center overflow-hidden"
         >
-          <img
+          <Image
             id={currentlyCount.toString()}
             onerror={() => imgOnError(currentlyCount.toString())}
             src={currentlyImage}
@@ -795,7 +801,7 @@
         <div
           class="min-h-full flex items-center content-center place-content-center justify-center"
         >
-          <img
+          <Image
             id={currentlyCount.toString()}
             onerror={() => imgOnError(currentlyCount.toString())}
             src={currentlyImage}

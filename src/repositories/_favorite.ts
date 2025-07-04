@@ -1,12 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME, defaultUser } from "@/constants";
-import {
-  libraryQuery,
-  libraryOrder,
-  isAscending,
-  librarySource,
-  libraryTag,
-} from "@/store";
+import { libraryQuery, libraryOrder, librarySource, libraryTag } from "@/store";
 import { MarkDB, UserDB } from "@/repositories";
 import type { Favorite, Mark } from "@/types";
 import { get } from "svelte/store";
@@ -144,9 +138,7 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
     params.push(get(librarySource));
   }
 
-  query += ` ORDER BY ${get(libraryOrder)} ${
-    get(isAscending) ? " ASC" : " DESC"
-  }`;
+  query += ` ORDER BY ${get(libraryOrder)} ASC`;
 
   try {
     const favorites: Favorite[] = await db.select(query, params);

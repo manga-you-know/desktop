@@ -80,7 +80,6 @@ export class MangaLivreDl implements MangaDl {
         headers: this.headers,
       }
     );
-    console.log(response.url);
     if (response.status !== 200) {
       throw new Error("Failed getting manga with id: " + favoriteID);
     }
@@ -93,6 +92,7 @@ export class MangaLivreDl implements MangaDl {
         source: "MangaLivre",
         chapter_id: a.attr("href")?.split("/").slice(-3, -1).join("/") ?? "",
         number: a.text().trim().split(" ").at(-1) ?? "",
+        language: "default",
       });
     });
     return chapters;

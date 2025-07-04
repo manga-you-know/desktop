@@ -36,6 +36,7 @@
   function search() {
     if (searchTerm.length === 0) {
       panelsWithQuery = $panels;
+      page = 1;
       return;
     }
     panelsWithQuery = $panels.filter((pn) => {
@@ -49,6 +50,7 @@
         chapter?.includes(searchTerm.toLowerCase())
       );
     });
+    page = 1;
   }
 
   panels.subscribe(search);
@@ -107,7 +109,7 @@
       No panel found, try adding it with Ctrl + S while in a chapter
     </Badge>
   {/if}
-  {#if $panels.length > perPage}
+  {#if displayedPanels.length > perPage}
     <div class="w-full h-10"></div>
     <div
       class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] z-20 absolute bottom-6 smh:mt-3 p-2 transition-all"

@@ -56,7 +56,7 @@ export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
 export const searchTerm = writable<string>("");
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
-  "expand"
+  "collapse"
 );
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
