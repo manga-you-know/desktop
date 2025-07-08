@@ -59,7 +59,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-  class="scrollbar w-[99.2%] h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-2"
+  class="scrollbar w-[99.2%] h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
   bind:this={panelDiv}
 >
   <div
@@ -96,7 +96,7 @@
       />
     </div>
   </div>
-  <div class="w-full h-0 smh:h-14"></div>
+  <div class="w-full h-32"></div>
   {#each displayedPanels as panel}
     <FavoritePanel
       src={panel.src}

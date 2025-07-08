@@ -41,6 +41,10 @@
   titlebar descends in chapters menu open
 - Icon not assuming the pinned icon place
 - Rounded images in favorite Card
+- Better expanded sidebar
+- Button to expand | collapse sidebar
+- More context menu's
+  Card ones has options to copy image (especially panels)
 
 - Make chapters only readed in the last page !!!!
 
@@ -57,9 +61,11 @@
   SCROLL BUGGED TOO!
 - Enter in the reader when long read should pass the chapter too!
 - Hover bugged in buttons from Favorite cards (hover area too big)
-- Scroll to big in favorites page
+- Scroll too big in favorites page
 - Underline black in input
 - User log
 - Popup in library with query = ""
+- Save images not working in long read (scroll)
+- Folder not exists then bugs (open downloads or favorite panels)
 
 - !!!! Pagination in panels page

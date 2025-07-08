@@ -128,9 +128,13 @@
             searchTerm.set($libraryQuery);
             openSearch.set(true);
           }}
-          >Nothing was found. You can try finding "<span class="text-gray-200">
+          >{#if $searchTerm.length > 0}
+            Nothing was found. You can try finding "<span class="text-gray-200">
             {$libraryQuery}
           </span>" in
+            {:else}
+              Nothing saved, try searching something at 
+            {/if}
           <span class="ml-1 text-gray-200 underline">Search</span>
         </Badge>
       </div>

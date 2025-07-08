@@ -18,7 +18,7 @@
           "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary",
         ghost:
           "bg-transparent text-primary hover:bg-accent hover:text-accent-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-accent",
-        link: "bg-transparent text-primary underline-offset-4 hover:underline placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
+        link: "bg-transparent text-primary underline-offset-4 hover:underline underline-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
       },
       borderFocus: {
         true: "focus-visible:outline-none",
@@ -75,7 +75,7 @@
     divClass,
     "relative focus-visible:ring-0 ring-0",
     disabled ? "cursor-default" : "!cursor-text",
-    variant === "link" && "underline"
+    variant === "link" && "underline underline-primary"
   )}
   onclick={() => {
     if (!disabled) {

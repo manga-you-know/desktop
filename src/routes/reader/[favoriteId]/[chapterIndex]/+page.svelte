@@ -135,14 +135,22 @@
     if (currentlyCount === 1) return;
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
-    if ($viewMode === "single" || $fitMode === "") scrollToTop();
+    if ($viewMode === "single" && $fitMode === "") scrollToTop();
+    if ($viewMode === "scroll") {
+      const prevP = document.getElementById((currentlyCount -1).toString());
+      pagesDiv?.scrollTo({ top: prevP.offsetTop, behavior: "smooth" });
+    }
   }
 
   function nextPage() {
     if (currentlyCount === totalPage) return;
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
-    if ($viewMode === "single" || $fitMode === "") scrollToTop();
+    if ($viewMode === "single" && $fitMode === "") scrollToTop();
+    if ($viewMode === "scroll") {
+      const nextP = document.getElementById((currentlyCount -1).toString());
+      pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
+    }
   }
 
   function goHome() {
@@ -168,6 +176,7 @@
   }
 
   async function favoriteImage() {
+    currentlyImage = images[currentlyCount - 1]
     const path = await join("favorite-panels", currentlyImagePath);
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
       await remove(path, { baseDir: BaseDirectory.Document });
@@ -343,22 +352,21 @@
     const key = event.key.toLowerCase();
     const ctrl = event.metaKey || event.ctrlKey;
     if (!$openSearch) {
-      if ($viewMode === "single") {
-        if (key === "arrowleft") {
-          prevPage();
-        }
-        if (key === "arrowright") {
-          nextPage();
-        }
-        if (key === " ") {
-          nextPage();
-        }
-        if (key === "enter") {
-          if (currentlyCount === totalPage && !isTheLastChapter) {
-            handleGoChapter("next");
-          } else nextPage();
-        }
+      if (key === "arrowleft") {
+        prevPage();
       }
+      if (key === "arrowright") {
+          nextPage();
+      }
+      if (key === " ") {
+        nextPage();
+      }
+      if (key === "enter") {
+        if (currentlyCount === totalPage && !isTheLastChapter) {
+          handleGoChapter("next");
+        } else nextPage();
+      }
+      
       if (key === "backspace") {
         prevPage();
       }
@@ -379,10 +387,10 @@
         saveSettings();
       }
       if (key === "+" || (event.ctrlKey && key === "=")) {
-        $zoomLevel = $zoomLevel + 10;
+        $zoomLevel = Math.min(200, $zoomLevel + 10);
       }
       if (key === "-" || (event.ctrlKey && key === "-")) {
-        $zoomLevel = $zoomLevel - 10;
+        $zoomLevel = Math.max(30, $zoomLevel - 10);
       }
       if (key === ">" && !isTheLastChapter) {
         handleGoChapter("next");
@@ -605,7 +613,7 @@
             class="h-9 pointer-events-auto"
             size="sm"
             variant="secondary"
-            disabled={isLocal}
+            disabled={isLocal || $viewMode === "scroll"}
             onclick={joinCurrentlyImageToNext}
           >
             <Icon icon="fluent:image-split-24-filled" />
@@ -617,7 +625,7 @@
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
               onclick={() => {
-                $zoomLevel = Math.max(50, $zoomLevel - 10);
+                $zoomLevel = Math.max(30, $zoomLevel - 10);
                 saveSettings();
               }}
             >
@@ -696,7 +704,7 @@
       onscroll={handleScroll}
     >
       <div class="flex flex-col items-center">
-        {#each images as image, index}
+        {#each images as image, index (index)}
           <Image
             id={index.toString()}
             onerror={() => imgOnError(index.toString())}
@@ -709,7 +717,7 @@
       </div>
     </div>
   {:else}
-    {#if $fitMode === "width"}
+
       <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class="fixed inset-0 flex cursor-default"
@@ -729,6 +737,7 @@
           prevPage();
         }}
         onwheel={(e) => {
+          if ($fitMode === "") return
           if (e.deltaY > 0) {
             nextPage();
           } else {
@@ -736,29 +745,7 @@
           }
         }}
       >
-      </button>
-    {:else}
-      <!-- svelte-ignore a11y_consider_explicit_label -->
-      <button
-        class="fixed inset-0 flex cursor-default"
-        style="z-index: 40;"
-        use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
-        onfocus={(e) => {
-          e.currentTarget.blur();
-        }}
-        tabindex={-1}
-        onswipe={handleSwipe}
-        onclick={(e) => {
-          nextPage();
-          e.currentTarget.blur();
-        }}
-        oncontextmenu={(e) => {
-          e.preventDefault();
-          prevPage();
-        }}
-      >
-      </button>
-    {/if}
+    </button>
     <!-- <button
         aria-label="Forward"
         class="w-[50%] cursor-default outline-none border-none bg-transparent"

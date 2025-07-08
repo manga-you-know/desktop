@@ -30,11 +30,13 @@
       $customTitlebar && "mt-5"
     )}
   >
-    <img
-      class="h-[82vh] max-h-[82vh] max-w-[80vw] object-contain rounded-xl"
-      {src}
-      alt="a imag"
-    />
+    <div class="h-[82vh] max-w-[80vw] flex justify-center items-center">
+      <img
+        class="h-full max-h-[82vh] max-w-[80vw] object-contain rounded-2xl"
+        {src}
+        alt="a imag"
+      />
+    </div>
     <div class="flex justify-center gap-2">
       <Button
         class="w-[40%]"

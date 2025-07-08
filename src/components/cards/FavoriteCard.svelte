@@ -198,7 +198,7 @@
               ? "opacity-100 translate-x-0"
               : IS_MOBILE
                 ? ""
-                : "opacity-0 -translate-x-[40%] group-hover:opacity-100"
+                : "opacity-0 -translate-x-[15%] group-hover:opacity-100"
           )}
         >
           <Tooltip
@@ -234,7 +234,7 @@
             "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
             IS_MOBILE
               ? " "
-              : "translate-y-[20%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+              : "translate-y-[15%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
           )}
         >
           <Badge
@@ -251,7 +251,7 @@
             "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
             IS_MOBILE
               ? ""
-              : "translate-x-[40%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+              : "translate-x-[15%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
           )}
         >
           <div
