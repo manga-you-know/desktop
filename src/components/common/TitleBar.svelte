@@ -14,7 +14,7 @@
     join,
   } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
-  import { downloadings, isFullscreen, isMaximized } from "@/store";
+  import { isFullscreen, extraTitle, downloadings, openMenuChapters, isMaximized } from "@/store";
   import { setFullscreen } from "@/functions";
   import type { Downloading } from "@/types";
 
@@ -40,9 +40,9 @@
 
 <div
   class={cn(
-    "bg-sidebar flex items-center justify-between w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
+    "bg-sidebar flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
     page.route.id?.startsWith("/reader") &&
-      $isFullscreen &&
+      $isFullscreen && !$openMenuChapters &&
       "h-0 -translate-y-[3rem]"
   )}
   data-tauri-drag-region={!$isFullscreen}
@@ -54,10 +54,10 @@
       class="h-6"
       data-tauri-drag-region={!$isFullscreen}
     />
-    <Label class="p-3" data-tauri-drag-region={!$isFullscreen}>
+    <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>
       MangaYouKnow
     </Label>
-    <Menubar.Root>
+    <Menubar.Root class="z-20">
       <Menubar.Menu>
         <Menubar.Trigger>Folders</Menubar.Trigger>
         <Menubar.Content class="z-[51]">
@@ -140,17 +140,21 @@
       >{downloadingCount} downloading...
     </Label>
   </div>
-
+    <div class="absolute w-full flex justify-center z-10" data-tauri-drag-region={!$isFullscreen}>
+    <Label class="select-none !text-primary/70" data-tauri-drag-region={!$isFullscreen}>
+      {$extraTitle} 
+    </Label>
+  </div>
   <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">
     <Button
-      class="size-9 rounded-lg pointer-events-auto"
+      class="size-9 z-20 rounded-lg pointer-events-auto"
       variant="ghost"
       onclick={() => window.minimize()}
     >
       <Icon class="!size-6" icon="ic:round-minus" />
     </Button>
     <Button
-      class="size-9 rounded-lg pointer-events-auto"
+      class="size-9 z-20 rounded-lg pointer-events-auto"
       variant="ghost"
       onclick={async () => {
         if ($isFullscreen) {
@@ -174,7 +178,7 @@
       />
     </Button>
     <Button
-      class="size-9 rounded-lg pointer-events-auto hover:bg-red-900 transition-colors duration-300"
+      class="size-9 z-20 rounded-lg pointer-events-auto hover:bg-red-900 transition-colors duration-300"
       variant="ghost"
       onclick={() => window.close()}
     >

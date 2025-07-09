@@ -3,6 +3,7 @@
   import { libraryOrder, isAscending } from "@/store";
   import { saveSettings, refreshLibrary } from "@/functions";
   import { titleCase } from "@/utils";
+  import { cn } from "@/lib/utils";
   import Icon from "@iconify/svelte";
 
   let open = $state(false);
@@ -106,7 +107,11 @@
     }}
   >
     <Icon
-      icon={$isAscending ? "typcn:arrow-sorted-up" : "typcn:arrow-sorted-down"}
+      class={cn(
+        "!size-5 transition-all duration-300",
+        $isAscending ? "-rotate-180" : "rotate-0"
+      )} 
+      icon="typcn:arrow-sorted-down"
     />
   </Button>
 </div>

@@ -1,6 +1,7 @@
 #![allow(unused_imports)]
 use tauri::Manager;
 use utils::hashmap::{get_data, set_data};
+use tauri_plugin_prevent_default::Flags;
 use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
 // use webview2_com::{
 //     Microsoft::Web::WebView2::Win32::{
@@ -89,9 +90,10 @@ pub fn run() {
                 // }
                 Ok(())
             })
-            .plugin(tauri_plugin_clipboard::init())
             // .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
+            .plugin(tauri_plugin_clipboard::init())
+            .plugin(tauri_plugin_prevent_default::debug())
             .plugin(tauri_plugin_window_state::Builder::default().build())
             .plugin(tauri_plugin_updater::Builder::new().build())
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
@@ -104,6 +106,7 @@ pub fn run() {
                 Some(vec!["--flag1", "--flag2"]),
             ))
             .plugin(tauri_plugin_global_shortcut::Builder::new().build());
+
     }
     builder.run(tauri::generate_context!()).unwrap()
 }

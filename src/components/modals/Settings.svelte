@@ -165,7 +165,7 @@
                 onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="minimize">
-                Minize to tray apps instead of closing
+                When closed, keep running in background
               </Label>
             </div>
             <div class="flex gap-2 items-center">
@@ -195,7 +195,7 @@
                 }}
               />
               <Label class="cursor-pointer" for="start-in-tray">
-                Start in tray apps
+                Start in background
               </Label>
             </div>
             <Label>Sidebar</Label>

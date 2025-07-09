@@ -30,7 +30,7 @@
   import type { Snippet } from "svelte";
   import SheetOverlay from "./sheet-overlay.svelte";
   import { cn } from "$lib/utils.js";
-  import { customTitlebar, isFullscreen, theme } from "@/store";
+  import { customTitlebar, theme } from "@/store";
 
   let {
     ref = $bindable(null),
@@ -65,7 +65,7 @@
     class={cn(
       sheetVariants({ side }),
       $theme === "dark" && "dark",
-      $customTitlebar && !$isFullscreen && "h-[calc(100vh-2.5rem)] mt-10",
+      $customTitlebar && "h-[calc(100vh-2.5rem)] mt-10",
       className
     )}
     {...restProps}

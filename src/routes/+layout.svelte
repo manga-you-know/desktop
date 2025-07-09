@@ -133,7 +133,7 @@
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 <div
   class={twMerge(
-    "!bg-background text-black dark:text-white !rounded-3xl",
+    "!bg-background text-black dark:text-white",
     $theme === "dark" && "dark"
   )}
 >

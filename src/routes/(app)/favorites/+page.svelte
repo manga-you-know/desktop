@@ -171,7 +171,7 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      variant={currentPage === page.value ? "default" : "ghost"}
+                      variant={currentPage === page.value ? "secondary" : "ghost"}
                       effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}

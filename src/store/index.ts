@@ -55,6 +55,7 @@ export const selectedSource = writable<string>(MANGASOURCES[1].name);
 export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
 export const searchTerm = writable<string>("");
+export const extraTitle = writable<string>("");
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
   "collapse"
 );

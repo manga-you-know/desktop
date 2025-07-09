@@ -29,6 +29,7 @@
     lastPage,
     openReadMenu,
     openSearch,
+    extraTitle,
     customTitlebar,
     favoritesLoaded,
   } from "@/store";
@@ -49,6 +50,7 @@
   import { ChaptersMenu, Image } from "@/components";
   import { join, documentDir, downloadDir } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
+  import { delay } from "@/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { IS_MOBILE } from "@/constants";
 
@@ -131,24 +133,28 @@
       `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
     );
   }
-  function prevPage() {
+  async function prevPage() {
     if (currentlyCount === 1) return;
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
+    const id = (currentlyCount - 1).toString()
     if ($viewMode === "single" && $fitMode === "") scrollToTop();
     if ($viewMode === "scroll") {
-      const prevP = document.getElementById((currentlyCount -1).toString());
+      await delay(5)
+      const prevP = document.getElementById(id);
       pagesDiv?.scrollTo({ top: prevP.offsetTop, behavior: "smooth" });
     }
   }
 
-  function nextPage() {
+  async function nextPage() {
     if (currentlyCount === totalPage) return;
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
+    const id = (currentlyCount - 1).toString()
     if ($viewMode === "single" && $fitMode === "") scrollToTop();
     if ($viewMode === "scroll") {
-      const nextP = document.getElementById((currentlyCount -1).toString());
+      await delay(5)
+      const nextP = document.getElementById(id);
       pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
     }
   }
@@ -162,6 +168,7 @@
     goto($lastPage);
     openMenuChapters.set(false);
     stopDiscordPresence();
+    extraTitle.set("")
   }
 
   async function handleGoChapter(way: "next" | "prev") {
@@ -277,6 +284,21 @@
     return [];
   }
 
+  async function toggleView() {
+    const pageToGo = currentlyCount;
+    $viewMode = $viewMode === "single" ? "scroll" : "single";
+    currentlyCount = pageToGo;
+    currentlyImage = images[currentlyCount - 1];
+    if ($viewMode === "scroll") {
+      await delay(5)
+      const id = (currentlyCount - 1).toString()
+      const nextP = document.getElementById(id);
+      pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
+    }
+    saveSettings();
+
+  }
+
   async function loadB64() {
     images = await $downloadManager.getBase64Images(
       images,
@@ -294,6 +316,7 @@
     isTheLastChapter = Number(chapterIndex) === 0;
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     chapter = $globalChapters[Number(chapterIndex)];
+    extraTitle.set(`${chapter.number} # ${chapter.title}`)
     if (!isLocal) {
       toast.loading(
         `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`
@@ -321,6 +344,7 @@
     }
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
+    extraTitle.set(`${chapter.number} # ${chapter.title}`)
     if (!isLocal) {
       if (favorite.is_ultra_favorite) {
         if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
@@ -400,11 +424,7 @@
       }
 
       if (key === "v") {
-        const pageToGo = currentlyCount;
-        $viewMode = $viewMode === "single" ? "scroll" : "single";
-        currentlyCount = pageToGo;
-        currentlyImage = images[currentlyCount - 1];
-        saveSettings();
+        toggleView()  
       }
 
       if (key === "f") {
@@ -598,10 +618,7 @@
             class="h-9 pointer-events-auto"
             size="sm"
             variant="secondary"
-            onclick={() => {
-              $viewMode = $viewMode === "scroll" ? "single" : "scroll";
-              saveSettings();
-            }}
+            onclick={toggleView}
           >
             <Icon
               icon={$viewMode === "scroll"

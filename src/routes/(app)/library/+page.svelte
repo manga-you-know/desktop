@@ -86,7 +86,7 @@
   <div
     bind:this={libraryDiv}
     bind:clientWidth={libdivWidth}
-    class="scrollbar w-[99.2%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
+    class="scrollbar w-[98.7%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
   >
     <div
       class={cn(
@@ -172,7 +172,7 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      variant={currentPage === page.value ? "default" : "ghost"}
+                      variant={currentPage === page.value ? "secondary" : "ghost"}
                       effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}
