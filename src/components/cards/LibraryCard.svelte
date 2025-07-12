@@ -11,7 +11,7 @@
   } from "@/components";
   import type { Chapter, Favorite, Readed } from "@/types";
   import { FavoriteDB, ReadedDB, MarkFavoriteDB } from "@/repositories";
-  import { refreshFavorites } from "@/functions";
+  import { refreshFavorites, copyText } from "@/functions";
   import { coversLoaded, downloadManager } from "@/store";
   import { cn } from "@/lib/utils";
   import type { MarkFavorites } from "@/types";
@@ -75,8 +75,8 @@
       id="library-{favorite.id}"
       class={cn(
         "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border-1 focus:shadow-lg no-blurry",
-        IS_MOBILE ? "" : "hover:scale-[1.08]",
-        isContext ? "!scale-[1.15] z-30 !border-1 !border-white" : ""
+        !IS_MOBILE && "hover:scale-[1.08]",
+        isContext && "!scale-[1.15]" 
       )}
       onclick={() => (isOpen = true)}
     >
@@ -203,6 +203,33 @@
       <Label>Edit</Label>
       <Icon class="!size-4 !h-5" icon="lucide:square-pen" />
     </ContextMenu.Item>
+    <ContextMenu.Sub>
+      <ContextMenu.SubTrigger class="flex justify-between">
+        <Label>Copy</Label>
+      </ContextMenu.SubTrigger>
+      <ContextMenu.SubContent>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onclick={(e) => {
+            copyText(favorite.name, "title")
+          }}
+        >
+          <Label>Title</Label>
+          <Icon class="!size-4" icon="tabler:text-size"/>
+        </ContextMenu.Item>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onclick={async (e) => {
+            await copyText(favorite.cover, "cover")
+          }}
+        >
+          <Label>
+            Cover {favorite.cover.startsWith("http") ? "URL" : "path"}
+          </Label>
+          <Icon class="!size-4"  icon="tabler:photo"/>
+        </ContextMenu.Item>
+      </ContextMenu.SubContent>
+    </ContextMenu.Sub>
     <ContextMenu.Separator />
     <ContextMenu.Item
       class="flex justify-between hover:!bg-destructive transition-colors duration-300"

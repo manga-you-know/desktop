@@ -10,6 +10,7 @@
     Tooltip,
     WatchFavorite,
     PickTags,
+    Image,
   } from "@/components";
   import {
     downloadManager,
@@ -28,6 +29,7 @@
     addReadedBelow,
     loadFavoriteChapters,
     refreshLibrary,
+    copyText,
   } from "@/functions";
   import type { Favorite, Chapter, Readed } from "@/types";
   import { goto } from "$app/navigation";
@@ -148,7 +150,7 @@
         "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
         favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
         IS_MOBILE ? "" : "hover:scale-[1.08]",
-        isContext && "!scale-[1.15] z-30 !border-1 !border-white opacity-100"
+        isContext && "!scale-[1.15] !border-1 !border-white opacity-100"
       )}
       onclick={() => {
         if (favoriteLoad.nextChapter === null) {
@@ -159,19 +161,11 @@
       }}
       tabindex={favoriteLoad?.toReadCount > 0 ? 0 : -1}
     >
-      <img
+      <Image
         src={$coversLoaded[favorite.cover] ?? favorite.cover}
         alt={favorite.name}
         class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-2xl !bg-transparent"
         id={strNotEmpty(favorite.id)}
-        onerror={() => {
-          const coverElement = document.getElementById(
-            strNotEmpty(favorite.id)
-          );
-          if (coverElement instanceof HTMLImageElement) {
-            coverElement.src = "/myk.png";
-          }
-        }}
       />
       <div
         class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center -m-[5.5px]"
@@ -251,7 +245,7 @@
             "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
             IS_MOBILE
               ? ""
-              : "translate-x-[15%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+              : "translate-x-[10%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
           )}
         >
           <div
@@ -354,6 +348,33 @@
       <Label>Edit</Label>
       <Icon class="!size-4 !h-5" icon="lucide:square-pen" />
     </ContextMenu.Item>
+    <ContextMenu.Sub>
+      <ContextMenu.SubTrigger class="flex justify-between">
+        <Label>Copy</Label>
+      </ContextMenu.SubTrigger>
+      <ContextMenu.SubContent>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onclick={(e) => {
+            copyText(favorite.name, "title")
+          }}
+        >
+          <Label>Title</Label>
+          <Icon class="!size-4" icon="tabler:text-size"/>
+        </ContextMenu.Item>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onclick={async (e) => {
+            await copyText(favorite.cover, "cover")
+          }}
+        >
+          <Label>
+            Cover {favorite.cover.startsWith("http") ? "URL" : "path"}
+          </Label>
+          <Icon class="!size-4"  icon="tabler:photo"/>
+        </ContextMenu.Item>
+      </ContextMenu.SubContent>
+    </ContextMenu.Sub>
     <ContextMenu.Separator />
     <ContextMenu.Item
       class="flex justify-between hover:!bg-destructive transition-colors duration-300"
