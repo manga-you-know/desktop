@@ -302,11 +302,10 @@ export class DownloadManager {
     });
   }
 
-  async pathToBase64(imagePath: string): Promise<string> {
+  async _pathToBase64(imagePath: string): Promise<string> {
     try {
       const bytes = await readFile(imagePath);
       console.log(fromByteArray(bytes));
-      console.log("THIS IS FUCKED");
       return "";
     } catch (error) {
       console.log(imagePath, "FODASSE");

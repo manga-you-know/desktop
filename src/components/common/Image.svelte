@@ -6,7 +6,9 @@
 </script>
 
 <img
-  src={src?.startsWith("http") ? src : convertFileSrc(src ?? "")}
+  src={src?.startsWith("http") || src?.startsWith("data:image")
+    ? src
+    : convertFileSrc(src ?? "")}
   {...props}
   onloadstart={(e) => {
     const img = e.currentTarget as HTMLImageElement;
