@@ -2,12 +2,14 @@
   import Icon from "@iconify/svelte";
   import { open as openPath } from "@tauri-apps/plugin-shell";
   import { AlertDialog, Button } from "@/lib/components";
-  import { openUpdate, updateInfo } from "@/store";
+  import { openUpdate, updateInfo, openSettings } from "@/store";
+  import { cn } from "@/lib/utils"
+
   let isUpdating = $state(false);
 </script>
 
 <AlertDialog.Root bind:open={$openUpdate}>
-  <AlertDialog.Content>
+  <AlertDialog.Content overlayClass={cn($openSettings && "bg-black/40")}>
     {#if $updateInfo.updateAvailable}
       <AlertDialog.Header>
         <AlertDialog.Title>New update avaible!</AlertDialog.Title>

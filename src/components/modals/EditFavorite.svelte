@@ -1,6 +1,5 @@
 <script lang="ts">
   import { open as openFile } from "@tauri-apps/plugin-dialog";
-  import { convertFileSrc } from "@tauri-apps/api/core";
   import { Dialog, Button, Input, Textarea, Label } from "@/lib/components";
   import { FavoriteDB } from "@/repositories";
   import { downloadManager } from "@/store";
@@ -46,7 +45,7 @@
       ],
     });
     if (file) {
-      cover = convertFileSrc(file);
+      cover = file;
     }
   }
   const loadUltraFavorite = async () => {
@@ -56,7 +55,7 @@
     isRefreshing = true;
     const favLoad = await $downloadManager.getMangaById(
       favorite.source_id,
-      favorite.source
+      favorite.source,
     );
     name = favLoad.name;
     link = favLoad.link;

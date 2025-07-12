@@ -5,7 +5,9 @@
     Label,
     Popover,
     ScrollArea,
+    ContextMenu,
   } from "@/lib/components";
+  import { AskSure } from "@/components";
   import { libraryFavorites, libraryTag, tags } from "@/store";
   import { refreshTags, refreshLibrary } from "@/functions";
   import { MarkDB } from "@/repositories";
@@ -17,6 +19,8 @@
   import { IS_MOBILE } from "@/constants";
 
   let open = $state(false);
+  let openDelete = $state(false)
+  let markToDelete: Mark = $state(null!)
   let searchTag = $state("");
   let shouldAdd = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
@@ -36,6 +40,19 @@
   let { class: className }: { class?: string } = $props();
 </script>
 
+<AskSure 
+  bind:open={openDelete} 
+  message="This will permanently delete the tag {markToDelete?.name}" 
+  onokay={async () => {
+    openDelete = false;
+    await MarkDB.deleteMark(markToDelete);
+    await refreshTags();
+    if ($libraryTag.id === markToDelete.id) {
+      libraryTag.set(undefined);
+      await refreshLibrary();
+    }
+  }} 
+/>
 <div class={cn("inline-flex", className)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
@@ -108,25 +125,42 @@
         <ScrollArea class="h-36 rounded-b-2xl">
           <Command.Group>
             {#each [{ id: -1, user_id: 1, name: "Favorites", icon: "heroicons:star-solid" }, ...$tags.reverse()] as tag}
-              <Command.Item
-                class={cn(
-                  "w-full rounded-xl flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
-                  tag === $libraryTag
-                    ? "!bg-slate-400 dark:!bg-secondary"
-                    : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"
-                )}
-                value={tag.name}
-                onSelect={async () => {
-                  libraryTag.set(tag);
-                  open = false;
-                  await refreshLibrary();
-                }}
-              >
-                {#if tag.icon}
-                  <Icon icon={tag.icon} />
-                {/if}
-                <Label class="text-center text-sm">{tag.name}</Label>
-              </Command.Item>
+              <ContextMenu.Root>
+                <ContextMenu.Trigger>
+                  <Command.Item
+                    class={cn(
+                      "w-full rounded-xl flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
+                      tag === $libraryTag
+                        ? "!bg-slate-400 dark:!bg-secondary"
+                        : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"
+                    )}
+                    value={tag.name}
+                    onSelect={async () => {
+                    libraryTag.set(tag);
+                    open = false;
+                    await refreshLibrary();
+                  }}
+                  >
+                    {#if tag.icon}
+                      <Icon icon={tag.icon} />
+                    {/if}
+                    <Label class="text-center text-sm">{tag.name}</Label>
+                  </Command.Item>
+                </ContextMenu.Trigger>
+                <ContextMenu.Content>
+                  <ContextMenu.Item 
+                    class="flex justify-between"
+                    onclick={() => {
+                      markToDelete = tag
+                      openDelete = true
+                      open = false
+                    }}
+                  >
+                    <Label>Delete</Label> 
+                    <Icon class="!size-4" icon="lucide:trash" />
+                  </ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Root>
             {/each}
           </Command.Group>
         </ScrollArea>

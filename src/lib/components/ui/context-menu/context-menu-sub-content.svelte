@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ContextMenu as ContextMenuPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
+	import { theme } from "@/store";
 
 	let {
 		ref = $bindable(null),
@@ -8,12 +9,12 @@
 		...restProps
 	}: ContextMenuPrimitive.SubContentProps = $props();
 </script>
-
 <ContextMenuPrimitive.SubContent
 	bind:ref
 	class={cn(
-		"bg-popover text-popover-foreground z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-md focus:outline-none",
-		className
+		"bg-secondary/80 backdrop-blur-sm text-popover-foreground z-50 w-[10rem] overflow-hidden rounded-xl border p-1 shadow-md focus:outline-none border-sidebar",
+		className,	
+		$theme === "dark" && "dark",
 	)}
 	{...restProps}
 />

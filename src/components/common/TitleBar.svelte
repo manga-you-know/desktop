@@ -13,8 +13,15 @@
     downloadDir,
     join,
   } from "@tauri-apps/api/path";
+  import { exists } from "@tauri-apps/plugin-fs";
   import { cn } from "@/lib/utils";
-  import { isFullscreen, extraTitle, downloadings, openMenuChapters, isMaximized } from "@/store";
+  import {
+    isFullscreen,
+    extraTitle,
+    downloadings,
+    openMenuChapters,
+    isMaximized,
+  } from "@/store";
   import { setFullscreen } from "@/functions";
   import type { Downloading } from "@/types";
 
@@ -26,8 +33,8 @@
   let downloadingCount = $derived(
     Object.values<Downloading>($downloadings).reduce(
       (a1, a2) => a1 + a2.downloading.length,
-      0
-    )
+      0,
+    ),
   );
 
   onMount(async () => {
@@ -42,8 +49,9 @@
   class={cn(
     "bg-sidebar flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
     page.route.id?.startsWith("/reader") &&
-      $isFullscreen && !$openMenuChapters &&
-      "h-0 -translate-y-[3rem]"
+      $isFullscreen &&
+      !$openMenuChapters &&
+      "h-0 -translate-y-[3rem]",
   )}
   data-tauri-drag-region={!$isFullscreen}
 >
@@ -63,15 +71,24 @@
         <Menubar.Content class="z-[51]">
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={async () => openPath(await join(downloadPath, "mangas"))}
+            onclick={async () => {
+              const pathToGo = await join(downloadPath, "favorite-panels");
+              if (await exists(pathToGo)) {
+                openPath(pathToGo);
+              }
+            }}
           >
             <Label>Downloads</Label>
             <Icon class="!size-5" icon="mingcute:folder-download-fill" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={async () =>
-              openPath(await join(documentsPath, "favorite-panels"))}
+            onclick={async () => {
+              const pathToGo = await join(documentsPath, "favorite-panels");
+              if (await exists(pathToGo)) {
+                openPath(pathToGo);
+              }
+            }}
           >
             <Label>Panels</Label>
             <Icon class="!size-5" icon="ic:round-photo-library" />
@@ -134,15 +151,21 @@
     <Label
       class={cn(
         "ml-8 dark!text-gray-400 hidden underline select-none",
-        downloadingCount > 0 && "block"
+        downloadingCount > 0 && "block",
       )}
       data-tauri-drag-region={!$isFullscreen}
       >{downloadingCount} downloading...
     </Label>
   </div>
-    <div class="absolute w-full flex justify-center z-10" data-tauri-drag-region={!$isFullscreen}>
-    <Label class="select-none !text-primary/70" data-tauri-drag-region={!$isFullscreen}>
-      {$extraTitle} 
+  <div
+    class="absolute w-full flex justify-center z-10"
+    data-tauri-drag-region={!$isFullscreen}
+  >
+    <Label
+      class="select-none !text-primary/70"
+      data-tauri-drag-region={!$isFullscreen}
+    >
+      {$extraTitle}
     </Label>
   </div>
   <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">

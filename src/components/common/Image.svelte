@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { HTMLImgAttributes } from "svelte/elements";
-  const { ...props }: HTMLImgAttributes = $props();
+  import { convertFileSrc } from "@tauri-apps/api/core";
+
+  const { src, ...props }: HTMLImgAttributes = $props();
 </script>
 
 <img
+  src={src?.startsWith("http") ? src : convertFileSrc(src ?? "")}
   {...props}
   onloadstart={(e) => {
     const img = e.currentTarget as HTMLImageElement;

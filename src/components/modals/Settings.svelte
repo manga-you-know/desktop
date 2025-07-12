@@ -2,6 +2,7 @@
   import { getVersion } from "@tauri-apps/api/app";
   import { enable, isEnabled, disable } from "@tauri-apps/plugin-autostart";
   import { load, Store } from "@tauri-apps/plugin-store";
+  import { relaunch } from "@tauri-apps/plugin-process";
   import {
     checkForAppUpdates,
     saveSettings,
@@ -285,19 +286,32 @@
           {/if}
           <Label>Theme</Label>
           <Theme />
-          <Button
-            class="w-44"
-            effect="ringHover"
-            onclick={async () => {
-              await resetSettings();
-            }}
-          >
-            <Icon
-              icon="material-symbols:rule-settings-rounded"
-              class="!w-5 !h-5"
-            />
-            Reset all settings
-          </Button>
+          <div class="flex gap-3">
+            <Button 
+              class="w-44"
+              effect="ringHover"
+              onclick={relaunch}
+            >
+              <Icon
+                icon="ic:round-refresh"
+                class="!size-5"
+              />
+              Reload app
+            </Button>
+            <Button
+              class="w-44"
+              effect="ringHover"
+              onclick={async () => {
+                await resetSettings();
+              }}
+            >
+              <Icon
+                icon="material-symbols:rule-settings-rounded"
+                class="!size-5"
+              />
+              Reset all settings
+            </Button>
+          </div>
         </Card.Content>
       </Card.Root>
       <div

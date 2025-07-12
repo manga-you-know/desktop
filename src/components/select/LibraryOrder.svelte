@@ -12,6 +12,10 @@
     id: "mdi:sort",
     name: "mdi:sort-alphabetical-variant",
   };
+  const orderLabel: Record<string, string> = {
+    id: "Newer",
+    name: "Title",
+  };
   const orders = ["id", "name"];
 </script>
 
@@ -30,12 +34,12 @@
             if (e.deltaY < 0) {
               libraryOrder.set(
                 orders.at(orders.findIndex((o) => o === $libraryOrder) - 1) ??
-                  orders[0]
+                  orders[0],
               );
             } else {
               libraryOrder.set(
                 orders.at(orders.findIndex((o) => o === $libraryOrder) + 1) ??
-                  orders[0]
+                  orders[0],
               );
             }
             refreshLibrary();
@@ -45,7 +49,7 @@
             if (e.button === 1) {
               libraryOrder.set(
                 orders.at(orders.findIndex((o) => o === $libraryOrder) + 1) ??
-                  orders[0]
+                  orders[0],
               );
               refreshLibrary();
               saveSettings();
@@ -75,7 +79,7 @@
                   await saveSettings();
                 }}
               >
-                <Label class="w-full text-sm ">{titleCase(order)}</Label>
+                <Label class="w-full text-sm ">{orderLabel[order]}</Label>
                 <Icon icon={orderIcon[order]} />
               </Command.Item>
             {/each}
@@ -109,8 +113,8 @@
     <Icon
       class={cn(
         "!size-5 transition-all duration-300",
-        $isAscending ? "-rotate-180" : "rotate-0"
-      )} 
+        $isAscending ? "-rotate-180" : "rotate-0",
+      )}
       icon="typcn:arrow-sorted-down"
     />
   </Button>
