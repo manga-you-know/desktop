@@ -1,5 +1,5 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { load } from "@tauri-apps/plugin-store";
+import { load, Store } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/types";
 import { FavoriteDB, ReadedDB } from "@/repositories";
@@ -18,9 +18,15 @@ import type { DownloadManager } from "@/managers";
 const window = getCurrentWindow();
 
 let dl: DownloadManager;
+let favoriteStore: Store = null!;
 downloadManager.subscribe((value) => {
   dl = value;
 });
+
+async function loadFavoriteStore() {
+  if (!favoriteStore)
+    favoriteStore = await load("favorite_store.json");
+}
 
 function addFavorite(favorite: Favorite) {
   favoritesLoaded.update((currentFavorites) => {
@@ -154,7 +160,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
       startLoading: () => loadFavoriteChapters(favorite),
       nextChapter: null,
     };
-
+    
     if (chaptersToRead.length > 0) {
       chaptersToRead.reverse();
       nextChapter = chaptersToRead[0];
@@ -181,7 +187,10 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   if (chaptersToRead.length > 0) {
     const chaptersType = favorite.type === "anime" ? "episode" : "chapter";
     if (valToRead) {
-      if (chaptersToRead.length > valToRead.chaptersToRead) {
+      if (
+        chaptersToRead.length > valToRead.chaptersToRead &&
+        chapters.length !== valToRead.chapters
+      ) {
         const newToRead =
           chaptersToRead.length - Number(valToRead.chaptersToRead);
         await notify(
@@ -194,7 +203,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
     }
   }
 
-  if (chaptersToRead.length > (valToRead?.chaptersToRead || 0)) {
+  if (chapters.length > 0) {
     await setValueToRead(
       favorite,
       chapters.length,
@@ -229,7 +238,7 @@ export async function getValueToRead(favorite: Favorite): Promise<
     }
   | undefined
 > {
-  const favoriteStore = await load("favorite_store.json");
+  await loadFavoriteStore();
   return await favoriteStore.get<{
     chapters: number;
     chaptersReaded: number;
@@ -243,7 +252,7 @@ export async function setValueToRead(
   chaptersReaded: number,
   chaptersToRead: number
 ): Promise<void> {
-  const favoriteStore = await load("favorite_store.json");
+  await loadFavoriteStore();
   await favoriteStore.set(`${favorite.id}`, {
     chapters,
     chaptersReaded,

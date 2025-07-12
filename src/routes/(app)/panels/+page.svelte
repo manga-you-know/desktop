@@ -17,6 +17,7 @@
     $derived(panelsWithQuery.slice((page - 1) * perPage, page * perPage));
   let searchTerm = $state("");
   const siblingCount = 1;
+
   onMount(async () => {
     await refreshPanels();
     panelsWithQuery = $panels;
@@ -75,7 +76,7 @@
       <Icon
         class={cn(
           "!size-5 ml-3 !text-primary absolute z-10",
-          searchTerm !== "" && "cursor-pointer"
+          searchTerm !== "" && "cursor-pointer",
         )}
         icon={searchTerm === "" ? "uil:search" : "lucide:x"}
         onclick={() => {

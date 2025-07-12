@@ -72,11 +72,11 @@
   let totalPage = $state(0);
   let isTheLastChapter = $state(Number(chapterIndex) === 0);
   let isTheFirstChapter = $state(
-    Number(chapterIndex) === $globalChapters.length - 1
+    Number(chapterIndex) === $globalChapters.length - 1,
   );
   let currentlyImage = $state("/myk.png");
   let currentlyImagePath = $derived(
-    `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`
+    `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`,
   );
   let downloadedImages: DirEntry[] = $state([]);
   let pagesDiv: HTMLDivElement = $state(null!);
@@ -113,7 +113,7 @@
     var images = await $downloadManager.getChapterImages(chapterToFetch);
     await $downloadManager.getBase64Images(
       images,
-      $downloadManager.getBaseUrl(chapterToFetch.source)
+      $downloadManager.getBaseUrl(chapterToFetch.source),
     );
   }
 
@@ -130,19 +130,19 @@
     }
     setDiscordActivity(
       `Reading [${name}]`,
-      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`
+      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`,
     );
   }
   async function prevPage() {
     if (currentlyCount === 1) return;
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
-    const id = (currentlyCount - 1).toString()
+    const id = (currentlyCount - 1).toString();
     if ($viewMode === "single" && $fitMode === "") scrollToTop();
     if ($viewMode === "scroll") {
-      await delay(5)
+      await delay(5);
       const prevP = document.getElementById(id);
-      pagesDiv?.scrollTo({ top: prevP.offsetTop, behavior: "smooth" });
+      pagesDiv?.scrollTo({ top: prevP?.offsetTop, behavior: "smooth" });
     }
   }
 
@@ -150,12 +150,12 @@
     if (currentlyCount === totalPage) return;
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
-    const id = (currentlyCount - 1).toString()
+    const id = (currentlyCount - 1).toString();
     if ($viewMode === "single" && $fitMode === "") scrollToTop();
     if ($viewMode === "scroll") {
-      await delay(5)
+      await delay(5);
       const nextP = document.getElementById(id);
-      pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
+      pagesDiv?.scrollTo({ top: nextP?.offsetTop, behavior: "smooth" });
     }
   }
 
@@ -168,7 +168,7 @@
     goto($lastPage);
     openMenuChapters.set(false);
     stopDiscordPresence();
-    extraTitle.set("")
+    extraTitle.set("");
   }
 
   async function handleGoChapter(way: "next" | "prev") {
@@ -178,12 +178,12 @@
     totalPage = 0;
     scrollToTop();
     await goto(
-      `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
+      `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`,
     );
   }
 
   async function favoriteImage() {
-    currentlyImage = images[currentlyCount - 1]
+    currentlyImage = images[currentlyCount - 1];
     const path = await join("favorite-panels", currentlyImagePath);
     if (downloadedImages.map((img) => img.name).includes(currentlyImagePath)) {
       await remove(path, { baseDir: BaseDirectory.Document });
@@ -205,12 +205,12 @@
           {
             fromPathBaseDir: BaseDirectory.Download,
             toPathBaseDir: BaseDirectory.Document,
-          }
+          },
         );
       } else {
         await $downloadManager.writePageBase64(
           currentlyImage,
-          currentlyImagePath
+          currentlyImagePath,
         );
       }
       toast.success("Page favorited!", { duration: 800 });
@@ -237,7 +237,7 @@
     } else {
       newImage = await $downloadManager.joinBase64Images(
         images[currentlyCount - 1],
-        images[currentlyCount]
+        images[currentlyCount],
       );
     }
     currentlyImage = newImage;
@@ -290,19 +290,18 @@
     currentlyCount = pageToGo;
     currentlyImage = images[currentlyCount - 1];
     if ($viewMode === "scroll") {
-      await delay(5)
-      const id = (currentlyCount - 1).toString()
+      await delay(5);
+      const id = (currentlyCount - 1).toString();
       const nextP = document.getElementById(id);
       pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
     }
     saveSettings();
-
   }
 
   async function loadB64() {
     images = await $downloadManager.getBase64Images(
       images,
-      $downloadManager.getBaseUrl(favorite.source)
+      $downloadManager.getBaseUrl(favorite.source),
     );
     backupImages = [...images];
     currentlyImage = images[currentlyCount - 1];
@@ -316,10 +315,10 @@
     isTheLastChapter = Number(chapterIndex) === 0;
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     chapter = $globalChapters[Number(chapterIndex)];
-    extraTitle.set(`${chapter.number} # ${chapter.title}`)
+    extraTitle.set(`${chapter.number} # ${chapter.title}`);
     if (!isLocal) {
       toast.loading(
-        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`
+        `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`,
       );
       images = await $downloadManager.getChapterImages(chapter);
       loadB64();
@@ -344,7 +343,7 @@
     }
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
     setChapterActivity(favorite.name);
-    extraTitle.set(`${chapter.number} # ${chapter.title}`)
+    extraTitle.set(`${chapter.number} # ${chapter.title}`);
     if (!isLocal) {
       if (favorite.is_ultra_favorite) {
         if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
@@ -380,7 +379,7 @@
         prevPage();
       }
       if (key === "arrowright") {
-          nextPage();
+        nextPage();
       }
       if (key === " ") {
         nextPage();
@@ -390,7 +389,7 @@
           handleGoChapter("next");
         } else nextPage();
       }
-      
+
       if (key === "backspace") {
         prevPage();
       }
@@ -424,7 +423,7 @@
       }
 
       if (key === "v") {
-        toggleView()  
+        toggleView();
       }
 
       if (key === "f") {
@@ -454,7 +453,7 @@
   function handleMouse(
     e: MouseEvent & {
       currentTarget: EventTarget & Window;
-    }
+    },
   ) {
     if (e.button === 3) {
       e.preventDefault();
@@ -480,7 +479,7 @@
 <div
   class={cn(
     "bg-white dark:bg-background h-screen overflow-hidden",
-    !$isFullscreen && $customTitlebar && "h-[calc(100vh-2.5rem)]"
+    !$isFullscreen && $customTitlebar && "h-[calc(100vh-2.5rem)]",
   )}
 >
   <div
@@ -490,7 +489,7 @@
       effect="ringHover"
       class={cn(
         "h-24 mr-2 pointer-events-auto transition-all",
-        currentlyCount === totalPage ? "translate-x-0" : "translate-x-16"
+        currentlyCount === totalPage ? "translate-x-0" : "translate-x-16",
       )}
       disabled={isTheLastChapter}
       variant={isTheLastChapter ? "outline" : "default"}
@@ -504,7 +503,7 @@
   <div
     class={cn(
       "fixed h-screen w-screen flex justify-end items-start z-50 pointer-events-none transition-all duration-500 ",
-      $openReadMenu ? "translate-x-0" : "translate-x-[15rem]"
+      $openReadMenu ? "translate-x-0" : "translate-x-[15rem]",
     )}
   >
     <div
@@ -531,7 +530,7 @@
           <Icon
             class={cn(
               "!size-5 transition-all duration-700",
-              $openReadMenu ? "rotate-180" : "rotate-0 opacity-50"
+              $openReadMenu ? "rotate-180" : "rotate-0 opacity-50",
             )}
             icon="typcn:chevron-left"
           />
@@ -539,7 +538,7 @@
         <Button
           class={cn(
             "w-10 cursor-move pointer-events-auto handle",
-            !$openReadMenu && "invisible"
+            !$openReadMenu && "invisible",
           )}
           variant="ghost"
         >
@@ -734,34 +733,33 @@
       </div>
     </div>
   {:else}
-
-      <!-- svelte-ignore a11y_consider_explicit_label -->
-      <button
-        class="fixed inset-0 flex cursor-default"
-        style="z-index: 40;"
-        use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
-        onfocus={(e) => {
-          e.currentTarget.blur();
-        }}
-        tabindex={-1}
-        onswipe={handleSwipe}
-        onclick={(e) => {
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button
+      class="fixed inset-0 flex cursor-default"
+      style="z-index: 40;"
+      use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
+      onfocus={(e) => {
+        e.currentTarget.blur();
+      }}
+      tabindex={-1}
+      onswipe={handleSwipe}
+      onclick={(e) => {
+        nextPage();
+        e.currentTarget.blur();
+      }}
+      oncontextmenu={(e) => {
+        e.preventDefault();
+        prevPage();
+      }}
+      onwheel={(e) => {
+        if ($fitMode === "") return;
+        if (e.deltaY > 0) {
           nextPage();
-          e.currentTarget.blur();
-        }}
-        oncontextmenu={(e) => {
-          e.preventDefault();
+        } else {
           prevPage();
-        }}
-        onwheel={(e) => {
-          if ($fitMode === "") return
-          if (e.deltaY > 0) {
-            nextPage();
-          } else {
-            prevPage();
-          }
-        }}
-      >
+        }
+      }}
+    >
     </button>
     <!-- <button
         aria-label="Forward"
@@ -795,7 +793,7 @@
               "object-contain transition-all duration-200",
               $isFullscreen || !$customTitlebar
                 ? "h-screen"
-                : "h-[calc(100vh-2.5rem)]"
+                : "h-[calc(100vh-2.5rem)]",
             )}
           />
         </div>

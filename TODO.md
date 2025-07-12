@@ -40,7 +40,7 @@
 - Better expanded sidebar
 - Button to expand | collapse sidebar
 - More context menu's
-  Card ones has options to copy image (especially panels)
+  Card ones has options to copy image (especially panels) path or url for non downloadeds
 
 - Make chapters only readed in the last page !!!!
 
@@ -49,6 +49,7 @@
 - Mobile doesn't really works
   - page not loading when changing from long read to unique read
     now do the same for the scroll mode, going from unique to scroll (long)
+- Android doesn't compiles cuz of import
 - Size of fail image when in readed modal (ReadedFavorite)
 - Loading bugging
 - Error changing from on-hover to compact

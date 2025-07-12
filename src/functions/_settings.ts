@@ -76,7 +76,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   is_chapters_descending: { store: isChaptersDescending, default: true },
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
-  sidebar_behavior: { store: sidebarBehavior, default: "expand" },
+  sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },
 } as const;
 
