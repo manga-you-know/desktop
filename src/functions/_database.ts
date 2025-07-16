@@ -186,7 +186,10 @@ export async function refreshPanels() {
   const docDir = await documentDir();
   for (const panel of downloaded) {
     const path = await join(docDir, "favorite-panels", panel.name);
-    localPanels.push({ src: convertFileSrc(path), path, shouldCopy: false });
+    const splitted: string[] = (path.includes("\\")
+      ? path.split("\\").at(-1)?.split("~")
+      : path.split("/").at(-1)?.split("~")) ?? [""]
+    localPanels.push({ path, shouldCopy: false, id: Number(splitted[0]), name: splitted[1]?.replaceAll("-", " "), chapter: splitted[2] });
   }
   if (localPanels.length > 0) {
     panels.set(localPanels);

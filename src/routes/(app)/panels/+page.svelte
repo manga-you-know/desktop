@@ -1,26 +1,63 @@
 <script lang="ts">
-  import { FavoritePanel } from "@/components";
+  import { FavoritePanel, Select } from "@/components";
   import { onMount } from "svelte";
   import { panels } from "@/store";
   import { copyImageFromPath, refreshPanels } from "@/functions";
   import { Pagination, Badge, Input } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
+  import { delay } from "@/utils";
+  import type { Favorite, Panel } from "@/types";
+  import { FavoriteDB } from "@/repositories";
 
   let page = $state(1);
   let perPage = 22;
   let panelDiv: HTMLDivElement = $state(null!);
-  let panelsWithQuery: { src: string; path: string; shouldCopy?: boolean }[] =
-    $state([]);
+  let rawFavorites: Favorite[] = $state([]);
+  let panelsWithQuery: { path: string; shouldCopy?: boolean }[] = $state([]);
   let count = $derived(panelsWithQuery.length);
-  let displayedPanels: { src: string; path: string; shouldCopy?: boolean }[] =
-    $derived(panelsWithQuery.slice((page - 1) * perPage, page * perPage));
+  let displayedPanels: { path: string; shouldCopy?: boolean }[] = $derived(
+    panelsWithQuery.slice((page - 1) * perPage, page * perPage),
+  );
   let searchTerm = $state("");
+  let selectedTitle = $state("");
+  let selectedChapter = $state("");
+  let panelsTitle: string[] = $derived(
+    Array.from(new Set($panels.map((pn) => pn.name))),
+  );
+
+  let panelsTitleLabel: Record<string, string> = $derived(
+    Object.fromEntries(
+      Array.from(new Set($panels.map((pn) => [pn.id, pn.name])))
+        .filter((pn) => rawFavorites.find((f) => f.id === pn[0]))
+        .map((pn) => [
+          pn[1],
+          rawFavorites.find((f) => f.id === pn[0])?.name ?? "",
+        ]),
+    ),
+  );
+
+  let panelsChapter: string[] = $derived(
+    Array.from(
+      new Set(
+        $panels
+          .filter((pn) =>
+            pn.name.toLowerCase().includes(selectedTitle.toLowerCase()),
+          )
+          .map((pn) => pn.chapter),
+      ),
+    ),
+  );
   const siblingCount = 1;
+
+  async function refreshRaw() {
+    rawFavorites = await FavoriteDB.getRawFavorites();
+  }
 
   onMount(async () => {
     await refreshPanels();
     panelsWithQuery = $panels;
+    refreshRaw();
   });
 
   async function handleKeydown(event: KeyboardEvent) {
@@ -35,20 +72,24 @@
   }
 
   function search() {
-    if (searchTerm.length === 0) {
+    refreshRaw();
+    if (
+      searchTerm.length === 0 &&
+      selectedTitle === "" &&
+      selectedChapter === ""
+    ) {
       panelsWithQuery = $panels;
       page = 1;
       return;
     }
     panelsWithQuery = $panels.filter((pn) => {
-      const splitted = pn.path.includes("\\")
-        ? pn.path?.split("\\").at(-1)?.split("~")
-        : pn.path?.split("/").at(-1)?.split("~");
-      const name = splitted?.at(1)?.replaceAll("-", " ");
-      const chapter = splitted?.at(2);
       return (
-        name?.includes(searchTerm.toLowerCase()) ||
-        chapter?.includes(searchTerm.toLowerCase())
+        (pn.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pn.chapter?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        pn.name?.toLowerCase().includes(selectedTitle.toLowerCase()) &&
+        (selectedChapter === ""
+          ? true
+          : pn.chapter?.toLowerCase() === selectedChapter.toLowerCase())
       );
     });
     page = 1;
@@ -66,10 +107,7 @@
   <div
     class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
   >
-    <Badge
-      class="h-10 w-12 flex justify-center items-center bg-secondary/70 hover:bg-secondary/50"
-      variant="secondary"
-    >
+    <Badge class="h-10 w-12 flex justify-center items-center" variant="outline">
       {count}
     </Badge>
     <div class="inline-flex relative items-center">
@@ -86,9 +124,9 @@
       />
       <Input
         bind:value={searchTerm}
-        class="w-52 pl-9 bg-secondary/70 hover:bg-secondary/50"
+        class="w-52 pl-9"
         labelClass="ml-6"
-        variant="secondary"
+        variant="outline"
         placeholder="Search name | chapter..."
         floatingLabel
         autocomplete="off"
@@ -96,14 +134,32 @@
         oninput={search}
       />
     </div>
+    <Select
+      class="max-w-52"
+      classPopup="w-[11rem]"
+      bind:selected={selectedTitle}
+      items={panelsTitle}
+      label="Title"
+      itemsLabel={panelsTitleLabel}
+      wheelControls
+      onselect={async () => {
+        selectedChapter = "";
+        search();
+        await delay(5);
+        if (panelsChapter.length === 1) selectedChapter = panelsChapter[0];
+      }}
+    />
+    <Select
+      bind:selected={selectedChapter}
+      items={panelsChapter}
+      label="Chapter"
+      wheelControls
+      onselect={search}
+    />
   </div>
   <div class="w-full h-32"></div>
   {#each displayedPanels as panel}
-    <FavoritePanel
-      src={panel.src}
-      path={panel.path}
-      bind:shouldCopy={panel.shouldCopy}
-    />
+    <FavoritePanel path={panel.path} bind:shouldCopy={panel.shouldCopy} />
   {/each}
   {#if displayedPanels.length === 0}
     <Badge class="h-10">

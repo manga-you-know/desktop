@@ -9,12 +9,15 @@
 		...restProps
 	}: ContextMenuPrimitive.SubContentProps = $props();
 </script>
-<ContextMenuPrimitive.SubContent
-	bind:ref
-	class={cn(
-		"bg-secondary/80 backdrop-blur-sm text-popover-foreground z-50 w-[10rem] overflow-hidden rounded-xl border p-1 shadow-md focus:outline-none border-sidebar",
-		className,	
-		$theme === "dark" && "dark",
-	)}
-	{...restProps}
-/>
+
+<ContextMenuPrimitive.Portal>
+	<ContextMenuPrimitive.SubContent
+		bind:ref
+		class={cn(
+			"pointer-events-auto bg-secondary/60 backdrop-blur-sm text-popover-foreground z-50 w-[10rem] overflow-hidden rounded-xl border p-1 shadow-md focus:outline-none border-sidebar",
+			className,
+			$theme === "dark" && "dark",
+		)}
+		{...restProps}
+	/>
+</ContextMenuPrimitive.Portal>

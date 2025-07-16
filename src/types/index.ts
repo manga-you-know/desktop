@@ -1,4 +1,5 @@
 export type { Mark } from "./_mark";
+export type { Panel } from "./_panel";
 export type { Readed } from "./_readed";
 export type { Source } from "./_source";
 export type { Chapter } from "./_chapter";

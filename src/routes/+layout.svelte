@@ -28,7 +28,6 @@
     migrateDatabase,
     loadSettings,
     toggleFullscreen,
-    loadFavoriteChapters,
     createTray,
     setFullscreen,
     logNewUser,
@@ -58,7 +57,7 @@
         console.log(e);
       }
     },
-    1000 * 60 * 10
+    1000 * 60 * 10,
   );
   function handleKeydown(e: KeyboardEvent) {
     const isCtrl = e.metaKey || e.ctrlKey;
@@ -134,7 +133,7 @@
 <div
   class={twMerge(
     "!bg-background text-black dark:text-white",
-    $theme === "dark" && "dark"
+    $theme === "dark" && "dark",
   )}
 >
   <Toaster theme={$theme} toastOptions={{}} richColors duration={2700} />

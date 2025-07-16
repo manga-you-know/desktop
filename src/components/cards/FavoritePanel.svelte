@@ -1,20 +1,20 @@
 <script lang="ts">
   import { Tilt } from "svelte-ux";
   import { ContextMenu, Label } from "@/lib/components";
-  import { PanelModal, AskSure } from "@/components";
+  import { PanelModal, AskSure, Image } from "@/components";
   import { copyText, refreshPanels, copyImageFromPath } from "@/functions";
   import { remove } from "@tauri-apps/plugin-fs";
   import { cn } from "@/lib/utils";
   import Icon from "@iconify/svelte";
 
-  let { src, path, shouldCopy = $bindable(false) } = $props();
+  let { path, shouldCopy = $bindable(false) } = $props();
   let open = $state(false);
   let contextOpen = $state(false);
   let deleteOpen = $state(false);
   let isDeleting = false;
 </script>
 
-<PanelModal bind:open bind:shouldCopy {src} {path} />
+<PanelModal bind:open bind:shouldCopy {path} />
 <AskSure
   bind:open={deleteOpen}
   message="This will delete this panel from your folder"
@@ -39,9 +39,9 @@
         onmouseenter={() => (shouldCopy = true)}
         onmouseleave={() => (shouldCopy = false)}
       >
-        <img
+        <Image
           class="!max-w-[16rem] h-[11rem] rounded-sm object-contain"
-          {src}
+          src={path}
           alt="favorite panel"
         />
       </button>

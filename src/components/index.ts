@@ -11,6 +11,8 @@ export { default as EpisodeButton } from "./buttons/EpisodeButton.svelte";
 // Toggle Buttons
 export { default as Theme } from "./toggleButtons/Theme.svelte";
 export { default as CustomType } from "./toggleButtons/CustomType.svelte";
+// Context
+export { default as FavoriteContext } from "./context-menu/FavoriteContext.svelte";
 // Inputs
 export { default as LibrarySearch } from "./input/LibrarySearch.svelte";
 // Selects

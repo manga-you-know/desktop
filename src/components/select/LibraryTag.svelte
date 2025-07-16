@@ -19,8 +19,8 @@
   import { IS_MOBILE } from "@/constants";
 
   let open = $state(false);
-  let openDelete = $state(false)
-  let markToDelete: Mark = $state(null!)
+  let openDelete = $state(false);
+  let markToDelete: Mark = $state(null!);
   let searchTag = $state("");
   let shouldAdd = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
@@ -40,26 +40,26 @@
   let { class: className }: { class?: string } = $props();
 </script>
 
-<AskSure 
-  bind:open={openDelete} 
-  message="This will permanently delete the tag {markToDelete?.name}" 
+<AskSure
+  bind:open={openDelete}
+  message="This will permanently delete the tag {markToDelete?.name}"
   onokay={async () => {
     openDelete = false;
     await MarkDB.deleteMark(markToDelete);
     await refreshTags();
-    if ($libraryTag.id === markToDelete.id) {
+    if ($libraryTag?.id === markToDelete.id) {
       libraryTag.set(undefined);
       await refreshLibrary();
     }
-  }} 
+  }}
 />
-<div class={cn("inline-flex", className)}>
+<div class={cn("inline-flex relative", className)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}
         <Button
+          class="w-32 pr-2 focus:none"
           variant="outline"
-          class="w-36 justify-between rounded-r-none focus:none"
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -70,7 +70,7 @@
                 libraryTag.set($tags.at(0));
               } else {
                 libraryTag.set(
-                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) + 1)
+                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) + 1),
                 );
               }
             } else {
@@ -78,7 +78,7 @@
                 libraryTag.set($tags.at(-1));
               } else {
                 libraryTag.set(
-                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) - 1)
+                  $tags.at($tags.findIndex((c) => c.id === $libraryTag.id) - 1),
                 );
               }
             }
@@ -92,19 +92,24 @@
             }
           }}
         >
-          {#if $libraryTag?.icon}
-            <Icon icon={$libraryTag.icon} />
-          {/if}
-          <Label
-            class="!w-36 cursor-pointer text-sm text-center -ml-[4px] text-ellipsis    
+          <div class="inline-flex justify-between items-center w-full gap-0.5">
+            <div class="inline-flex w-full justify-center items-center gap-2">
+              {#if $libraryTag?.icon}
+                <Icon icon={$libraryTag.icon} />
+              {/if}
+              <Label
+                class="max-w-20 cursor-pointer text-sm text-center truncate    
             {$libraryTag === undefined ? 'dark:text-gray-400' : ''}"
-          >
-            {limitStr($libraryTag?.name ?? "Filter by tag...", 16)}
-          </Label>
+              >
+                {$libraryTag?.name ?? "Select tag"}
+              </Label>
+            </div>
+            <Icon class="!w-4 text-gray-500" icon="lucide:chevron-down" />
+          </div>
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[11rem] max-h-44 ml-7 p-0">
+    <Popover.Content class="w-[10rem] max-h-44 p-0">
       <Command.Root onValueChange={(v) => (shouldAdd = v.length === 0)}>
         <Command.Input
           bind:value={searchTag}
@@ -132,14 +137,14 @@
                       "w-full rounded-xl flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
                       tag === $libraryTag
                         ? "!bg-slate-400 dark:!bg-secondary"
-                        : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit"
+                        : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit",
                     )}
                     value={tag.name}
                     onSelect={async () => {
-                    libraryTag.set(tag);
-                    open = false;
-                    await refreshLibrary();
-                  }}
+                      libraryTag.set(tag);
+                      open = false;
+                      await refreshLibrary();
+                    }}
                   >
                     {#if tag.icon}
                       <Icon icon={tag.icon} />
@@ -148,15 +153,15 @@
                   </Command.Item>
                 </ContextMenu.Trigger>
                 <ContextMenu.Content>
-                  <ContextMenu.Item 
+                  <ContextMenu.Item
                     class="flex justify-between"
                     onclick={() => {
-                      markToDelete = tag
-                      openDelete = true
-                      open = false
+                      markToDelete = tag;
+                      openDelete = true;
+                      open = false;
                     }}
                   >
-                    <Label>Delete</Label> 
+                    <Label>Delete</Label>
                     <Icon class="!size-4" icon="lucide:trash" />
                   </ContextMenu.Item>
                 </ContextMenu.Content>
@@ -168,9 +173,11 @@
     </Popover.Content>
   </Popover.Root>
   <Button
-    variant="secondary"
-    class="w-8 rounded-l-none"
-    disabled={$libraryTag === undefined}
+    class={cn(
+      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
+      $libraryTag !== undefined ? "opacity-100" : "pointer-events-none",
+    )}
+    variant="outline"
     onclick={() => {
       open = false;
       libraryTag.set(undefined);

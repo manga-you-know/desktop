@@ -3,6 +3,7 @@ import { DownloadManager } from "@/managers";
 import { IS_MOBILE, MANGASOURCES } from "@/constants";
 import type {
   Mark,
+  Panel,
   Readed,
   Chapter,
   Favorite,
@@ -29,9 +30,7 @@ export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
 export const readeds = writable<Readed[]>([]);
 export const tags = writable<Mark[]>([]);
-export const panels = writable<
-  { src: string; path: string; shouldCopy?: boolean }[]
->([]);
+export const panels = writable<Panel[]>([]);
 export const updateInfo = writable<UpdateInfo>({
   updateAvailable: false,
   version: "",

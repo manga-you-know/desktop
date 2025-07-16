@@ -53,9 +53,7 @@
   //     triggerRef.focus();
   //   });
   // }
-  selectedSource.subscribe(async (value) => {
-    await saveSettings();
-  });
+  selectedSource.subscribe(saveSettings);
 
   onMount(() => {
     sourceType = mangaSourceNames.includes($selectedSource)
@@ -84,17 +82,17 @@
               selectedSource.set(
                 sources[sourceType].at(
                   sources[sourceType].findIndex(
-                    (s) => s.name === $selectedSource
-                  ) - 1
-                )?.name ?? sources[sourceType][0].name
+                    (s) => s.name === $selectedSource,
+                  ) - 1,
+                )?.name ?? sources[sourceType][0].name,
               );
             } else {
               selectedSource.set(
                 sources[sourceType].at(
                   sources[sourceType].findIndex(
-                    (s) => s.name === $selectedSource
-                  ) + 1
-                )?.name ?? sources[sourceType][0].name
+                    (s) => s.name === $selectedSource,
+                  ) + 1,
+                )?.name ?? sources[sourceType][0].name,
               );
             }
           }}
@@ -103,9 +101,9 @@
               selectedSource.set(
                 sources[sourceType].at(
                   sources[sourceType].findIndex(
-                    (s) => s.name === $selectedSource
-                  ) + 1
-                )?.name ?? sources[sourceType][0].name
+                    (s) => s.name === $selectedSource,
+                  ) + 1,
+                )?.name ?? sources[sourceType][0].name,
               );
             }
           }}
@@ -128,7 +126,7 @@
                     "flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 ",
                     source.name === $selectedSource
                       ? "!bg-gray-300 dark:!bg-secondary"
-                      : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit"
+                      : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
                   )}
                   value={source.name}
                   onSelect={() => {
@@ -160,6 +158,11 @@
     variant="secondary"
     bind:selected={sourceType}
     items={["manga", "comic", "anime"]}
+    itemsLabel={{
+      manga: "Manga",
+      comic: "Comic",
+      anime: "Anime",
+    }}
     icons={{
       manga: "uil:letter-japanese-a",
       comic: "game-icons:spinning-sword",
@@ -169,6 +172,7 @@
       selectedSource.set(sources[sourceType][0].name);
     }}
     openIcon={false}
+    closeButton={false}
     wheelControls
     onmouseup={(e) => {
       if (e.button === 1) {

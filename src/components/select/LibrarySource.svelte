@@ -30,13 +30,13 @@
   let { class: className }: { class?: string } = $props();
 </script>
 
-<div class={cn("inline-flex", className)}>
+<div class={cn("inline-flex relative", className)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}
         <Button
           variant="outline"
-          class="w-36 justify-between rounded-r-none focus:none "
+          class="w-32 justify-between focus:none pr-2"
           {...props}
           role="combobox"
           aria-expanded={open}
@@ -49,8 +49,8 @@
               } else {
                 librarySource.set(
                   sources.at(
-                    sources.findIndex((s) => s === $librarySource) + 1
-                  ) ?? ""
+                    sources.findIndex((s) => s === $librarySource) + 1,
+                  ) ?? "",
                 );
               }
             } else {
@@ -59,8 +59,8 @@
               } else {
                 librarySource.set(
                   sources.at(
-                    sources.findIndex((s) => s === $librarySource) - 1
-                  ) ?? ""
+                    sources.findIndex((s) => s === $librarySource) - 1,
+                  ) ?? "",
                 );
               }
             }
@@ -74,18 +74,23 @@
             }
           }}
         >
-          <Label
-            class="w-full text-sm text-center -ml-[4px] cursor-pointer {$librarySource ===
-            ''
-              ? 'dark:text-gray-400'
-              : ''}"
-          >
-            {$librarySource || "Filter by source..."}
-          </Label>
+          <div class="inline-flex justify-between items-center w-full gap-0.5">
+            <div class="flex w-full justify-center">
+              <Label
+                class="text-sm truncate flex items-center cursor-pointer {$librarySource ===
+                ''
+                  ? 'dark:text-gray-400'
+                  : ''}"
+              >
+                {$librarySource || "Select source"}
+              </Label>
+            </div>
+            <Icon class="!w-4 text-gray-500" icon="lucide:chevron-down" />
+          </div>
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[11rem] ml-7 p-0">
+    <Popover.Content class="w-[10rem] p-0">
       <Command.Root>
         <Command.Input
           placeholder="Search source..."
@@ -116,9 +121,11 @@
     </Popover.Content>
   </Popover.Root>
   <Button
-    variant="secondary"
-    class="w-8 rounded-l-none"
-    disabled={$librarySource === ""}
+    class={cn(
+      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
+      $librarySource !== "" ? "opacity-100" : "pointer-events-none",
+    )}
+    variant="outline"
     onclick={() => {
       open = false;
       librarySource.set("");

@@ -13,9 +13,12 @@
   type Props = {
     selected: string;
     items: string[];
+    label?: string;
+    itemsLabel?: Record<string, string>;
     icons?: { [key: string]: string };
     openIcon?: boolean;
     invertIcons?: boolean;
+    closeButton?: boolean;
     onselect?: VoidFunction;
     onmouseup?: (e: any) => void;
     wheelControls?: boolean;
@@ -26,14 +29,17 @@
   };
 
   let {
-    selected = $bindable(),
+    selected = $bindable(""),
+    label = "Select...",
     items,
+    itemsLabel = {},
     icons,
     onselect,
     onmouseup,
     variant = "outline",
     openIcon = true,
     invertIcons = false,
+    closeButton = true,
     wheelControls = false,
     class: className,
     classPopup,
@@ -44,88 +50,111 @@
   let triggerRef = $state<HTMLButtonElement>(null!);
 </script>
 
-<Popover.Root bind:open>
-  <Popover.Trigger bind:ref={triggerRef}>
-    {#snippet child({ props })}
-      <Button
-        class={className}
-        {variant}
-        {...props}
-        role="combobox"
-        aria-expanded={open}
-        tabindex={-1}
-        onwheel={(e) => {
-          if (wheelControls) {
-            if (e.deltaY < 0) {
-              selected =
-                items.at(items.findIndex((v) => v === selected) - 1) ??
-                items[0];
-            } else {
-              selected =
-                items.at(items.findIndex((v) => v === selected) + 1) ??
-                items[0];
+<div class="inline-flex relative">
+  <Popover.Root bind:open>
+    <Popover.Trigger bind:ref={triggerRef}>
+      {#snippet child({ props })}
+        <Button
+          class={className}
+          disabled={items.length === 0}
+          {variant}
+          {...props}
+          role="combobox"
+          aria-expanded={open}
+          tabindex={-1}
+          onwheel={(e) => {
+            if (wheelControls) {
+              if (e.deltaY < 0) {
+                selected =
+                  items.at(items.findIndex((v) => v === selected) - 1) ??
+                  items[0];
+              } else {
+                selected =
+                  items.at(items.findIndex((v) => v === selected) + 1) ??
+                  items[0];
+              }
+              onselect?.();
             }
-            onselect?.();
-          }
-        }}
-        {onmouseup}
-      >
-        <div
-          class={cn(
-            "flex min-w-[60px] justify-between items-center gap-1 select-none",
-            invertIcons ? "flex-row-reverse" : ""
-          )}
+          }}
+          {onmouseup}
         >
-          {#if icons}
-            <Icon icon={icons[selected]} />
-          {/if}
-          <Label class="w-full text-sm cursor-pointer"
-            >{titleCase(selected)}</Label
+          <div
+            class={cn(
+              "flex min-w-[60px] justify-between items-center gap-1 select-none",
+              invertIcons ? "flex-row-reverse" : "",
+            )}
           >
-        </div>
-        {#if openIcon}
-          <Icon icon="lucide:chevron-down" class="text-gray-500" />
-        {/if}
-      </Button>
-    {/snippet}
-  </Popover.Trigger>
-  <Popover.Content class={cn("w-[110px]  p-0", classPopup)}>
-    <Command.Root>
-      <Command.List>
-        <Command.Group>
-          {#each items as item}
-            <Command.Item
+            {#if icons}
+              <Icon icon={icons[selected]} />
+            {/if}
+            <Label
               class={cn(
-                "w-full flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 select-none",
-                classItem,
-                item === selected
-                  ? "!bg-gray-300 dark:!bg-secondary"
-                  : " dark:aria-selected:bg-inherit"
+                "w-full text-sm cursor-pointer truncate",
+                selected === "" && "dark:!text-gray-400",
               )}
-              value={item}
-              onSelect={async () => {
-                selected = item;
-                open = false;
-                onselect?.();
-              }}
             >
-              <div
+              {selected !== "" ? (itemsLabel[selected] ?? selected) : label}
+            </Label>
+          </div>
+          {#if openIcon}
+            <Icon icon="lucide:chevron-down" class="text-gray-500" />
+          {/if}
+        </Button>
+      {/snippet}
+    </Popover.Trigger>
+    <Popover.Content class={cn("w-[7rem]  p-0", classPopup)}>
+      <Command.Root>
+        <Command.List class="scrollbar">
+          <Command.Group>
+            {#each items as item}
+              <Command.Item
                 class={cn(
-                  "flex w-full items-center gap-2",
-                  invertIcons ? "flex-row-reverse" : ""
+                  "w-full flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 select-none",
+                  classItem,
+                  item === selected
+                    ? "!bg-gray-300 dark:!bg-secondary"
+                    : " dark:aria-selected:bg-inherit",
                 )}
+                value={item}
+                onSelect={async () => {
+                  selected = item;
+                  open = false;
+                  onselect?.();
+                }}
               >
-                {#if icons}
-                  <Icon icon={icons[item]} />
-                {/if}
-                <Label class="flex w-full text-sm justify-center"
-                  >{titleCase(item)}</Label
+                <div
+                  class={cn(
+                    "flex w-full items-center gap-2",
+                    invertIcons ? "flex-row-reverse" : "",
+                  )}
                 >
-              </div>
-            </Command.Item>
-          {/each}
-        </Command.Group>
-      </Command.List>
-    </Command.Root>
-  </Popover.Content>
-</Popover.Root>
+                  {#if icons}
+                    <Icon icon={icons[item]} />
+                  {/if}
+                  <Label
+                    class="flex w-full  items-center text-center text-sm justify-center"
+                    >{itemsLabel[item] ?? item}</Label
+                  >
+                </div>
+              </Command.Item>
+            {/each}
+          </Command.Group>
+        </Command.List>
+      </Command.Root>
+    </Popover.Content>
+  </Popover.Root>
+  <Button
+    class={cn(
+      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
+      selected !== "" && closeButton ? "opacity-100" : "pointer-events-none",
+    )}
+    variant="outline"
+    onclick={() => {
+      open = false;
+      selected = "";
+      onselect?.();
+    }}
+  >
+    <Icon icon="lucide:x" />
+  </Button>
+</div>

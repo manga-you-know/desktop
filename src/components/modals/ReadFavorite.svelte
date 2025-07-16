@@ -75,12 +75,12 @@
         ...jsonChapters[d.name],
         path: `Mangas/${favorite.folder_name}/${d.name}`,
       }))
-      .toReversed()
+      .toReversed(),
   );
   let readedLenghtDisplayed: number = $derived(
     chaptersMode === "web"
       ? displayedChapters.filter((c) => isReaded(c, $readeds)).length
-      : displayedLocalChapters.filter((c) => isReaded(c, $readeds)).length
+      : displayedLocalChapters.filter((c) => isReaded(c, $readeds)).length,
   );
   let nextChapter: Chapter | undefined = $derived(
     chaptersMode === "web"
@@ -89,19 +89,19 @@
           .find((chapter) => isReaded(chapter, $readeds) === undefined)
       : chaptersDl
           .toReversed()
-          .find((chapter) => isReaded(chapter, $readeds) === undefined)
+          .find((chapter) => isReaded(chapter, $readeds) === undefined),
   );
   let isNextDownloaded = $derived(
-    downloaded.map((d) => d.name).includes(nextChapter?.number ?? "")
+    downloaded.map((d) => d.name).includes(nextChapter?.number ?? ""),
   );
   let store: Store = $state(null!);
   let chaptersLength = $derived(
-    chaptersMode === "web" ? $globalChapters.length : chaptersDl.length
+    chaptersMode === "web" ? $globalChapters.length : chaptersDl.length,
   );
   let displayedChaptersLength = $derived(
     chaptersMode === "web"
       ? displayedChapters.length
-      : displayedLocalChapters.length
+      : displayedLocalChapters.length,
   );
   let isLoaded = $state(false);
   let isFetching = $state(false);
@@ -119,7 +119,7 @@
     if ($downloadings[favorite.id] === undefined) return false;
     return (
       $downloadings[favorite.id].downloading.find(
-        (dl) => dl.chapter_id === chapter.chapter_id
+        (dl) => dl.chapter_id === chapter.chapter_id,
       ) !== undefined
     );
   }
@@ -157,7 +157,7 @@
       [favorite.id]: {
         ...d[favorite.id],
         downloading: d[favorite.id].downloading.filter(
-          (c) => c.chapter_id !== chapter.chapter_id
+          (c) => c.chapter_id !== chapter.chapter_id,
         ),
       },
     }));
@@ -220,7 +220,7 @@
             } catch (error) {
               console.error(
                 `Failed to download chapter ${chapter.number}:`,
-                error
+                error,
               );
             } finally {
               removeDownloading(chapter);
@@ -230,7 +230,7 @@
 
           downloadPromises.add(downloadPromise);
           downloadPromise.finally(() =>
-            downloadPromises.delete(downloadPromise)
+            downloadPromises.delete(downloadPromise),
           );
         }
         await new Promise((resolve) => setTimeout(resolve, 70));
@@ -252,7 +252,7 @@
       .toReversed();
     displayedLocalChapters = chaptersDl
       .filter(
-        (chapter) => chapter.number?.toString()?.includes(searchTerm) ?? false
+        (chapter) => chapter.number?.toString()?.includes(searchTerm) ?? false,
       )
       .toReversed();
   }
@@ -288,6 +288,7 @@
         ]);
       }
       globalChapters.set(chapters);
+      console.log(languageOptions);
     } else {
       localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
       const result = await $downloadManager.getChapters(favorite);
@@ -348,7 +349,7 @@
         <Icon
           class={cn(
             "!size-6 duration-300 transition-all",
-            $isChaptersDescending ? "rotate-0" : "rotate-180"
+            $isChaptersDescending ? "rotate-0" : "rotate-180",
           )}
           icon="typcn:arrow-sorted-down"
         />
@@ -362,14 +363,14 @@
           <div
             class={cn(
               "size-9 bg-white mx-1 rounded-xl transition-all duration-300 translate-x-0",
-              chaptersMode === "local" && "translate-x-10"
+              chaptersMode === "local" && "translate-x-10",
             )}
           ></div>
         </div>
         <Button
           class={cn(
             "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
-            chaptersMode === "web" && "!text-black"
+            chaptersMode === "web" && "!text-black",
           )}
           size="sm"
           onclick={() => (chaptersMode = "web")}
@@ -380,7 +381,7 @@
         <Button
           class={cn(
             "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
-            chaptersMode === "local" && "!text-black"
+            chaptersMode === "local" && "!text-black",
           )}
           size="sm"
           onclick={() => (chaptersMode = "local")}
@@ -406,7 +407,7 @@
       <Button
         class={cn(
           "chapter-button w-full flex justify-between items-center rounded-xl group transition-colors duration-500 hover:bg-background/60",
-          nextChapter === undefined ? "cursor-default" : ""
+          nextChapter === undefined ? "cursor-default" : "",
         )}
         variant="secondary"
         size="sm"
@@ -415,10 +416,10 @@
             const originalIndex =
               chaptersMode === "web"
                 ? $globalChapters.findIndex(
-                    (c) => c.chapter_id === nextChapter.chapter_id
+                    (c) => c.chapter_id === nextChapter.chapter_id,
                   )
                 : chaptersDl.findIndex(
-                    (c) => c.chapter_id === nextChapter.chapter_id
+                    (c) => c.chapter_id === nextChapter.chapter_id,
                   );
 
             goto(`/reader/${favorite.id}/${originalIndex}`);
@@ -459,7 +460,7 @@
                     await downloadDir(),
                     "Mangas",
                     favorite.folder_name,
-                    nextChapter.number
+                    nextChapter.number,
                   );
                   openPath(path);
                 }
@@ -482,7 +483,9 @@
           <span
             class={cn(
               "flex group-hover:underline group-hover:underline-offset-4 truncate",
-              chaptersLength === 0 ? "w-[100px] justify-end" : "w-16 text-start"
+              chaptersLength === 0
+                ? "w-[100px] justify-end"
+                : "w-16 text-start",
             )}
           >
             {nextChapter !== undefined
@@ -557,13 +560,13 @@
     <div
       class={cn(
         "flex w-full items-center",
-        isMobile ? "flex-row-reverse justify-start gap-2" : "justify-center"
+        isMobile ? "flex-row-reverse justify-start gap-2" : "justify-center",
       )}
     >
       <div
         class={cn(
           " flex flex-col items-center gap-2 w-1/2",
-          isMobile ? "w-full justify-center " : "justify-start pr-10"
+          isMobile ? "w-full justify-center " : "justify-start pr-10",
         )}
       >
         <div class="w-40 h-70 flex justify-center">
@@ -577,7 +580,7 @@
         <div
           class={cn(
             "flex flex-col items-center gap-2",
-            isMobile && "justify-end p-2 h-full"
+            isMobile && "justify-end p-2 h-full",
           )}
         >
           <Language
@@ -588,7 +591,7 @@
               isFetching = true;
               const result = await $downloadManager.getChapters(
                 favorite,
-                localSelectedLanguage.id
+                localSelectedLanguage.id,
               );
               await refreshReadeds(favorite);
               await new Promise((resolve) => setTimeout(resolve, 10));
@@ -617,7 +620,7 @@
                 favorite.is_ultra_favorite = isUltraFavorite;
                 isUltraFavorite = await FavoriteDB.toggleUltraFavorite(
                   favorite,
-                  false
+                  false,
                 );
               }}
             >
@@ -654,27 +657,27 @@
           <div
             class={cn(
               "bg-secondary rounded-xl relative overflow-hidden",
-              isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem] "
+              isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem] ",
             )}
           >
             <div
               class={cn(
                 "flex justify-center items-center absolute transition-all duration-300 ease-in-out",
-                chaptersMode === "web" ? "translate-x-0" : "translate-x-full",
-                isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem] "
+                chaptersMode === "web" ? "translate-x-0" : "-translate-x-full",
+                isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem] ",
               )}
             >
               {#if isFetching}
                 <div
                   class={cn(
                     "h-full flex flex-col justify-start items-start",
-                    isMobile ? "w-[15rem] " : "w-[14.2rem] "
+                    isMobile ? "w-[15rem] " : "w-[14.2rem] ",
                   )}
                 >
                   <div
                     class={cn(
                       "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
-                      isMobile ? "w-[350px]" : "w-[220px]"
+                      isMobile ? "w-[350px]" : "w-[220px]",
                     )}
                   >
                     <div
@@ -692,7 +695,7 @@
                   <div
                     class={cn(
                       "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
-                      isMobile ? "w-[350px]" : "w-[220px]"
+                      isMobile ? "w-[350px]" : "w-[220px]",
                     )}
                   >
                     <div
@@ -710,7 +713,7 @@
                   <div
                     class={cn(
                       "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
-                      isMobile ? "w-[350px]" : "w-[220px]"
+                      isMobile ? "w-[350px]" : "w-[220px]",
                     )}
                   >
                     <div
@@ -728,7 +731,7 @@
                   <div
                     class={cn(
                       "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
-                      isMobile ? "w-[350px]" : "w-[220px]"
+                      isMobile ? "w-[350px]" : "w-[220px]",
                     )}
                   >
                     <div
@@ -781,7 +784,7 @@
                       isDownloading={isDownloadingHere}
                       onclick={() => {
                         const originalIndex = $globalChapters.findIndex(
-                          (c) => c.chapter_id === chapter.chapter_id
+                          (c) => c.chapter_id === chapter.chapter_id,
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}`);
                         open = false;
@@ -793,7 +796,7 @@
                           pushDownloading(chapter);
                           await $downloadManager.downloadChapter(
                             chapter,
-                            favorite
+                            favorite,
                           );
                           removeDownloading(chapter);
                           await refreshDownloadeds();
@@ -803,7 +806,7 @@
                             await downloadDir(),
                             "Mangas",
                             favorite.folder_name,
-                            chapter.number
+                            chapter.number,
                           );
                           openPath(path);
                         }
@@ -814,7 +817,7 @@
                           chapter,
                           $globalChapters,
                           favorite,
-                          $readeds
+                          $readeds,
                         );
                         await refreshReadeds(favorite);
                       }}
@@ -827,7 +830,7 @@
               class={cn(
                 "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out",
                 chaptersMode === "local" ? "translate-x-0" : "translate-x-full",
-                isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem]"
+                isMobile ? "!h-[75vh] w-[15rem]" : "!h-[19rem] w-[14.2rem]",
               )}
             >
               {#if displayedLocalChapters.length === 0}
@@ -860,7 +863,7 @@
                       onclick={() => {
                         $globalChapters = chaptersDl;
                         const originalIndex = $globalChapters.findIndex(
-                          (c) => c.chapter_id === chapter.chapter_id
+                          (c) => c.chapter_id === chapter.chapter_id,
                         );
                         goto(`/reader/${favorite.id}/${originalIndex}?local`);
                         open = false;
@@ -872,7 +875,7 @@
                           await downloadDir(),
                           "Mangas",
                           favorite.folder_name,
-                          chapter.number
+                          chapter.number,
                         );
                         openPath(path);
                       }}

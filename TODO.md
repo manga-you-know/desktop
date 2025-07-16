@@ -33,7 +33,6 @@
 - Improve tooltips
 - Seamless openings
 - Suggestions (start by changing some covers)
-- Hovers in select when transparent
 - Use the space in sidebar and titlebar
 - Icon not assuming the pinned icon place
 - Rounded images in favorite Card
@@ -41,14 +40,25 @@
 - Button to expand | collapse sidebar
 - More context menu's
   Card ones has options to copy image (especially panels) path or url for non downloadeds
-
-- Make chapters only readed in the last page !!!!
+- Maybe tell the user more in updates.
+- Enable copying in animelist and myanimelist id too!
+- Improve fetching with multiple languages
+- Improve RefreshPanels and local reading
+- Filter by title or chatper in panels
+- Improve context menus
+- IMPROVE A LOT THE CONTROLS IN READER
+- Make icon change based on how many favorites are
+- Button chapter, maybe change downloaded icon and loading kinda sucks
+- ANIMATION WHEN CHANGING PAGES (THE SAME YOU DID IN READEDFAVORITE)
+- Make chapters only readed in the last page !!!
+- Improve CONTEXTTT
 
 ## Bugs & fixes
 
-- Mobile doesn't really works
+  - Mobile doesn't really works
   - page not loading when changing from long read to unique read
     now do the same for the scroll mode, going from unique to scroll (long)
+- Some bugs on search
 - Android doesn't compiles cuz of import
 - Size of fail image when in readed modal (ReadedFavorite)
 - Loading bugging

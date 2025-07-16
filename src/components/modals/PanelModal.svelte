@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AskSure, Select } from "@/components";
+  import { AskSure, Select, Image } from "@/components";
   import { copyImageFromPath, copyText, refreshPanels } from "@/functions";
   import { AlertDialog, Button } from "@/lib/components";
   import { cn } from "@/lib/utils";
@@ -8,9 +8,8 @@
   import { remove } from "@tauri-apps/plugin-fs";
 
   let {
-    open = $bindable(false),
-    src,
     path,
+    open = $bindable(false),
     shouldCopy = $bindable(false),
   } = $props();
 
@@ -27,13 +26,13 @@
   <AlertDialog.Content
     class={cn(
       "max-w-[90vw] w-auto h-[92vh] mx-auto flex flex-col justify-center",
-      $customTitlebar && "mt-5"
+      $customTitlebar && "mt-5",
     )}
   >
     <div class="h-[82vh] max-w-[80vw] flex justify-center items-center">
-      <img
+      <Image
         class="h-full max-h-[82vh] max-w-[80vw] object-contain rounded-2xl"
-        {src}
+        src={path}
         alt="a imag"
       />
     </div>
@@ -49,8 +48,13 @@
       </Button>
       <div class="w-[60%] inline-flex">
         <Select
-          class="min-w-24 w-[40%] rounded-r-none"
+          class="min-w-24 pr-0 -mr-1 w-[40%] rounded-r-none"
           variant="outline"
+          itemsLabel={{
+            image: "Image",
+            path: "Path",
+          }}
+          closeButton={false}
           bind:selected={copyMode}
           items={modes}
           {icons}

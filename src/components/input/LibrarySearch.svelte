@@ -52,7 +52,7 @@
 </script>
 
 <Button
-  class="bg-secondary/60 hover:bg-secondary/40 transition duration-200"
+  class="transition duration-200"
   id="button-search"
   variant="secondary"
   onclick={handleSearch}
@@ -69,7 +69,7 @@
       "relative transition-all duration-500 ease-in-out ",
       showInput
         ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0"
-        : "max-w-[0px] opacity-0 overflow-hidden"
+        : "max-w-[0px] opacity-0 overflow-hidden",
     )}
   >
     <Input
@@ -77,7 +77,7 @@
         "transition-all duration-500 ease-in-out border-none outline-none ring-none",
         showInput
           ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem]"
-          : "max-w-[0px]"
+          : "max-w-[0px]",
       )}
       bind:value={$libraryQuery}
       variant="link"
