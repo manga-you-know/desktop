@@ -53,6 +53,7 @@
   import { delay } from "@/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { IS_MOBILE } from "@/constants";
+  import { ScrollingValue } from "svelte-ux";
 
   let { favoriteId, chapterIndex } = page.params;
   let isLocal = page.url.searchParams.has("local");
@@ -229,11 +230,11 @@
     if (currentlyCount === totalPage) return;
     let newImage = "";
     if (isLocal) {
-      const [currentlyB64, nextB64] = await Promise.all([
-        $downloadManager.pathToBase64(images[currentlyCount - 1]),
-        $downloadManager.pathToBase64(images[currentlyCount]),
-      ]);
-      newImage = await $downloadManager.joinBase64Images(currentlyB64, nextB64);
+      //const [currentlyB64, nextB64] = await Promise.all([
+      // $downloadManager.pathToBase64(images[currentlyCount - 1]),
+      //$downloadManager.pathToBase64(images[currentlyCount]),
+      //]);
+      // newImage = await $downloadManager.joinBase64Images(currentlyB64, nextB64);
     } else {
       newImage = await $downloadManager.joinBase64Images(
         images[currentlyCount - 1],
@@ -293,7 +294,7 @@
       await delay(5);
       const id = (currentlyCount - 1).toString();
       const nextP = document.getElementById(id);
-      pagesDiv?.scrollTo({ top: nextP.offsetTop, behavior: "smooth" });
+      pagesDiv?.scrollTo({ top: nextP?.offsetTop, behavior: "smooth" });
     }
     saveSettings();
   }
@@ -562,7 +563,10 @@
             class="w-12 h-9 rounded-xl  place-content-center"
             variant="secondary"
           >
-            {isNaN(currentlyCount) ? 0 : currentlyCount}/{totalPage}
+            <ScrollingValue
+              axis="y"
+              value={isNaN(currentlyCount) ? 0 : currentlyCount}
+            />/ <ScrollingValue axis="y" value={totalPage} />
           </Badge>
           <Button
             class="pointer-events-auto z-50"

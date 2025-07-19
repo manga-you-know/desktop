@@ -53,6 +53,7 @@ export const ICONS_TO_LOAD = [
   "heroicons:cog-6-tooth-solid",
   "tabler:photo",
   "tabler:world",
+  "tabler:folder",
   "tabler:bookmark",
   "tabler:text-size",
   "tabler:photo-filled",

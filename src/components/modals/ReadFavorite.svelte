@@ -614,6 +614,7 @@
           <div class="flex gap-2">
             <Button
               variant="outline"
+              effect="ringHoverSecondary"
               onclick={async (e: Event) => {
                 e.stopPropagation();
                 isUltraFavorite = !isUltraFavorite;

@@ -44,7 +44,6 @@
 - Enable copying in animelist and myanimelist id too!
 - Improve fetching with multiple languages
 - Improve RefreshPanels and local reading
-- Filter by title or chatper in panels
 - Improve context menus
 - IMPROVE A LOT THE CONTROLS IN READER
 - Make icon change based on how many favorites are
@@ -52,14 +51,24 @@
 - ANIMATION WHEN CHANGING PAGES (THE SAME YOU DID IN READEDFAVORITE)
 - Make chapters only readed in the last page !!!
 - Improve CONTEXTTT
+  COPY CHAPTER NUMBER OR FAVORITE IN PANELS
+  Open favorite too!
+- Merge titles!
+- Make the image change when the menu is open in chapters
+- Transition colors in paginations
+- Card with strech image option
+- SearchModal dividing what is added and what is not with cute animations and numbers saying if there's something similar already added.
+- Custom bg
+- Add option to delete panels from the favorite being deleted
+- Behaving like a browser when reading???
 
 ## Bugs & fixes
 
+- Title undefined eh foda né k, troca pra nome # chapter
   - Mobile doesn't really works
   - page not loading when changing from long read to unique read
     now do the same for the scroll mode, going from unique to scroll (long)
 - Some bugs on search
-- Android doesn't compiles cuz of import
 - Size of fail image when in readed modal (ReadedFavorite)
 - Loading bugging
 - Error changing from on-hover to compact
@@ -71,4 +80,5 @@
 - User log
 - Folder not exists then bugs (open downloads or favorite panels)
 
-- !!!! Pagination in panels page
+- PANELSSSS WHEN DELETING!!!
+

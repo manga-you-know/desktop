@@ -2,16 +2,14 @@
   import { Tilt } from "svelte-ux";
   import { ContextMenu, Label } from "@/lib/components";
   import { PanelModal, AskSure, Image } from "@/components";
-  import { copyText, refreshPanels, copyImageFromPath } from "@/functions";
-  import { remove } from "@tauri-apps/plugin-fs";
+  import { copyText, removePanel, copyImageFromPath } from "@/functions";
   import { cn } from "@/lib/utils";
   import Icon from "@iconify/svelte";
 
-  let { path, shouldCopy = $bindable(false) } = $props();
+  let { path, title, chapter, shouldCopy = $bindable(false) } = $props();
   let open = $state(false);
   let contextOpen = $state(false);
   let deleteOpen = $state(false);
-  let isDeleting = false;
 </script>
 
 <PanelModal bind:open bind:shouldCopy {path} />
@@ -19,10 +17,7 @@
   bind:open={deleteOpen}
   message="This will delete this panel from your folder"
   onokay={async () => {
-    if (isDeleting) return;
-    isDeleting = true;
-    await remove(path);
-    await refreshPanels();
+    removePanel(path);
   }}
 />
 
@@ -48,23 +43,46 @@
     </Tilt>
   </ContextMenu.Trigger>
   <ContextMenu.Content>
-    <ContextMenu.Item
-      class="flex justify-between"
-      onclick={() => {
-        copyText(path, "path");
-      }}
+    <Label
+      class="bg-secondary/50 rounded-lg flex mb-0.5 p-[0.3rem] justify-start w-full select-none"
+      >Copy</Label
     >
-      <Label>Copy path</Label>
-      <Icon class="!size-4" icon="tabler:folder" />
-    </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"
       onclick={() => {
         copyImageFromPath(path);
       }}
     >
-      <Label>Copy image</Label>
+      <Label>Image</Label>
       <Icon class="!size-4" icon="tabler:photo" />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={() => {
+        copyText(chapter, "chapter");
+      }}
+    >
+      <Label>Chapter</Label>
+      <Label class="!text-gray-300">{chapter}</Label>
+    </ContextMenu.Item>
+
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={() => {
+        copyText(title, "title");
+      }}
+    >
+      <Label>Title</Label>
+      <Icon class="!size-4" icon="tabler:text-size" />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={() => {
+        copyText(path, "path");
+      }}
+    >
+      <Label>Path</Label>
+      <Icon class="!size-4" icon="tabler:folder" />
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item

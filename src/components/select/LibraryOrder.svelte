@@ -97,7 +97,7 @@
       await saveSettings();
     }}
     tabindex={-1}
-    onwheel={(e) => {
+    onwheel={() => {
       isAscending.set(!$isAscending);
       refreshLibrary();
       saveSettings();
@@ -113,7 +113,7 @@
     <Icon
       class={cn(
         "!size-5 transition-all duration-300",
-        $isAscending ? "-rotate-180" : "rotate-0",
+        $isAscending ? "rotate-180" : "rotate-0",
       )}
       icon="typcn:arrow-sorted-down"
     />

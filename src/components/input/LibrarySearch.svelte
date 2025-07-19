@@ -54,7 +54,7 @@
 <Button
   class="transition duration-200"
   id="button-search"
-  variant="secondary"
+  variant="outline"
   onclick={handleSearch}
   onmouseenter={() => (isHovered = true)}
   onmouseleave={() => (isHovered = false)}

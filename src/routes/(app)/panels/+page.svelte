@@ -9,14 +9,15 @@
   import { delay } from "@/utils";
   import type { Favorite, Panel } from "@/types";
   import { FavoriteDB } from "@/repositories";
+  import { ScrollingValue } from "svelte-ux";
 
   let page = $state(1);
   let perPage = 22;
   let panelDiv: HTMLDivElement = $state(null!);
   let rawFavorites: Favorite[] = $state([]);
-  let panelsWithQuery: { path: string; shouldCopy?: boolean }[] = $state([]);
+  let panelsWithQuery: Panel[] = $state([]);
   let count = $derived(panelsWithQuery.length);
-  let displayedPanels: { path: string; shouldCopy?: boolean }[] = $derived(
+  let displayedPanels: Panel[] = $derived(
     panelsWithQuery.slice((page - 1) * perPage, page * perPage),
   );
   let searchTerm = $state("");
@@ -95,7 +96,12 @@
     page = 1;
   }
 
-  panels.subscribe(search);
+  panels.subscribe(() => {
+    page = 1;
+    selectedTitle = "";
+    selectedChapter = "";
+    search();
+  });
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -108,7 +114,7 @@
     class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
   >
     <Badge class="h-10 w-12 flex justify-center items-center" variant="outline">
-      {count}
+      <ScrollingValue axis="y" value={count} />
     </Badge>
     <div class="inline-flex relative items-center">
       <Icon
@@ -150,16 +156,24 @@
       }}
     />
     <Select
+      class="w-28"
+      classPopup="w-24"
       bind:selected={selectedChapter}
       items={panelsChapter}
       label="Chapter"
       wheelControls
+      closeButton={panelsChapter.length > 1}
       onselect={search}
     />
   </div>
   <div class="w-full h-32"></div>
   {#each displayedPanels as panel}
-    <FavoritePanel path={panel.path} bind:shouldCopy={panel.shouldCopy} />
+    <FavoritePanel
+      path={panel.path}
+      title={rawFavorites.find((f) => f.id === panel.id)?.name ?? panel.name}
+      chapter={panel.chapter}
+      bind:shouldCopy={panel.shouldCopy}
+    />
   {/each}
   {#if displayedPanels.length === 0}
     <Badge class="h-10">

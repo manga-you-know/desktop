@@ -224,6 +224,7 @@
       <Button
         class="w-28 h-10 ml-[0.6rem] flex justify-between"
         variant="outline"
+        effect="ringHoverSecondary"
         onclick={async () => {
           isUltraFavorite = !isUltraFavorite;
           favorite.is_ultra_favorite = isUltraFavorite;

@@ -25,7 +25,6 @@ import {
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
-import { refreshLibrary } from "@/functions/_database";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 
@@ -80,12 +79,8 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   custom_titlebar: { store: customTitlebar, default: true },
 } as const;
 
-async function connectSettings() {
-  loadedSettings = await load("settings.json");
-}
-
 async function ensureConnected() {
-  if (!loadedSettings) await connectSettings();
+  if (!loadedSettings) loadedSettings = await load("settings.json");
 }
 
 export function saveScreenState() {
@@ -107,7 +102,6 @@ export async function loadSettings() {
       store.set(data[key] ?? defaultValue);
     }
   );
-  refreshLibrary();
   if (get(lastPage) !== "/home") goto(get(lastPage));
   const isDecorated = await window.isDecorated();
   if (get(customTitlebar)) {

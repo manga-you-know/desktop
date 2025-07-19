@@ -18,6 +18,8 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import type { Favorite } from "@/types";
+  import { ScrollingValue } from "svelte-ux";
+  import ScrollArea from "@/lib/components/ui/scroll-area/scroll-area.svelte";
 
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);
@@ -25,13 +27,13 @@
   let perPage = $derived(Math.floor(favdivWidth / 169) * 3);
   let favoritesWithChapter: Favorite[] = $derived(
     $ultraFavorites.filter(
-      (fv) => $favoritesLoaded[fv.id.toString()]?.nextChapter
-    )
+      (fv) => $favoritesLoaded[fv.id.toString()]?.nextChapter,
+    ),
   );
   let displayedFavorites: Favorite[] = $derived(
     !$showOnlyNew
       ? $ultraFavorites.slice((page - 1) * perPage, page * perPage)
-      : favoritesWithChapter.slice((page - 1) * perPage, page * perPage)
+      : favoritesWithChapter.slice((page - 1) * perPage, page * perPage),
   );
   const count = $derived($ultraFavorites.length);
   const extraSpace: number = $derived(
@@ -41,7 +43,7 @@
         ? perPage * 2 - displayedFavorites.length
         : perPage * 3 >= displayedFavorites.length
           ? perPage * 3 - displayedFavorites.length
-          : 0
+          : 0,
   );
   onMount(async () => {
     await refreshFavorites();
@@ -57,28 +59,34 @@
   <div
     class={cn(
       "flex relative top-0",
-      IS_MOBILE ? "h-24 justify-center" : "h-14"
+      IS_MOBILE ? "h-24 justify-center" : "h-14",
     )}
   >
     <div class="flex flex-wrap items-center gap-2">
       <div class="flex">
         <Badge
-          class="font-bold h-8 w-22 rounded-xl rounded-r-none mr-0"
+          class="font-bold h-8 w-22 rounded-xl rounded-r-none mr-0 gap-0.5"
           variant="secondary"
         >
-          + {Object.values($favoritesLoaded).reduce(
-            (total, fv) => total + (fv.isLoaded && fv.nextChapter ? 1 : 0),
-            0
-          )} Favorites
+          + <ScrollingValue
+            axis="y"
+            value={Object.values($favoritesLoaded).reduce(
+              (total, fv) => total + (fv.isLoaded && fv.nextChapter ? 1 : 0),
+              0,
+            )}
+          /> Favorites
         </Badge>
         <Badge
-          class="font-bold h-8 w-22 rounded-xl rounded-l-none -ml-[2px]"
+          class="font-bold h-8 w-22 rounded-xl rounded-l-none -ml-[2px] gap-0.5"
           variant="secondary"
         >
-          + {Object.values($favoritesLoaded).reduce(
-            (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
-            0
-          )} Chapters
+          +<ScrollingValue
+            axis="y"
+            value={Object.values($favoritesLoaded).reduce(
+              (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
+              0,
+            )}
+          /> Chapters
         </Badge>
       </div>
       <Button
@@ -171,7 +179,9 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      variant={currentPage === page.value ? "secondary" : "ghost"}
+                      variant={currentPage === page.value
+                        ? "secondary"
+                        : "ghost"}
                       effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}

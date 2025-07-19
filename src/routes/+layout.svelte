@@ -37,6 +37,7 @@
     refreshFavorites,
     loadFavoritesChapters,
     saveScreenState,
+    refreshPanels,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
@@ -111,6 +112,7 @@
     loadSettings();
     loadAppIcons();
     refreshLibrary();
+    refreshPanels();
     loadScreenState();
     refreshFavorites();
     loadFavoritesChapters();

@@ -4,6 +4,7 @@
     Command,
     Label,
     Popover,
+    type ButtonEffect,
     type ButtonVariant,
   } from "@/lib/components";
   import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@
     onmouseup?: (e: any) => void;
     wheelControls?: boolean;
     variant?: ButtonVariant;
+    effect?: ButtonEffect;
     class?: string;
     classPopup?: string;
     classItem?: string;
@@ -37,6 +39,7 @@
     onselect,
     onmouseup,
     variant = "outline",
+    effect = null,
     openIcon = true,
     invertIcons = false,
     closeButton = true,
@@ -58,6 +61,7 @@
           class={className}
           disabled={items.length === 0}
           {variant}
+          {effect}
           {...props}
           role="combobox"
           aria-expanded={open}

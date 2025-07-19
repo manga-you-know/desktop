@@ -15,17 +15,18 @@ import {
   readeds,
   ultraFavorites,
 } from "@/store";
-import type { Favorite, Chapter, Readed } from "@/types";
+import type { Favorite, Chapter, Readed, Panel } from "@/types";
 import {
   BaseDirectory,
   exists,
   readDir,
+  remove,
   type DirEntry,
 } from "@tauri-apps/plugin-fs";
 import { documentDir, join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { removeFavorite } from "@/functions";
 import { get } from "svelte/store";
-import { removeFavorite } from "@/functions/_favorite";
+import { toast } from "svelte-sonner";
 
 let db: Database = null!;
 
@@ -194,4 +195,17 @@ export async function refreshPanels() {
   if (localPanels.length > 0) {
     panels.set(localPanels);
   }
+}
+
+export async function removePanel(path: string) {
+  await remove(path)
+  let panelsNow = get(panels)
+  for (let i = 0; i < panelsNow.length; i++) {
+    if (panelsNow[i].path === path) {
+      panelsNow.splice(i, 1);
+      break;
+    }
+  }
+  panels.set(panelsNow)
+  toast.info("Panel removed with success")
 }

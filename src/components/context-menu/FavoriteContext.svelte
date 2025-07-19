@@ -51,10 +51,16 @@
 				await refreshFavorites();
 			}}
 		>
-			<Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+			<Label
+				>{favorite.is_ultra_favorite
+					? "Remove"
+					: "Favorite"}</Label
+			>
 			<Icon
 				class="!size-5 -mr-[2px]"
-				icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
+				icon={isUltraFavorite
+					? "heroicons:star-solid"
+					: "heroicons:star"}
 			/>
 		</ContextMenu.Item>
 		<ContextMenu.Item
@@ -76,12 +82,18 @@
 			class="flex justify-between"
 			onclick={async (e: Event) => {
 				e.stopPropagation();
-				markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
+				markeds =
+					await MarkFavoriteDB.getMarkFavorites(
+						favorite,
+					);
 				openTags = true;
 			}}
 		>
 			<Label>Tags</Label>
-			<Icon class="!size-5 -mr-[2px]" icon="lucide:bookmark" />
+			<Icon
+				class="!size-5 -mr-[2px]"
+				icon="lucide:bookmark"
+			/>
 		</ContextMenu.Item>
 		<ContextMenu.Item
 			class="flex justify-between"
@@ -101,23 +113,39 @@
 				<ContextMenu.Item
 					class="flex justify-between hover:bg-accent"
 					onmousedown={() => {
-						copyText(favorite.name, "title");
+						copyText(
+							favorite.name,
+							"title",
+						);
 					}}
 					onclick={() => {
-						copyText(favorite.name, "title");
+						copyText(
+							favorite.name,
+							"title",
+						);
 					}}
 				>
 					<Label>Title</Label>
-					<Icon class="!size-4" icon="tabler:text-size" />
+					<Icon
+						class="!size-4"
+						icon="tabler:text-size"
+					/>
 				</ContextMenu.Item>
 				<ContextMenu.Item
 					class="flex justify-between hover:bg-accent"
-					disabled={favorite.author === "" || favorite.author === null}
+					disabled={favorite.author === "" ||
+						favorite.author === null}
 					onmousedown={() => {
-						copyText(favorite.author ?? "", "description");
+						copyText(
+							favorite.author ?? "",
+							"author",
+						);
 					}}
 					onclick={() => {
-						copyText(favorite.author ?? "", "description");
+						copyText(
+							favorite.author ?? "",
+							"author",
+						);
 					}}
 				>
 					<Label>Author</Label>
@@ -131,28 +159,52 @@
 					disabled={favorite.description === "" ||
 						favorite.description === null}
 					onmousedown={() => {
-						copyText(favorite.description ?? "", "description");
+						copyText(
+							favorite.description ??
+								"",
+							"description",
+						);
 					}}
 					onclick={() => {
-						copyText(favorite.description ?? "", "description");
+						copyText(
+							favorite.description ??
+								"",
+							"description",
+						);
 					}}
 				>
 					<Label>Description</Label>
-					<Icon class="!size-4" icon="solar:document-text-outline" />
+					<Icon
+						class="!size-4"
+						icon="solar:document-text-outline"
+					/>
 				</ContextMenu.Item>
 				<ContextMenu.Item
 					class="flex justify-between hover:bg-accent"
 					onmousedown={() => {
-						copyText(favorite.cover, "cover");
+						copyText(
+							favorite.cover,
+							"cover",
+						);
 					}}
 					onclick={() => {
-						copyText(favorite.cover, "cover");
+						copyText(
+							favorite.cover,
+							"cover",
+						);
 					}}
 				>
 					<Label>
-						Cover {favorite.cover.startsWith("http") ? "URL" : "path"}
+						Cover {favorite.cover.startsWith(
+							"http",
+						)
+							? "URL"
+							: "path"}
 					</Label>
-					<Icon class="!size-4" icon="tabler:photo" />
+					<Icon
+						class="!size-4"
+						icon="tabler:photo"
+					/>
 				</ContextMenu.Item>
 			</ContextMenu.SubContent>
 		</ContextMenu.Sub>

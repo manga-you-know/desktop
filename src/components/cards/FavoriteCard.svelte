@@ -139,9 +139,10 @@
   bind:markeds
   bind:isUltraFavorite
   bind:open={isContext}
+  bind:openRead={isOpen}
   bind:openTags={isPicking}
   bind:openEdit={isEdit}
-  bind:openRead={isOpen}
+  bind:openDelete={isDelete}
 >
   <button
     class={cn(
@@ -211,9 +212,10 @@
               <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
             {:else if favoriteLoad.toReadCount > 0}
               <Label tabindex={-1}>
-                <ScrollingValue axis="y">
-                  +{favoriteLoad.toReadCount ?? 0}
-                </ScrollingValue>
+                +<ScrollingValue
+                  axis="y"
+                  value={favoriteLoad.toReadCount ?? 0}
+                />
               </Label>
             {:else}
               <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />

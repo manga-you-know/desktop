@@ -23,6 +23,7 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import { get, has, set } from "tauri-plugin-cache-api";
+  import { ScrollingValue } from "svelte-ux";
 
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
@@ -35,7 +36,7 @@
       ? $libraryFavorites.slice((page - 1) * perPage, page * perPage)
       : $libraryFavorites
           .toReversed()
-          .slice((page - 1) * perPage, page * perPage)
+          .slice((page - 1) * perPage, page * perPage),
   );
   const siblingCount = 1;
 
@@ -56,7 +57,7 @@
 
   async function loadAllImages() {
     await Promise.all(
-      $libraryFavorites.map((fv) => loadImage(fv.cover, fv.link))
+      $libraryFavorites.map((fv) => loadImage(fv.cover, fv.link)),
     );
   }
 
@@ -91,14 +92,14 @@
     <div
       class={cn(
         "bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
-        IS_MOBILE ? "h-28 flex-wrap" : "h-14"
+        IS_MOBILE ? "h-28 flex-wrap" : "h-14",
       )}
     >
       <Badge
-        class="h-10 w-12 flex justify-center items-center bg-secondary/70 hover:bg-secondary/50"
-        variant="secondary"
+        class="h-10 w-12 flex justify-center items-center"
+        variant="outline"
       >
-        {count}
+        <ScrollingValue axis="y" value={count} />
       </Badge>
       <LibrarySearch bind:page bind:favdiv={libraryDiv} />
       <LibraryOrder />
@@ -130,11 +131,11 @@
           }}
           >{#if $searchTerm.length > 0}
             Nothing was found. You can try finding "<span class="text-gray-200">
-            {$libraryQuery}
-          </span>" in
-            {:else}
-              Nothing saved, try searching something at 
-            {/if}
+              {$libraryQuery}
+            </span>" in
+          {:else}
+            Nothing saved, try searching something at
+          {/if}
           <span class="ml-1 text-gray-200 underline">Search</span>
         </Badge>
       </div>
@@ -172,7 +173,9 @@
                   <Pagination.Item>
                     <Pagination.Link
                       {page}
-                      variant={currentPage === page.value ? "secondary" : "ghost"}
+                      variant={currentPage === page.value
+                        ? "secondary"
+                        : "ghost"}
                       effect={currentPage === page.value ? "ringHover" : null}
                       isActive={currentPage === page.value}
                       tabindex={-1}

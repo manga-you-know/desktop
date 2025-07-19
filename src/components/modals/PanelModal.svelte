@@ -1,6 +1,11 @@
 <script lang="ts">
   import { AskSure, Select, Image } from "@/components";
-  import { copyImageFromPath, copyText, refreshPanels } from "@/functions";
+  import {
+    copyImageFromPath,
+    copyText,
+    refreshPanels,
+    removePanel,
+  } from "@/functions";
   import { AlertDialog, Button } from "@/lib/components";
   import { cn } from "@/lib/utils";
   import { customTitlebar } from "@/store";
@@ -40,6 +45,7 @@
       <Button
         class="w-[40%]"
         variant="destructive"
+        effect="ringHoverDestructive"
         onclick={() => {
           openDelete = true;
         }}
@@ -48,19 +54,22 @@
       </Button>
       <div class="w-[60%] inline-flex">
         <Select
-          class="min-w-24 pr-0 -mr-1 w-[40%] rounded-r-none"
+          class="!min-w-36 pr-0 w-[40%] rounded-r-none"
           variant="outline"
+          effect="ringHoverSecondary"
+          bind:selected={copyMode}
+          items={modes}
+          {icons}
           itemsLabel={{
             image: "Image",
             path: "Path",
           }}
           closeButton={false}
-          bind:selected={copyMode}
-          items={modes}
-          {icons}
+          wheelControls
         />
         <Button
           class="w-[60%] rounded-l-none"
+          effect="ringHover"
           onclick={async () => {
             copyMode === "image"
               ? await copyImageFromPath(path)
@@ -77,8 +86,7 @@
     message={"This will delete this panel from your folder."}
     overlayClass="bg-black/40"
     onokay={async () => {
-      await remove(path);
-      await refreshPanels();
+      removePanel(path);
       open = false;
     }}
   />
