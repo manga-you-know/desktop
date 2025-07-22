@@ -66,7 +66,7 @@
   let favoritesWithChapterCount = $derived(
     Object.values($favoritesLoaded)
       .map((fv) => (fv.nextChapter !== null ? 1 : 0))
-      .reduce((a: number, b: number): number => a + b, 0)
+      .reduce((a: number, b: number): number => a + b, 0),
   );
 
   function rotateImage(): void {
@@ -101,11 +101,12 @@
 </script>
 
 <Sidebar.Root
-  class={cn("pl-[2.5px] hover:bg-sidebar pr-0", $customTitlebar && "pt-7")}
+  class={cn(
+    "bg-sidebar pl-[2.5px] pb-0 pr-0 border-0",
+    $customTitlebar && "pt-7",
+  )}
   {variant}
   collapsible="icon"
-  onmouseenter={() => {}}
-  onmouseleave={() => {}}
 >
   <Sidebar.Header></Sidebar.Header>
   <Sidebar.Content class="overflow-hidden">

@@ -134,7 +134,7 @@
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 <div
   class={twMerge(
-    "!bg-background text-black dark:text-white",
+    "text-black dark:text-white border-background",
     $theme === "dark" && "dark",
   )}
 >

@@ -92,6 +92,7 @@ pub fn run() {
             // .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
             .plugin(tauri_plugin_clipboard::init())
+            .plugin(tauri_plugin_positioner::init())
             .plugin(tauri_plugin_prevent_default::debug())
             .plugin(tauri_plugin_window_state::Builder::default().build())
             .plugin(tauri_plugin_updater::Builder::new().build())

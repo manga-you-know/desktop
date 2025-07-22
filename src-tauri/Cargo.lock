@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "MangaYouKnow"
-version = "0.9.7"
+version = "0.9.8"
 dependencies = [
  "base64 0.21.7",
  "lazy_static",
@@ -26,6 +26,7 @@ dependencies = [
  "tauri-plugin-notification",
  "tauri-plugin-opener",
  "tauri-plugin-os",
+ "tauri-plugin-positioner",
  "tauri-plugin-prevent-default",
  "tauri-plugin-process",
  "tauri-plugin-shell",
@@ -5887,6 +5888,21 @@ dependencies = [
  "serde_json",
  "serialize-to-javascript",
  "sys-locale",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "tauri-plugin-positioner"
+version = "2.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "01da0c9140e941f12b5ac9238fadf27b05c8f3b3244b77703d7e733925ad514d"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "serde_repr",
  "tauri",
  "tauri-plugin",
  "thiserror 2.0.12",

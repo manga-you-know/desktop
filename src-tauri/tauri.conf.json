@@ -14,6 +14,7 @@
     "windows": [
       {
         "title": "MangaYouKnow",
+        "label": "main",
         "width": 1200,
         "height": 720,
         "minHeight": 400,
@@ -22,15 +23,33 @@
         "visible": false,
         "transparent": true,
         "decorations": false,
-        "backgroundColor": "#18181b",
+        "backgroundColor": "#09090b",
+        "shadow": true,
         "dragDropEnabled": true
+      },
+      {
+        "title": "Notificator",
+        "label": "notificator",
+        "width": 500,
+        "height": 100,
+        "transparent": true,
+        "skipTaskbar": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "visibleOnAllWorkspaces": false,
+        "decorations": false,
+        "shadow": false,
+        "closable": false,
+        "resizable": false
       }
     ],
     "security": {
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": ["**/*"]
+        "scope": [
+          "**/*"
+        ]
       }
     }
   },
@@ -62,7 +81,10 @@
       "icons/icon.icns",
       "icons/icon.ico",
       "icons/icon.png"
-    ]
+    ],
+    "resources": {
+      "../static/*": "static/"
+    }
   },
   "plugins": {
     "updater": {

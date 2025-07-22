@@ -4,16 +4,21 @@ import { get } from "svelte/store";
 import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/types";
 import { FavoriteDB, ReadedDB } from "@/repositories";
 import {
+  customNotificator,
   downloadManager,
   favoritesLoaded,
+  globalChapters,
   isRefreshing,
+  notifyFavorites,
   preferableLanguage,
   ultraFavorites,
 } from "@/store";
-import { isReaded, notify, refreshFavorites } from "@/functions";
+import { isReaded, notify, refreshFavorites, removeCountIcon, setCountIcon, setCountTray } from "@/functions";
 import { toast } from "svelte-sonner";
 import { strNotEmpty } from "@/utils";
 import type { DownloadManager } from "@/managers";
+import { listen } from "@tauri-apps/api/event";
+import { goto } from "$app/navigation";
 
 const window = getCurrentWindow();
 
@@ -89,20 +94,31 @@ export async function preloadNextChapter(
   return await preloadChapter(chapters[currentlyChapterIndex - 1]);
 }
 
+export async function updateBadge() {
+  const toRead = Object.values(get(favoritesLoaded)).filter(fv => fv.nextChapter !== null).length;
+  if (toRead > 0) {
+    await setCountIcon(toRead);
+  } else {
+    await removeCountIcon();
+  }
+  await setCountTray(toRead);
+}
+
 export async function loadFavoritesChapters(
   rerenderFavoritesOption = false
 ): Promise<void> {
   isRefreshing.set(true);
   const favorites = await FavoriteDB.getUltraFavorites();
   dl.clearChaptersCache();
-  await Promise.all(favorites.map(loadFavoriteChapters));
-  if (rerenderFavoritesOption) {
-    await rerenderFavorites();
-  }
+  await Promise.all(favorites.map(fv => loadFavoriteChapters(fv, false)));
+  // if (rerenderFavoritesOption) {
+  //await rerenderFavorites();
+  //}
   isRefreshing.set(false);
+  await updateBadge()
 }
 
-export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
+export async function loadFavoriteChapters(favorite: Favorite, unique = true): Promise<void> {
   const loadedFavorite = get(favoritesLoaded)[strNotEmpty(favorite.id)];
   if (!loadedFavorite) {
     addFavorite(favorite);
@@ -160,7 +176,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
       startLoading: () => loadFavoriteChapters(favorite),
       nextChapter: null,
     };
-    
+
     if (chaptersToRead.length > 0) {
       chaptersToRead.reverse();
       nextChapter = chaptersToRead[0];
@@ -193,12 +209,26 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
       ) {
         const newToRead =
           chaptersToRead.length - Number(valToRead.chaptersToRead);
-        await notify(
-          favorite.name,
-          newToRead === 1
-            ? `New ${chaptersType} available!`
-            : `+${newToRead} ${chaptersType}s!`
-        );
+        if (get(notifyFavorites)) {
+          await notify(
+            favorite.name,
+            newToRead === 1
+              ? `New ${chaptersType} available!`
+              : `+${newToRead} ${chaptersType}s!`,
+            `read-${favorite.id}`,
+            true
+          );
+          if (get(customNotificator)) {
+            listenToread(`read-${favorite.id}`, async () => {
+              globalChapters.set(chapters)
+              goto(
+                `/reader/${favorite.id}/${chapters.indexOf(
+                  nextChapter ?? chapters[0]
+                )}`,
+              );
+            })
+          }
+        }
       }
     }
   }
@@ -228,14 +258,20 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
     }
   };
   fetchNext();
+  if (unique) updateBadge();
+}
+
+async function listenToread(key: string, func: () => Promise<void>) {
+  const unlisten = await listen(key, func)
+  unlisten()
 }
 
 export async function getValueToRead(favorite: Favorite): Promise<
   | {
-      chapters: number;
-      chaptersReaded: number;
-      chaptersToRead: number;
-    }
+    chapters: number;
+    chaptersReaded: number;
+    chaptersToRead: number;
+  }
   | undefined
 > {
   await loadFavoriteStore();

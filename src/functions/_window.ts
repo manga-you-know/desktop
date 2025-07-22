@@ -15,7 +15,7 @@ import {
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon, getVersion } from "@tauri-apps/api/app";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Effect, getCurrentWindow } from "@tauri-apps/api/window";
 import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
@@ -33,12 +33,22 @@ import { loadIcons } from "@iconify/svelte";
 import { DISCORD_WEBHOOK_URL, ICONS_TO_LOAD } from "@/constants";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
+import { join, resourceDir } from "@tauri-apps/api/path";
 
 const currentWindow = getCurrentWindow();
+const system = type();
 let isMaximized = false;
 
 export async function getEnv(key: string): Promise<string> {
   return await invoke("get_env", { name: key });
+}
+
+export async function addBlurWindow() {
+  await currentWindow.setEffects({ effects: [Effect.Acrylic] });
+}
+
+export async function removeBlurWindow() {
+  await currentWindow.clearEffects();
 }
 
 export async function toggleFullscreen() {
@@ -62,7 +72,7 @@ export async function setFullscreen(value: boolean) {
 
 export async function copyText(text: string, textType?: string) {
   await writeText(text);
-  toast.info(titleCase(textType ?? "Text") + " copied!");
+  toast.success(titleCase(textType ?? "Text") + " copied!");
 }
 
 export async function copyImageFromPath(path: string) {
@@ -80,6 +90,32 @@ export async function copyImageFromPath(path: string) {
 export async function copyImageBase64(imageBase64: string) {
   await writeImageBase64(imageBase64.replace(/^data:image\/\w+;base64,/, ""));
   toast.success("Image copied!");
+}
+
+export async function setCountIcon(value: number) {
+  if (system === "ios" || system === "android") return
+  if (system === "windows") {
+    let imageEnd = "extra";
+    if (value < 10) {
+      imageEnd = value.toString();
+    }
+    const iconPath = await join(await resourceDir(), "static", `number_overlay_${imageEnd}.png`);
+    currentWindow.setOverlayIcon(iconPath);
+  } else {
+    currentWindow.setBadgeCount(value);
+    if (system === "macos") {
+      currentWindow.setBadgeLabel("+");
+    }
+  }
+}
+
+export async function removeCountIcon() {
+  if (system === "ios" || system === "android") return
+  if (system === "windows") {
+    currentWindow.setOverlayIcon()
+  } else {
+    currentWindow.setBadgeCount();
+  }
 }
 
 export async function goDefaultPage() {
@@ -192,12 +228,21 @@ export async function createTray() {
           currentWindow.destroy();
         },
       },
+      {
+        id: "count",
+        text: "All readed!",
+        action: async () => {
+          await currentWindow.show();
+          await currentWindow.setFocus();
+          await goto("/favorites")
+        }
+      }
     ],
   });
   const options = {
     id: "myk-tray",
     icon: (await defaultWindowIcon()) ?? "/icon.png",
-    tooltip: "MangaYouKnow",
+    tooltip: "All readed!",
     menu: menu,
     menuOnLeftClick: false,
     action: async (e: TrayIconEvent) => {
@@ -207,5 +252,48 @@ export async function createTray() {
       }
     },
   };
-  const tray = await TrayIcon.new(options);
+  await TrayIcon.new(options);
+}
+
+export async function setCountTray(value: number) {
+  const label = value > 0 ? `+${value} Favorites to read` : "All readed!";
+  const tray = await TrayIcon.getById("myk-tray");
+  if (tray === null) return;
+  const menu = await Menu.new({
+    items: [
+      {
+        id: "open",
+        text: "Open",
+        action: async () => {
+          await currentWindow.show();
+          await currentWindow.setFocus();
+        },
+      },
+      {
+        id: "hide",
+        text: "Hide",
+        action: async () => {
+          await currentWindow.hide();
+        },
+      },
+      {
+        id: "quit",
+        text: "Quit",
+        action: () => {
+          currentWindow.destroy();
+        },
+      },
+      {
+        id: "count",
+        text: value > 0 ? `+${value} to read` : "All readed!",
+        action: async () => {
+          await currentWindow.show();
+          await currentWindow.setFocus();
+          await goto("/favorites")
+        }
+      }
+    ],
+  });
+  await tray.setMenu(menu)
+  await tray.setTooltip(value > 0 ? `+${value} Favorites to read` : "All readed!")
 }

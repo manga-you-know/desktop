@@ -37,12 +37,18 @@
     openUpdate,
     sidebarBehavior,
     customTitlebar,
+    notifyFavorites,
+    showCountIcon,
+    windowEffects,
+    customNotificator,
+    theme,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
+  import { emit } from "@tauri-apps/api/event";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -199,6 +205,55 @@
                 Start in background
               </Label>
             </div>
+            <div class="flex items-center">
+              <Checkbox
+                id="notify-favorites"
+                bind:checked={$notifyFavorites}
+                class="flex-shrink-0 mr-2"
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="notify-favorites">
+                Desktop notification for new chapters from favorites
+              </Label>
+            </div>
+            <div class="flex gap-2 items-center">
+              <Separator
+                class="border-y-[12px] border-x-2"
+                orientation="vertical"
+              />
+              <Checkbox
+                id="custom-notificator"
+                disabled={!$notifyFavorites}
+                bind:checked={$customNotificator}
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="custom-notificator">
+                Custom notifications (not natives & they appear on fullscreen in
+                this version)
+              </Label>
+            </div>
+            <div class="flex items-center">
+              <Checkbox
+                id="show-count-icon"
+                bind:checked={$showCountIcon}
+                class="flex-shrink-0 mr-2"
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="show-count-icon">
+                Show count of favorites with chapter to read in icon
+              </Label>
+            </div>
+            <div class="flex items-center">
+              <Checkbox
+                id="window-effects"
+                bind:checked={$windowEffects}
+                class="flex-shrink-0 mr-2"
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="window-effects">
+                Window effects (experimental & Windows only)
+              </Label>
+            </div>
             <Label>Sidebar</Label>
             <div
               class="flex relative w-[21rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
@@ -208,7 +263,7 @@
                   class={cn(
                     "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[5.5rem] translate-x-0",
                     $sidebarBehavior === "collapse" && "w-20 translate-x-24",
-                    $sidebarBehavior === "on-hover" && "w-32 translate-x-48"
+                    $sidebarBehavior === "on-hover" && "w-32 translate-x-48",
                   )}
                 ></div>
               </div>
@@ -216,7 +271,7 @@
                 class={cn(
                   "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent",
                   $sidebarBehavior === "expand" &&
-                    "!text-secondary hover:bg-background/20"
+                    "!text-secondary hover:bg-background/20",
                 )}
                 size="sm"
                 variant="secondary"
@@ -231,7 +286,7 @@
                 class={cn(
                   "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent ",
                   $sidebarBehavior === "collapse" &&
-                    "!text-secondary hover:bg-background/20"
+                    "!text-secondary hover:bg-background/20",
                 )}
                 size="sm"
                 variant="secondary"
@@ -246,7 +301,7 @@
                 class={cn(
                   "z-[2] h-9 transition-colors duration-300 bg-transparent",
                   $sidebarBehavior === "on-hover" &&
-                    "!text-secondary hover:bg-background/20"
+                    "!text-secondary hover:bg-background/20",
                 )}
                 size="sm"
                 variant="secondary"
@@ -287,15 +342,8 @@
           <Label>Theme</Label>
           <Theme />
           <div class="flex gap-3">
-            <Button 
-              class="w-44"
-              effect="ringHover"
-              onclick={relaunch}
-            >
-              <Icon
-                icon="ic:round-refresh"
-                class="!size-5"
-              />
+            <Button class="w-44" effect="ringHover" onclick={relaunch}>
+              <Icon icon="ic:round-refresh" class="!size-5" />
               Reload app
             </Button>
             <Button

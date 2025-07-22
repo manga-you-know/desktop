@@ -2,8 +2,14 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop",
   "description": "persmissions just for Desktop",
-  "windows": ["*"],
-  "platforms": ["macOS", "windows", "linux"],
+  "windows": [
+    "*"
+  ],
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
   "permissions": [
     "core:window:default",
     "core:window:allow-start-dragging",
@@ -17,6 +23,11 @@
     "core:window:allow-destroy",
     "core:window:allow-show",
     "core:window:allow-hide",
+    "core:window:allow-set-overlay-icon",
+    "core:window:allow-set-badge-count",
+    "core:window:allow-set-badge-label",
+    "core:window:allow-set-ignore-cursor-events",
+    "core:window:allow-set-effects",
     "clipboard:write-all",
     "clipboard:read-all",
     "global-shortcut:default",
@@ -48,6 +59,7 @@
       ]
     },
     "cli:default",
-    "updater:default"
+    "updater:default",
+    "positioner:default"
   ]
 }

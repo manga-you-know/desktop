@@ -10,7 +10,7 @@
     SIDEBAR_WIDTH_ICON,
   } from "./constants.js";
   import { setSidebar } from "./context.svelte.js";
-  import { customTitlebar } from "@/store";
+  import { customTitlebar, windowEffects } from "@/store";
 
   let {
     ref = $bindable(null),
@@ -49,9 +49,12 @@
   <div
     style="--sidebar-width: {SIDEBAR_WIDTH}; --sidebar-width-icon: {SIDEBAR_WIDTH_ICON}; {style}"
     class={cn(
-      "group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar flex w-full",
+      "group/sidebar-wrapper flex w-full",
       $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "min-h-svh",
-      className
+      $windowEffects
+        ? "has-[[data-variant=inset]]:bg-transparent"
+        : "has-[[data-variant=inset]]:bg-sidebar",
+      className,
     )}
     bind:this={ref}
     {...restProps}

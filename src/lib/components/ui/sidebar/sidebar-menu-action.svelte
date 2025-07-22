@@ -18,7 +18,7 @@
 
   const mergedProps = $derived({
     class: cn(
-      "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+      "text-sidebar-foreground ring-sidebar-ring hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
       // Increases the hit area of the button on mobile.
       "after:absolute after:-inset-2 after:ssm:hidden",
       "peer-data-[size=sm]/menu-button:top-1",
@@ -27,7 +27,7 @@
       "group-data-[collapsible=icon]:hidden",
       showOnHover &&
         "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 ssm:opacity-0",
-      className
+      className,
     ),
     "data-sidebar": "menu-action",
     ...restProps,

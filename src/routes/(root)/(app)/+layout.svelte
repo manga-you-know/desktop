@@ -30,7 +30,7 @@
   function getTransitionY(
     currentId: PageId,
     lastId: PageId,
-    isEntering: boolean
+    isEntering: boolean,
   ): number {
     const currentPos = pageDirection[currentId];
     const lastPos = pageDirection[lastId];
@@ -63,21 +63,21 @@
           <div
             class={cn(
               "w-full absolute pb-5",
-              $customTitlebar ? "h-[calc(100vh-2.8rem)]" : "h-[99vh]"
+              $customTitlebar ? "h-[calc(100vh-2.8rem)]" : "h-[99vh]",
             )}
             in:fly={{
               y: getTransitionY(
-                getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
+                getPageId(page.route.id?.replace("/(root)/(app)/", "") ?? ""),
                 getPageId($lastPage.replace("/", "")),
-                true
+                true,
               ),
               duration: 300,
             }}
             out:fly={{
               y: getTransitionY(
-                getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
+                getPageId(page.route.id?.replace("/(root)/(app)/", "") ?? ""),
                 getPageId($lastPage.replace("/", "")),
-                false
+                false,
               ),
               duration: 300,
             }}
@@ -101,7 +101,7 @@
             x: getTransitionY(
               getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
               getPageId($lastPage.replace("/", "")),
-              true
+              true,
             ),
             duration: 300,
           }}
@@ -109,7 +109,7 @@
             x: getTransitionY(
               getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
               getPageId($lastPage.replace("/", "")),
-              false
+              false,
             ),
             duration: 300,
           }}

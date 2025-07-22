@@ -48,7 +48,7 @@
 <div
   class={cn(
     "bg-sidebar flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
-    page.route.id?.startsWith("/reader") &&
+    page.route.id?.startsWith("/(root)/reader") &&
       $isFullscreen &&
       !$openMenuChapters &&
       "h-0 -translate-y-[3rem]",

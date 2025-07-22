@@ -574,7 +574,7 @@
             draggable={false}
             src={favorite.cover}
             alt={favorite.name}
-            class="w-40 h-70 object-contain rounded-xl bg-gray-950!"
+            class="w-40 h-70 object-contain rounded-xl bg-gray-950"
           />
         </div>
         <div

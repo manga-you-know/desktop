@@ -22,11 +22,17 @@ import {
   discordIntegration,
   sidebarBehavior,
   customTitlebar,
+  showCountIcon,
+  notifyFavorites,
+  customNotificator,
+  windowEffects,
+  blurEffects,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
+import { updateBadge, addBlurWindow, removeBlurWindow, removeCountIcon } from "@/functions";
 
 let loadedSettings: Store;
 const window = getCurrentWindow();
@@ -77,6 +83,11 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },
+  show_count_icon: { store: showCountIcon, default: true },
+  notify_favorites: { store: notifyFavorites, default: true },
+  custom_notificator: { store: customNotificator, default: false },
+  window_effects: { store: windowEffects, default: false },
+  blur_effects: { store: blurEffects, default: true },
 } as const;
 
 async function ensureConnected() {
@@ -111,6 +122,22 @@ export async function loadSettings() {
       window.setDecorations(true);
     }
   }
+  if (get(showCountIcon)) {
+    updateBadge();
+  } else {
+    removeCountIcon();
+  }
+  if (get(windowEffects)) {
+    addBlurWindow();
+  } else {
+    removeBlurWindow();
+  }
+  const notificator = await Window.getByLabel("notificator")
+  if (get(customNotificator)) {
+    if (notificator) notificator.show()
+  } else {
+    if (notificator) notificator.hide()
+  }
 }
 
 export async function saveSettings() {
@@ -127,6 +154,22 @@ export async function saveSettings() {
     if (!isDecorated) {
       window.setDecorations(true);
     }
+  }
+  if (get(showCountIcon)) {
+    updateBadge();
+  } else {
+    removeCountIcon();
+  }
+  if (get(windowEffects)) {
+    addBlurWindow();
+  } else {
+    removeBlurWindow();
+  }
+  const notificator = await Window.getByLabel("notificator")
+  if (get(customNotificator)) {
+    if (notificator) notificator.show()
+  } else {
+    if (notificator) notificator.hide()
   }
 }
 

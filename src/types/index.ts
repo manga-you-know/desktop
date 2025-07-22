@@ -11,3 +11,4 @@ export type { UpdateInfo } from "./_updateInfo";
 export type { Downloading } from "./_downloading";
 export type { MarkFavorites } from "./_markFavorite";
 export type { FavoriteLoaded } from "./_favoriteLoaded";
+export type { NotificationPayload } from "./_notificationPayload";

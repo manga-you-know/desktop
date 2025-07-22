@@ -131,10 +131,10 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-sidebar;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
