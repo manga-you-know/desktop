@@ -37,9 +37,9 @@
   }}
 >
   <AlertDialog.Content class="w-[26rem] flex flex-col justify-center">
-    <AlertDialog.Title class="text-center">
+    <AlertDialog.Title class="text-center select-none">
       Select tags to
-      <spam class="font-extrabold">
+      <spam class="font-extrabold truncate">
         {limitStr(favorite.name, 13)}
       </spam>
     </AlertDialog.Title>

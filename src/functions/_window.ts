@@ -211,6 +211,7 @@ export async function createTray() {
         text: "Open",
         action: async () => {
           await currentWindow.show();
+          await currentWindow.unminimize();
           await currentWindow.setFocus();
         },
       },
@@ -220,6 +221,15 @@ export async function createTray() {
         action: async () => {
           await currentWindow.hide();
         },
+      }, {
+        id: "count",
+        text: "All readed!",
+        action: async () => {
+          goto("/favorites")
+          await currentWindow.show();
+          await currentWindow.unminimize()
+          await currentWindow.setFocus();
+        }
       },
       {
         id: "quit",
@@ -228,15 +238,6 @@ export async function createTray() {
           currentWindow.destroy();
         },
       },
-      {
-        id: "count",
-        text: "All readed!",
-        action: async () => {
-          await currentWindow.show();
-          await currentWindow.setFocus();
-          await goto("/favorites")
-        }
-      }
     ],
   });
   const options = {
@@ -248,6 +249,7 @@ export async function createTray() {
     action: async (e: TrayIconEvent) => {
       if (e.type === "DoubleClick") {
         await currentWindow.show();
+        await currentWindow.unminimize()
         await currentWindow.setFocus();
       }
     },
@@ -266,6 +268,7 @@ export async function setCountTray(value: number) {
         text: "Open",
         action: async () => {
           await currentWindow.show();
+          await currentWindow.unminimize();
           await currentWindow.setFocus();
         },
       },
@@ -277,21 +280,22 @@ export async function setCountTray(value: number) {
         },
       },
       {
+        id: "count",
+        text: value > 0 ? `+${value} to read` : "All readed!",
+        action: async () => {
+          goto("/favorites")
+          await currentWindow.show();
+          await currentWindow.unminimize();
+          await currentWindow.setFocus();
+        }
+      },
+      {
         id: "quit",
         text: "Quit",
         action: () => {
           currentWindow.destroy();
         },
       },
-      {
-        id: "count",
-        text: value > 0 ? `+${value} to read` : "All readed!",
-        action: async () => {
-          await currentWindow.show();
-          await currentWindow.setFocus();
-          await goto("/favorites")
-        }
-      }
     ],
   });
   await tray.setMenu(menu)

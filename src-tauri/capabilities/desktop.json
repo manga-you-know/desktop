@@ -16,6 +16,7 @@
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-minimize",
+    "core:window:allow-unminimize",
     "core:window:allow-close",
     "core:window:allow-set-title",
     "core:window:allow-set-decorations",

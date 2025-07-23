@@ -6,6 +6,7 @@
 </script>
 
 <img
+  class="select-none"
   src={src?.startsWith("http") || src?.startsWith("data:image")
     ? src
     : convertFileSrc(src ?? "")}

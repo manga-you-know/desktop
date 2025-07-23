@@ -76,6 +76,7 @@ export const ICONS_TO_LOAD = [
   "material-symbols:dark-mode-outline",
   "material-symbols:book-ribbon-rounded",
   "material-symbols:info-outline-rounded",
+  "material-symbols:notifications-rounded",
   "material-symbols:sunny-outline-rounded",
   "material-symbols:rule-settings-rounded",
   "material-symbols:book-ribbon-outline-rounded",

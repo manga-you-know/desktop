@@ -18,8 +18,8 @@
 
   let isHovered = false;
 
-  function handleSearch(e: Event) {
-    e.stopPropagation();
+  function handleSearch(e?: Event) {
+    e?.stopPropagation();
     const inputElement = document.getElementById("favorite-search");
     if (inputElement && document.activeElement === inputElement) {
       return;
@@ -56,7 +56,10 @@
   id="button-search"
   variant="outline"
   onclick={handleSearch}
-  onmouseenter={() => (isHovered = true)}
+  onmouseenter={() => {
+    isHovered = true;
+    handleSearch();
+  }}
   onmouseleave={() => (isHovered = false)}
   tabindex={-1}
 >

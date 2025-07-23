@@ -5,12 +5,14 @@
   import { delay } from "@/utils";
   import type { NotificationPayload } from "@/types";
   import { emit, listen } from "@tauri-apps/api/event";
-  import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { getCurrentWindow, Window } from "@tauri-apps/api/window";
   import { moveWindow, Position } from "@tauri-apps/plugin-positioner";
   import { onMount } from "svelte";
+  import { writable } from "svelte/store";
   import Icon from "@iconify/svelte";
 
   const window = getCurrentWindow();
+  let mainWindow: Window | null = $state(null);
 
   let open = $state(false);
   let isHover = $state(false);
@@ -19,7 +21,9 @@
   let body = $state("");
   let isChapter = $state(false);
   let readEmit = $state("");
-  let queue: NotificationPayload[] = $state([]);
+  const queue: NotificationPayload[] = $state([]);
+
+  let isNotifying = $state(false);
 
   function isNotificationPayload(obj: any): obj is NotificationPayload {
     return (
@@ -35,42 +39,43 @@
       typeof obj.theme === "string"
     );
   }
-  async function notificate(payload: NotificationPayload, isQueue = false) {
-    while (isHover || open) {
+
+  async function notificate() {
+    if (queue.length === 0) return;
+    while (isNotifying) {
       await delay(20);
     }
-    if (isQueue) {
-      await delay(500);
-    }
-    theme = payload.theme;
-    title = payload.title;
-    body = payload.body;
-    isChapter = payload.isChapter;
-    readEmit = payload.readEmit;
+    isNotifying = true;
+    const next = queue.shift();
+    if (next === undefined) return;
+    title = next.title;
+    body = next.body;
+    theme = next.theme;
+    isChapter = next.isChapter;
+    readEmit = next.readEmit;
     open = true;
     await window.setIgnoreCursorEvents(false);
-    await delay(2600);
+    await delay(5000);
     open = false;
-    const next = queue.shift();
-    if (next) {
-      notificate(next, true);
+    while (isHover) {
+      await delay(20);
     }
-    if (!isHover) await window.setIgnoreCursorEvents(true);
+    await window.setIgnoreCursorEvents(true);
+    await delay(700);
+    isNotifying = false;
   }
 
   onMount(async () => {
     await moveWindow(Position.BottomRight);
     await window.setIgnoreCursorEvents(true);
+    mainWindow = await Window.getByLabel("main");
   });
 
   listen("notificate", async (e) => {
     if (!isNotificationPayload(e.payload)) return;
     const payload: NotificationPayload = e.payload;
     queue.push(payload);
-    if (!open && !isHover && queue.length === 1) {
-      queue.length = 0;
-      notificate(payload);
-    }
+    notificate();
   });
 </script>
 
@@ -84,7 +89,6 @@
     onmouseenter={() => (isHover = true)}
     onmouseleave={() => {
       isHover = false;
-      if (!open) window.setIgnoreCursorEvents(true);
     }}
     class={cn(
       "absolute duration-600 transition-all w-44",
@@ -95,19 +99,23 @@
     <button
       onclick={async () => {
         if (isChapter) emit(readEmit);
-        await window.show();
-        await window.setFocus();
+        await mainWindow?.show();
+        await mainWindow?.unminimize();
+        await mainWindow?.setFocus();
+        await window.setIgnoreCursorEvents(true);
         open = false;
         isHover = false;
-        await window.setIgnoreCursorEvents(true);
+        isNotifying = false;
       }}
       class="w-[27rem] h-[4.5rem] flex items-center justify-between gap-3 p-3 bg-sidebar rounded-xl cursor-default border-[0.5px] border-secondary"
     >
       <div class="h-full items-start">
         <img class="h-6 object-contain" src="/icon.png" alt="logo" />
       </div>
-      <div class="w-full flex flex-col items-start">
-        <Label class="text-lg truncate">{title}</Label>
+      <div class="w-[22rem] flex flex-col items-start">
+        <Label class="w-[20rem] flex justify-start text-lg truncate">
+          {title}
+        </Label>
         <Label class="text-md !text-primary/60">{body}</Label>
       </div>
       <div class="h-full flex flex-col">

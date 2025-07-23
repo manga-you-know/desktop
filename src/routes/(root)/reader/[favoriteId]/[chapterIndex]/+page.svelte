@@ -560,15 +560,15 @@
                 : Math.round((currentlyCount / totalPage) * 100)}%
           </Badge>
           <Badge
-            class="w-12 h-9 rounded-xl relative place-content-center"
+            class="w-12 h-9 rounded-xl place-content-center"
             variant="secondary"
           >
             <ScrollingValue
-              classes={{ root: "absolute left-1" }}
+              classes={{ root: "" }}
               axis="y"
               value={isNaN(currentlyCount) ? 0 : currentlyCount}
-            />/ <ScrollingValue
-              classes={{ root: "absolute right-1" }}
+            /> / <ScrollingValue
+              classes={{ root: "" }}
               axis="y"
               value={totalPage}
             />

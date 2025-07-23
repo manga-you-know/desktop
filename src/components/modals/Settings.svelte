@@ -9,6 +9,7 @@
     stopDiscordPresence,
     setDiscordActivity,
     resetSettings,
+    notify,
   } from "@/functions";
   import {
     Card,
@@ -48,12 +49,14 @@
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
-  import { emit } from "@tauri-apps/api/event";
+  import { emit, listen } from "@tauri-apps/api/event";
+  import { delay } from "@/utils";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
   let autoStart = $state(false);
   let startInTray = $state(false);
+  let receivedNotification = $state(false);
   let store: Store | null = null;
   onMount(async () => {
     version = await getVersion();
@@ -91,11 +94,11 @@
       </div>
       <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
-          <Label class="text-md"
-            >Current version: <span class="text-xl font-bold">
+          <Label class="text-md">
+            Current version: <span class="text-xl font-bold">
               v{version}
-            </span></Label
-          >
+            </span>
+          </Label>
           {#if !IS_MOBILE}
             <Button
               class="w-44 "
@@ -229,9 +232,36 @@
               />
               <Label class="cursor-pointer" for="custom-notificator">
                 Custom notifications (not natives & they appear on fullscreen in
-                this version)
+                this version, but they open the chapter when clicked)
               </Label>
             </div>
+            <Button
+              class="w-44 flex justify-between"
+              variant={receivedNotification ? "outline" : "default"}
+              effect="ringHover"
+              onclick={async () => {
+                await notify(
+                  "One Piece",
+                  "+1 thrilion chapters",
+                  "insane_click",
+                  true,
+                );
+                await listen("insane_click", async () => {
+                  if (receivedNotification) return;
+                  receivedNotification = true;
+                  await delay(2500);
+                  receivedNotification = false;
+                });
+              }}
+            >
+              {receivedNotification ? "Click received!" : "Test notification"}
+              <Icon
+                class="!size-5"
+                icon={receivedNotification
+                  ? "lucide:check"
+                  : "material-symbols:notifications-rounded"}
+              />
+            </Button>
             <div class="flex items-center">
               <Checkbox
                 id="show-count-icon"

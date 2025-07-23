@@ -10,6 +10,12 @@ import {
   globalChapters,
   isRefreshing,
   notifyFavorites,
+  openAdd,
+  openDownloads,
+  openInfo,
+  openSearch,
+  openSettings,
+  openTag,
   preferableLanguage,
   ultraFavorites,
 } from "@/store";
@@ -219,7 +225,13 @@ export async function loadFavoriteChapters(favorite: Favorite, unique = true): P
             true
           );
           if (get(customNotificator)) {
-            listenToread(`read-${favorite.id}`, async () => {
+            listen(`read-${favorite.id}`, async () => {
+              openSearch.set(false)
+              openSettings.set(false)
+              openTag.set(false)
+              openInfo.set(false)
+              openAdd.set(false)
+              openDownloads.set(false)
               globalChapters.set(chapters)
               goto(
                 `/reader/${favorite.id}/${chapters.indexOf(
@@ -261,10 +273,6 @@ export async function loadFavoriteChapters(favorite: Favorite, unique = true): P
   if (unique) updateBadge();
 }
 
-async function listenToread(key: string, func: () => Promise<void>) {
-  const unlisten = await listen(key, func)
-  unlisten()
-}
 
 export async function getValueToRead(favorite: Favorite): Promise<
   | {

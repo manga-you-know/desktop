@@ -118,7 +118,7 @@
             <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton
                 variant={page.url.pathname === item.path
-                  ? "outline"
+                  ? "secondary"
                   : "default"}
                 onclick={(e) => {
                   e.currentTarget.blur();
@@ -135,7 +135,11 @@
                   />
                 {:else}
                   <Badge
-                    class="dark:text-black"
+                    class={cn(
+                      page.url.pathname === item.path
+                        ? "bg-sidebar text-primary"
+                        : "bg-primary text-sidebar",
+                    )}
                     value={favoritesWithChapterCount}
                     small
                   >

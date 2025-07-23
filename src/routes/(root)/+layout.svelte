@@ -148,7 +148,7 @@
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}
-    <div class="flex flex-col overflow-hidden">
+    <div class="flex flex-col overflow-hidden bg-background">
       {#if $customTitlebar}
         <TitleBar />
       {/if}
