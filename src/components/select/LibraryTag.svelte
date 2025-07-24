@@ -109,7 +109,7 @@
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[10rem] max-h-44 p-0">
+    <Popover.Content class="w-[10rem] max-h-48 p-0">
       <Command.Root onValueChange={(v) => (shouldAdd = v.length === 0)}>
         <Command.Input
           bind:value={searchTag}

@@ -122,6 +122,7 @@
               />
               Search for updates
             </Button>
+            <Label>Behavior</Label>
             <div class="flex items-center">
               <Checkbox
                 id="auto-update"
@@ -131,21 +132,6 @@
               />
               <Label class="cursor-pointer" for="auto-update">
                 Auto check for updates
-              </Label>
-            </div>
-            <div class="flex gap-2 items-center">
-              <Separator
-                class="border-y-[12px] border-x-2"
-                orientation="vertical"
-              />
-              <Checkbox
-                id="notify-update"
-                disabled={!$autoSearchUpdates}
-                bind:checked={$notifyUpdate}
-                onCheckedChange={saveSettings}
-              />
-              <Label class="cursor-pointer" for="notify-update">
-                Desktop notication for new updates
               </Label>
             </div>
             <!-- <div class="flex items-center">
@@ -208,6 +194,19 @@
                 Start in background
               </Label>
             </div>
+
+            <Label>Notifications</Label>
+            <div class="flex gap-2 items-center">
+              <Checkbox
+                id="notify-update"
+                disabled={!$autoSearchUpdates}
+                bind:checked={$notifyUpdate}
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="notify-update">
+                Desktop notication for new updates
+              </Label>
+            </div>
             <div class="flex items-center">
               <Checkbox
                 id="notify-favorites"
@@ -220,25 +219,21 @@
               </Label>
             </div>
             <div class="flex gap-2 items-center">
-              <Separator
-                class="border-y-[12px] border-x-2"
-                orientation="vertical"
-              />
               <Checkbox
                 id="custom-notificator"
-                disabled={!$notifyFavorites}
+                disabled={!$notifyUpdate && !$notifyFavorites}
                 bind:checked={$customNotificator}
                 onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="custom-notificator">
-                Custom notifications (not natives & they appear on fullscreen in
-                this version, but they open the chapter when clicked)
+                Custom notifications (not natives & they open the chapter when
+                clicked)
               </Label>
             </div>
             <Button
-              class="w-44 flex justify-between"
+              class="w-44 flex gap-3"
               variant={receivedNotification ? "outline" : "default"}
-              effect="ringHover"
+              effect={receivedNotification ? "ringHoverSecondary" : "ringHover"}
               onclick={async () => {
                 await notify(
                   "One Piece",
@@ -254,14 +249,15 @@
                 });
               }}
             >
-              {receivedNotification ? "Click received!" : "Test notification"}
               <Icon
                 class="!size-5"
                 icon={receivedNotification
                   ? "lucide:check"
                   : "material-symbols:notifications-rounded"}
               />
+              {receivedNotification ? "Click received!" : "Test notification"}
             </Button>
+            <Label>Style</Label>
             <div class="flex items-center">
               <Checkbox
                 id="show-count-icon"
@@ -292,8 +288,10 @@
                 <div
                   class={cn(
                     "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[5.5rem] translate-x-0",
-                    $sidebarBehavior === "collapse" && "w-20 translate-x-24",
-                    $sidebarBehavior === "on-hover" && "w-32 translate-x-48",
+                    $sidebarBehavior === "collapse" &&
+                      "w-[5.5rem] translate-x-24",
+                    $sidebarBehavior === "on-hover" &&
+                      "w-[8.5rem] translate-x-[11.7rem]",
                   )}
                 ></div>
               </div>
@@ -305,6 +303,7 @@
                 )}
                 size="sm"
                 variant="secondary"
+                effect={$sidebarBehavior === "expand" ? "ringHover" : null}
                 onclick={() => {
                   $sidebarBehavior = "expand";
                   saveSettings();
@@ -320,6 +319,7 @@
                 )}
                 size="sm"
                 variant="secondary"
+                effect={$sidebarBehavior === "collapse" ? "ringHover" : null}
                 onclick={() => {
                   $sidebarBehavior = "collapse";
                   saveSettings();
@@ -335,6 +335,7 @@
                 )}
                 size="sm"
                 variant="secondary"
+                effect={$sidebarBehavior === "on-hover" ? "ringHover" : null}
                 onclick={() => {
                   $sidebarBehavior = "on-hover";
                   saveSettings();

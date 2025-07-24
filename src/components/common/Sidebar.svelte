@@ -113,10 +113,25 @@
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
-        <Sidebar.Menu class="flex flex-col gap-2">
+        <Sidebar.Menu class="flex flex-col gap-2 relative">
+          <Sidebar.MenuButton
+            class={cn(
+              "absolute transition-translate duration-300",
+              page.url.pathname === "/home" && "translate-y-0",
+              page.url.pathname === "/favorites" && "translate-y-12",
+              page.url.pathname === "/library" && "translate-y-24",
+              page.url.pathname === "/panels" && "translate-y-36",
+            )}
+            variant="secondary"
+          />
           {#each items as item (item.name)}
             <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton
+                class={cn(
+                  "bg-transparent",
+                  page.url.pathname === item.path &&
+                    "hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
+                )}
                 variant={page.url.pathname === item.path
                   ? "secondary"
                   : "default"}
@@ -128,10 +143,10 @@
               >
                 {#if item.path !== "/favorites" || favoritesWithChapterCount === 0}
                   <Icon
+                    class="!size-7 -ml-[10px]"
                     icon={page.url.pathname === item.path
                       ? item.iconActive
                       : item.icon}
-                    class="!size-7 -ml-[10px]"
                   />
                 {:else}
                   <Badge
@@ -151,7 +166,12 @@
                     />
                   </Badge>
                 {/if}
-                <Label class="cursor-pointer">{item.name}</Label>
+                <Label
+                  class={cn(
+                    "cursor-pointer transition-all",
+                    page.url.pathname === item.path && "!text-sidebar",
+                  )}>{item.name}</Label
+                >
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
@@ -164,7 +184,7 @@
         <Sidebar.Menu class="flex flex-col gap-2">
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              variant={$openSearch ? "outline" : "default"}
+              variant={$openSearch ? "secondary" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(true);
@@ -183,12 +203,18 @@
                   : "mingcute:search-3-line"}
                 class="!size-7 -ml-[10px]"
               />
-              <Label class="cursor-pointer">Search</Label>
+              <Label
+                class={cn(
+                  "cursor-pointer transition-all",
+                  $openSearch && "!text-sidebar",
+                )}
+                >Search
+              </Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              variant={$openTag ? "outline" : "default"}
+              variant={$openTag ? "secondary" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
                 openSearch.set(false);
@@ -205,7 +231,12 @@
                 class="!size-7 -ml-[10px]"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
-              <Label class="cursor-pointer">Tags</Label>
+              <Label
+                class={cn(
+                  "cursor-pointer transition-all",
+                  $openTag && "!text-sidebar",
+                )}>Tags</Label
+              >
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem class="hidden">
@@ -226,7 +257,12 @@
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
                 class="!size-7 -ml-[2px] "
               />
-              <Label class="cursor-pointer">Add</Label>
+              <Label
+                class={cn(
+                  "cursor-pointer transition-all",
+                  $openAdd && "!text-sidebar",
+                )}>Add</Label
+              >
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>
@@ -243,7 +279,7 @@
         <!-- <Sidebar.MenuItem>
           <Sidebar.MenuButton
             class="size-10"
-            variant={$openInfo ? "outline" : "default"}
+            variant={$openInfo ? "secondary" : "default"}
             onclick={(e) => {
               e.currentTarget.blur();
               openSearch.set(false);
@@ -262,13 +298,13 @@
                 : "material-symbols:info-outline-rounded"}
               class="!size-7 -ml-[10px]"
             />
-            <Label class="cursor-pointer">Info</Label>
+            <Label class={cn("cursor-pointer transition-all", $openInfo && "!text-sidebar")}>Info</Label>
           </Sidebar.MenuButton>
         </Sidebar.MenuItem> -->
         <Sidebar.MenuItem>
           <Sidebar.MenuButton
             class="size-10"
-            variant={$openSettings ? "outline" : "default"}
+            variant={$openSettings ? "secondary" : "default"}
             onclick={(e) => {
               e.currentTarget.blur();
               openSearch.set(false);
@@ -287,7 +323,12 @@
                 : "heroicons:cog-6-tooth"}
               class="!size-7 -ml-[10px]"
             />
-            <Label class="cursor-pointer">Settings</Label>
+            <Label
+              class={cn(
+                "cursor-pointer transition-all",
+                $openSettings && "!text-sidebar",
+              )}>Settings</Label
+            >
           </Sidebar.MenuButton>
         </Sidebar.MenuItem>
         <Sidebar.MenuItem>

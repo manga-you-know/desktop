@@ -130,7 +130,9 @@
       <div class="flex w-full justify-center mt-10">
         <Badge
           class="flex flex-col text-sm h-12"
-          variant="destructive"
+          variant={!$showOnlyNew || $ultraFavorites.length === 0
+            ? "destructive"
+            : "info"}
           onclick={() => openSearch.set(true)}
         >
           {#if !$showOnlyNew || $ultraFavorites.length === 0}

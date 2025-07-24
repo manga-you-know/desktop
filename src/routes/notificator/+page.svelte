@@ -24,6 +24,7 @@
   const queue: NotificationPayload[] = $state([]);
 
   let isNotifying = $state(false);
+  let pass = $state(false);
 
   function isNotificationPayload(obj: any): obj is NotificationPayload {
     return (
@@ -42,27 +43,39 @@
 
   async function notificate() {
     if (queue.length === 0) return;
-    while (isNotifying) {
-      await delay(20);
-    }
     isNotifying = true;
-    const next = queue.shift();
-    if (next === undefined) return;
-    title = next.title;
-    body = next.body;
-    theme = next.theme;
-    isChapter = next.isChapter;
-    readEmit = next.readEmit;
-    open = true;
-    await window.setIgnoreCursorEvents(false);
-    await delay(5000);
-    open = false;
-    while (isHover) {
-      await delay(20);
+    while (queue.length > 0) {
+      const next = queue.shift();
+      if (next === undefined) return;
+      title = next.title;
+      body = next.body;
+      theme = next.theme;
+      isChapter = next.isChapter;
+      readEmit = next.readEmit;
+      open = true;
+      await window.setIgnoreCursorEvents(false);
+      for (let i = 0; i < 60; i++) {
+        if (pass) {
+          await delay(400);
+          break;
+        }
+        await delay(100);
+      }
+      if (pass) {
+        pass = false;
+        continue;
+      }
+      open = false;
+      while (isHover) {
+        await delay(20);
+      }
+      await window.setIgnoreCursorEvents(true);
+      await delay(700);
     }
     await window.setIgnoreCursorEvents(true);
-    await delay(700);
     isNotifying = false;
+    open = false;
+    isHover = false;
   }
 
   onMount(async () => {
@@ -75,7 +88,7 @@
     if (!isNotificationPayload(e.payload)) return;
     const payload: NotificationPayload = e.payload;
     queue.push(payload);
-    notificate();
+    if (!isNotifying) notificate();
   });
 </script>
 
@@ -105,7 +118,7 @@
         await window.setIgnoreCursorEvents(true);
         open = false;
         isHover = false;
-        isNotifying = false;
+        pass = true;
       }}
       class="w-[27rem] h-[4.5rem] flex items-center justify-between gap-3 p-3 bg-sidebar rounded-xl cursor-default border-[0.5px] border-secondary"
     >
@@ -124,6 +137,7 @@
             e.stopImmediatePropagation();
             isHover = false;
             open = false;
+            pass = true;
           }}
           class="size-7 rounded-full p-2"
           variant="outline"

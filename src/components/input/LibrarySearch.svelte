@@ -58,9 +58,21 @@
   onclick={handleSearch}
   onmouseenter={() => {
     isHovered = true;
-    handleSearch();
+    showInput = true;
+    const inputElement = document.getElementById("favorite-search");
+    inputElement?.focus();
   }}
-  onmouseleave={() => (isHovered = false)}
+  onmouseleave={() => {
+    isHovered = false;
+    const inputElement = document.getElementById("favorite-search");
+    if (
+      inputElement &&
+      $libraryQuery === "" &&
+      document.activeElement !== inputElement
+    ) {
+      showInput = false;
+    }
+  }}
   tabindex={-1}
 >
   <Icon

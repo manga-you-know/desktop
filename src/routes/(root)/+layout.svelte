@@ -21,6 +21,7 @@
     theme,
     undoTasks,
     updateInfo,
+    windowEffects,
   } from "@/store";
   import {
     checkForAppUpdates,
@@ -38,10 +39,12 @@
     loadFavoritesChapters,
     saveScreenState,
     refreshPanels,
+    updateBadge,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
+  import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import { toast } from "svelte-sonner";
 
@@ -125,6 +128,11 @@
     // saveScreenState();
   }
   window.onResized(screenJob);
+  window.onFocusChanged((v) => {
+    if (v.payload) {
+      updateBadge();
+    }
+  });
   onDestroy(() => {
     clearInterval(interval);
   });
@@ -148,7 +156,12 @@
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}
-    <div class="flex flex-col overflow-hidden bg-background">
+    <div
+      class={cn(
+        "flex flex-col overflow-hidden",
+        !$windowEffects && "bg-background",
+      )}
+    >
       {#if $customTitlebar}
         <TitleBar />
       {/if}

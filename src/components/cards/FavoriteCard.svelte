@@ -45,8 +45,13 @@
   let markeds: MarkFavorites[] = $state([]);
   let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);
-  let variant: "destructive" | "secondary" | "default" | "outline" | undefined =
-    $derived(favoriteLoad.toReadCount > 0 ? "destructive" : "secondary");
+  let variant:
+    | "destructive"
+    | "secondary"
+    | "info"
+    | "default"
+    | "outline"
+    | undefined = $derived(favoriteLoad.toReadCount > 0 ? "info" : "secondary");
 
   async function updateReaded() {
     favoriteLoad.readeds = await ReadedDB.getReadeds(favorite);
@@ -194,34 +199,25 @@
               : "opacity-0 -translate-x-[15%] group-hover:opacity-100",
         )}
       >
-        <Tooltip
-          text="{favoriteLoad.chapters.length -
-            favoriteLoad.toReadCount}/{favoriteLoad.chapters.length}"
+        <Badge
+          class={cn(
+            "min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default ",
+            favoriteLoad.toReadCount > 0 &&
+              "group-hover:scale-[0.9] group-hover:ring-2 group-hover:ring-info/90 group-hover:ring-offset-white group-hover:ring-offset-2 transition-all duration-500",
+          )}
+          {variant}
+          tabindex={-1}
         >
-          <Badge
-            class={cn(
-              "min-w-10 max-w-12 h-10 mb-1 flex justify-center rounded-xl text-center cursor-default",
-              favoriteLoad.toReadCount > 0
-                ? "group-hover:ring-2 group-hover:scale-[0.9] ring-white  transition-all duration-500"
-                : "",
-            )}
-            {variant}
-            tabindex={-1}
-          >
-            {#if favoriteLoad.isLoading}
-              <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
-            {:else if favoriteLoad.toReadCount > 0}
-              <Label tabindex={-1}>
-                +<ScrollingValue
-                  axis="y"
-                  value={favoriteLoad.toReadCount ?? 0}
-                />
-              </Label>
-            {:else}
-              <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
-            {/if}
-          </Badge>
-        </Tooltip>
+          {#if favoriteLoad.isLoading}
+            <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
+          {:else if favoriteLoad.toReadCount > 0}
+            <Label tabindex={-1}>
+              +<ScrollingValue axis="y" value={favoriteLoad.toReadCount ?? 0} />
+            </Label>
+          {:else}
+            <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
+          {/if}
+        </Badge>
       </div>
       <div
         class={cn(

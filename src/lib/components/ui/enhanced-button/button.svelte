@@ -9,6 +9,7 @@
       variants: {
         variant: {
           default: "bg-primary text-primary-foreground hover:bg-primary/80",
+          info: "bg-info text-white hover:bg-info/60",
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",
           outline:
@@ -29,6 +30,8 @@
             "transition-all duration-300 hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
           ringHoverSecondary:
             "transition-all duration-300 hover:ring-2 hover:ring-secondary/90 hover:ring-offset-2",
+          ringHoverInfo:
+            "transition-all duration-300 hover:ring-2 hover:ring-info/90 hover:ring-offset-2",
           ringHoverDestructive:
             "transition-all duration-300 hover:ring-2 hover:ring-destructive/90 hover:ring-offset-2",
           shine:

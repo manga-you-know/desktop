@@ -124,12 +124,13 @@
     {#if displayedLibrary.length === 0}
       <div class="w-full flex justify-center mt-4">
         <Badge
-          class="text-sm h-20 bg-blue-400 hover:bg-blue-300/40 transition-colors duration-300"
+          class="text-sm h-20 transition-colors duration-300"
+          variant="info"
           onclick={() => {
             searchTerm.set($libraryQuery);
             openSearch.set(true);
           }}
-          >{#if $searchTerm.length > 0}
+          >{#if $libraryQuery.length > 0}
             Nothing was found. You can try finding "<span class="text-gray-200">
               {$libraryQuery}
             </span>" in

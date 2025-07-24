@@ -17,6 +17,7 @@ import {
   openSettings,
   openTag,
   preferableLanguage,
+  showCountIcon,
   ultraFavorites,
 } from "@/store";
 import { isReaded, notify, refreshFavorites, removeCountIcon, setCountIcon, setCountTray } from "@/functions";
@@ -102,7 +103,7 @@ export async function preloadNextChapter(
 
 export async function updateBadge() {
   const toRead = Object.values(get(favoritesLoaded)).filter(fv => fv.nextChapter !== null).length;
-  if (toRead > 0) {
+  if (toRead > 0 && get(showCountIcon)) {
     await setCountIcon(toRead);
   } else {
     await removeCountIcon();
@@ -116,7 +117,7 @@ export async function loadFavoritesChapters(
   isRefreshing.set(true);
   const favorites = await FavoriteDB.getUltraFavorites();
   dl.clearChaptersCache();
-  await Promise.all(favorites.map(fv => loadFavoriteChapters(fv, false)));
+  await Promise.all(favorites.map(loadFavoriteChapters));
   // if (rerenderFavoritesOption) {
   //await rerenderFavorites();
   //}
@@ -124,7 +125,7 @@ export async function loadFavoritesChapters(
   await updateBadge()
 }
 
-export async function loadFavoriteChapters(favorite: Favorite, unique = true): Promise<void> {
+export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   const loadedFavorite = get(favoritesLoaded)[strNotEmpty(favorite.id)];
   if (!loadedFavorite) {
     addFavorite(favorite);
@@ -270,7 +271,7 @@ export async function loadFavoriteChapters(favorite: Favorite, unique = true): P
     }
   };
   fetchNext();
-  if (unique) updateBadge();
+  updateBadge();
 }
 
 
