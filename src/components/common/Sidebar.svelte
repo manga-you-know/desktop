@@ -361,6 +361,7 @@
       bind:this={imgElement}
       draggable={false}
       onclick={rotateImage}
+      onwheel={rotateImage}
       class="w-24 min-w-10 -ml-[2px]"
       src="/icon.png"
       alt="icon"

@@ -129,7 +129,7 @@
     {#if displayedFavorites.length === 0}
       <div class="flex w-full justify-center mt-10">
         <Badge
-          class="flex flex-col text-sm h-12"
+          class="flex flex-col justify-center items-center text-sm h-12"
           variant={!$showOnlyNew || $ultraFavorites.length === 0
             ? "destructive"
             : "info"}

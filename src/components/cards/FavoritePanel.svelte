@@ -42,7 +42,7 @@
       </button>
     </Tilt>
   </ContextMenu.Trigger>
-  <ContextMenu.Content>
+  <ContextMenu.Content class="-mt-10">
     <Label
       class="bg-secondary/50 rounded-lg flex mb-0.5 p-[0.3rem] justify-start w-full select-none"
       >Copy</Label
@@ -86,7 +86,7 @@
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="flex justify-between hover:!bg-destructive transition-colors duration-300"
+      class="flex justify-between hover:!bg-destructive relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-gradient-to-l from-white/40 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
       onclick={() => {
         deleteOpen = true;
       }}

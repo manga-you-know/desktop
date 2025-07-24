@@ -3,6 +3,7 @@ import {
   lastPage,
   autoEnterFullscreen,
   discordIntegration,
+  showCountIconTray,
 } from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
 import { readFile } from "@tauri-apps/plugin-fs";
@@ -158,10 +159,10 @@ export async function sendLogDiscord() {
 
 export async function logNewUser() {
   const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged_4");
+  const hasLogged = await loadedSettings.get<boolean>("has_logged_5");
   if (hasLogged === undefined) {
     sendLogDiscord();
-    await loadedSettings.set("has_logged_4", true);
+    await loadedSettings.set("has_logged_5", true);
   }
 }
 
@@ -260,6 +261,18 @@ export async function createTray() {
 export async function setCountTray(value: number) {
   const label = value > 0 ? `+${value} Favorites to read` : "All readed!";
   const tray = await TrayIcon.getById("myk-tray");
+  let imageEnd = "extra";
+  let iconPath = ""
+  if (value < 10) {
+    imageEnd = value.toString();
+  }
+  if (value !== 0) {
+    iconPath = await join(await resourceDir(), "static", `icon_tray_count_${imageEnd}.png`);
+  } else {
+    iconPath = await join(await resourceDir(), "static", "icon.png")
+  }
+
+
   if (tray === null) return;
   const menu = await Menu.new({
     items: [
@@ -298,6 +311,10 @@ export async function setCountTray(value: number) {
       },
     ],
   });
+  if (get(showCountIconTray)) {
+    await tray.setIcon(iconPath);
+  }
   await tray.setMenu(menu)
   await tray.setTooltip(value > 0 ? `+${value} Favorites to read` : "All readed!")
 }
+

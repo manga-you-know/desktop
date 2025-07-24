@@ -29,7 +29,7 @@
           ringHover:
             "transition-all duration-300 hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
           ringHoverSecondary:
-            "transition-all duration-300 hover:ring-2 hover:ring-secondary/90 hover:ring-offset-2",
+            "transition-all duration-300 hover:ring-2 hover:ring-secondary/90 hover:ring-offset-2 hover:ring-offset-background",
           ringHoverInfo:
             "transition-all duration-300 hover:ring-2 hover:ring-info/90 hover:ring-offset-2",
           ringHoverDestructive:

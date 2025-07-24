@@ -289,7 +289,7 @@
                   class={cn(
                     "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[5.5rem] translate-x-0",
                     $sidebarBehavior === "collapse" &&
-                      "w-[5.5rem] translate-x-24",
+                      "w-[5.5rem] translate-x-[5.8rem]",
                     $sidebarBehavior === "on-hover" &&
                       "w-[8.5rem] translate-x-[11.7rem]",
                   )}
@@ -297,7 +297,7 @@
               </div>
               <Button
                 class={cn(
-                  "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent",
+                  "z-[2] h-9 w-24 duration-300 bg-transparent",
                   $sidebarBehavior === "expand" &&
                     "!text-secondary hover:bg-background/20",
                 )}
@@ -313,7 +313,7 @@
               </Button>
               <Button
                 class={cn(
-                  "z-[2] h-9 w-24 transition-colors duration-300 bg-transparent ",
+                  "z-[2] h-9 w-24 duration-300 bg-transparent ",
                   $sidebarBehavior === "collapse" &&
                     "!text-secondary hover:bg-background/20",
                 )}
@@ -329,7 +329,7 @@
               </Button>
               <Button
                 class={cn(
-                  "z-[2] h-9 transition-colors duration-300 bg-transparent",
+                  "z-[2] h-9 duration-300 bg-transparent",
                   $sidebarBehavior === "on-hover" &&
                     "!text-secondary hover:bg-background/20",
                 )}

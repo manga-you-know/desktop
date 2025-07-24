@@ -47,6 +47,7 @@
     while (queue.length > 0) {
       const next = queue.shift();
       if (next === undefined) return;
+      pass = false;
       title = next.title;
       body = next.body;
       theme = next.theme;
@@ -126,10 +127,12 @@
         <img class="h-6 object-contain" src="/icon.png" alt="logo" />
       </div>
       <div class="w-[22rem] flex flex-col items-start">
-        <Label class="w-[20rem] flex justify-start text-lg truncate">
+        <Label
+          class="w-[20rem] flex justify-start text-lg select-none truncate"
+        >
           {title}
         </Label>
-        <Label class="text-md !text-primary/60">{body}</Label>
+        <Label class="text-md select-none !text-primary/60">{body}</Label>
       </div>
       <div class="h-full flex flex-col">
         <Button
@@ -139,8 +142,8 @@
             open = false;
             pass = true;
           }}
-          class="size-7 rounded-full p-2"
-          variant="outline"
+          class="size-7 p-2 rounded-lg"
+          variant="destructive"
         >
           <Icon class="!size-4" icon="lucide:x" />
         </Button>

@@ -15,7 +15,14 @@
     copyImageBase64,
   } from "@/functions";
   import type { Favorite } from "@/types";
-  import { Button, Badge, HoverCard, Tooltip } from "@/lib/components";
+  import {
+    Button,
+    Badge,
+    HoverCard,
+    Tooltip,
+    Switch,
+    Label,
+  } from "@/lib/components";
   import {
     downloadManager,
     globalChapters,
@@ -32,6 +39,8 @@
     extraTitle,
     customTitlebar,
     favoritesLoaded,
+    chapterPagesCounter,
+    chapterPercentage,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -81,7 +90,7 @@
   );
   let downloadedImages: DirEntry[] = $state([]);
   let pagesDiv: HTMLDivElement = $state(null!);
-  let menuFromTop: number = $state(0);
+  let menuFromTop: number = $state(20);
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -501,20 +510,56 @@
       />
     </Button>
   </div>
+  <div class="fixed w-screen h-screen p-6 flex justify-end items-start">
+    <div
+      class={cn(
+        "flex gap-2 p-2 transition-all duration-300 rounded-2xl bg-secondary/30 backdrop-blur-sm",
+        !$chapterPagesCounter && !$chapterPercentage && "hidden",
+      )}
+    >
+      <Badge
+        class={cn(
+          "h-9 rounded-xl place-content-center transition-all duration-300",
+          !$chapterPagesCounter && "hidden",
+        )}
+        variant="secondary"
+      >
+        <ScrollingValue
+          axis="y"
+          value={isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
+          !isFinite(Math.round((currentlyCount / totalPage) * 100))
+            ? 0
+            : currentlyCount === 1 && totalPage === 1
+              ? 100
+              : Math.round((currentlyCount / totalPage) * 100)}
+        />%
+      </Badge>
+      <Badge
+        class={cn(
+          "h-9 rounded-xl place-content-center transition-all duration-300",
+          !$chapterPercentage && "hidden",
+        )}
+        variant="secondary"
+      >
+        <ScrollingValue
+          classes={{ root: "" }}
+          axis="y"
+          value={isNaN(currentlyCount) ? 0 : currentlyCount}
+        /> / <ScrollingValue
+          classes={{ root: "" }}
+          axis="y"
+          value={totalPage}
+        />
+      </Badge>
+    </div>
+  </div>
   <div
     class={cn(
-      "fixed h-screen w-screen flex justify-end items-start z-50 pointer-events-none transition-all duration-500 ",
-      $openReadMenu ? "translate-x-0" : "translate-x-[15rem]",
+      "fixed h-screen w-screen p-6 flex justify-end items-start z-50 pointer-events-none transition-all duration-500",
+      $openReadMenu ? "translate-x-0" : "translate-x-[14rem]",
     )}
   >
-    <div
-      class="flex h-36 mt-[{menuFromTop}px] absolute"
-      use:draggable={{
-        axis: "y",
-        handle: ".handle",
-        bounds: { top: 5, bottom: 10 },
-      }}
-    >
+    <div class="flex h-44 items-center absolute mt-20">
       <div class="flex flex-col gap-3 justify-center">
         <Button
           class="w-3 rounded-l-full rounded-r-none pointer-events-auto"
@@ -536,45 +581,26 @@
             icon="typcn:chevron-left"
           />
         </Button>
-        <Button
-          class={cn(
-            "w-10 cursor-move pointer-events-auto handle",
-            !$openReadMenu && "invisible",
-          )}
-          variant="ghost"
-        >
-          <Icon class="!size-5" icon="ic:round-drag-indicator" />
-        </Button>
       </div>
-      <div class="flex flex-col items-end justify-end gap-1 p-1">
+      <div
+        class="flex flex-col items-end justify-end bg-secondary/30 backdrop-blur-xl rounded-2xl gap-1 p-1"
+      >
         <div class="flex gap-1">
-          <Badge
-            class="w-10 h-9 rounded-xl place-content-center"
-            variant="secondary"
-          >
-            {isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
-            !isFinite(Math.round((currentlyCount / totalPage) * 100))
-              ? 0
-              : currentlyCount === 1 && totalPage === 1
-                ? 100
-                : Math.round((currentlyCount / totalPage) * 100)}%
-          </Badge>
-          <Badge
-            class="w-12 h-9 rounded-xl place-content-center"
-            variant="secondary"
-          >
-            <ScrollingValue
-              classes={{ root: "" }}
-              axis="y"
-              value={isNaN(currentlyCount) ? 0 : currentlyCount}
-            /> / <ScrollingValue
-              classes={{ root: "" }}
-              axis="y"
-              value={totalPage}
-            />
-          </Badge>
           <Button
-            class="pointer-events-auto z-50"
+            class="w-11 pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            onclick={toggleView}
+          >
+            <Icon
+              icon={$viewMode === "scroll"
+                ? "lucide:scroll"
+                : "lucide:book-open"}
+            />
+          </Button>
+
+          <Button
+            class="w-11 pointer-events-auto z-50"
             size="sm"
             variant="secondary"
             onclick={toggleFullscreen}
@@ -585,7 +611,7 @@
           </Button>
 
           <Button
-            class="pointer-events-auto"
+            class="w-11 pointer-events-auto"
             size="sm"
             variant="secondary"
             onclick={() => ($openMenuChapters = true)}
@@ -603,7 +629,7 @@
         </div>
         <div class="flex gap-1 z-30">
           <Button
-            class="h-9 pointer-events-auto"
+            class="w-11 pointer-events-auto"
             size="sm"
             variant="secondary"
             disabled={$viewMode === "scroll"}
@@ -617,35 +643,50 @@
             }}
           >
             <Icon
+              class="!size-5"
               icon={$fitMode === "width"
                 ? "tabler:arrow-autofit-content-filled"
                 : "tabler:arrow-autofit-content"}
             />
           </Button>
           <Button
-            class="h-9 pointer-events-auto"
+            class="w-11 pointer-events-auto"
             size="sm"
             variant="secondary"
-            onclick={toggleView}
+            disabled={isLocal || $viewMode === "scroll"}
+            onclick={resetImages}
           >
-            <Icon
-              icon={$viewMode === "scroll"
-                ? "lucide:scroll"
-                : "lucide:book-open"}
-            />
+            <Icon class="!size-5" icon="ic:round-refresh" />
           </Button>
           <Button
-            class="h-9 pointer-events-auto"
+            class="w-11 pointer-events-auto"
             size="sm"
             variant="secondary"
             disabled={isLocal || $viewMode === "scroll"}
             onclick={joinCurrentlyImageToNext}
           >
-            <Icon icon="fluent:image-split-24-filled" />
+            <Icon class="!size-5" icon="fluent:image-split-24-filled" />
           </Button>
-          <div class="inline-flex pointer-events-auto z-50">
+          <Button
+            class="w-11 pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            onclick={favoriteImage}
+          >
+            <Icon
+              class="!size-5"
+              icon={downloadedImages
+                .map((img) => img.name)
+                .includes(currentlyImagePath)
+                ? "tabler:photo-filled"
+                : "tabler:photo"}
+            />
+          </Button>
+        </div>
+        <div class="flex gap-1">
+          <div class="inline-flex gap-1 pointer-events-auto z-50">
             <Button
-              class="w-7 rounded-r-none"
+              class="w-11"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -657,7 +698,7 @@
               <Icon icon="lucide:minus" />
             </Button>
             <Button
-              class="w-[40px] p-0 flex justify-center rounded-none"
+              class="w-[5.7rem] flex justify-center"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -669,7 +710,7 @@
               {$zoomLevel}%
             </Button>
             <Button
-              class="w-7 rounded-l-none"
+              class="w-11"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -682,40 +723,50 @@
             </Button>
           </div>
         </div>
-        <div class="flex gap-1 justify-end pointer-events-auto cursor-default">
-          <div class="inline-flex">
-            <Badge
-              class="w-[133px] flex justify-center rounded-l-xl rounded-r-none"
-              variant="secondary"
-            >
-              {favorite?.name
-                ? favorite.name.length > 17
-                  ? favorite.name.substring(0, 17) + "..."
-                  : favorite.name
-                : ""}
-            </Badge>
-            <Badge
-              class="w-12 rounded-l-none rounded-r-xl flex justify-center items-center ml-0.5 px-2"
-              variant="secondary"
-            >
-              {chapter?.number.toString()}
-            </Badge>
-          </div>
-          <Button
-            class="w-10 pointer-events-auto"
-            size="sm"
+        <div
+          class="h-9 flex gap-1 justify-end pointer-events-auto cursor-default"
+        >
+          <Badge
+            class="w-[8.7rem] flex justify-center rounded-xl"
             variant="secondary"
-            onclick={favoriteImage}
           >
-            <Icon
-              icon={downloadedImages
-                .map((img) => img.name)
-                .includes(currentlyImagePath)
-                ? "tabler:photo-filled"
-                : "tabler:photo"}
-              class="!size-5"
+            {favorite?.name
+              ? favorite.name.length > 17
+                ? favorite.name.substring(0, 17) + "..."
+                : favorite.name
+              : ""}
+          </Badge>
+          <Badge
+            class="w-11 px-5 flex justify-center items-center rounded-xl"
+            variant="secondary"
+          >
+            {chapter?.number.toString()}
+          </Badge>
+        </div>
+        <div class="w-full flex flex-col items-start gap-1">
+          <div
+            class="w-full inline-flex gap-3 items-center pointer-events-auto"
+          >
+            <Switch
+              id="chapter-count"
+              bind:checked={$chapterPagesCounter}
+              onCheckedChange={saveSettings}
             />
-          </Button>
+            <Label class="cursor-pointer" for="chapter-count">Pages count</Label
+            >
+          </div>
+          <div
+            class="w-full inline-flex gap-3 items-center pointer-events-auto"
+          >
+            <Switch
+              id="chapter-percentage"
+              bind:checked={$chapterPercentage}
+              onCheckedChange={saveSettings}
+            />
+            <Label class="cursor-pointer" for="chapter-percentage">
+              Chapter percentage
+            </Label>
+          </div>
         </div>
       </div>
     </div>

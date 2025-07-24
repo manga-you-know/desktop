@@ -7,7 +7,7 @@ const FILE = "../src/constants/_secrets.ts";
 
 const REPLACEMENTS = [
   {
-    pattern: /export const DISCORD_WEBHOOK_URL = ["'`&]+;/,
+    pattern: /export const DISCORD_WEBHOOK_URL\s*=\s*["'`].*?["'`];/,
     replacement: `export const DISCORD_WEBHOOK_URL = "${process.env.DISCORD_WEBHOOK_URL}";`,
   },
 ];

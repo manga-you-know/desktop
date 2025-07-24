@@ -27,6 +27,9 @@ import {
   customNotificator,
   windowEffects,
   blurEffects,
+  showCountIconTray,
+  chapterPagesCounter,
+  chapterPercentage,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -79,11 +82,14 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   zoom_level: { store: zoomLevel, default: 100 },
   open_read_menu: { store: openReadMenu, default: true },
   is_chapters_descending: { store: isChaptersDescending, default: true },
+  chapter_pages_counter: { store: chapterPagesCounter, default: true },
+  chapter_percentage: { store: chapterPercentage, default: false },
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },
   show_count_icon: { store: showCountIcon, default: true },
+  show_count_icon_tray: { store: showCountIconTray, default: false },
   notify_favorites: { store: notifyFavorites, default: true },
   custom_notificator: { store: customNotificator, default: false },
   window_effects: { store: windowEffects, default: false },

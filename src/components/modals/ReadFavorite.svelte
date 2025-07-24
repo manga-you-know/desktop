@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { openPath } from "@tauri-apps/plugin-opener";
+  import { openPath, openUrl } from "@tauri-apps/plugin-opener";
   import { downloadDir, join } from "@tauri-apps/api/path";
   import { VList } from "virtua/svelte";
   import {
@@ -605,7 +605,7 @@
             class="w-[165px]"
             variant="outline"
             effect="hoverUnderline"
-            onclick={() => window.open(favorite.link, "_blank")}
+            onclick={() => openUrl(favorite.link)}
           >
             <span class="truncate">
               {favorite.source ?? "Open"}
