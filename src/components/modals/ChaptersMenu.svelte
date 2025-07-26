@@ -87,7 +87,7 @@
           <Icon
             class={cn(
               "!size-6 duration-300 transition-all",
-              $isChaptersDescending ? "rotate-0" : "rotate-180"
+              $isChaptersDescending ? "rotate-0" : "rotate-180",
             )}
             icon="typcn:arrow-sorted-down"
           />
@@ -124,13 +124,17 @@
             "chapter-button my-[1px] w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
             isReadedHere && "opacity-60",
             currentlyChapter?.chapter_id === chapter.chapter_id &&
-              "bg-accent border  border-black dark:border-white"
+              "bg-accent border  border-black dark:border-white",
           )}
           variant="secondary"
           size="sm"
           onclick={() => {
             openMenuChapters.set(false);
-            gotoPage(`/reader/${favorite?.id}/${i}`);
+            gotoPage(
+              `/reader/${favorite?.id}/${$globalChapters.findIndex(
+                (c) => c.chapter_id === chapter.chapter_id,
+              )}`,
+            );
           }}
         >
           <div class="flex items-center gap-2">
@@ -158,7 +162,7 @@
                     chapter,
                     $globalChapters,
                     favorite,
-                    $readeds
+                    $readeds,
                   );
                   await refreshReadeds(favorite);
                 }

@@ -211,7 +211,7 @@
           {#if favoriteLoad.isLoading}
             <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
           {:else if favoriteLoad.toReadCount > 0}
-            <Label tabindex={-1}>
+            <Label class="text-nowrap" tabindex={-1}>
               +<ScrollingValue axis="y" value={favoriteLoad.toReadCount ?? 0} />
             </Label>
           {:else}

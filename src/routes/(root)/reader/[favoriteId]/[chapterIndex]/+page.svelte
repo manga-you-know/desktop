@@ -41,6 +41,8 @@
     favoritesLoaded,
     chapterPagesCounter,
     chapterPercentage,
+    showCurrentChapter,
+    readerClock,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -53,7 +55,7 @@
     mkdir,
   } from "@tauri-apps/plugin-fs";
   import { open as openPath } from "@tauri-apps/plugin-shell";
-  import { goto, afterNavigate } from "$app/navigation";
+  import { goto, afterNavigate, replaceState } from "$app/navigation";
   import { onMount } from "svelte";
   import { floor } from "lodash";
   import { ChaptersMenu, Image } from "@/components";
@@ -64,9 +66,11 @@
   import { IS_MOBILE } from "@/constants";
   import { ScrollingValue } from "svelte-ux";
 
-  let { favoriteId, chapterIndex } = page.params;
+  let { favoriteIdEx, chapterIndexEx } = page.params;
+  let favoriteId = $state(favoriteIdEx);
+  let chapterIndex = $state(chapterIndexEx);
   let isLocal = page.url.searchParams.has("local");
-  let chapter = $state($globalChapters[Number(chapterIndex)]);
+  let chapter = $derived($globalChapters[Number(chapterIndex)]);
   let favorite: Favorite = $state({
     id: 0,
     name: "",
@@ -78,10 +82,12 @@
   });
   let images: string[] = $state([]);
   let backupImages: string[] = [];
+  let prevImages: string[] = [];
+  let nextImages: string[] = [];
   let currentlyCount = $state(1);
   let totalPage = $state(0);
-  let isTheLastChapter = $state(Number(chapterIndex) === 0);
-  let isTheFirstChapter = $state(
+  let isTheLastChapter = $derived(Number(chapterIndex) === 0);
+  let isTheFirstChapter = $derived(
     Number(chapterIndex) === $globalChapters.length - 1,
   );
   let currentlyImage = $state("/myk.png");
@@ -91,9 +97,25 @@
   let downloadedImages: DirEntry[] = $state([]);
   let pagesDiv: HTMLDivElement = $state(null!);
   let menuFromTop: number = $state(20);
+  let time = $state(new Date());
+
+  let hours = $derived(time.getHours());
+  let minutes = $derived(time.getMinutes());
+  let seconds = $derived(time.getSeconds());
+  setInterval(() => {
+    time = new Date();
+  }, 1000);
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  function scrollToBottom() {
+    pagesDiv?.scrollTo({
+      top: pagesDiv?.scrollHeight ?? 0,
+      behavior: "smooth",
+    });
+  }
+
   async function refreshDownloadeds() {
     const path = "favorite-panels";
     if (await exists(path, { baseDir: BaseDirectory.Document })) {
@@ -121,7 +143,7 @@
     if (Number(chapterIndex) === 0) return;
     const chapterToFetch = $globalChapters[Number(chapterIndex) - 1];
     var images = await $downloadManager.getChapterImages(chapterToFetch);
-    await $downloadManager.getBase64Images(
+    nextImages = await $downloadManager.getBase64Images(
       images,
       $downloadManager.getBaseUrl(chapterToFetch.source),
     );
@@ -144,7 +166,10 @@
     );
   }
   async function prevPage() {
-    if (currentlyCount === 1) return;
+    if (currentlyCount === 1) {
+      if (!isTheFirstChapter) handleChapterSeamless("prev");
+      return;
+    }
     currentlyCount--;
     currentlyImage = images[currentlyCount - 1];
     const id = (currentlyCount - 1).toString();
@@ -157,7 +182,10 @@
   }
 
   async function nextPage() {
-    if (currentlyCount === totalPage) return;
+    if (currentlyCount === totalPage) {
+      if (!isTheLastChapter) handleChapterSeamless("next");
+      return;
+    }
     currentlyCount++;
     currentlyImage = images[currentlyCount - 1];
     const id = (currentlyCount - 1).toString();
@@ -180,14 +208,54 @@
     stopDiscordPresence();
     extraTitle.set("");
   }
+  async function handleChapterSeamless(way: "next" | "prev") {
+    if (way === "next" && nextImages.length > 0) {
+      currentlyImage = nextImages[0];
+      prevImages = backupImages;
+      images = nextImages;
+      backupImages = images;
+      currentlyCount = 1;
+      totalPage = nextImages.length;
+      scrollToTop();
+      chapterIndex = (Number(chapterIndex) - 1).toString();
+      nextImages = [];
+      preloadNextChapter();
+    } else if (prevImages.length > 0) {
+      currentlyImage = prevImages.at(-1) ?? prevImages[0];
+      nextImages = backupImages;
+      images = prevImages;
+      backupImages = images;
+      currentlyCount = nextImages.length;
+      totalPage = nextImages.length;
+      scrollToBottom();
+      chapterIndex = (Number(chapterIndex) + 1).toString();
+      prevImages = [];
+    }
+    replaceState("", `/reader/${favoriteId}/${Number(chapterIndex)}`);
+    extraTitle.set(`${chapter.number} # ${chapter.title}`);
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
+    readeds.set(newReadeds);
+    if (favorite.is_ultra_favorite) {
+      loadFavoriteChapters(favorite);
+    }
+  }
 
-  async function handleGoChapter(way: "next" | "prev") {
+  function handleGoChapter(way: "next" | "prev") {
+    if (way === "next" && nextImages.length > 0) {
+      handleChapterSeamless("next");
+      return;
+    }
+    if (way === "prev" && prevImages.length > 0) {
+      handleChapterSeamless("prev");
+      return;
+    }
     currentlyImage = "/myk.png";
     images = ["/myk.png"];
     currentlyCount = 1;
     totalPage = 0;
     scrollToTop();
-    await goto(
+    goto(
       `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`,
     );
   }
@@ -321,10 +389,7 @@
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
-    isTheFirstChapter = Number(chapterIndex) === $globalChapters.length - 1;
-    isTheLastChapter = Number(chapterIndex) === 0;
     favorite = await FavoriteDB.getFavorite(Number(favoriteId));
-    chapter = $globalChapters[Number(chapterIndex)];
     extraTitle.set(`${chapter.number} # ${chapter.title}`);
     if (!isLocal) {
       toast.loading(
@@ -513,18 +578,48 @@
   <div class="fixed w-screen h-screen p-6 flex justify-end items-start">
     <div
       class={cn(
-        "flex gap-2 p-2 transition-all duration-300 rounded-2xl bg-secondary/30 backdrop-blur-sm",
-        !$chapterPagesCounter && !$chapterPercentage && "hidden",
+        "flex gap-2 p-2 transition-all duration-400 rounded-2xl bg-secondary/30 backdrop-blur-sm",
+        !$readerClock &&
+          !$chapterPagesCounter &&
+          !$chapterPercentage &&
+          !$showCurrentChapter &&
+          "size-0 opacity-0",
       )}
     >
       <Badge
         class={cn(
           "h-9 rounded-xl place-content-center transition-all duration-300",
-          !$chapterPagesCounter && "hidden",
+          !$readerClock && "w-0 m-0 p-0 -mx-[5px] opacity-0",
         )}
         variant="secondary"
       >
         <ScrollingValue
+          classes={{
+            root: cn("transition-all -mr-0.5", !$readerClock && "w-0 m-0 p-0"),
+          }}
+          axis="y"
+          format={(v) => (v < 10 ? `0${v}` : v)}
+          value={hours}
+        />:<ScrollingValue
+          classes={{
+            root: cn("transition-all", !$readerClock && "w-0 m-0 p-0"),
+          }}
+          axis="y"
+          format={(v) => (v < 10 ? `0${v}` : v)}
+          value={minutes}
+        />
+      </Badge>
+      <Badge
+        class={cn(
+          "h-9 rounded-xl place-content-center transition-all duration-300",
+          !$chapterPercentage && "w-0 m-0 p-0 -mx-[5px] opacity-0",
+        )}
+        variant="secondary"
+      >
+        <ScrollingValue
+          classes={{
+            root: cn("transition-all", !$chapterPercentage && "w-0 m-0 p-0"),
+          }}
           axis="y"
           value={isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
           !isFinite(Math.round((currentlyCount / totalPage) * 100))
@@ -537,19 +632,34 @@
       <Badge
         class={cn(
           "h-9 rounded-xl place-content-center transition-all duration-300",
-          !$chapterPercentage && "hidden",
+          !$chapterPagesCounter && "w-0 m-0 p-0 -mx-[5px] opacity-0",
         )}
         variant="secondary"
       >
         <ScrollingValue
-          classes={{ root: "" }}
+          classes={{
+            root: cn("transition-all", !$chapterPagesCounter && "w-0 m-0 p-0"),
+          }}
           axis="y"
           value={isNaN(currentlyCount) ? 0 : currentlyCount}
-        /> / <ScrollingValue
-          classes={{ root: "" }}
+        />
+        /
+        <ScrollingValue
+          classes={{
+            root: cn("transition-all", !$chapterPagesCounter && "w-0 m-0 p-0"),
+          }}
           axis="y"
           value={totalPage}
         />
+      </Badge>
+      <Badge
+        class={cn(
+          "h-9 min-w-9 rounded-xl place-content-center transition-all duration-300",
+          !$showCurrentChapter && "w-0 min-w-0 m-0 p-0 -mx-[5px] opacity-0",
+        )}
+        variant="secondary"
+      >
+        {chapter?.number}
       </Badge>
     </div>
   </div>
@@ -559,7 +669,7 @@
       $openReadMenu ? "translate-x-0" : "translate-x-[14rem]",
     )}
   >
-    <div class="flex h-44 items-center absolute mt-20">
+    <div class="flex h-44 items-center absolute mt-36">
       <div class="flex flex-col gap-3 justify-center">
         <Button
           class="w-3 rounded-l-full rounded-r-none pointer-events-auto"
@@ -625,6 +735,28 @@
             onclick={goHome}
           >
             <Icon icon="lucide:home" />
+          </Button>
+        </div>
+        <div class="flex gap-1">
+          <Button
+            class="w-[5.75rem] pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            disabled={isTheFirstChapter}
+            onclick={() => handleGoChapter("prev")}
+          >
+            <Icon class="!size-4" icon="lucide:arrow-left" />
+            Prev
+          </Button>
+          <Button
+            class="w-[5.75rem] pointer-events-auto"
+            size="sm"
+            variant="secondary"
+            disabled={isTheLastChapter}
+            onclick={() => handleGoChapter("next")}
+          >
+            Next
+            <Icon class="!size-4" icon="lucide:arrow-right" />
           </Button>
         </div>
         <div class="flex gap-1 z-30">
@@ -698,7 +830,7 @@
               <Icon icon="lucide:minus" />
             </Button>
             <Button
-              class="w-[5.7rem] flex justify-center"
+              class="w-[5.75rem] flex justify-center"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}
@@ -743,7 +875,7 @@
             {chapter?.number.toString()}
           </Badge>
         </div>
-        <div class="w-full flex flex-col items-start gap-1">
+        <div class="w-full flex flex-col items-start gap-2">
           <div
             class="w-full inline-flex gap-3 items-center pointer-events-auto"
           >
@@ -764,8 +896,30 @@
               onCheckedChange={saveSettings}
             />
             <Label class="cursor-pointer" for="chapter-percentage">
-              Chapter percentage
+              Reading percentage
             </Label>
+          </div>
+          <div
+            class="w-full inline-flex gap-3 items-center pointer-events-auto"
+          >
+            <Switch
+              id="show-current-chapter"
+              bind:checked={$showCurrentChapter}
+              onCheckedChange={saveSettings}
+            />
+            <Label class="cursor-pointer" for="show-current-chapter">
+              Chapter number
+            </Label>
+          </div>
+          <div
+            class="w-full inline-flex gap-3 items-center pointer-events-auto"
+          >
+            <Switch
+              id="reader-clock"
+              bind:checked={$readerClock}
+              onCheckedChange={saveSettings}
+            />
+            <Label class="cursor-pointer" for="reader-clock">Show clock</Label>
           </div>
         </div>
       </div>
