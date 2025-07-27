@@ -53,7 +53,7 @@
       }}
     >
       <Icon
-        class="!w-8 !h-8"
+        class="!size-8"
         icon={page.url.pathname === item.path ? item.iconActive : item.icon}
       />
     </Button>
@@ -67,7 +67,7 @@
     }}
   >
     <Icon
-      class="!w-8 !h-8"
+      class="!size-8"
       icon={$openSearch ? "mingcute:search-3-fill" : "mingcute:search-3-line"}
     />
   </Button>
@@ -79,6 +79,6 @@
       sidebar.toggle();
     }}
   >
-    <Icon class="!w-8 !h-8" icon="lucide:menu" />
+    <Icon class="!size-8" icon="lucide:menu" />
   </Button>
 </div>

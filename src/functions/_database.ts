@@ -14,6 +14,7 @@ import {
   panels,
   readeds,
   ultraFavorites,
+  rawFavorites,
 } from "@/store";
 import type { Favorite, Chapter, Readed, Panel } from "@/types";
 import {
@@ -146,6 +147,11 @@ function createReadedMap(readeds: Readed[]): Map<string, Readed> {
     map.set(`${r.chapter_id}_${r.language}`, r);
   }
   return map;
+}
+
+export async function refreshRawFavorites() {
+  const favs = await FavoriteDB.getRawFavorites();
+  rawFavorites.set(favs)
 }
 
 export async function refreshLibrary() {

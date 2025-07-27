@@ -13,6 +13,7 @@
     toggleFullscreen,
     saveSettings,
     copyImageBase64,
+    refreshRawFavorites,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import {
@@ -43,6 +44,7 @@
     chapterPercentage,
     showCurrentChapter,
     readerClock,
+    rawFavorites,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -64,22 +66,26 @@
   import { delay } from "@/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { IS_MOBILE } from "@/constants";
-  import { ScrollingValue } from "svelte-ux";
+  import { ScrollingValue, SpringValue } from "svelte-ux";
+  import { fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
 
   let { favoriteIdEx, chapterIndexEx } = page.params;
   let favoriteId = $state(favoriteIdEx);
   let chapterIndex = $state(chapterIndexEx);
   let isLocal = page.url.searchParams.has("local");
   let chapter = $derived($globalChapters[Number(chapterIndex)]);
-  let favorite: Favorite = $state({
-    id: 0,
-    name: "",
-    link: "",
-    cover: "",
-    source: "",
-    source_id: "",
-    folder_name: "",
-  });
+  let favorite: Favorite = $derived(
+    $rawFavorites.find((fv) => fv.id === Number(favoriteId)) ?? {
+      id: 0,
+      name: "",
+      link: "",
+      cover: "",
+      source: "",
+      source_id: "",
+      folder_name: "",
+    },
+  );
   let images: string[] = $state([]);
   let backupImages: string[] = [];
   let prevImages: string[] = [];
@@ -232,7 +238,11 @@
       prevImages = [];
     }
     replaceState("", `/reader/${favoriteId}/${Number(chapterIndex)}`);
-    extraTitle.set(`${chapter.number} # ${chapter.title}`);
+    extraTitle.set(
+      chapter.title !== undefined
+        ? `${chapter.number} # ${chapter.title}`
+        : `${favorite.name} # ${chapter.number}`,
+    );
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
@@ -389,8 +399,11 @@
   afterNavigate(async () => {
     favoriteId = page.params.favoriteId;
     chapterIndex = page.params.chapterIndex;
-    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
-    extraTitle.set(`${chapter.number} # ${chapter.title}`);
+    extraTitle.set(
+      chapter.title !== undefined
+        ? `${chapter.number} # ${chapter.title}`
+        : `${favorite.name} # ${chapter.number}`,
+    );
     if (!isLocal) {
       toast.loading(
         `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`,
@@ -416,9 +429,13 @@
     if ($autoEnterFullscreen) {
       await setFullscreen(true);
     }
-    favorite = await FavoriteDB.getFavorite(Number(favoriteId));
-    setChapterActivity(favorite.name);
-    extraTitle.set(`${chapter.number} # ${chapter.title}`);
+    await refreshRawFavorites();
+    setChapterActivity(favorite?.name);
+    extraTitle.set(
+      chapter.title !== undefined
+        ? `${chapter.number} # ${chapter.title}`
+        : `${favorite.name} # ${chapter.number}`,
+    );
     if (!isLocal) {
       if (favorite.is_ultra_favorite) {
         if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
@@ -588,19 +605,19 @@
     >
       <Badge
         class={cn(
-          "h-9 rounded-xl place-content-center transition-all duration-300",
+          "flex items-center justify-center h-9 rounded-xl place-content-center transition-all duration-300",
           !$readerClock && "w-0 m-0 p-0 -mx-[5px] opacity-0",
         )}
         variant="secondary"
       >
         <ScrollingValue
           classes={{
-            root: cn("transition-all -mr-0.5", !$readerClock && "w-0 m-0 p-0"),
+            root: cn("transition-all", !$readerClock && "w-0 m-0 p-0"),
           }}
           axis="y"
           format={(v) => (v < 10 ? `0${v}` : v)}
           value={hours}
-        />:<ScrollingValue
+        /><span class="text-lg mb-1">:</span><ScrollingValue
           classes={{
             root: cn("transition-all", !$readerClock && "w-0 m-0 p-0"),
           }}
@@ -616,11 +633,8 @@
         )}
         variant="secondary"
       >
-        <ScrollingValue
-          classes={{
-            root: cn("transition-all", !$chapterPercentage && "w-0 m-0 p-0"),
-          }}
-          axis="y"
+        <SpringValue
+          format="integer"
           value={isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
           !isFinite(Math.round((currentlyCount / totalPage) * 100))
             ? 0
@@ -652,15 +666,25 @@
           value={totalPage}
         />
       </Badge>
-      <Badge
-        class={cn(
-          "h-9 min-w-9 rounded-xl place-content-center transition-all duration-300",
-          !$showCurrentChapter && "w-0 min-w-0 m-0 p-0 -mx-[5px] opacity-0",
-        )}
-        variant="secondary"
-      >
-        {chapter?.number}
-      </Badge>
+      {#key chapter?.number}
+        <div
+          class={cn(
+            "min-w-9 transition-all duration-300",
+            !$showCurrentChapter && "size-0 min-w-0 m-0 p-0 -mx-[4px]",
+          )}
+          in:fly={{ y: 15, duration: 400 }}
+        >
+          <Badge
+            class={cn(
+              "h-9 min-w-9 rounded-xl place-content-center transition-all duration-300",
+              !$showCurrentChapter && "w-0 min-w-0 m-0 p-0 -mx-[5px] opacity-0",
+            )}
+            variant="secondary"
+          >
+            {chapter?.number}
+          </Badge>
+        </div>
+      {/key}
     </div>
   </div>
   <div
@@ -859,7 +883,7 @@
           class="h-9 flex gap-1 justify-end pointer-events-auto cursor-default"
         >
           <Badge
-            class="w-[8.7rem] flex justify-center rounded-xl"
+            class="w-[8.7rem] flex justify-center rounded-xl select-none"
             variant="secondary"
           >
             {favorite?.name
@@ -869,7 +893,7 @@
               : ""}
           </Badge>
           <Badge
-            class="w-11 px-5 flex justify-center items-center rounded-xl"
+            class="w-11 px-5 flex justify-center items-center rounded-xl select-none"
             variant="secondary"
           >
             {chapter?.number.toString()}
@@ -884,7 +908,8 @@
               bind:checked={$chapterPagesCounter}
               onCheckedChange={saveSettings}
             />
-            <Label class="cursor-pointer" for="chapter-count">Pages count</Label
+            <Label class="cursor-pointer select-none" for="chapter-count"
+              >Pages count</Label
             >
           </div>
           <div
@@ -895,7 +920,7 @@
               bind:checked={$chapterPercentage}
               onCheckedChange={saveSettings}
             />
-            <Label class="cursor-pointer" for="chapter-percentage">
+            <Label class="cursor-pointer select-none" for="chapter-percentage">
               Reading percentage
             </Label>
           </div>
@@ -907,7 +932,10 @@
               bind:checked={$showCurrentChapter}
               onCheckedChange={saveSettings}
             />
-            <Label class="cursor-pointer" for="show-current-chapter">
+            <Label
+              class="cursor-pointer select-none"
+              for="show-current-chapter"
+            >
               Chapter number
             </Label>
           </div>
@@ -919,7 +947,9 @@
               bind:checked={$readerClock}
               onCheckedChange={saveSettings}
             />
-            <Label class="cursor-pointer" for="reader-clock">Show clock</Label>
+            <Label class="cursor-pointer select-none" for="reader-clock"
+              >Show clock</Label
+            >
           </div>
         </div>
       </div>

@@ -13,12 +13,14 @@
     downloadManager,
     selectedSource,
     searchTerm,
+    rawFavorites,
   } from "@/store";
   import { FavoriteDB } from "@/repositories";
   import {
     refreshLibrary,
     stopDiscordPresence,
     setDiscordActivity,
+    refreshRawFavorites,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import { onMount } from "svelte";
@@ -32,16 +34,13 @@
   let isFavoriteOpen = $state(false);
   let favoriteOpen: Favorite | null = $state(null);
   let results: Favorite[] = $state([]);
-  let rawFavorites: Favorite[] = $state([]);
 
   function isFavorite(favorite: Favorite) {
-    return rawFavorites.find(
-      (f) => f.source_id === favorite.source_id && f.source === favorite.source
+    return $rawFavorites.find(
+      (f) => f.source_id === favorite.source_id && f.source === favorite.source,
     );
   }
-  async function refreshRawFavorites() {
-    rawFavorites = await FavoriteDB.getRawFavorites();
-  }
+
   async function search() {
     await new Promise((resolve) => setTimeout(resolve, 5));
     if ($searchTerm.length === 0) {
@@ -52,7 +51,7 @@
     isSearching = true;
     results = await $downloadManager.search(
       $searchTerm.toLowerCase(),
-      $selectedSource
+      $selectedSource,
     );
     isSearching = false;
   }
@@ -64,14 +63,14 @@
     if (isFavorite(result)) {
       const favorite = await FavoriteDB.getFavoriteBySource(
         result.source_id,
-        result.source
+        result.source,
       );
       await FavoriteDB.deleteFavorite(favorite);
     } else {
       await FavoriteDB.createFavorite(result);
     }
-    await refreshRawFavorites();
-    await refreshLibrary();
+    refreshRawFavorites();
+    refreshLibrary();
   }
 
   openSearch.subscribe(async (open) => {
@@ -80,7 +79,7 @@
       refreshRawFavorites();
       await new Promise((resolve) => setTimeout(resolve, 50));
       const input = document.querySelector(
-        `input[id="search-input"]`
+        `input[id="search-input"]`,
       ) as HTMLInputElement;
       input?.focus();
       if ($searchTerm.length > 0) search();
@@ -111,13 +110,13 @@
     overlayClass="bg-black/40"
     class={cn(
       "overflow-hidden p-0 gap-0 !bg-background/65 border-0.5",
-      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30.5rem]"
+      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30.5rem]",
     )}
   >
     <div
       class={cn(
         "w-full absolute transition-all duration-500 ease-in-out",
-        isResultOpen ? "-translate-x-full" : "translate-x-0'"
+        isResultOpen ? "-translate-x-full" : "translate-x-0'",
       )}
     >
       <AlertDialog.Header class="bg-accent border-secondary border-1">
@@ -131,7 +130,7 @@
                   : "mingcute:search-2-fill"}
               class={cn(
                 "!size-[1.2rem]",
-                $searchTerm.length > 0 && !isSearching && "cursor-pointer"
+                $searchTerm.length > 0 && !isSearching && "cursor-pointer",
               )}
               color="gray"
               onclick={() => {
@@ -159,7 +158,7 @@
       <div
         class={cn(
           "bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-3xl ",
-          isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52"
+          isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52",
         )}
       >
         {#if results.length !== 0}
@@ -219,7 +218,7 @@
     <div
       class={cn(
         "flex justify-between w-full h-full bg-gray-200 dark:bg-secondary/50 p-2 absolute transition-all duration-500 ease-in-out ",
-        isResultOpen ? "translate-x-0" : "translate-x-full"
+        isResultOpen ? "translate-x-0" : "translate-x-full",
       )}
     >
       <Button

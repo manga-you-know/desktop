@@ -21,6 +21,7 @@ export const undoTasks = writable<
 export const coversLoaded = writable<Record<string, string>>({});
 export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
+export const rawFavorites = writable<Favorite[]>([]);
 export const libraryFavorites = writable<Favorite[]>([]);
 export const ultraFavorites = writable<Favorite[]>([]);
 export const libraryQuery = writable<string>("");
