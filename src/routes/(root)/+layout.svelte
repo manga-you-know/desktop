@@ -40,6 +40,7 @@
     saveScreenState,
     refreshPanels,
     updateBadge,
+    destroyEverything,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
@@ -47,6 +48,7 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import { toast } from "svelte-sonner";
+  import { page } from "$app/state";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -93,8 +95,8 @@
     if (get(closeTray)) {
       window.hide();
     } else {
-      window.destroy();
-      interval.unref();
+      destroyEverything();
+      clearInterval(interval);
     }
     saveScreenState();
   });
@@ -158,8 +160,9 @@
   {:else}
     <div
       class={cn(
-        "flex flex-col overflow-hidden",
+        "flex flex-col overflow-hidden transition-colors duration-300",
         !$windowEffects && "bg-background",
+        page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
       )}
     >
       {#if $customTitlebar}

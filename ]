@@ -2,14 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { Badge } from "svelte-ux";
-  import { Tooltip } from "@/components";
-  import {
-    Sidebar,
-    Label,
-    Avatar,
-    Separator,
-    ScrollArea,
-  } from "@/lib/components";
+  import { Sidebar, Label, Avatar, Separator } from "@/lib/components";
   import {
     openSearch,
     openSettings,
@@ -20,10 +13,9 @@
     theme,
     openInfo,
     customTitlebar,
-    globalChapters,
   } from "@/store";
   import Icon from "@iconify/svelte";
-  import type { Downloading, FavoriteLoaded } from "@/types";
+  import type { Downloading } from "@/types";
   import { useSidebar } from "@/lib/components/ui/sidebar";
   import { IS_MOBILE } from "@/constants";
   import { saveSettings } from "@/functions";
@@ -71,10 +63,10 @@
   let rotation: number = 0;
   let imgElement: HTMLImageElement | null = null;
   let isAnimating: boolean = false;
-  let favoritesWithChapters: FavoriteLoaded[] = $derived(
-    Object.values($favoritesLoaded).filter((fv) =>
-      fv.nextChapter !== null ? 1 : 0,
-    ),
+  let favoritesWithChapterCount = $derived(
+    Object.values($favoritesLoaded)
+      .map((fv) => (fv.nextChapter !== null ? 1 : 0))
+      .reduce((a: number, b: number): number => a + b, 0),
   );
 
   function rotateImage(): void {
@@ -82,25 +74,20 @@
     isAnimating = true;
 
     let start: number | null = null;
-    const totalRotation = 4 * 360;
-    const duration = 1000;
 
     function animate(timestamp: number): void {
       if (start === null) start = timestamp;
       let progress: number = timestamp - start;
 
-      let degrees: number = Math.min(
-        (progress / duration) * totalRotation,
-        totalRotation,
-      );
+      let degrees: number = Math.min((progress / 500) * 360, 360);
       if (imgElement) {
         imgElement.style.transform = `rotate(${rotation + degrees}deg)`;
       }
 
-      if (degrees < totalRotation) {
+      if (degrees < 360) {
         requestAnimationFrame(animate);
       } else {
-        rotation += totalRotation;
+        rotation += 360;
         isAnimating = false;
       }
     }
@@ -114,7 +101,10 @@
 </script>
 
 <Sidebar.Root
-  class={cn("bg-sidebar  px-[2.5px] pb-0 border-0", $customTitlebar && "pt-7")}
+  class={cn(
+    "bg-sidebar pl-[2.5px] pb-0 pr-0 border-0",
+    $customTitlebar && "pt-7",
+  )}
   {variant}
   collapsible="icon"
 >
@@ -151,7 +141,7 @@
                 }}
                 tabindex={-1}
               >
-                {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
+                {#if item.path !== "/favorites" || favoritesWithChapterCount === 0}
                   <Icon
                     class="!size-7 -ml-[10px]"
                     icon={page.url.pathname === item.path
@@ -165,7 +155,7 @@
                         ? "bg-sidebar text-primary"
                         : "bg-primary text-sidebar",
                     )}
-                    value={favoritesWithChapters.length}
+                    value={favoritesWithChapterCount}
                     small
                   >
                     <Icon
@@ -280,47 +270,12 @@
     </Sidebar.Group>
     <Sidebar.Group>
       <Sidebar.GroupContent>
-        {#if favoritesWithChapters.length > 0}
-          <Sidebar.Menu
-            class="bg-background/30 rounded-2xl border border-secondary"
-          >
-            <Sidebar.MenuItem
-              class="max-h-60 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-  transparent rounded-2xl"
-            >
-              <ScrollArea>
-                {#each favoritesWithChapters as fav}
-                  <Tooltip
-                    class="h-7 font-bold items-center flex -ml-1 "
-                    text={fav.self.name}
-                    placement="right"
-                    delay={200}
-                  >
-                    <Sidebar.MenuButton
-                      class="hover:bg-transparent hover:underline"
-                      onclick={() => {
-                        globalChapters.set(fav.chapters);
-                        goto(
-                          `/reader/${fav.self.id}/${$globalChapters.indexOf(
-                            fav.nextChapter ?? fav.chapters[0],
-                          )}`,
-                        );
-                      }}
-                    >
-                      <Label
-                        class="w-2 mr-3 flex justify-center cursor-pointer"
-                      >
-                        {fav?.nextChapter?.number ?? ""}
-                      </Label>
-                      <Label class="cursor-pointer truncate">
-                        {fav.self.name}
-                      </Label>
-                    </Sidebar.MenuButton>
-                  </Tooltip>
-                {/each}
-              </ScrollArea>
-            </Sidebar.MenuItem>
-          </Sidebar.Menu>
-        {/if}
+        <Sidebar.Menu class="bg-background/30 border border-secondary">
+          <Sidebar.MenuItem>
+            <Sidebar.MenuButton></Sidebar.MenuButton>
+            <Sidebar.MenuButton></Sidebar.MenuButton>
+          </Sidebar.MenuItem>
+        </Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
@@ -410,25 +365,18 @@
       </Sidebar.Menu>
     </Sidebar.GroupContent>
   </Sidebar.Group>
-  <Sidebar.Footer class="flex items-center overflow-hidden">
+  <Sidebar.Footer class="flex items-center">
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
-    <Sidebar.MenuItem>
-      <Sidebar.MenuButton
-        onclick={rotateImage}
-        onwheel={rotateImage}
-        class="hover:bg-transparent"
-      >
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-        <img
-          bind:this={imgElement}
-          class="min-w-9 max-w-9 -ml-[14px]"
-          draggable={false}
-          src="/icon.png"
-          alt="icon"
-        />
-        <Label class="text-nowrap cursor-pointer">漫画君知る</Label>
-      </Sidebar.MenuButton>
-    </Sidebar.MenuItem>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <img
+      bind:this={imgElement}
+      draggable={false}
+      onclick={rotateImage}
+      onwheel={rotateImage}
+      class="w-24 min-w-10 -ml-[2px]"
+      src="/icon.png"
+      alt="icon"
+    />
   </Sidebar.Footer>
 </Sidebar.Root>

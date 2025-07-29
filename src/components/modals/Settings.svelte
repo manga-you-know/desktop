@@ -43,6 +43,7 @@
     windowEffects,
     customNotificator,
     theme,
+    markReaded,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
@@ -344,34 +345,41 @@
                 Expand on hover
               </Button>
             </div>
-            <div class="flex flex-col gap-2 justify-center">
-              <Label class="cursor-pointer" for="custom-titlebar">
-                Custom Titlebar
-              </Label>
-              <div class="flex gap-2 items-center">
-                <Label
-                  class="cursor-pointer"
-                  onclick={() => {
-                    customTitlebar.set(false);
-                    saveSettings();
-                  }}>OFF</Label
-                >
-                <Switch
-                  bind:checked={$customTitlebar}
-                  onCheckedChange={saveSettings}
-                />
-                <Label
-                  class="cursor-pointer"
-                  onclick={() => {
-                    customTitlebar.set(true);
-                    saveSettings();
-                  }}>ON</Label
-                >
+            <div class="flex gap-24">
+              <div class="flex flex-col gap-2">
+                <Label>Theme</Label>
+                <Theme />
+              </div>
+              <div class="flex flex-col gap-2 justify-center">
+                <Label class="cursor-pointer" for="custom-titlebar">
+                  Custom Titlebar
+                </Label>
+                <div class="flex gap-2 items-center">
+                  <Label
+                    class="cursor-pointer"
+                    onclick={() => {
+                      customTitlebar.set(false);
+                      saveSettings();
+                    }}>OFF</Label
+                  >
+                  <Switch
+                    bind:checked={$customTitlebar}
+                    onCheckedChange={saveSettings}
+                  />
+                  <Label
+                    class="cursor-pointer"
+                    onclick={() => {
+                      customTitlebar.set(true);
+                      saveSettings();
+                    }}>ON</Label
+                  >
+                </div>
               </div>
             </div>
+          {:else}
+            <Label>Theme</Label>
+            <Theme />
           {/if}
-          <Label>Theme</Label>
-          <Theme />
           <div class="flex gap-3">
             <Button class="w-44" effect="ringHover" onclick={relaunch}>
               <Icon icon="ic:round-refresh" class="!size-5" />
@@ -405,6 +413,68 @@
 
       <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
         <Card.Content class="flex flex-col gap-4">
+          <Label>Mark as read</Label>
+          <div
+            class="flex relative w-[20rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+          >
+            <div class="z-[1] absolute w-full h-9">
+              <div
+                class={cn(
+                  "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[6rem] translate-x-0",
+                  $markReaded === "end" && "translate-x-[6.5rem]",
+                  $markReaded === "manual" && "translate-x-[13rem]",
+                )}
+              ></div>
+            </div>
+            <Button
+              class={cn(
+                "z-[2] h-9 w-24 duration-300 bg-transparent",
+                $markReaded === "start" &&
+                  "!text-secondary hover:bg-background/20",
+              )}
+              size="sm"
+              variant="secondary"
+              effect={$markReaded === "start" ? "ringHover" : null}
+              onclick={() => {
+                $markReaded = "start";
+                saveSettings();
+              }}
+            >
+              First page
+            </Button>
+            <Button
+              class={cn(
+                "z-[2] h-9 w-24 duration-300 bg-transparent",
+                $markReaded === "end" &&
+                  "!text-secondary hover:bg-background/20",
+              )}
+              size="sm"
+              variant="secondary"
+              effect={$markReaded === "end" ? "ringHover" : null}
+              onclick={() => {
+                $markReaded = "end";
+                saveSettings();
+              }}
+            >
+              Last page
+            </Button>
+            <Button
+              class={cn(
+                "z-[2] h-9 w-24 duration-300 bg-transparent",
+                $markReaded === "manual" &&
+                  "!text-secondary hover:bg-background/20",
+              )}
+              size="sm"
+              variant="secondary"
+              effect={$markReaded === "manual" ? "ringHover" : null}
+              onclick={() => {
+                $markReaded = "manual";
+                saveSettings();
+              }}
+            >
+              Manual
+            </Button>
+          </div>
           <div class="flex flex-col gap-2">
             <Label>Preferable language</Label>
             <Language
@@ -424,7 +494,7 @@
                 onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="auto-fullscreen"
-                >Auto enter in fullscreen</Label
+                >Enter in fullscreen when reading</Label
               >
             </div>
           {/if}

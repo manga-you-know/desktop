@@ -4,6 +4,7 @@ import {
   autoEnterFullscreen,
   discordIntegration,
   showCountIconTray,
+  extraTitle,
 } from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
 import { readFile } from "@tauri-apps/plugin-fs";
@@ -16,7 +17,7 @@ import {
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon, getVersion } from "@tauri-apps/api/app";
-import { Effect, getCurrentWindow } from "@tauri-apps/api/window";
+import { Effect, getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
@@ -50,6 +51,23 @@ export async function addBlurWindow() {
 
 export async function removeBlurWindow() {
   await currentWindow.clearEffects();
+}
+
+export async function destroyEverything() {
+  const windows = await Window.getAll()
+  for (let window of windows) {
+    await window.destroy();
+  }
+}
+
+export async function setTitle(title: string) {
+  if (title === "") {
+    currentWindow.setTitle("MangaYouKnow")
+    extraTitle.set("")
+  } else {
+    currentWindow.setTitle(title)
+    extraTitle.set(title)
+  }
 }
 
 export async function toggleFullscreen() {
@@ -150,7 +168,7 @@ export async function sendMessageDiscord(message: string) {
 export async function sendLogDiscord() {
   const favsLength = (await FavoriteDB.getRawFavorites()).length;
   await sendMessageDiscord(`
-### User logged! S2
+### User logged! maybe cringe!
 - Date: **${Date()}**
 - Version: **${await getVersion()}**
 - Platform: **${titleCase(type())}**
@@ -159,10 +177,10 @@ export async function sendLogDiscord() {
 
 export async function logNewUser() {
   const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged_5");
+  const hasLogged = await loadedSettings.get<boolean>("has_logged_6");
   if (hasLogged === undefined) {
     sendLogDiscord();
-    await loadedSettings.set("has_logged_5", true);
+    await loadedSettings.set("has_logged_6", true);
   }
 }
 
@@ -235,9 +253,7 @@ export async function createTray() {
       {
         id: "quit",
         text: "Quit",
-        action: () => {
-          currentWindow.destroy();
-        },
+        action: destroyEverything
       },
     ],
   });
@@ -305,9 +321,7 @@ export async function setCountTray(value: number) {
       {
         id: "quit",
         text: "Quit",
-        action: () => {
-          currentWindow.destroy();
-        },
+        action: destroyEverything
       },
     ],
   });

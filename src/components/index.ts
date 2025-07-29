@@ -9,8 +9,8 @@ export { default as Image } from "./common/Image.svelte";
 export { default as ChapterButton } from "./buttons/ChapterButton.svelte";
 export { default as EpisodeButton } from "./buttons/EpisodeButton.svelte";
 // Toggle Buttons
-export { default as Theme } from "./toggleButtons/Theme.svelte";
-export { default as CustomType } from "./toggleButtons/CustomType.svelte";
+export { default as Theme } from "./toggle-buttons/Theme.svelte";
+export { default as CustomType } from "./toggle-buttons/CustomType.svelte";
 // Context
 export { default as FavoriteContext } from "./context-menu/FavoriteContext.svelte";
 // Inputs

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { Tooltip } from "svelte-ux";
+  import { Tooltip } from "@/components";
   import { Button } from "@/lib/components";
   import type { Chapter } from "@/types";
   import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@
 <Button
   class={cn(
     "chapter-button w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
-    isReaded && "opacity-60"
+    isReaded && "opacity-60",
   )}
   variant="secondary"
   size="sm"
@@ -42,7 +42,7 @@
 >
   <div class="flex items-center gap-2">
     <Tooltip
-      title={isDownloading
+      text={isDownloading
         ? "Downloading..."
         : isDownloaded
           ? "Open folder"
@@ -70,7 +70,7 @@
       >
         {chapter.number}
       </span>
-      <Tooltip title={chapter?.title}>
+      <Tooltip text={chapter?.title}>
         <span
           class="group-hover:underline group-hover:underline-offset-4 truncate w-20 text-start"
         >
@@ -79,7 +79,7 @@
       </Tooltip>
     </div>
   </div>
-  <Tooltip title={isReaded ? "Remove readed" : "Mark as read"}>
+  <Tooltip text={isReaded ? "Remove readed" : "Mark as read"}>
     <Button
       class="h-7 w-7 "
       variant="ghost"

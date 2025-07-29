@@ -38,11 +38,6 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
   if (!IS_MOBILE) {
     const [update, response] = await Promise.all([check(), fetch(UPDATE_URL)]);
     if (update === null && !response.ok) {
-      await message("Failed to check for updates.\nPlease try again later.", {
-        title: "Error",
-        kind: "error",
-        okLabel: "OK",
-      });
       return;
     } else if (update) {
       const isFocus = await window.isFocused();

@@ -32,6 +32,7 @@ import {
   chapterPercentage,
   readerClock,
   showCurrentChapter,
+  markReaded,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -56,6 +57,9 @@ type SettingValue =
   | "on-hover"
   | "expand"
   | "collapse"
+  | "start"
+  | "end"
+  | "auto"
   | undefined;
 
 interface SettingConfig {
@@ -88,6 +92,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   chapter_percentage: { store: chapterPercentage, default: false },
   reader_clock: { store: readerClock, default: false },
   show_current_chapter: { store: showCurrentChapter, default: false },
+  mark_readed: { store: markReaded, default: "start" },
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },

@@ -57,7 +57,7 @@
         />
         {limitStr(favorite?.name ?? "", 80)}
       </Sheet.Title>
-      <div class="flex gap-2">
+      <div class="flex gap-1">
         <Button
           variant="outline"
           onclick={() => {
@@ -66,6 +66,7 @@
           }}
         >
           <Icon icon="lucide:arrow-left" />
+          Prev
         </Button>
         <Button
           variant="outline"
@@ -74,10 +75,11 @@
             handleGoChapter("next");
           }}
         >
+          Next
           <Icon icon="lucide:arrow-right" />
         </Button>
         <Button
-          class="w-12 mr-12"
+          class="w-12"
           variant="outline"
           onclick={() => {
             isChaptersDescending.set(!$isChaptersDescending);
@@ -109,6 +111,7 @@
         ? displayedChapters
         : displayedChapters.toReversed()} -->
     <VList
+      id="list-chapter"
       class="scrollbar-chapters overflow-x-hidden scroll-smooth !h-[70rem] bottom-0"
       itemSize={25}
       data={$isChaptersDescending
@@ -120,6 +123,9 @@
       {#snippet children(chapter, i)}
         {@const isReadedHere = isReaded(chapter, $readeds) !== undefined}
         <Button
+          id={currentlyChapter?.chapter_id === chapter.chapter_id
+            ? "currently"
+            : null}
           class={cn(
             "chapter-button my-[1px] w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
             isReadedHere && "opacity-60",

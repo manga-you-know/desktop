@@ -14,6 +14,7 @@
     saveSettings,
     copyImageBase64,
     refreshRawFavorites,
+    setTitle,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import {
@@ -37,7 +38,6 @@
     lastPage,
     openReadMenu,
     openSearch,
-    extraTitle,
     customTitlebar,
     favoritesLoaded,
     chapterPagesCounter,
@@ -45,6 +45,7 @@
     showCurrentChapter,
     readerClock,
     rawFavorites,
+    markReaded,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -69,14 +70,15 @@
   import { ScrollingValue, SpringValue } from "svelte-ux";
   import { fly } from "svelte/transition";
   import { flip } from "svelte/animate";
+  import { get } from "svelte/store";
 
-  let { favoriteIdEx, chapterIndexEx } = page.params;
-  let favoriteId = $state(favoriteIdEx);
-  let chapterIndex = $state(chapterIndexEx);
+  let { favoriteId, chapterIndex } = page.params;
+  let favoriteIdEx = $state(favoriteId);
+  let chapterIndexEx = $state(chapterIndex);
   let isLocal = page.url.searchParams.has("local");
-  let chapter = $derived($globalChapters[Number(chapterIndex)]);
+  let chapter = $derived($globalChapters[Number(chapterIndexEx)]);
   let favorite: Favorite = $derived(
-    $rawFavorites.find((fv) => fv.id === Number(favoriteId)) ?? {
+    $rawFavorites.find((fv) => fv.id === Number(favoriteIdEx)) ?? {
       id: 0,
       name: "",
       link: "",
@@ -92,9 +94,9 @@
   let nextImages: string[] = [];
   let currentlyCount = $state(1);
   let totalPage = $state(0);
-  let isTheLastChapter = $derived(Number(chapterIndex) === 0);
+  let isTheLastChapter = $derived(Number(chapterIndexEx) === 0);
   let isTheFirstChapter = $derived(
-    Number(chapterIndex) === $globalChapters.length - 1,
+    Number(chapterIndexEx) === $globalChapters.length - 1,
   );
   let currentlyImage = $state("/myk.png");
   let currentlyImagePath = $derived(
@@ -146,8 +148,8 @@
   }
 
   async function preloadNextChapter(): Promise<void> {
-    if (Number(chapterIndex) === 0) return;
-    const chapterToFetch = $globalChapters[Number(chapterIndex) - 1];
+    if (Number(chapterIndexEx) === 0) return;
+    const chapterToFetch = $globalChapters[Number(chapterIndexEx) - 1];
     var images = await $downloadManager.getChapterImages(chapterToFetch);
     nextImages = await $downloadManager.getBase64Images(
       images,
@@ -155,9 +157,18 @@
     );
   }
 
+  async function addReaded() {
+    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
+    const newReadeds = await ReadedDB.getReadeds(favorite);
+    readeds.set(newReadeds);
+    if (favorite.is_ultra_favorite) {
+      loadFavoriteChapters(favorite);
+    }
+  }
+
   function setChapterActivity(name: string) {
     const percentageReaded: number =
-      (($globalChapters.length - Number(chapterIndex)) /
+      (($globalChapters.length - Number(chapterIndexEx)) /
         $globalChapters.length) *
       100;
     let percentageText = percentageReaded.toFixed(2);
@@ -168,7 +179,7 @@
     }
     setDiscordActivity(
       `Reading [${name}]`,
-      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndex)}/${$globalChapters.length}] - ${percentageText}%`,
+      `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndexEx)}/${$globalChapters.length}] - ${percentageText}%`,
     );
   }
   async function prevPage() {
@@ -201,6 +212,9 @@
       const nextP = document.getElementById(id);
       pagesDiv?.scrollTo({ top: nextP?.offsetTop, behavior: "smooth" });
     }
+    if (get(markReaded) === "end" && currentlyCount === totalPage) {
+      addReaded();
+    }
   }
 
   function goHome() {
@@ -212,7 +226,7 @@
     goto($lastPage);
     openMenuChapters.set(false);
     stopDiscordPresence();
-    extraTitle.set("");
+    setTitle("");
   }
   async function handleChapterSeamless(way: "next" | "prev") {
     if (way === "next" && nextImages.length > 0) {
@@ -223,7 +237,7 @@
       currentlyCount = 1;
       totalPage = nextImages.length;
       scrollToTop();
-      chapterIndex = (Number(chapterIndex) - 1).toString();
+      chapterIndexEx = (Number(chapterIndexEx) - 1).toString();
       nextImages = [];
       preloadNextChapter();
     } else if (prevImages.length > 0) {
@@ -234,20 +248,22 @@
       currentlyCount = nextImages.length;
       totalPage = nextImages.length;
       scrollToBottom();
-      chapterIndex = (Number(chapterIndex) + 1).toString();
+      chapterIndexEx = (Number(chapterIndexEx) + 1).toString();
       prevImages = [];
     }
-    replaceState("", `/reader/${favoriteId}/${Number(chapterIndex)}`);
-    extraTitle.set(
+    replaceState(
+      `/reader/${favoriteIdEx}/${Number(chapterIndexEx)}`,
+      page.state,
+    );
+    setTitle(
       chapter.title !== undefined
         ? `${chapter.number} # ${chapter.title}`
-        : `${favorite.name} # ${chapter.number}`,
+        : ` ${chapter.number} # ${favorite.name}`,
     );
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
-    const newReadeds = await ReadedDB.getReadeds(favorite);
-    readeds.set(newReadeds);
-    if (favorite.is_ultra_favorite) {
-      loadFavoriteChapters(favorite);
+    if (get(markReaded) === "start") {
+      addReaded();
+    } else if (get(markReaded) === "end" && totalPage === 1) {
+      addReaded();
     }
   }
 
@@ -266,7 +282,7 @@
     totalPage = 0;
     scrollToTop();
     goto(
-      `/reader/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`,
+      `/reader/${favoriteIdEx}/${Number(chapterIndexEx) + (way === "next" ? -1 : 1)}`,
     );
   }
 
@@ -397,12 +413,12 @@
   }
 
   afterNavigate(async () => {
-    favoriteId = page.params.favoriteId;
-    chapterIndex = page.params.chapterIndex;
-    extraTitle.set(
+    favoriteIdEx = page.params.favoriteId;
+    chapterIndexEx = page.params.chapterIndex;
+    setTitle(
       chapter.title !== undefined
         ? `${chapter.number} # ${chapter.title}`
-        : `${favorite.name} # ${chapter.number}`,
+        : ` ${chapter.number} # ${favorite.name}`,
     );
     if (!isLocal) {
       toast.loading(
@@ -417,11 +433,12 @@
     currentlyImage = images[currentlyCount - 1];
     totalPage = images.length;
     setChapterActivity(favorite.name);
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite.is_ultra_favorite) {
-      loadFavoriteChapters(favorite);
+    if (get(markReaded) === "start") {
+      addReaded();
+    } else if (get(markReaded) === "end" && totalPage === 1) {
+      addReaded();
     }
   });
 
@@ -431,10 +448,10 @@
     }
     await refreshRawFavorites();
     setChapterActivity(favorite?.name);
-    extraTitle.set(
+    setTitle(
       chapter.title !== undefined
         ? `${chapter.number} # ${chapter.title}`
-        : `${favorite.name} # ${chapter.number}`,
+        : `${chapter.number} # ${favorite.name}`,
     );
     if (!isLocal) {
       if (favorite.is_ultra_favorite) {
@@ -455,11 +472,12 @@
     currentlyImage = images[0];
     totalPage = images.length;
     setChapterActivity(favorite.name);
-    await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite.is_ultra_favorite) {
-      loadFavoriteChapters(favorite);
+    if (get(markReaded) === "start") {
+      addReaded();
+    } else if (get(markReaded) === "end" && totalPage === 1) {
+      addReaded();
     }
   });
 
@@ -612,14 +630,14 @@
       >
         <ScrollingValue
           classes={{
-            root: cn("transition-all", !$readerClock && "w-0 m-0 p-0"),
+            root: cn("transition-all -mr-1", !$readerClock && "w-0 m-0 p-0"),
           }}
           axis="y"
           format={(v) => (v < 10 ? `0${v}` : v)}
           value={hours}
-        /><span class="text-lg mb-1">:</span><ScrollingValue
+        />：<ScrollingValue
           classes={{
-            root: cn("transition-all", !$readerClock && "w-0 m-0 p-0"),
+            root: cn("transition-all -ml-1", !$readerClock && "w-0 m-0 p-0"),
           }}
           axis="y"
           format={(v) => (v < 10 ? `0${v}` : v)}

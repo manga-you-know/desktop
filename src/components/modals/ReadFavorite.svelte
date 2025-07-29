@@ -20,7 +20,7 @@
     Badge,
     Skeleton,
   } from "@/lib/components";
-  import { ChapterButton, Image, Language } from "@/components";
+  import { ChapterButton, Image, Tooltip, Language } from "@/components";
   import {
     readeds,
     openSearch,
@@ -53,7 +53,6 @@
   import { imageFail, limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
   import { load, Store } from "@tauri-apps/plugin-store";
-  import { Tooltip } from "svelte-ux";
   import { IsMobile } from "@/lib/hooks";
 
   let { favorite, open = $bindable(false) }: Props = $props();
@@ -430,7 +429,7 @@
       >
         <div class="flex items-center gap-2">
           <Tooltip
-            title={nextChapter !== undefined
+            text={nextChapter !== undefined
               ? isDownloading(nextChapter)
                 ? "Downloading..."
                 : isNextDownloaded
@@ -495,25 +494,27 @@
                 : "All clear!"}
           </span>
         </div>
-        <Button
-          class="h-7 w-7 "
-          variant="ghost"
-          size="sm"
-          tabindex={-1}
-          disabled={nextChapter === undefined}
-          onclick={async (e) => {
-            e.stopPropagation();
-            if (nextChapter) {
-              await addReadedBelow(nextChapter, $globalChapters, favorite);
-              await refreshReadeds(favorite);
-            }
-          }}
-        >
-          <Icon
-            icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
-            class="!size-7"
-          />
-        </Button>
+        <Tooltip text={nextChapter !== undefined ? "Mark readed" : ""}>
+          <Button
+            class="h-7 w-7 "
+            variant="ghost"
+            size="sm"
+            tabindex={-1}
+            disabled={nextChapter === undefined}
+            onclick={async (e) => {
+              e.stopPropagation();
+              if (nextChapter) {
+                await addReadedBelow(nextChapter, $globalChapters, favorite);
+                await refreshReadeds(favorite);
+              }
+            }}
+          >
+            <Icon
+              icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
+              class="!size-7"
+            />
+          </Button>
+        </Tooltip>
       </Button>
     </div>
     {#if !isMobile}

@@ -135,6 +135,9 @@
   * {
     @apply border-sidebar;
   }
+  li {
+    list-style:none; 
+  }
   body {
     @apply text-foreground;
   }

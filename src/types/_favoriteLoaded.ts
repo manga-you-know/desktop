@@ -1,6 +1,7 @@
-import type { Chapter, Readed } from "@/types";
+import type { Chapter, Favorite, Readed } from "@/types";
 
 export interface FavoriteLoaded {
+  self: Favorite;
   readeds: Readed[];
   chapters: Chapter[];
   isLoaded: boolean;

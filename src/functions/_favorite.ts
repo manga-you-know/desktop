@@ -44,7 +44,8 @@ function addFavorite(favorite: Favorite) {
   favoritesLoaded.update((currentFavorites) => {
     return {
       ...currentFavorites,
-      [favorite.id?.toString() ?? ""]: {
+      [favorite.id.toString() ?? ""]: {
+        self: favorite,
         isLoaded: false,
         isLoading: false,
         chapters: [],
@@ -175,6 +176,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   favoritesLoaded.update((currentFavorites) => {
     const favoriteId = strNotEmpty(favorite.id);
     const currentFavorite = currentFavorites[favoriteId] || {
+      self: favorite,
       isLoaded: false,
       isLoading: false,
       chapters: [],
@@ -196,6 +198,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
       ...currentFavorites,
       [favoriteId]: {
         ...currentFavorite,
+        self: favorite,
         isLoaded: true,
         isLoading: false,
         chapters,

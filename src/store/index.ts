@@ -71,6 +71,7 @@ export const showCountIcon = writable<boolean>(true);
 export const showCountIconTray = writable<boolean>(false);
 export const blurEffects = writable<boolean>(true);
 export const windowEffects = writable<boolean>(false);
+export const markReaded = writable<"start" | "end" | "manual">("start");
 export const discordIntegration = writable<boolean>(false);
 export const preferableLanguage = writable<Language>({
   id: "en",

@@ -21,15 +21,25 @@
     downloadings,
     openMenuChapters,
     isMaximized,
+    favoritesLoaded,
+    globalChapters,
   } from "@/store";
   import { setFullscreen } from "@/functions";
-  import type { Downloading } from "@/types";
+  import type { Downloading, FavoriteLoaded } from "@/types";
+  import Tooltip from "./Tooltip.svelte";
+  import { goto } from "$app/navigation";
 
   const window = getCurrentWindow();
   let version = $state("0.0.0");
   let appPath = $state("");
   let downloadPath = $state("");
   let documentsPath = $state("");
+  let divFavs: HTMLDivElement = $state(null!);
+  let favoritesWithChapters: FavoriteLoaded[] = $derived(
+    Object.values($favoritesLoaded).filter((fv) =>
+      fv.nextChapter !== null ? 1 : 0,
+    ),
+  );
   let downloadingCount = $derived(
     Object.values<Downloading>($downloadings).reduce(
       (a1, a2) => a1 + a2.downloading.length,
@@ -62,7 +72,7 @@
       class="h-6"
       data-tauri-drag-region={!$isFullscreen}
     />
-    <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>
+    <Label class="p-3 z-20 bg-sidebar" data-tauri-drag-region={!$isFullscreen}>
       MangaYouKnow
     </Label>
     <Menubar.Root class="z-20">
@@ -158,15 +168,50 @@
     </Label>
   </div>
   <div
-    class="absolute w-full flex justify-center z-10"
+    class="absolute left-32 w-full flex justify-center z-10 items-center gap-24"
     data-tauri-drag-region={!$isFullscreen}
   >
     <Label
-      class="select-none !text-primary/70"
+      class="select-none !text-primary/70 z-[3]"
       data-tauri-drag-region={!$isFullscreen}
     >
       {$extraTitle}
     </Label>
+    {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")}
+      <div
+        bind:this={divFavs}
+        onwheel={(e) => {
+          const scrollLeft = divFavs.scrollLeft;
+          if (e.deltaY < 0) {
+            divFavs.scroll({ left: scrollLeft - 50, behavior: "smooth" });
+          } else {
+            divFavs.scrollTo({ left: scrollLeft + 50, behavior: "smooth" });
+          }
+        }}
+        class="flex !max-w-36 md:!max-w-52 lg:!max-w-96 2xl:!max-w-[30rem] 2xl:!ml-16 transition-all duration-400 overflow-x-scroll overflow-y-hidden bg-background/30 rounded-xl border border-secondary [&::-webkit-scrollbar]:size-0 [&::-webkit-scrollbar-thumb]:bg-transparent"
+      >
+        {#each favoritesWithChapters as fav}
+          {#if fav.self.id.toString() !== page.params?.favoriteId}
+            <Tooltip class="font-bold" text={fav.self.name} delay={200}>
+              <Button
+                class="w-10 h-8 rounded-xl"
+                variant="link"
+                onclick={() => {
+                  globalChapters.set(fav.chapters);
+                  goto(
+                    `/reader/${fav.self.id}/${$globalChapters.indexOf(
+                      fav.nextChapter ?? fav.chapters[0],
+                    )}`,
+                  );
+                }}
+              >
+                {fav?.nextChapter?.number}
+              </Button>
+            </Tooltip>
+          {/if}
+        {/each}
+      </div>
+    {/if}
   </div>
   <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">
     <Button

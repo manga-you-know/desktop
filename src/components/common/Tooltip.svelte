@@ -1,22 +1,38 @@
 <script lang="ts">
-  import { Tooltip as TooltipPrimitive } from "@/lib/components";
+  import { cn } from "@/lib/utils";
+  import { theme } from "@/store";
+  import { Tooltip } from "svelte-ux";
 
   interface Props {
-    text: string;
+    text?: string;
+    class?: string;
+    placement?: "left" | "top" | "bottom" | "right";
+    delay?: number;
     disabled?: boolean;
-    width?: string;
-    height?: string;
     children?: any;
   }
 
-  let { text, disabled = $bindable(false), children }: Props = $props();
+  let {
+    text,
+    class: className,
+    placement = "top",
+    delay,
+    disabled = false,
+    children,
+  }: Props = $props();
 </script>
 
-<TooltipPrimitive.Root delayDuration={200} {disabled}>
-  <TooltipPrimitive.Trigger tabindex={-1}>
-    {@render children?.()}
-  </TooltipPrimitive.Trigger>
-  <TooltipPrimitive.Content sideOffset={5}>
-    {text}
-  </TooltipPrimitive.Content>
-</TooltipPrimitive.Root>
+<Tooltip
+  classes={{
+    title: cn(
+      "rounded-xl border border-secondary bg-sidebar text-primary",
+      $theme === "dark" && "dark",
+      className,
+    ),
+  }}
+  {placement}
+  {delay}
+  title={text}
+>
+  {@render children?.()}
+</Tooltip>

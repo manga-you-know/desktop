@@ -29,7 +29,7 @@
     <img
       src="/icon.png"
       alt="MangaYouKnow logo"
-      class="w-40 h-40 rounded-[2rem] mt-10 logo-shadow"
+      class="size-40 rounded-[3.2rem] mt-10 logo-shadow"
     />
   </div>
   <div class="w-full h-full mt-12">
