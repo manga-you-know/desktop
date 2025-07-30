@@ -285,9 +285,15 @@
           $downloadManager.getChapters(favorite, $preferableLanguage.id),
           $downloadManager.getFavoriteLanguages(favorite),
         ]);
+        if (!languageOptions.includes(localSelectedLanguage)) {
+          localSelectedLanguage = languageOptions[0];
+          chapters = await $downloadManager.getChapters(
+            favorite,
+            languageOptions[0].id,
+          );
+        }
       }
       globalChapters.set(chapters);
-      console.log(languageOptions);
     } else {
       localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
       const result = await $downloadManager.getChapters(favorite);
@@ -600,7 +606,7 @@
               globalChapters.set(result);
               isFetching = false;
             }}
-            disabled={!isMulti || isFetching}
+            disabled={!isMulti || isFetching || languageOptions.length < 2}
           />
           <Button
             class="w-[165px]"

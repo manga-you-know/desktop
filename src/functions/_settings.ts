@@ -33,6 +33,7 @@ import {
   readerClock,
   showCurrentChapter,
   markReaded,
+  keepReading,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -93,6 +94,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   reader_clock: { store: readerClock, default: false },
   show_current_chapter: { store: showCurrentChapter, default: false },
   mark_readed: { store: markReaded, default: "start" },
+  keep_reading: { store: keepReading, default: true },
   notify_update: { store: notifyUpdate, default: true },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },

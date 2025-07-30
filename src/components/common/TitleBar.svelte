@@ -72,7 +72,7 @@
       class="h-6"
       data-tauri-drag-region={!$isFullscreen}
     />
-    <Label class="p-3 z-20 bg-sidebar" data-tauri-drag-region={!$isFullscreen}>
+    <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>
       MangaYouKnow
     </Label>
     <Menubar.Root class="z-20">
@@ -113,7 +113,11 @@
         </Menubar.Content>
       </Menubar.Menu>
       <Menubar.Menu>
-        <Menubar.Trigger>About</Menubar.Trigger>
+        <Menubar.Trigger
+          class={cn(
+            page.route.id?.startsWith("/(root)/reader") && "hidden md:block",
+          )}>About</Menubar.Trigger
+        >
         <Menubar.Content class="z-[51]">
           <Menubar.Item
             class="pointer-events-auto"
@@ -168,11 +172,11 @@
     </Label>
   </div>
   <div
-    class="absolute left-32 w-full flex justify-center z-10 items-center gap-24"
+    class="w-full flex justify-center z-10 items-center gap-1 md:gap-6 lg:gap-16 lg"
     data-tauri-drag-region={!$isFullscreen}
   >
     <Label
-      class="select-none !text-primary/70 z-[3]"
+      class="select-none text-nowrap !text-primary/70 z-[3]"
       data-tauri-drag-region={!$isFullscreen}
     >
       {$extraTitle}

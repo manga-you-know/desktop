@@ -10,6 +10,7 @@
     setDiscordActivity,
     resetSettings,
     notify,
+    clearCache,
   } from "@/functions";
   import {
     Card,
@@ -44,6 +45,7 @@
     customNotificator,
     theme,
     markReaded,
+    keepReading,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme } from "@/components";
@@ -52,6 +54,7 @@
   import { cn } from "@/lib/utils";
   import { emit, listen } from "@tauri-apps/api/event";
   import { delay } from "@/utils";
+  import { toast } from "svelte-sonner";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -125,7 +128,7 @@
             </Button>
             <Label>Behavior</Label>
             <div class="flex items-center">
-              <Checkbox
+              <Switch
                 id="auto-update"
                 bind:checked={$autoSearchUpdates}
                 class="flex-shrink-0 mr-2"
@@ -156,7 +159,7 @@
               </Label>
             </div> -->
             <div class="flex gap-2 items-center">
-              <Checkbox
+              <Switch
                 id="minimize"
                 bind:checked={$closeTray}
                 onCheckedChange={saveSettings}
@@ -166,7 +169,7 @@
               </Label>
             </div>
             <div class="flex gap-2 items-center">
-              <Checkbox
+              <Switch
                 id="auto-start"
                 bind:checked={autoStart}
                 onCheckedChange={async (value) => {
@@ -198,7 +201,7 @@
 
             <Label>Notifications</Label>
             <div class="flex gap-2 items-center">
-              <Checkbox
+              <Switch
                 id="notify-update"
                 disabled={!$autoSearchUpdates}
                 bind:checked={$notifyUpdate}
@@ -209,7 +212,7 @@
               </Label>
             </div>
             <div class="flex items-center">
-              <Checkbox
+              <Switch
                 id="notify-favorites"
                 bind:checked={$notifyFavorites}
                 class="flex-shrink-0 mr-2"
@@ -220,7 +223,7 @@
               </Label>
             </div>
             <div class="flex gap-2 items-center">
-              <Checkbox
+              <Switch
                 id="custom-notificator"
                 disabled={!$notifyUpdate && !$notifyFavorites}
                 bind:checked={$customNotificator}
@@ -475,13 +478,33 @@
               Manual
             </Button>
           </div>
+          <Label>Chapter cache</Label>
+          <div class="flex items-center gap-2">
+            <Switch
+              id="keep-reading"
+              bind:checked={$keepReading}
+              onCheckedChange={saveSettings}
+            />
+            <Label for="keep-reading" class="cursor-pointer">Keep reading</Label
+            >
+          </div>
+          <Button
+            class="w-44"
+            variant="destructive"
+            effect="ringHoverDestructive"
+            onclick={async () => {
+              await clearCache();
+              toast.info("Cache cleared!");
+            }}
+          >
+            <Icon class="!size-4" icon="lucide:trash" />
+            Clear cache
+          </Button>
           <div class="flex flex-col gap-2">
             <Label>Preferable language</Label>
             <Language
               bind:selectedLanguage={$preferableLanguage}
-              onChange={async () => {
-                await saveSettings();
-              }}
+              onChange={saveSettings}
               languageOptions={LANGUAGE_OPTIONS}
             />
           </div>

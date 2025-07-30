@@ -9,6 +9,7 @@
     Avatar,
     Separator,
     ScrollArea,
+    Button,
   } from "@/lib/components";
   import {
     openSearch,
@@ -21,13 +22,21 @@
     openInfo,
     customTitlebar,
     globalChapters,
+    chaptersCache,
+    downloadManager,
+    preferableLanguage,
+    keepReading,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading, FavoriteLoaded } from "@/types";
   import { useSidebar } from "@/lib/components/ui/sidebar";
   import { IS_MOBILE } from "@/constants";
-  import { saveSettings } from "@/functions";
+  import { refreshCache, removeCache, saveSettings } from "@/functions";
   import { cn } from "@/lib/utils";
+  import { toast } from "svelte-sonner";
+  import { ReadedDB } from "@/repositories";
+  import { get } from "svelte/store";
+  import { onMount } from "svelte";
 
   const items = [
     {
@@ -109,6 +118,7 @@
   }
 
   let { variant }: { variant: "sidebar" | "inset" | "floating" } = $props();
+  onMount(() => refreshCache());
 
   const sidebar = useSidebar();
 </script>
@@ -279,15 +289,118 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
     <Sidebar.Group>
-      <Sidebar.GroupContent>
-        {#if favoritesWithChapters.length > 0}
+      <Sidebar.GroupContent class="flex flex-col gap-2">
+        {#if $chaptersCache.length > 0 && $keepReading}
           <Sidebar.Menu
-            class="bg-background/30 rounded-2xl border border-secondary"
+            class="bg-background/30 rounded-xl border border-background"
           >
             <Sidebar.MenuItem
-              class="max-h-60 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-  transparent rounded-2xl"
+              class={cn(
+                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
+                favoritesWithChapters.length === 0 && "max-h-96 smh:max-h-88",
+              )}
             >
-              <ScrollArea>
+              <ScrollArea class="gap-0">
+                {#each $chaptersCache as cache}
+                  <Tooltip
+                    class="h-7 font-bold items-center flex -ml-1 "
+                    text={`${cache?.currentPage}/${cache?.totalPage} ~ ${cache?.chapter?.number} # ${cache?.favorite.name}`}
+                    placement="right"
+                    delay={200}
+                  >
+                    <Sidebar.MenuButton
+                      class="rounded-md group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline relative group/cache"
+                      onclick={async () => {
+                        if (cache.chapters.length === 0) {
+                          let chapters = [];
+                          const isMulti = $downloadManager.isMultiLanguage(
+                            cache.favorite.source,
+                          );
+                          if (isMulti) {
+                            const lastReaded = await ReadedDB.getLastReaded(
+                              cache.favorite,
+                            );
+                            if (lastReaded) {
+                              chapters = await $downloadManager.getChapters(
+                                cache.favorite,
+                                lastReaded.language,
+                              );
+                            } else {
+                              chapters = await $downloadManager.getChapters(
+                                cache.favorite,
+                                get(preferableLanguage).id,
+                              );
+                            }
+                            if (chapters.length === 0) {
+                              const languages =
+                                await $downloadManager.getFavoriteLanguages(
+                                  cache.favorite,
+                                );
+                              chapters = await $downloadManager.getChapters(
+                                cache.favorite,
+                                languages[0].id,
+                              );
+                            }
+                          } else {
+                            chapters = await $downloadManager.getChapters(
+                              cache.favorite,
+                            );
+                          }
+                          cache.chapters = chapters;
+                        }
+                        globalChapters.set(cache.chapters);
+                        const chapter = $globalChapters.find(
+                          (c) => c.chapter_id === cache.chapter.chapter_id,
+                        );
+                        goto(
+                          `/reader/${cache.favorite.id}/${$globalChapters.indexOf(
+                            chapter ?? $globalChapters[0],
+                          )}`,
+                        );
+                      }}
+                    >
+                      <Label
+                        class="w-2 mr-3 flex justify-center cursor-pointer"
+                      >
+                        {cache.chapter?.number ?? ""}
+                      </Label>
+                      <Label class="cursor-pointer truncate">
+                        {cache.favorite.name}
+                      </Label>
+                      <Button
+                        class="absolute size-0 m-0 p-0 group-hover/cache:size-5 top-0 -left-2 group-hover/cache:-left-1 group-hover/cache:p-2 rounded-full transition-all duration-300"
+                        variant="outline"
+                        onclick={async (e) => {
+                          e.stopPropagation();
+                          await removeCache(cache.favorite.id.toString());
+                          toast.info("Chapter cache removed!");
+                        }}
+                      >
+                        <Icon
+                          class="group-hover/cache:!size-4"
+                          icon="lucide:x"
+                        />
+                      </Button>
+                    </Sidebar.MenuButton>
+                  </Tooltip>
+                {/each}
+              </ScrollArea>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        {/if}
+
+        {#if favoritesWithChapters.length > 0 && keepReading}
+          <Sidebar.Menu
+            class="bg-background/30 rounded-xl border border-secondary"
+          >
+            <Sidebar.MenuItem
+              class={cn(
+                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
+                ($chaptersCache.length === 0 || !$keepReading) &&
+                  "max-h-96 smh:max-h-88",
+              )}
+            >
+              <ScrollArea class="gap-0">
                 {#each favoritesWithChapters as fav}
                   <Tooltip
                     class="h-7 font-bold items-center flex -ml-1 "
@@ -296,7 +409,7 @@
                     delay={200}
                   >
                     <Sidebar.MenuButton
-                      class="hover:bg-transparent hover:underline"
+                      class="group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline"
                       onclick={() => {
                         globalChapters.set(fav.chapters);
                         goto(

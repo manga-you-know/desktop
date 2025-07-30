@@ -1,9 +1,10 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load, Store } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
-import type { Chapter, Favorite, FavoriteLoaded, Readed } from "@/types";
+import { type ReadCache, type Chapter, type Favorite, type FavoriteLoaded, type Readed } from "@/types";
 import { FavoriteDB, ReadedDB } from "@/repositories";
 import {
+  chaptersCache,
   customNotificator,
   downloadManager,
   favoritesLoaded,
@@ -31,6 +32,7 @@ const window = getCurrentWindow();
 
 let dl: DownloadManager;
 let favoriteStore: Store = null!;
+let cacheStore: Store = null!;
 downloadManager.subscribe((value) => {
   dl = value;
 });
@@ -39,6 +41,41 @@ async function loadFavoriteStore() {
   if (!favoriteStore)
     favoriteStore = await load("favorite_store.json");
 }
+
+async function loadCacheStore() {
+  if (!cacheStore)
+    cacheStore = await load("cache_store.json")
+}
+
+export async function refreshCache() {
+  await loadCacheStore();
+  chaptersCache.set(Array.from<ReadCache>(
+    await cacheStore.values()
+  ).map(cache => ({ ...cache, images: [], chapters: [] })))
+}
+
+export function getCache(favoriteId: string): ReadCache | undefined {
+  return get(chaptersCache).find(cache => cache.favorite.id.toString() === favoriteId)
+}
+
+export async function addToCache(cache: ReadCache) {
+  await loadCacheStore();
+  await cacheStore.set(cache.favorite.id.toString(), cache);
+  await refreshCache();
+}
+
+export async function removeCache(favoriteId: string) {
+  await loadCacheStore();
+  await cacheStore.delete(favoriteId)
+  await refreshCache();
+}
+
+export async function clearCache() {
+  await loadCacheStore();
+  await cacheStore.clear();
+  chaptersCache.set([])
+}
+
 
 function addFavorite(favorite: Favorite) {
   favoritesLoaded.update((currentFavorites) => {

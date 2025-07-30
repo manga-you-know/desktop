@@ -15,6 +15,9 @@
     copyImageBase64,
     refreshRawFavorites,
     setTitle,
+    removeCache,
+    addToCache,
+    getCache,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import {
@@ -46,6 +49,7 @@
     readerClock,
     rawFavorites,
     markReaded,
+    keepReading,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -196,6 +200,14 @@
       const prevP = document.getElementById(id);
       pagesDiv?.scrollTo({ top: prevP?.offsetTop, behavior: "smooth" });
     }
+    if (get(keepReading)) {
+      addToCache({
+        favorite,
+        chapter,
+        currentPage: currentlyCount,
+        totalPage,
+      });
+    }
   }
 
   async function nextPage() {
@@ -215,6 +227,18 @@
     if (get(markReaded) === "end" && currentlyCount === totalPage) {
       addReaded();
     }
+    if (get(keepReading)) {
+      if (currentlyCount === totalPage) {
+        removeCache(favorite.id.toString());
+      } else {
+        addToCache({
+          favorite,
+          chapter,
+          currentPage: currentlyCount,
+          totalPage,
+        });
+      }
+    }
   }
 
   function goHome() {
@@ -228,6 +252,7 @@
     stopDiscordPresence();
     setTitle("");
   }
+
   async function handleChapterSeamless(way: "next" | "prev") {
     if (way === "next" && nextImages.length > 0) {
       currentlyImage = nextImages[0];
@@ -415,6 +440,8 @@
   afterNavigate(async () => {
     favoriteIdEx = page.params.favoriteId;
     chapterIndexEx = page.params.chapterIndex;
+    currentlyCount = 1;
+    totalPage = 0;
     setTitle(
       chapter.title !== undefined
         ? `${chapter.number} # ${chapter.title}`
@@ -433,6 +460,13 @@
     currentlyImage = images[currentlyCount - 1];
     totalPage = images.length;
     setChapterActivity(favorite.name);
+    if (get(keepReading)) {
+      const cache = getCache(favorite.id.toString());
+      if (cache) {
+        currentlyCount = cache.currentPage;
+        currentlyImage = images[currentlyCount - 1];
+      }
+    }
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (get(markReaded) === "start") {
@@ -472,6 +506,20 @@
     currentlyImage = images[0];
     totalPage = images.length;
     setChapterActivity(favorite.name);
+    if (get(keepReading)) {
+      const cache = getCache(favorite.id.toString());
+      if (cache) {
+        currentlyCount = cache.currentPage;
+        currentlyImage = images[currentlyCount - 1];
+      } else if (totalPage > 1) {
+        addToCache({
+          favorite,
+          chapter,
+          currentPage: currentlyCount,
+          totalPage,
+        });
+      }
+    }
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
     if (get(markReaded) === "start") {

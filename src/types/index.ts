@@ -6,6 +6,7 @@ export type { Chapter } from "./_chapter";
 export type { Episode } from "./_episode";
 export type { Favorite } from "./_favorite";
 export type { Language } from "./_language";
+export type { ReadCache } from "./_readCache";
 export type { Suggestion } from "./_suggestion";
 export type { UpdateInfo } from "./_updateInfo";
 export type { Downloading } from "./_downloading";

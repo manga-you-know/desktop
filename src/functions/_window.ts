@@ -33,7 +33,7 @@ import { titleCase } from "@/utils";
 import { FavoriteDB } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
 import { DISCORD_WEBHOOK_URL, ICONS_TO_LOAD } from "@/constants";
-import { relaunch } from "@tauri-apps/plugin-process";
+import { exit, relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 import { join, resourceDir } from "@tauri-apps/api/path";
 
@@ -54,10 +54,7 @@ export async function removeBlurWindow() {
 }
 
 export async function destroyEverything() {
-  const windows = await Window.getAll()
-  for (let window of windows) {
-    await window.destroy();
-  }
+  exit();
 }
 
 export async function setTitle(title: string) {

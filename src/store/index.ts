@@ -1,16 +1,17 @@
 import { writable, readable, get } from "svelte/store";
 import { DownloadManager } from "@/managers";
 import { IS_MOBILE, MANGASOURCES } from "@/constants";
-import type {
-  Mark,
-  Panel,
-  Readed,
-  Chapter,
-  Favorite,
-  Language,
-  UpdateInfo,
-  Downloading,
-  FavoriteLoaded,
+import {
+  type Mark,
+  type Panel,
+  type Readed,
+  type Chapter,
+  type Favorite,
+  type Language,
+  type UpdateInfo,
+  type Downloading,
+  type FavoriteLoaded,
+  type ReadCache,
 } from "@/types";
 
 export const downloadManager = writable<DownloadManager>(new DownloadManager());
@@ -53,6 +54,7 @@ export const isRefreshing = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);
 export const chapterPagesCounter = writable<boolean>(true);
 export const chapterPercentage = writable<boolean>(true);
+export const chaptersCache = writable<(ReadCache & { chapters: Chapter[]; images: string[] })[]>([]);
 export const readerClock = writable<boolean>(false);
 export const showCurrentChapter = writable<boolean>(false);
 export const selectedSource = writable<string>(MANGASOURCES[1].name);
@@ -71,6 +73,7 @@ export const showCountIcon = writable<boolean>(true);
 export const showCountIconTray = writable<boolean>(false);
 export const blurEffects = writable<boolean>(true);
 export const windowEffects = writable<boolean>(false);
+export const keepReading = writable<boolean>(true);
 export const markReaded = writable<"start" | "end" | "manual">("start");
 export const discordIntegration = writable<boolean>(false);
 export const preferableLanguage = writable<Language>({

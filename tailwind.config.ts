@@ -23,6 +23,9 @@ const config: Config = {
     extend: {
       screens: {
         ssm: "620px",
+        ssmh: {
+          raw: "(max-height: 700px)",
+        },
         smh: {
           raw: "(max-height: 1000px)",
         },
