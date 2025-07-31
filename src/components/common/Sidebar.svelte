@@ -126,12 +126,12 @@
 <Sidebar.Root
   class={cn("bg-sidebar  px-[2.5px] pb-0 border-0", $customTitlebar && "pt-7")}
   {variant}
+  side="left"
   collapsible="icon"
 >
-  <Sidebar.Header></Sidebar.Header>
-  <Sidebar.Content class="overflow-hidden">
+  <Sidebar.Header class="px-0">
     <Sidebar.Group>
-      <!-- <Sidebar.GroupLabel>pages</Sidebar.GroupLabel> -->
+      <!-- <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
         <Sidebar.Menu class="flex flex-col gap-2 relative">
           <Sidebar.MenuButton
@@ -198,7 +198,11 @@
         </Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>
-    <Separator class="bg-secondary w-[95%]" />
+  </Sidebar.Header>
+  <Separator class="bg-secondary w-[95%]" />
+  <Sidebar.Content
+    class="group-data-[collapsible=icon]:overflow-y-auto scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
+  >
     <Sidebar.Group>
       <Sidebar.GroupContent>
         <Sidebar.Menu class="flex flex-col gap-2">
@@ -228,7 +232,8 @@
                   "cursor-pointer transition-all",
                   $openSearch && "!text-sidebar",
                 )}
-                >Search
+              >
+                Search
               </Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
@@ -297,7 +302,7 @@
             <Sidebar.MenuItem
               class={cn(
                 "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
-                favoritesWithChapters.length === 0 && "max-h-96 smh:max-h-88",
+                favoritesWithChapters.length === 0 && "max-h-88 smh:max-h-96",
               )}
             >
               <ScrollArea class="gap-0">
@@ -312,6 +317,9 @@
                       class="rounded-md group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline relative group/cache"
                       onclick={async () => {
                         if (cache.chapters.length === 0) {
+                          toast.loading("Loading chapters...", {
+                            duration: 200,
+                          });
                           let chapters = [];
                           const isMulti = $downloadManager.isMultiLanguage(
                             cache.favorite.source,
@@ -389,15 +397,15 @@
           </Sidebar.Menu>
         {/if}
 
-        {#if favoritesWithChapters.length > 0 && keepReading}
+        {#if favoritesWithChapters.length > 0}
           <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-secondary"
+            class="bg-background/30 rounded-xl border border-primary"
           >
             <Sidebar.MenuItem
               class={cn(
                 "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
                 ($chaptersCache.length === 0 || !$keepReading) &&
-                  "max-h-96 smh:max-h-88",
+                  "max-h-88 smh:max-h-96",
               )}
             >
               <ScrollArea class="gap-0">
@@ -437,7 +445,6 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-
   <Sidebar.Group>
     <Sidebar.GroupContent>
       <Sidebar.Menu
@@ -501,7 +508,7 @@
             </Label>
           </Sidebar.MenuButton>
         </Sidebar.MenuItem>
-        <Sidebar.MenuItem>
+        <Sidebar.MenuItem class="group-data-[collapsible=icon]:ssmh:hidden">
           <Sidebar.MenuButton
             class="size-10"
             onclick={(e) => {
@@ -523,7 +530,7 @@
       </Sidebar.Menu>
     </Sidebar.GroupContent>
   </Sidebar.Group>
-  <Sidebar.Footer class="flex items-center overflow-hidden">
+  <Sidebar.Footer class="flex items-center overflow-hidden mt-0 ssmh:-mt-3">
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
     <Sidebar.MenuItem>
       <Sidebar.MenuButton

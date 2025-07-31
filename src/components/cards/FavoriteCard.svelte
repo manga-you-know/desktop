@@ -222,9 +222,8 @@
       <div
         class={cn(
           "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
-          IS_MOBILE
-            ? " "
-            : "translate-y-[15%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
+          !IS_MOBILE &&
+            "translate-y-[15%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
         )}
       >
         <Badge
@@ -238,10 +237,22 @@
       </div>
       <div
         class={cn(
+          "w-full h-full flex fixed items-end justify-end p-1 transition-all ease-in-out duration-300",
+          !IS_MOBILE && favoriteLoad.nextChapter
+            ? "translate-x-0 opacity-100 group-hover:translate-x-[15%] group-hover:opacity-0"
+            : "hidden",
+        )}
+      >
+        <Badge class="h-8 rounded-xl" variant="info">
+          <Label>{favoriteLoad?.nextChapter?.number}</Label>
+        </Badge>
+      </div>
+
+      <div
+        class={cn(
           "w-full h-22 flex flex-col justify-end items-end p-1 transform  transition-all duration-300 ease-in-out",
-          IS_MOBILE
-            ? ""
-            : "translate-x-[10%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
+          !IS_MOBILE &&
+            "translate-x-[10%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
         )}
       >
         <div

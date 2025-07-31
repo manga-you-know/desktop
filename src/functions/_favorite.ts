@@ -47,20 +47,70 @@ async function loadCacheStore() {
     cacheStore = await load("cache_store.json")
 }
 
-export async function refreshCache() {
-  await loadCacheStore();
-  chaptersCache.set(Array.from<ReadCache>(
-    await cacheStore.values()
-  ).map(cache => ({ ...cache, images: [], chapters: [] })))
+async function preloadCache(cache: ReadCache) {
+  const oldCache = getCache(cache.favorite.id.toString());
+  if (oldCache === undefined) return
+  const images = await dl.getChapterImages(cache.chapter)
+  const imagesB64 = await dl.getBase64Images(images, dl.getBaseUrl(cache.favorite.source))
+  if (oldCache.chapters?.length === 0) {
+    oldCache.chapters = await dl.getChapters(cache.favorite)
+  }
+  oldCache.images = imagesB64
+  const oldList = get(chaptersCache)
+  let final: (ReadCache & { chapters: Chapter[]; images: string[] })[] = []
+  for (let data of oldList) {
+    if (data.favorite.id === cache.favorite.id) {
+      final.push(oldCache)
+      console.log(oldCache)
+    } else {
+      final.push(data)
+    }
+  }
+  chaptersCache.set(final)
 }
 
-export function getCache(favoriteId: string): ReadCache | undefined {
+export async function refreshCache() {
+  await loadCacheStore();
+  const newCache = Array.from<ReadCache>(
+    await cacheStore.values())
+  let final: (ReadCache & { chapters: Chapter[]; images: string[] })[] = []
+  for (let cache of newCache) {
+    const loaded = getCache(cache.favorite.id.toString())
+    if (loaded?.chapter?.chapter_id === cache.chapter.chapter_id && loaded?.images?.length > 0 && loaded?.chapters?.length > 0) {
+      final.push({
+        ...cache,
+        images: loaded.images,
+        chapters: loaded.chapters
+      })
+    } else {
+      final.push({
+        ...cache,
+        images: [],
+        chapters: []
+      })
+      preloadCache(cache)
+    }
+  }
+  chaptersCache.set(final)
+}
+
+export function getCache(favoriteId: string): (ReadCache & { chapters: Chapter[]; images: string[] }) | undefined {
   return get(chaptersCache).find(cache => cache.favorite.id.toString() === favoriteId)
 }
 
-export async function addToCache(cache: ReadCache) {
+export async function addToCache(cache: ReadCache, chapters: Chapter[], images: string[] = []) {
   await loadCacheStore();
   await cacheStore.set(cache.favorite.id.toString(), cache);
+  const oldList = get(chaptersCache)
+  let final: (ReadCache & { chapters: Chapter[]; images: string[] })[] = []
+  for (let data of oldList) {
+    if (data.favorite.id === cache.favorite.id) {
+      final.push({ ...cache, chapters, images })
+    } else {
+      final.push(data)
+    }
+  }
+  chaptersCache.set(final)
   await refreshCache();
 }
 

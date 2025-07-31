@@ -19,7 +19,7 @@
     addToCache,
     getCache,
   } from "@/functions";
-  import type { Favorite } from "@/types";
+  import type { Chapter, Favorite } from "@/types";
   import {
     Button,
     Badge,
@@ -96,6 +96,7 @@
   let backupImages: string[] = [];
   let prevImages: string[] = [];
   let nextImages: string[] = [];
+  let nextChapter: Chapter | null = null;
   let currentlyCount = $state(1);
   let totalPage = $state(0);
   let isTheLastChapter = $derived(Number(chapterIndexEx) === 0);
@@ -114,9 +115,11 @@
   let hours = $derived(time.getHours());
   let minutes = $derived(time.getMinutes());
   let seconds = $derived(time.getSeconds());
+
   setInterval(() => {
     time = new Date();
   }, 1000);
+
   function scrollToTop() {
     pagesDiv?.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -152,13 +155,18 @@
   }
 
   async function preloadNextChapter(): Promise<void> {
+    await delay(3);
     if (Number(chapterIndexEx) === 0) return;
-    const chapterToFetch = $globalChapters[Number(chapterIndexEx) - 1];
-    var images = await $downloadManager.getChapterImages(chapterToFetch);
-    nextImages = await $downloadManager.getBase64Images(
-      images,
-      $downloadManager.getBaseUrl(chapterToFetch.source),
+    nextChapter = $globalChapters[Number(chapterIndexEx) - 1];
+    const nextOld = nextChapter;
+    const imagesUrl = await $downloadManager.getChapterImages(nextOld);
+    const imagesB64 = await $downloadManager.getBase64Images(
+      imagesUrl,
+      $downloadManager.getBaseUrl(nextOld.source),
     );
+    if (nextChapter.chapter_id === nextOld.chapter_id) {
+      nextImages = imagesB64;
+    }
   }
 
   async function addReaded() {
@@ -171,6 +179,7 @@
   }
 
   function setChapterActivity(name: string) {
+    return;
     const percentageReaded: number =
       (($globalChapters.length - Number(chapterIndexEx)) /
         $globalChapters.length) *
@@ -186,9 +195,10 @@
       `${favorite.type === "manga" ? "Chapter " : "Issue"} ${chapter?.number}: [${$globalChapters.length - Number(chapterIndexEx)}/${$globalChapters.length}] - ${percentageText}%`,
     );
   }
+
   async function prevPage() {
     if (currentlyCount === 1) {
-      if (!isTheFirstChapter) handleChapterSeamless("prev");
+      if (!isTheFirstChapter) handleGoChapter("prev", true);
       return;
     }
     currentlyCount--;
@@ -201,18 +211,22 @@
       pagesDiv?.scrollTo({ top: prevP?.offsetTop, behavior: "smooth" });
     }
     if (get(keepReading)) {
-      addToCache({
-        favorite,
-        chapter,
-        currentPage: currentlyCount,
-        totalPage,
-      });
+      addToCache(
+        {
+          favorite,
+          chapter,
+          currentPage: currentlyCount,
+          totalPage,
+        },
+        $globalChapters,
+        backupImages,
+      );
     }
   }
 
   async function nextPage() {
     if (currentlyCount === totalPage) {
-      if (!isTheLastChapter) handleChapterSeamless("next");
+      if (!isTheLastChapter) handleGoChapter("next");
       return;
     }
     currentlyCount++;
@@ -231,12 +245,16 @@
       if (currentlyCount === totalPage) {
         removeCache(favorite.id.toString());
       } else {
-        addToCache({
-          favorite,
-          chapter,
-          currentPage: currentlyCount,
-          totalPage,
-        });
+        addToCache(
+          {
+            favorite,
+            chapter,
+            currentPage: currentlyCount,
+            totalPage,
+          },
+          $globalChapters,
+          backupImages,
+        );
       }
     }
   }
@@ -255,6 +273,7 @@
 
   async function handleChapterSeamless(way: "next" | "prev") {
     if (way === "next" && nextImages.length > 0) {
+      chapterIndexEx = (Number(chapterIndexEx) - 1).toString();
       currentlyImage = nextImages[0];
       prevImages = backupImages;
       images = nextImages;
@@ -262,10 +281,10 @@
       currentlyCount = 1;
       totalPage = nextImages.length;
       scrollToTop();
-      chapterIndexEx = (Number(chapterIndexEx) - 1).toString();
       nextImages = [];
       preloadNextChapter();
     } else if (prevImages.length > 0) {
+      chapterIndexEx = (Number(chapterIndexEx) + 1).toString();
       currentlyImage = prevImages.at(-1) ?? prevImages[0];
       nextImages = backupImages;
       images = prevImages;
@@ -273,7 +292,6 @@
       currentlyCount = nextImages.length;
       totalPage = nextImages.length;
       scrollToBottom();
-      chapterIndexEx = (Number(chapterIndexEx) + 1).toString();
       prevImages = [];
     }
     replaceState(
@@ -281,18 +299,34 @@
       page.state,
     );
     setTitle(
-      chapter.title !== undefined
+      chapter.title
         ? `${chapter.number} # ${chapter.title}`
         : ` ${chapter.number} # ${favorite.name}`,
     );
     if (get(markReaded) === "start") {
       addReaded();
-    } else if (get(markReaded) === "end" && totalPage === 1) {
+    } else if (
+      get(markReaded) === "end" &&
+      (totalPage === 1 || way === "prev")
+    ) {
       addReaded();
+    }
+    if (get(keepReading)) {
+      addToCache(
+        {
+          favorite,
+          chapter,
+          currentPage: currentlyCount,
+          totalPage,
+        },
+        $globalChapters,
+        backupImages,
+      );
     }
   }
 
-  function handleGoChapter(way: "next" | "prev") {
+  function handleGoChapter(way: "next" | "prev", fromPages = false) {
+    if (totalPage === 0) return;
     if (way === "next" && nextImages.length > 0) {
       handleChapterSeamless("next");
       return;
@@ -307,7 +341,7 @@
     totalPage = 0;
     scrollToTop();
     goto(
-      `/reader/${favoriteIdEx}/${Number(chapterIndexEx) + (way === "next" ? -1 : 1)}`,
+      `/reader/${favoriteIdEx}/${Number(chapterIndexEx) + (way === "next" ? -1 : 1)}${fromPages && way === "prev" ? "?prev" : ""}`,
     );
   }
 
@@ -428,13 +462,17 @@
   }
 
   async function loadB64() {
-    images = await $downloadManager.getBase64Images(
+    const id = chapter.chapter_id;
+    const imagesB64 = await $downloadManager.getBase64Images(
       images,
       $downloadManager.getBaseUrl(favorite.source),
     );
-    backupImages = [...images];
-    currentlyImage = images[currentlyCount - 1];
-    preloadNextChapter();
+    if (chapter.chapter_id === id) {
+      images = imagesB64;
+      backupImages = [...images];
+      currentlyImage = images[currentlyCount - 1];
+      preloadNextChapter();
+    }
   }
 
   afterNavigate(async () => {
@@ -443,28 +481,46 @@
     currentlyCount = 1;
     totalPage = 0;
     setTitle(
-      chapter.title !== undefined
+      chapter.title
         ? `${chapter.number} # ${chapter.title}`
         : ` ${chapter.number} # ${favorite.name}`,
     );
     if (!isLocal) {
       toast.loading(
         `Loading ${favorite.type === "manga" ? "chapter" : "issue"} ${chapter?.number}`,
+        { duration: 200 },
       );
-      images = await $downloadManager.getChapterImages(chapter);
-      loadB64();
+      const id = chapter.chapter_id;
+      const imagesUrl = await $downloadManager.getChapterImages(chapter);
+      if (chapter.chapter_id === id) {
+        images = imagesUrl;
+        loadB64();
+      } else return;
     } else {
       images = await getLocalChapterImages();
     }
     backupImages = [...images];
-    currentlyImage = images[currentlyCount - 1];
     totalPage = images.length;
+    currentlyCount = page.url.searchParams.has("prev") ? totalPage : 1;
+    currentlyImage = images[currentlyCount - 1];
     setChapterActivity(favorite.name);
     if (get(keepReading)) {
-      const cache = getCache(favorite.id.toString());
-      if (cache) {
-        currentlyCount = cache.currentPage;
-        currentlyImage = images[currentlyCount - 1];
+      if (page.url.searchParams.has("prev")) {
+        addToCache(
+          {
+            favorite,
+            chapter,
+            currentPage: currentlyCount,
+            totalPage,
+          },
+          $globalChapters,
+        );
+      } else {
+        const cache = getCache(favorite.id.toString());
+        if (cache && cache.chapter.chapter_id === chapter.chapter_id) {
+          currentlyCount = cache.currentPage;
+          currentlyImage = images[currentlyCount - 1];
+        }
       }
     }
     const newReadeds = await ReadedDB.getReadeds(favorite);
@@ -478,26 +534,44 @@
 
   onMount(async () => {
     if ($autoEnterFullscreen) {
-      await setFullscreen(true);
+      setFullscreen(true);
     }
     await refreshRawFavorites();
     setChapterActivity(favorite?.name);
     setTitle(
-      chapter.title !== undefined
+      chapter.title
         ? `${chapter.number} # ${chapter.title}`
         : `${chapter.number} # ${favorite.name}`,
     );
+    const cache = getCache(favorite.id.toString());
     if (!isLocal) {
-      if (favorite.is_ultra_favorite) {
-        if ($favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0) {
+      if (
+        cache?.chapter?.chapter_id === chapter.chapter_id &&
+        cache?.images?.length > 0
+      ) {
+        images = cache.images;
+      } else if (favorite.is_ultra_favorite) {
+        if (
+          $favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0 &&
+          $favoritesLoaded[favorite.id.toString()]?.nextChapter?.chapter_id ===
+            chapter.chapter_id
+        ) {
           images = $favoritesLoaded[favorite.id.toString()]?.nextImages;
         } else {
-          images = await $downloadManager.getChapterImages(chapter);
-          loadB64();
+          const id = chapter.chapter_id;
+          const imagesUrl = await $downloadManager.getChapterImages(chapter);
+          if (chapter.chapter_id === id) {
+            images = await $downloadManager.getChapterImages(chapter);
+            loadB64();
+          } else return;
         }
       } else {
-        images = await $downloadManager.getChapterImages(chapter);
-        loadB64();
+        const id = chapter.chapter_id;
+        const imagesUrl = await $downloadManager.getChapterImages(chapter);
+        if (chapter.chapter_id === id) {
+          images = await $downloadManager.getChapterImages(chapter);
+          loadB64();
+        } else return;
       }
     } else {
       images = await getLocalChapterImages();
@@ -507,17 +581,19 @@
     totalPage = images.length;
     setChapterActivity(favorite.name);
     if (get(keepReading)) {
-      const cache = getCache(favorite.id.toString());
       if (cache) {
         currentlyCount = cache.currentPage;
         currentlyImage = images[currentlyCount - 1];
       } else if (totalPage > 1) {
-        addToCache({
-          favorite,
-          chapter,
-          currentPage: currentlyCount,
-          totalPage,
-        });
+        addToCache(
+          {
+            favorite,
+            chapter,
+            currentPage: currentlyCount,
+            totalPage,
+          },
+          $globalChapters,
+        );
       }
     }
     const newReadeds = await ReadedDB.getReadeds(favorite);
@@ -608,6 +684,7 @@
       nextPage();
     }
   }
+
   function handleMouse(
     e: MouseEvent & {
       currentTarget: EventTarget & Window;
