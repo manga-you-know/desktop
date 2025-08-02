@@ -96,7 +96,13 @@
   let backupImages: string[] = [];
   let prevImages: string[] = [];
   let nextImages: string[] = [];
-  let nextChapter: Chapter | null = null;
+  let nextChapter: Chapter | undefined = $derived(
+    $globalChapters[Number(chapterIndexEx) - 1],
+  );
+  let prevChapter: Chapter | undefined = $derived(
+    $globalChapters[Number(chapterIndexEx) + 1],
+  );
+  let fetchedImages: Record<string, string[]> = $state({});
   let currentlyCount = $state(1);
   let totalPage = $state(0);
   let isTheLastChapter = $derived(Number(chapterIndexEx) === 0);
@@ -157,16 +163,13 @@
   async function preloadNextChapter(): Promise<void> {
     await delay(3);
     if (Number(chapterIndexEx) === 0) return;
-    nextChapter = $globalChapters[Number(chapterIndexEx) - 1];
-    const nextOld = nextChapter;
-    const imagesUrl = await $downloadManager.getChapterImages(nextOld);
+    const nextChapter = $globalChapters[Number(chapterIndexEx) - 1];
+    const imagesUrl = await $downloadManager.getChapterImages(nextChapter);
     const imagesB64 = await $downloadManager.getBase64Images(
       imagesUrl,
-      $downloadManager.getBaseUrl(nextOld.source),
+      $downloadManager.getBaseUrl(nextChapter.source),
     );
-    if (nextChapter.chapter_id === nextOld.chapter_id) {
-      nextImages = imagesB64;
-    }
+    fetchedImages[nextChapter.chapter_id] = imagesB64;
   }
 
   async function addReaded() {
@@ -272,27 +275,23 @@
   }
 
   async function handleChapterSeamless(way: "next" | "prev") {
-    if (way === "next" && nextImages.length > 0) {
+    if (way === "next") {
       chapterIndexEx = (Number(chapterIndexEx) - 1).toString();
-      currentlyImage = nextImages[0];
-      prevImages = backupImages;
-      images = nextImages;
+      currentlyImage = fetchedImages[chapter.chapter_id][0];
+      images = fetchedImages[chapter.chapter_id];
       backupImages = images;
       currentlyCount = 1;
-      totalPage = nextImages.length;
+      totalPage = images.length;
       scrollToTop();
-      nextImages = [];
       preloadNextChapter();
-    } else if (prevImages.length > 0) {
+    } else {
       chapterIndexEx = (Number(chapterIndexEx) + 1).toString();
-      currentlyImage = prevImages.at(-1) ?? prevImages[0];
-      nextImages = backupImages;
-      images = prevImages;
+      currentlyImage = fetchedImages[chapter.chapter_id][0];
+      images = fetchedImages[chapter.chapter_id];
       backupImages = images;
-      currentlyCount = nextImages.length;
-      totalPage = nextImages.length;
+      currentlyCount = images.length;
+      totalPage = images.length;
       scrollToBottom();
-      prevImages = [];
     }
     replaceState(
       `/reader/${favoriteIdEx}/${Number(chapterIndexEx)}`,
@@ -311,27 +310,15 @@
     ) {
       addReaded();
     }
-    if (get(keepReading)) {
-      addToCache(
-        {
-          favorite,
-          chapter,
-          currentPage: currentlyCount,
-          totalPage,
-        },
-        $globalChapters,
-        backupImages,
-      );
-    }
   }
 
   function handleGoChapter(way: "next" | "prev", fromPages = false) {
     if (totalPage === 0) return;
-    if (way === "next" && nextImages.length > 0) {
+    if (way === "next" && fetchedImages[nextChapter?.chapter_id ?? "no"]) {
       handleChapterSeamless("next");
       return;
     }
-    if (way === "prev" && prevImages.length > 0) {
+    if (way === "prev" && fetchedImages[prevChapter?.chapter_id ?? "no"]) {
       handleChapterSeamless("prev");
       return;
     }
@@ -467,6 +454,7 @@
       images,
       $downloadManager.getBaseUrl(favorite.source),
     );
+    fetchedImages[id] = imagesB64;
     if (chapter.chapter_id === id) {
       images = imagesB64;
       backupImages = [...images];
@@ -569,7 +557,7 @@
         const id = chapter.chapter_id;
         const imagesUrl = await $downloadManager.getChapterImages(chapter);
         if (chapter.chapter_id === id) {
-          images = await $downloadManager.getChapterImages(chapter);
+          images = imagesUrl;
           loadB64();
         } else return;
       }

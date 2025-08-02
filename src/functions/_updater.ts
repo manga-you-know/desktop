@@ -6,6 +6,7 @@ import { updateInfo, openUpdate, notifyUpdate } from "@/store";
 import { notify, reloadApp } from "@/functions";
 import { get } from "svelte/store";
 import { IS_MOBILE } from "@/constants";
+import { delay } from "@/utils";
 
 const UPDATE_URL =
   "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json";
@@ -49,7 +50,7 @@ export async function checkForAppUpdates(isUserClick: boolean = false) {
         url: `https://github.com/manga-you-know/desktop/releases/tag/v${update.version}`,
         fetchUpdate: async () => {
           while (!isDownloaded) {
-            await new Promise((resolve) => setTimeout(resolve, 80));
+            await delay(30);
           }
           await update.install();
           await reloadApp();
