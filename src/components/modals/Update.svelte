@@ -1,9 +1,9 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { open as openPath } from "@tauri-apps/plugin-shell";
   import { AlertDialog, Button } from "@/lib/components";
   import { openUpdate, updateInfo, openSettings } from "@/store";
-  import { cn } from "@/lib/utils"
+  import { cn } from "@/lib/utils";
+  import { openUrl } from "@tauri-apps/plugin-opener";
 
   let isUpdating = $state(false);
 </script>
@@ -17,15 +17,15 @@
           This will update to
           <span class="font-bold"> v{$updateInfo.version} </span>. Read about
           the new version
-          <button onclick={() => openPath($updateInfo.url)} class="underline"
+          <button onclick={() => openUrl($updateInfo.url)} class="underline"
             >here
           </button>.
         </AlertDialog.Description>
       </AlertDialog.Header>
       <AlertDialog.Footer>
         <Button
-          variant="secondary"
           class="bg-blue-500 text-white hover:bg-blue-300 hover:text-gray-700"
+          variant="secondary"
           effect="gooeyLeft"
           disabled={isUpdating}
           onclick={async () => {

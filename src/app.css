@@ -81,11 +81,11 @@
 
 .logo-shadow {
   box-shadow:
-    #fef08a 0px 15px 60px,
-    #fef08a 0px -12px 30px,
-    #fef08a 0px 4px 6px,
-    #fef08a 0px 8px 13px,
-    #fef08a 0px -3px 5px;
+    #ff67c3 -20px 15px 30px,
+    #ff8ab8 -10px -12px 30px,
+    #ffaa9f 0px 4px 30px,
+    #ffc37d 10px 8px 30px,
+    #ffdc5a 20px -3px 30px;
 }
 
 @layer utilities {

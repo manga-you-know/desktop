@@ -61,6 +61,7 @@
     if (favoriteLoad) {
     } else {
       $favoritesLoaded[strNotEmpty(favorite.id)] = {
+        self: favorite,
         isLoaded: false,
         isLoading: false,
         chapters: [],
@@ -151,7 +152,7 @@
 >
   <button
     class={cn(
-      "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+      "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center justify-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
       favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
       IS_MOBILE ? "" : "hover:scale-[1.08]",
       isContext && "!scale-[1.15] !border-1 !border-white opacity-100",
@@ -168,7 +169,7 @@
     <Image
       src={$coversLoaded[favorite.cover] ?? favorite.cover}
       alt={favorite.name}
-      class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-b-2xl !bg-transparent"
+      class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-2xl !bg-transparent"
       id={strNotEmpty(favorite.id)}
     />
     <div
@@ -179,7 +180,7 @@
             {variant}
           > -->
       <div
-        class="h-52 w-[168px] max-w-[168px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+        class="h-52 w-[168px] max-w-[168px] rounded-t-2xl flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
       >
         <Label
           class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
@@ -276,15 +277,10 @@
             {variant}
             onclick={(e) => {
               e.stopPropagation();
-              isOpen = true;
+              isEdit = true;
             }}
           >
-            <Icon
-              icon={favorite.type === "anime"
-                ? "lucide:tv-minimal-play"
-                : "lucide:book-open-text"}
-              class="!size-4"
-            />
+            <Icon icon="lucide:square-pen" class="!size-4" />
           </Button>
           <Button
             class="rounded-t-none rounded-b-2xl"
@@ -292,11 +288,16 @@
             tabindex={-1}
             onclick={(e: Event) => {
               e.stopPropagation();
-              isEdit = true;
+              isOpen = true;
             }}
             {variant}
           >
-            <Icon icon="lucide:square-pen" class="-mt-[7px] !size-4" />
+            <Icon
+              icon={favorite.type === "anime"
+                ? "lucide:tv-minimal-play"
+                : "lucide:book-open-text"}
+              class="!size-4"
+            />
           </Button>
         </div>
       </div>

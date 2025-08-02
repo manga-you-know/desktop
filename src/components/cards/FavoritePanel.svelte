@@ -25,17 +25,18 @@
   <ContextMenu.Trigger class={cn("hover:z-10", contextOpen && "z-10")}>
     <Tilt
       class={cn(
-        "h-[11rem] hover:scale-[1.546] no-blurry transition duration-500 [perspective:200px]",
+        "hover:scale-[1.2] no-blurry transition duration-500 [perspective:200px]",
         contextOpen && "!scale-[1.546]",
       )}
     >
       <button
+        class="h-[18rem]"
         onclick={() => (open = true)}
         onmouseenter={() => (shouldCopy = true)}
         onmouseleave={() => (shouldCopy = false)}
       >
         <Image
-          class="!max-w-[16rem] h-[11rem] rounded-sm object-contain"
+          class="!max-w-[25rem] h-[18rem] rounded-sm object-contain"
           src={path}
           alt="favorite panel"
         />

@@ -318,7 +318,7 @@
                       onclick={async () => {
                         if (cache.chapters.length === 0) {
                           toast.loading("Loading chapters...", {
-                            duration: 200,
+                            duration: 700,
                           });
                           let chapters = [];
                           const isMulti = $downloadManager.isMultiLanguage(

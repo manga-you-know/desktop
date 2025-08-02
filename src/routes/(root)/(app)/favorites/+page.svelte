@@ -35,16 +35,18 @@
       ? $ultraFavorites.slice((page - 1) * perPage, page * perPage)
       : favoritesWithChapter.slice((page - 1) * perPage, page * perPage),
   );
-  const count = $derived($ultraFavorites.length);
-  const extraSpace: number = $derived(
-    perPage >= displayedFavorites.length
-      ? perPage - displayedFavorites.length
-      : perPage * 2 >= displayedFavorites.length
-        ? perPage * 2 - displayedFavorites.length
-        : perPage * 3 >= displayedFavorites.length
-          ? perPage * 3 - displayedFavorites.length
-          : 0,
+  const countFound = $derived(
+    !$showOnlyNew ? $ultraFavorites.length : favoritesWithChapter.length,
   );
+  const count = $derived($ultraFavorites.length);
+  function extraSpaceCards(): number {
+    const x = perPage / 3;
+    const n = displayedFavorites.length;
+    if (n <= x) return x - n;
+    if (n <= 2 * x) return 2 * x - n;
+    if (n <= 3 * x) return 3 * x - n;
+    return 0;
+  }
   onMount(async () => {
     await refreshFavorites();
   });
@@ -53,79 +55,88 @@
       page = Math.ceil($ultraFavorites.length / perPage);
     }
   });
+  showOnlyNew.subscribe(() => {
+    page = 1;
+    favoriteDiv?.scrollTo({ top: 0 });
+    saveSettings();
+  });
 </script>
 
 <div class="h-full flex flex-col overflow-hidden">
-  <div
-    class={cn(
-      "flex relative top-0",
-      IS_MOBILE ? "h-24 justify-center" : "h-14",
-    )}
-  >
-    <div class="flex flex-wrap items-center gap-2">
-      <div class="flex">
-        <Badge
-          class="font-bold h-8 w-22 rounded-xl rounded-r-none mr-0 gap-0.5"
-          variant="secondary"
-        >
-          + <ScrollingValue
-            axis="y"
-            value={Object.values($favoritesLoaded).reduce(
-              (total, fv) => total + (fv.isLoaded && fv.nextChapter ? 1 : 0),
-              0,
-            )}
-          /> Favorites
-        </Badge>
-        <Badge
-          class="font-bold h-8 w-22 rounded-xl rounded-l-none -ml-[2px] gap-0.5"
-          variant="secondary"
-        >
-          +<ScrollingValue
-            axis="y"
-            value={Object.values($favoritesLoaded).reduce(
-              (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
-              0,
-            )}
-          /> Chapters
-        </Badge>
-      </div>
-      <Button
-        size="sm"
-        variant="secondary"
-        class="rounded-xl h-8"
-        disabled={$isRefreshing}
-        onclick={() => loadFavoritesChapters()}
-      >
-        <Icon
-          icon={$isRefreshing
-            ? "line-md:loading-loop"
-            : "mingcute:refresh-3-fill"}
-          class="w-5 h-5"
-        />
-        Refresh
-      </Button>
-      <div class="flex gap-2 items-center">
-        <Switch
-          id="showOnlyNew"
-          bind:checked={$showOnlyNew}
-          onCheckedChange={() => {
-            page = 1;
-            favoriteDiv.scrollTo({ top: 0 });
-            saveSettings();
-          }}
-        />
-        <Label class="dark:text-white cursor-pointer" for="showOnlyNew"
-          >Only new chapters</Label
-        >
-      </div>
-    </div>
-  </div>
-
   <div
     class="scrollbar w-[99.2%] h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-scroll overflow-x-hidden pb-5"
     bind:this={favoriteDiv}
     bind:clientWidth={favdivWidth}
   >
+    <div
+      class={cn(
+        "bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        IS_MOBILE ? "h-28 flex-wrap" : "h-14",
+      )}
+    >
+      <div class="flex items-center gap-2">
+        <div class="flex gap-2">
+          <Badge
+            class="flex justify-center font-bold !w-12 w-22 gap-0.5"
+            variant="outline"
+          >
+            <ScrollingValue axis="y" value={countFound} />
+          </Badge>
+          <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
+            {#if favoritesWithChapter.length > 0}
+              +
+            {/if}
+            <ScrollingValue axis="y" value={favoritesWithChapter.length} /> Favorites
+          </Badge>
+          <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
+            {#if favoritesWithChapter.length > 0}
+              +
+            {/if}
+            <ScrollingValue
+              axis="y"
+              value={Object.values($favoritesLoaded).reduce(
+                (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
+                0,
+              )}
+            /> Chapters
+          </Badge>
+        </div>
+
+        <Button
+          class="flex h-10 group/show hover:bg-background/40 px-2"
+          variant="outline"
+          onclick={() => {
+            showOnlyNew.set(!$showOnlyNew);
+          }}
+        >
+          <Switch
+            class="dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
+            id="show-only-new"
+            bind:checked={$showOnlyNew}
+          />
+          <Label
+            class="mr-1 dark:text-white cursor-pointer"
+            for="show-only-new"
+          >
+            To read
+          </Label>
+        </Button>
+        <Button
+          variant="outline"
+          disabled={$isRefreshing}
+          onclick={() => loadFavoritesChapters()}
+        >
+          <Icon
+            icon={$isRefreshing
+              ? "line-md:loading-loop"
+              : "mingcute:refresh-3-fill"}
+            class="w-5 h-5"
+          />
+          {$isRefreshing ? "Loading..." : "Refresh"}
+        </Button>
+      </div>
+    </div>
+    <div class="w-full h-0 smh:h-14"></div>
     {#if displayedFavorites.length === 0}
       <div class="flex w-full justify-center mt-10">
         <Badge
@@ -152,13 +163,13 @@
     {#each displayedFavorites as favorite}
       <FavoriteCard {favorite} />
     {/each}
-    {#each Array.from({ length: extraSpace }, (_, i) => i) as n (n)}
+    {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n (n)}
       <div class="w-[158px] h-[234px] p-1"></div>
     {/each}
     {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
-      <div class="w-full smh:h-10"></div>
+      <div class="w-full h-10"></div>
       <div
-        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl smh:absolute smh:bottom-6 mt-20 smh:mt-0 py-2 px-2"
+        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl absolute bottom-6 mt-10 py-2 px-2"
       >
         <Pagination.Root
           {count}

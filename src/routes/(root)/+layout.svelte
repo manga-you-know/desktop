@@ -148,7 +148,12 @@
     $theme === "dark" && "dark",
   )}
 >
-  <Toaster theme={$theme} toastOptions={{}} richColors duration={2700} />
+  <Toaster
+    theme={$theme}
+    toastOptions={{ classes: { toast: "rounded-2xl" } }}
+    richColors
+    duration={2700}
+  />
   <Search />
   <Settings />
   <AddCustom />

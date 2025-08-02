@@ -12,7 +12,7 @@
   import { ScrollingValue } from "svelte-ux";
 
   let page = $state(1);
-  let perPage = 22;
+  let perPage = 14;
   let panelDiv: HTMLDivElement = $state(null!);
   let rawFavorites: Favorite[] = $state([]);
   let panelsWithQuery: Panel[] = $state([]);
@@ -146,6 +146,7 @@
       bind:selected={selectedTitle}
       items={panelsTitle}
       label="Title"
+      search
       itemsLabel={panelsTitleLabel}
       wheelControls
       onselect={async () => {
@@ -161,12 +162,13 @@
       bind:selected={selectedChapter}
       items={panelsChapter}
       label="Chapter"
+      search
       wheelControls
       closeButton={panelsChapter.length > 1}
       onselect={search}
     />
   </div>
-  <div class="w-full h-32"></div>
+  <div class="w-full h-32 ssmh:h-0"></div>
   {#each displayedPanels as panel}
     <FavoritePanel
       path={panel.path}

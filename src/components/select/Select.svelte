@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { IS_MOBILE } from "@/constants";
   import {
     Button,
     Command,
@@ -7,6 +8,7 @@
     type ButtonEffect,
     type ButtonVariant,
   } from "@/lib/components";
+  import { Empty } from "@/lib/components/ui/command";
   import { cn } from "@/lib/utils";
   import { titleCase } from "@/utils";
   import Icon from "@iconify/svelte";
@@ -15,6 +17,7 @@
     selected: string;
     items: string[];
     label?: string;
+    search?: boolean;
     itemsLabel?: Record<string, string>;
     icons?: { [key: string]: string };
     openIcon?: boolean;
@@ -40,6 +43,7 @@
     onmouseup,
     variant = "outline",
     effect = null,
+    search = false,
     openIcon = true,
     invertIcons = false,
     closeButton = true,
@@ -108,6 +112,13 @@
     </Popover.Trigger>
     <Popover.Content class={cn("w-[7rem]  p-0", classPopup)}>
       <Command.Root>
+        {#if search}
+          <Command.Input
+            placeholder="Search..."
+            tabindex={IS_MOBILE ? -1 : 1}
+          />
+        {/if}
+        <Command.Empty class="select-none">Nothing found.</Command.Empty>
         <Command.List class="scrollbar">
           <Command.Group>
             {#each items as item}
