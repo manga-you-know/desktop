@@ -13,43 +13,42 @@ MangaYouKnow is a manga reader that allows you to read, download and keep track 
 
 ## Download
 
-Download the latest version from [here](https://github.com/manga-you-know/desktop/releases/latest/).
+You can find the newest version [here](https://github.com/manga-you-know/desktop/releases/latest/).
+
+Avaible for:
 
 - Windows
-  - the best way is with the Msi installer, but if you don't have admin rights you can use the Nsis installer (the .exe file).
+  - This is where most of things are tested so its the most finished version 
 - MacOS
-
-  - Unfortunately I don't have a Mac to test the app on MacOS, so if you have any issue with the app please let me know. I don't even know if it will work on MacOS.
-
+  - Since I don't own a Mac yet, I don't know the extends of functionatilities there
 - Linux
-
-  - I know it works on Linux, but I didn't test it. Let me know if you have any issue.
-
-- Mobile
-  - Its in my plans.
+  - Already tested but needs some fixing in UI, since Linux seems to hate blur effects.
+- Android
+  - I need more time and RAM on my device to make it useful
+- iOS
+  - Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account
 
 Discord server to contact me: [MangaYouKnow server](https://discord.gg/FK37mJtFD4)
 
-## Dev setup
+## Contribuition
 
-In this project, I use [Bun](https://bun.sh/) as the JavaScript runtime and I personally recommend it.
-If you want to use another runtime, you must change the `src-tauri/tauri.conf.json` file.
-There you replace `bun`in the `beforeDevCommand` and `beforeBuildCommand` with the runtime you want to use.
+Since this project is made with Tauri, you have to install all of its [prerequisites](https://v2.tauri.app/start/prerequisites/) based on which platform you are on.
+In this project, I use [Bun](https://bun.sh/), even though it doesn't really impacts this project as it is rendered by Tauri, I like it.
+You can use whichever you like, just don't commit the changes you need to make it work.
 
-Please don't commit the change of runtime in the `src-tauri/tauri.conf.json` file.
+There's no other setup, just installing the dependencies with the command below should work.
+Dependencies such as SvelteKit, TailwindCSS and so on.
+
 
 Make sure to install the dependencies:
-
 ```bash
 bun install
 ```
-
 ### Start a development app
 
 ```bash
 bun tauri dev
 ```
-
 ### Production
 
 Build the application for production:
