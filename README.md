@@ -1,36 +1,38 @@
 <div align="center" style="flex: auto">
 <H1>
-<img height="25px" style="border-radius: 10%" src="/static/icon.png" />
+<img height="25px" style="border-radius: 10%" src="/docs/assets/icon.png" />
 MangaYouKnow</H1>
 
-<img height="450px" src="/docs/assets/demo.gif" />
-
+  <img
+    src="/docs/assets/overall-demonstration.gif"
+    style="width: 600px; object-fit: contain; border-radius: 6px" />
 </div>
+
 
 # MangaYouKnow desktop
 
 MangaYouKnow is a manga reader that allows you to read, download and keep track manga & comics from multiple sources in one app.
 
-## Download
+## Download and use
 
-You can find the newest version [here](https://github.com/manga-you-know/desktop/releases/latest/).
+You can find the newest version for all platforms [here](https://github.com/manga-you-know/desktop/releases/latest/).
 
-Avaible for:
+Available platforms:
 
-- Windows
-  - This is where most of things are tested so its the most finished version 
-- MacOS
-  - Since I don't own a Mac yet, I don't know the extends of functionatilities there
-- Linux
-  - Already tested but needs some fixing in UI, since Linux seems to hate blur effects.
-- Android
-  - I need more time and RAM on my device to make it useful
-- iOS
-  - Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account
+| OS                                                                                                                                                                  | status                                                                                              | working?                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| <p style="display: flex; align-items: center; gap: 0.5rem" ><br>    <img src="/docs/assets/windows.png" width="30" style="margin-top: 16px" /><br>  Windows<br></p> | most of things are tested so its the most finished version                                          | ✅Yes                                         |
+| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/apple.png" width="30" style="margin-top: 16px" /><br>  MacOS<br></p>                  | Since I don't own a Mac yet, I don't know the extends of functionalities there                      | ☑️Mostly                                     |
+| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/linux.png" width="30" style="margin-top: 16px"/><br>  Linux<br></p>                   | Already tested but needs some fixing in UI, since Linux seems to hate blur effects                  | ☑️ Mostly                                    |
+| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/android.png" width="30" style="margin-top: 16px" /><br>  Android<br></p>              | I need more time and RAM on my device to make it useful                                             | <p style="text-wrap: nowrap" >⛔Partially</p> |
+| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/ios.png" width="30" style="margin-top: 16px" /><br>  iOS<br></p>                      | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                         |
+ 
+<p style="display: flex; align-items: center; gap: 0.5rem" >
+    <img src="/docs/assets/discord.png" width="25" style="margin-top: 1px" />
+Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_blank">MangaYouKnow server</a>
+</p> 
 
-Discord server to contact me: [MangaYouKnow server](https://discord.gg/FK37mJtFD4)
-
-## Contribuition
+## Contribution
 
 Since this project is made with Tauri, you have to install all of its [prerequisites](https://v2.tauri.app/start/prerequisites/) based on which platform you are on.
 In this project, I use [Bun](https://bun.sh/), even though it doesn't really impacts this project as it is rendered by Tauri, I like it.
