@@ -170,6 +170,20 @@
   },
   "active": "4755e26177e46bd7",
   "lastOpenFiles": [
+    "docs/assets/banner-github.png",
+    "docs/assets/d.png",
+    "docs/assets/banner readme(1).png",
+    "src/lib/components/ui/drawer/drawer-overlay.svelte~",
+    "src/components/common/Sidebar.svelte~",
+    "src/routes/(root)/reader/[favoriteId]/[chapterIndex]/+page.svelte~",
+    "src-tauri/target/debug/deps/MangaYouKnow.3ip696w30js2q4ia4j8ryhha5.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/deps/MangaYouKnow.6pwzw1g7tanwkn7n0wq1zgafp.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/deps/MangaYouKnow.5h71adgxzzse9m5crddjck880.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/deps/MangaYouKnow.dcmwslp8bm384fd3evgkp16g0.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/deps/MangaYouKnow.9iox4smppy0w9573zts9n7uau.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/deps/MangaYouKnow.8rzj7yme1jlxvxz2sc2c0btzl.0ibgwst.rcgu.o",
+    "src-tauri/target/debug/incremental/MangaYouKnow-2k8ole9qnpd8h/s-h9w6u0rdde-0q3zbiz.lock",
+    "docs/assets/MangaYouKnow.png",
     "docs/assets/overall-demonstration.gif",
     "docs/assets/nada.gif",
     "docs/assets/Recording 2025-08-04 230558.gif",
@@ -180,11 +194,6 @@
     "docs/assets/discord.png",
     "docs/assets/ios.png",
     "docs/assets/apple.png",
-    "docs/assets/apple(2).png",
-    "docs/assets/apple(1).png",
-    "docs/assets/windows.png",
-    "docs/assets/android.png",
-    "docs/Untitled.md",
-    "assets"
+    "docs/Untitled.md"
   ]
 }
