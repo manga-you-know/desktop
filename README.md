@@ -17,18 +17,19 @@ MangaYouKnow is a manga reader that allows you to read, download and keep track 
 
 You can find the newest version for all platforms [here](https://github.com/manga-you-know/desktop/releases/latest/).
 
+
 Available platforms:
 
-| OS                                                                                                                                                                  | status                                                                                              | working?                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| <p style="display: flex; align-items: center; gap: 0.5rem" ><br>    <img src="/docs/assets/windows.png" width="30" style="margin-top: 16px" /><br>  Windows<br></p> | most of things are tested so its the most finished version                                          | ✅Yes                                         |
-| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/apple.png" width="30" style="margin-top: 16px" /><br>  MacOS<br></p>                  | Since I don't own a Mac yet, I don't know the extends of functionalities there                      | ☑️Mostly                                     |
-| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/linux.png" width="30" style="margin-top: 16px"/><br>  Linux<br></p>                   | Already tested but needs some fixing in UI, since Linux seems to hate blur effects                  | ☑️ Mostly                                    |
-| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/android.png" width="30" style="margin-top: 16px" /><br>  Android<br></p>              | I need more time and RAM on my device to make it useful                                             | <p style="text-wrap: nowrap" >⛔Partially</p> |
-| <p style="display: flex; align-items: center" ><br>    <img src="/docs/assets/ios.png" width="30" style="margin-top: 16px" /><br>  iOS<br></p>                      | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                         |
+| OS                                                                                                                                                                  | Currently status                                                                                              | Working?                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| <p style="display: flex; align-items: center; gap: 1rem" > <img src="/docs/assets/windows.png" width="16" />  Windows| most of things are tested so its the most finished version                                          | ✅Yes                                         |
+| <p style="display: flex; align-items: center" >   <img src="/docs/assets/apple.png" width="16" />  MacOS<br></p>                  | Since I don't own a Mac yet, I don't know the extends of functionalities there                      | ☑️Mostly                                     |
+| <p style="display: flex; align-items: center" >  <img src="/docs/assets/linux.png" width="16"/>  Linux<br></p>                   | Already tested but needs some fixing in UI, since Linux seems to hate blur effects                  | ☑️ Mostly                                    |
+| <p style="display: flex; align-items: center" >  <img src="/docs/assets/android.png" width="16" />  Android</p>              | I need more time and RAM on my device to make it useful                                             | <p style="text-wrap: nowrap" >⛔Partially</p> |
+| <p style="display: flex; align-items: center" >    <img src="/docs/assets/ios.png" width="16" />  iOS</p>                      | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                         |
  
 <p style="display: flex; align-items: center; gap: 0.5rem" >
-    <img src="/docs/assets/discord.png" width="25" style="margin-top: 1px" />
+    <img src="/docs/assets/discord.png" width="16" />
 Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_blank">MangaYouKnow server</a>
 </p> 
 
