@@ -8,9 +8,12 @@
   let {
     ref = $bindable(null),
     class: className,
+    classThumb: classThumb,
     checked = $bindable(false),
     ...restProps
-  }: WithoutChildrenOrChild<SwitchPrimitive.RootProps> = $props();
+  }: WithoutChildrenOrChild<SwitchPrimitive.RootProps> & {
+    classThumb?: string;
+  } = $props();
 </script>
 
 <SwitchPrimitive.Root
@@ -25,6 +28,7 @@
   <SwitchPrimitive.Thumb
     class={cn(
       "bg-background pointer-events-none block size-5 rounded-full shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
+      classThumb,
     )}
   />
 </SwitchPrimitive.Root>

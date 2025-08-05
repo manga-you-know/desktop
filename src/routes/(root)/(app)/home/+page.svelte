@@ -20,10 +20,12 @@
       <span class="font-[minecraftia] text-xl text-[#88105a]">
         Welcome to MangaYouKnow!
       </span>
-      <p class="flex flex-wrap mt-2 font-[Minecraft] text-sm dark:text-white">
-        MangaYouKnow is a manga reader <br />that allows you to read mangas
+      <p
+        class="flex flex-wrap mt-2 font-[minecraftia] text-xs text-bold dark:text-white"
+      >
+        MangaYouKnow is a open source <br />reader that allows you to enjoy
         <br />
-        on your computer through your<br /> favorite sites.
+        mangas on your computer <br />through your favorite sites.
       </p>
     </div>
     <img

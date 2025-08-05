@@ -11,6 +11,9 @@
 
 <DrawerPrimitive.Overlay
   bind:ref
-  class={cn("fixed inset-0 z-50 bg-background/80", className)}
+  class={cn(
+    "fixed inset-0 z-50 bg-background/80 outline-none ring-0 focus-visible:outline-none focus-visible:ring-0",
+    className,
+  )}
   {...restProps}
 />

@@ -169,7 +169,7 @@
     <Image
       src={$coversLoaded[favorite.cover] ?? favorite.cover}
       alt={favorite.name}
-      class="w-[155px] h-[225px] min-w-[155px] max-w-[155px] min-h-[225px] max-h-[225px] object-contain rounded-2xl !bg-transparent"
+      class="w-[155px] min-w-[155px] max-w-[155px] max-h-[225px] object-contain rounded-2xl !bg-transparent"
       id={strNotEmpty(favorite.id)}
     />
     <div

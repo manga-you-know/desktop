@@ -297,7 +297,7 @@
       <Sidebar.GroupContent class="flex flex-col gap-2">
         {#if $chaptersCache.length > 0 && $keepReading}
           <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-background"
+            class="bg-background/30 rounded-xl border border-primary"
           >
             <Sidebar.MenuItem
               class={cn(
@@ -399,7 +399,7 @@
 
         {#if favoritesWithChapters.length > 0}
           <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-primary"
+            class="bg-background/30 rounded-xl border border-background"
           >
             <Sidebar.MenuItem
               class={cn(
@@ -536,13 +536,13 @@
       <Sidebar.MenuButton
         onclick={rotateImage}
         onwheel={rotateImage}
-        class="hover:bg-transparent"
+        class="hover:bg-transparent transition-all"
       >
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <img
           bind:this={imgElement}
-          class="min-w-9 max-w-9 -ml-[14px]"
+          class="!size-9 min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0 transition-all"
           draggable={false}
           src="/icon.png"
           alt="icon"

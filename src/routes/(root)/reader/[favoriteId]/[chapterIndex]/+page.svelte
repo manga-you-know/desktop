@@ -310,6 +310,18 @@
     ) {
       addReaded();
     }
+    if (get(keepReading) && way === "next" && totalPage > 1) {
+      addToCache(
+        {
+          favorite,
+          chapter,
+          currentPage: currentlyCount,
+          totalPage,
+        },
+        $globalChapters,
+        backupImages,
+      );
+    }
   }
 
   function handleGoChapter(way: "next" | "prev", fromPages = false) {
@@ -394,7 +406,11 @@
     images[currentlyCount - 1] = newImage;
     images.splice(currentlyCount, 1);
     totalPage = images.length;
-    toast.success("Images joined!", { duration: 600 });
+    toast.success("Images joined!", { duration: 1000 });
+    if (currentlyCount === totalPage) {
+      if (get(markReaded) === "end") addReaded();
+      if (get(keepReading)) removeCache(favorite.id.toString());
+    }
   }
 
   function imgOnError(id: string) {

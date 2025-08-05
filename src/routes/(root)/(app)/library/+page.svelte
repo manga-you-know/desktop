@@ -87,7 +87,7 @@
   <div
     bind:this={libraryDiv}
     bind:clientWidth={libdivWidth}
-    class="scrollbar w-[98.7%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
+    class="scrollbar w-[98.4%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
   >
     <div
       class={cn(

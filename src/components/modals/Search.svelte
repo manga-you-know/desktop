@@ -25,7 +25,7 @@
   import type { Favorite } from "@/types";
   import { onMount } from "svelte";
   import { cn } from "@/lib/utils";
-  import { limitStr } from "@/utils";
+  import { delay, limitStr } from "@/utils";
   import Icon from "@iconify/svelte";
   import { IsMobile } from "@/lib/hooks";
 
@@ -42,18 +42,23 @@
   }
 
   async function search() {
-    await new Promise((resolve) => setTimeout(resolve, 5));
+    await delay(5);
     if ($searchTerm.length === 0) {
       results = [];
       isSearching = false;
       return;
     }
     isSearching = true;
-    results = await $downloadManager.search(
+    const term = $searchTerm.toLowerCase();
+    const source = $selectedSource;
+    const getResults = await $downloadManager.search(
       $searchTerm.toLowerCase(),
       $selectedSource,
     );
-    isSearching = false;
+    if (term === $searchTerm.toLowerCase() && source === $selectedSource) {
+      results = getResults;
+      isSearching = false;
+    }
   }
   selectedSource.subscribe((_) => {
     results = [];

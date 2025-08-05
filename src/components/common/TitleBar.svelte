@@ -201,6 +201,7 @@
                 class="w-10 h-8 rounded-xl"
                 variant="link"
                 onclick={() => {
+                  openMenuChapters.set(false);
                   globalChapters.set(fav.chapters);
                   goto(
                     `/reader/${fav.self.id}/${$globalChapters.indexOf(

@@ -110,7 +110,8 @@
           }}
         >
           <Switch
-            class="dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
+            class="rounded-[10px] dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
+            classThumb="rounded-lg"
             id="show-only-new"
             bind:checked={$showOnlyNew}
           />
