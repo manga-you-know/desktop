@@ -1,8 +1,9 @@
 <div align="center" style="flex: auto">
 <img style="width: 100%" src="/docs/assets/banner-github.png" />
-
 </div>
-[![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest)[![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest)
+
+[![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest) [![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest)
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7)
 
 <div align="center" style="flex: auto">
