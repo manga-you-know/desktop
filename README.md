@@ -5,7 +5,7 @@ MangaYouKnow</H1>
 
   <img
     src="/docs/assets/overall-demonstration.gif"
-    style="width: 600px; object-fit: contain; border-radius: 6px" />
+    style="width: 100%; object-fit: contain; border-radius: 6px" />
 </div>
 
 
