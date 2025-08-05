@@ -35,6 +35,7 @@ Available platforms:
     <img src="/docs/assets/discord.png" width="16" />
 Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_blank">MangaYouKnow server</a>
 </p> 
+
 ## About 
 
 ### Stack
