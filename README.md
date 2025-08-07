@@ -40,25 +40,33 @@ Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_b
 
 ### Stack
 
+### Stack
+
 - [Rust](https://www.rust-lang.org/pt-BR)
-	- [Tauri](https://v2.tauri.app/)
-		- [@tauri-apps/plugin-sql](https://v2.tauri.app/plugin/sql/)
-		- [@tauri-apps/plugin-http](https://v2.tauri.app/plugin/http/)
-		- [@tauri-apps/plugin-store](https://v2.tauri.app/plugin/store/)
-		- [@tauri-apps/plugin-fs](https://v2.tauri.app/plugin/file-system/)
-		- [@tauri-apps/plugin-updater](https://v2.tauri.app/plugin/updater/)
-		- [@tauri-apps/plugin-notification](https://v2.tauri.app/plugin/notification/)
-		- [@tauri-apps/plugin-single-instance](https://v2.tauri.app/plugin/single-instance/)
-		- [@tauri-apps/plugin-opener](https://v2.tauri.app/plugin/opener/)
-		- [@tauri-apps/plugin-autostart](https://v2.tauri.app/plugin/autostart/)  
-		- [@tauri-apps/plugin-process](https://v2.tauri.app/plugin/process/)
-		- [@tauri-apps/plugin-os](https://v2.tauri.app/plugin/os-info/)
-		- [@tauri-apps/plugin-window-state](https://v2.tauri.app/plugin/window-state)
-		- [@tauri-apps/plugin-positioner](https://v2.tauri.app/plugin/positioner/)
-		- [@tauri-apps/plugin-cli](https://v2.tauri.app/plugin/cli/)
-		- [@tauri-apps/plugin-shell](https://v2.tauri.app/plugin/shell/)
-	- [@ferreira-tb/tauri-plugin-prevent-default ](https://github.com/ferreira-tb/tauri-plugin-prevent-default)
-	- [@CrossCopy/tauri-plugin-clipboard](https://github.com/CrossCopy/tauri-plugin-clipboard)
+  - [Tauri](https://v2.tauri.app/)
+    <details>
+      <summary>Tauri Official Plugins</summary>
+	  <ul>
+	    <li><a href="https://v2.tauri.app/plugin/sql/">@tauri-apps/plugin-sql</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/http/">@tauri-apps/plugin-http</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/store/">@tauri-apps/plugin-store</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/file-system/">@tauri-apps/plugin-fs</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/updater/">@tauri-apps/plugin-updater</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/notification/">@tauri-apps/plugin-notification</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/single-instance/">@tauri-apps/plugin-single-instance</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/opener/">@tauri-apps/plugin-opener</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/autostart/">@tauri-apps/plugin-autostart</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/process/">@tauri-apps/plugin-process</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/os-info/">@tauri-apps/plugin-os</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/window-state">@tauri-apps/plugin-window-state</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/positioner/">@tauri-apps/plugin-positioner</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/cli/">@tauri-apps/plugin-cli</a></li>
+	    <li><a href="https://v2.tauri.app/plugin/shell/">@tauri-apps/plugin-shell</a></li>
+	  </ul>
+    </details>
+  - [@ferreira-tb/tauri-plugin-prevent-default](https://github.com/ferreira-tb/tauri-plugin-prevent-default)  
+  - [@CrossCopy/tauri-plugin-clipboard](https://github.com/CrossCopy/tauri-plugin-clipboard)
+
 - [Typescript](https://www.typescriptlang.org/)
 	- [Sveltekit](https://svelte.dev/docs/kit/introduction)
 	- [TailwindCSS v3](https://v3.tailwindcss.com/)
