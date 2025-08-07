@@ -40,8 +40,6 @@ Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_b
 
 ### Stack
 
-### Stack
-
 - [Rust](https://www.rust-lang.org/pt-BR)
   - [Tauri](https://v2.tauri.app/)
     <details>
