@@ -34,6 +34,8 @@ import {
   showCurrentChapter,
   markReaded,
   keepReading,
+  filter,
+  useFilter,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -96,6 +98,8 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   mark_readed: { store: markReaded, default: "start" },
   keep_reading: { store: keepReading, default: true },
   notify_update: { store: notifyUpdate, default: true },
+  use_filter: { store: useFilter, default: false },
+  filter: { store: filter, default: "bg-amber-500/10" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },

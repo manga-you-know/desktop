@@ -34,6 +34,9 @@
   let isFavoriteOpen = $state(false);
   let favoriteOpen: Favorite | null = $state(null);
   let results: Favorite[] = $state([]);
+  let resultsFavorited: Favorite[] = $derived(
+    results.filter((r) => isFavorite(r)),
+  );
 
   function isFavorite(favorite: Favorite) {
     return $rawFavorites.find(
@@ -162,13 +165,76 @@
       <Separator />
       <div
         class={cn(
-          "bg-secondary/50 py-1 pl-1  flex gap-2 rounded-b-3xl ",
+          "flex flex-col bg-secondary/50 py-1 pl-1  flex gap-1 rounded-b-3xl relative",
           isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52",
         )}
       >
         {#if results.length !== 0}
-          <ScrollArea class="w-[30rem] rounded-xl !scrollbar">
-            {#each results.slice(0, 20) as result}
+          <div
+            class={cn(
+              "transition-all duration-400",
+              resultsFavorited.length > 0 ? "opacity-100" : "opacity-0",
+            )}
+          >
+            <div class="relative">
+              <Label
+                class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-br-xl text-xs !text-gray-400"
+              >
+                {resultsFavorited.length} saveds
+              </Label>
+            </div>
+            <div class="w-[30rem] max-h-20 relative">
+              <ScrollArea
+                class="flex flex-col gap-[2px] w-[30rem] max-h-20 !scrollbar transition-all duration-300"
+              >
+                {#each resultsFavorited as result}
+                  <div class="inline-flex w-[98%]">
+                    <Button
+                      class="w-full flex justify-start border-r-0 rounded-r-none transition-colors duration-500"
+                      variant="outline"
+                      onclick={() => {
+                        favoriteOpen = null;
+                        isResultOpen = true;
+                        favoriteOpen = result;
+                      }}
+                    >
+                      <span class="ml-2 truncate"
+                        >{limitStr(result.name, isMobile ? 45 : 50)}</span
+                      >
+                    </Button>
+                    <Button
+                      class="rounded-l-none border-l-0 transition-colors duration-500"
+                      variant="outline"
+                      onclick={async () => saveResult(result)}
+                    >
+                      <Icon
+                        class="!size-4"
+                        icon={isFavorite(result)
+                          ? "tabler:bookmark-filled"
+                          : "tabler:bookmark"}
+                      />
+                    </Button>
+                  </div>
+                  <img
+                    class="hidden"
+                    src={result.cover}
+                    alt="Prefetched"
+                    data-sveltekit-prefetch
+                  />
+                {/each}
+              </ScrollArea>
+            </div>
+          </div>
+          <div class="relative">
+            <Label
+              class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-xl text-xs !text-gray-400"
+            >
+              {results.slice(0, 20).filter((r) => !isFavorite(r)).length}
+              non saveds
+            </Label>
+          </div>
+          <ScrollArea class="w-[30rem] rounded-b-xl !scrollbar">
+            {#each results.slice(0, 20).filter((r) => !isFavorite(r)) as result}
               <div class="inline-flex w-[98%]">
                 <Button
                   class="w-full flex justify-start rounded-r-none transition-colors duration-500"

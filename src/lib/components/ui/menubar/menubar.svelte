@@ -12,8 +12,8 @@
 <MenubarPrimitive.Root
   bind:ref
   class={cn(
-    "bg-sidebar flex h-10 items-center space-x-1 rounded-xl p-1",
-    className
+    "bg-transparent flex h-10 items-center space-x-1 rounded-xl p-1",
+    className,
   )}
   {...restProps}
 />

@@ -19,10 +19,10 @@
     AlertDialog,
     Input,
     Separator,
-    Select,
     ScrollArea,
     Checkbox,
     Switch,
+    Slider,
   } from "@/lib/components";
   import {
     openSettings,
@@ -46,9 +46,11 @@
     theme,
     markReaded,
     keepReading,
+    filter,
+    useFilter,
   } from "@/store";
   import { onMount } from "svelte";
-  import { Language, Theme } from "@/components";
+  import { Language, Theme, Select } from "@/components";
   import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
@@ -79,6 +81,37 @@
       ? await setDiscordActivity("Changing settings...")
       : await stopDiscordPresence();
   });
+
+  const filters = [
+    "filter grayscale",
+    "bg-amber-500/20",
+    "bg-amber-900/10",
+    "bg-red-900/20",
+    "contrast-125",
+    "bg-teal-200/20",
+    "bg-red-500/20",
+    "bg-blue-500/20",
+    "bg-amber-900/25",
+    "bg-green-400/10",
+    "bg-violet-200/20",
+    "bg-purple-300/20",
+    "bg-orange-500/20",
+  ];
+  const filtersLabel = {
+    "filter grayscale": "Black & white",
+    "bg-amber-500/20": "Portable Mexico",
+    "bg-teal-200/20": "Shine emerald",
+    "bg-amber-900/10": "Warm heart",
+    "contrast-125": "High contrast",
+    "bg-red-900/20": "Great wine",
+    "bg-blue-500/20": "Frozen ice",
+    "bg-violet-200/20": "Violet dream",
+    "bg-green-400/10": "Small florest",
+    "bg-amber-900/25": "Fine wood",
+    "bg-purple-300/20": "Cool grape",
+    "bg-red-500/20": "Gentle blood",
+    "bg-orange-500/20": "Strong Autumn",
+  };
 </script>
 
 <AlertDialog.Root bind:open={$openSettings}>
@@ -284,6 +317,24 @@
                 Window effects (experimental & Windows only)
               </Label>
             </div>
+            <Label>Filter</Label>
+            <div class="flex gap-2 items-center">
+              <Switch
+                id="use-filter"
+                bind:checked={$useFilter}
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="use-filter">Use filter</Label>
+            </div>
+            <Select
+              class="w-44"
+              classPopup="w-44"
+              bind:selected={$filter}
+              items={filters}
+              itemsLabel={filtersLabel}
+              onselect={saveSettings}
+              closeButton={false}
+            />
             <Label>Sidebar</Label>
             <div
               class="flex relative w-[21rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"

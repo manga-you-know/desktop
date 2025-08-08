@@ -15,12 +15,14 @@
     autoSearchUpdates,
     closeTray,
     customTitlebar,
+    filter,
     isFullscreen,
     isMaximized,
     openSearch,
     theme,
     undoTasks,
     updateInfo,
+    useFilter,
     windowEffects,
   } from "@/store";
   import {
@@ -143,7 +145,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 <div
-  class={twMerge(
+  class={cn(
     "text-black dark:text-white border-background",
     $theme === "dark" && "dark",
   )}
@@ -165,20 +167,28 @@
   {:else}
     <div
       class={cn(
+        "fixed z-[999] pointer-events-none w-screen h-screen",
+        $useFilter && $filter,
+      )}
+    ></div>
+    <div
+      class={cn(
         "flex flex-col overflow-hidden transition-colors duration-300",
         !$windowEffects && "bg-background",
         page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
       )}
     >
-      {#if $customTitlebar}
-        <TitleBar />
-      {/if}
-      <div
-        class={$isFullscreen || !$customTitlebar
-          ? "max-h-screen overflow-hidden"
-          : "max-h-[calc(100vh-2.5rem)] overflow-hidden"}
-      >
-        {@render children?.()}
+      <div class={cn("w-screen h-screen", $useFilter && $filter)}>
+        {#if $customTitlebar}
+          <TitleBar />
+        {/if}
+        <div
+          class={$isFullscreen || !$customTitlebar
+            ? "max-h-screen overflow-hidden"
+            : "max-h-[calc(100vh-2.5rem)] overflow-hidden"}
+        >
+          {@render children?.()}
+        </div>
       </div>
     </div>
   {/if}

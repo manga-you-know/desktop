@@ -8,7 +8,7 @@
     {
       variants: {
         variant: {
-          default: "bg-primary text-primary-foreground hover:bg-primary/80",
+          default: "bg-primary text-background hover:bg-primary/80",
           info: "bg-info text-white hover:bg-info/60",
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",

@@ -53,7 +53,7 @@
       $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "min-h-svh",
       $windowEffects
         ? "has-[[data-variant=inset]]:bg-transparent"
-        : "has-[[data-variant=inset]]:bg-sidebar",
+        : "has-[[data-variant=inset]]:bg-sidebar/60",
       className,
     )}
     bind:this={ref}

@@ -32,6 +32,7 @@ export { ScrollArea } from "./ui/scroll-area";
 export { Progress } from "./ui/progress";
 export { Badge } from "./ui/badge";
 export { Avatar } from "./ui/avatar";
+export { Slider } from "./ui/slider";
 //common
 export { Toaster } from "./ui/sonner";
 //variants

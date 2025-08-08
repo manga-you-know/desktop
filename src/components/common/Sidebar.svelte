@@ -124,7 +124,7 @@
 </script>
 
 <Sidebar.Root
-  class={cn("bg-sidebar  px-[2.5px] pb-0 border-0", $customTitlebar && "pt-7")}
+  class={cn("px-[2.5px] pb-0 border-0", $customTitlebar && "pt-7")}
   {variant}
   side="left"
   collapsible="icon"
@@ -148,7 +148,7 @@
             <Sidebar.MenuItem class="!min-w-16">
               <Sidebar.MenuButton
                 class={cn(
-                  "bg-transparent",
+                  "bg-transparent transition-all",
                   page.url.pathname === item.path &&
                     "hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
                 )}
@@ -542,7 +542,7 @@
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <img
           bind:this={imgElement}
-          class="!size-9 min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0 transition-all"
+          class="!size-9 min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0"
           draggable={false}
           src="/icon.png"
           alt="icon"

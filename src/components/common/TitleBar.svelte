@@ -55,9 +55,22 @@
   });
 </script>
 
+<!--
 <div
   class={cn(
-    "bg-sidebar flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
+    "absolute flex w-full h-10 items-center justify-center translate-y-0 transition-all duration-300",
+    page.route.id?.startsWith("/(root)/reader") &&
+      $isFullscreen &&
+      !$openMenuChapters &&
+      "h-0 -translate-y-[3rem]",
+  )}
+>
+  <div class="size-8 rounded-full bg-primary/40"></div>
+</div>
+-->
+<div
+  class={cn(
+    "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
     page.route.id?.startsWith("/(root)/reader") &&
       $isFullscreen &&
       !$openMenuChapters &&

@@ -27,7 +27,8 @@
 {#if collapsible === "none"}
   <div
     class={cn(
-      "bg-sidebar text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col",
+      "text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col",
+      variant === "inset" ? "bg-transparent" : "bg-sidebar/60",
       className,
     )}
     bind:this={ref}
@@ -44,7 +45,7 @@
     <Sheet.Content
       data-sidebar="sidebar"
       data-mobile="true"
-      class="bg-sidebar text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
+      class="bg-sidebar/60 text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
       {side}
     >
@@ -57,7 +58,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={ref}
-    class="text-sidebar-foreground group peer hidden ssm:block"
+    class="text-sidebar-foreground group peer hidden ssm:block ![background:transparent] hover:![background:transparent] focus:![background:transparent]"
     data-state={sidebar.state}
     data-collapsible={sidebar.state === "collapsed" ? collapsible : ""}
     data-variant={variant}
@@ -69,7 +70,7 @@
     <div
       data-slot="sidebar-gap"
       class={cn(
-        "relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear",
+        "relative w-[--sidebar-width] transition-[width] duration-200 ease-linear",
         $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         "group-data-[collapsible=offcanvas]:w-0",
         "group-data-[side=right]:!rotate-180",
@@ -87,15 +88,15 @@
           : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
         // Adjust the padding for floating and inset variants.
         variant === "floating" || variant === "inset"
-          ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+10px)]"
-          : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          ? "p-2 bg-transparent group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+10px)]"
+          : "bg-sidebar/60 group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
         className,
       )}
       {...restProps}
     >
       <div
         data-sidebar="sidebar"
-        class="bg-sidebar bg-group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow"
+        class="bg-group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow"
       >
         {@render children?.()}
       </div>

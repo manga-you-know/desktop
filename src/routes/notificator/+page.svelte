@@ -86,6 +86,7 @@
   });
 
   listen("notificate", async (e) => {
+    moveWindow(Position.BottomRight);
     if (!isNotificationPayload(e.payload)) return;
     const payload: NotificationPayload = e.payload;
     queue.push(payload);
