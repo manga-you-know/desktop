@@ -25,11 +25,11 @@ Available platforms:
 
 | OS                                                                                                                                           | Currently status                                                                                    | Working?                                      |
 | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| <p style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap" >   Windows | The app is developed here, so its supposed to run really smooth with every functionality            | ✅Yes                                          |
-| <p style="display: flex; align-items: center; white-space: nowrap" >   macOS <br></p>        | Since I don't own a Mac yet, I don't know the extends of functionalities here                       | ☑️Mostly                                      |
-| <p style="display: flex; align-items: center; white-space: nowrap" >  Linux <br></p>         | Already tested but needs some fixing in UI, since Linux seems to hate blur effects. IDK about Arch  | ☑️ Mostly                                     |
-| <p style="display: flex; align-items: center; white-space: nowrap" >   Android </p>        | I need more time and RAM on my device to make it useful                                             | <p style="white-space:nowrap" >⛔Partially</p> |
-| <p style="display: flex; align-items: center; white-space: nowrap" >  iOS </p>                | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                          |
+| <b style="width: 100%; display: flex; justify-content: center">Windows</b> | The app is developed here, so its supposed to run really smooth with every functionality            | ✅Yes                                          |
+| <b style="width: 100%; display: flex; justify-content: center">macOS</b>   | Since I don't own a Mac yet, I don't know the extends of functionalities here                       | ☑️Mostly                                      |
+| <b style="width: 100%; display: flex; justify-content: center">Linux</b>   | Already tested but needs some fixing in UI, since Linux seems to hate blur effects. IDK about Arch  | ☑️ Mostly                                     |
+| <b style="width: 100%; display: flex; justify-content: center">Android</b> | I need more time and RAM on my device to make it useful                                             | <p style="white-space:nowrap" >⛔Partially</p> |
+| <b style="width: 100%; display: flex; justify-content: center">iOS</b>     | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                          |
  
 <p style="display: flex; align-items: center; gap: 0.5rem" >
     <img src="/docs/assets/discord.png" width="16" />
