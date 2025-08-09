@@ -2,7 +2,15 @@
 	import { Drawer as DrawerPrimitive } from "vaul-svelte";
 	import DrawerOverlay from "./drawer-overlay.svelte";
 	import { cn } from "$lib/utils.js";
-
+	import {
+		blackWhiteMode,
+		brightness,
+		contrast,
+		customTitlebar,
+		saturation,
+		sepia,
+		theme,
+	} from "@/store";
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -19,12 +27,23 @@
 	<DrawerPrimitive.Content
 		bind:ref
 		class={cn(
-			"bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border outline-none ring-0 focus-visible:outline-none focus-visible:ring-0 ",
+			"filter-effects",
+			"bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border outline-none ring-0 focus-visible:outline-none focus-visible:ring-0",
+			$theme === "dark" && "dark",
+			$blackWhiteMode && "grayscale",
 			className,
 		)}
+		style="--contrast: {contrast}; --brightness: {brightness}; --saturate: {saturation}; --sepia: {sepia};"
 		{...restProps}
 	>
 		<div class="bg-muted mx-auto mt-4 h-2 w-[100px] rounded-full"></div>
 		{@render children?.()}
 	</DrawerPrimitive.Content>
 </DrawerPrimitive.Portal>
+
+<style>
+	:global(.filter-effects) {
+		filter: contrast(var(--contrast)) brightness(var(--brightness))
+			saturate(var(--saturation)) sepia(var(--sepia));
+	}
+</style>

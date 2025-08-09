@@ -36,6 +36,11 @@ import {
   keepReading,
   filter,
   useFilter,
+  blackWhiteMode,
+  contrast,
+  brightness,
+  saturation,
+  sepia,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -98,8 +103,13 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   mark_readed: { store: markReaded, default: "start" },
   keep_reading: { store: keepReading, default: true },
   notify_update: { store: notifyUpdate, default: true },
+  black_white_mode: { store: blackWhiteMode, default: false },
+  contrast: { store: contrast, default: 1 },
+  brightness: { store: brightness, default: 1 },
+  saturation: { store: saturation, default: 1 },
+  sepia: { store: sepia, default: 0 },
   use_filter: { store: useFilter, default: false },
-  filter: { store: filter, default: "bg-amber-500/10" },
+  filter: { store: filter, default: "bg-amber-500/20" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },
@@ -131,7 +141,7 @@ export async function loadSettings() {
   >;
   Object.entries(SETTINGS_SCHEMA).forEach(
     ([key, { store, default: defaultValue }]) => {
-      store.set(data[key] ?? defaultValue);
+      store.set(data[key] !== undefined ? data[key] : defaultValue);
     }
   );
   if (get(lastPage) !== "/home") goto(get(lastPage));
@@ -164,8 +174,8 @@ export async function loadSettings() {
 export async function saveSettings() {
   await ensureConnected();
   await Promise.all(
-    Object.entries(SETTINGS_SCHEMA).map(([key, { store }]) =>
-      loadedSettings.set(key, get(store))
+    Object.entries(SETTINGS_SCHEMA).map(async ([key, { store }]) =>
+      await loadedSettings.set(key, get(store))
     )
   );
   const isDecorated = await window.isDecorated();

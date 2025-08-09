@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "CHANGELOG.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "CHANGELOG"
             }
           }
         ]
@@ -170,6 +170,9 @@
   },
   "active": "4755e26177e46bd7",
   "lastOpenFiles": [
+    "README.md",
+    "TODO.md",
+    "CHANGELOG.md",
     "docs/assets/banner-github.png",
     "docs/assets/d.png",
     "docs/assets/banner readme(1).png",
@@ -188,12 +191,8 @@
     "docs/assets/nada.gif",
     "docs/assets/Recording 2025-08-04 230558.gif",
     "docs/assets/foda.gif",
-    "TODO.md",
-    "README.md",
-    "CHANGELOG.md",
     "docs/assets/discord.png",
     "docs/assets/ios.png",
-    "docs/assets/apple.png",
     "docs/Untitled.md"
   ]
 }

@@ -13,12 +13,17 @@
   } from "@/components";
   import {
     autoSearchUpdates,
+    blackWhiteMode,
+    brightness,
     closeTray,
+    contrast,
     customTitlebar,
     filter,
     isFullscreen,
     isMaximized,
     openSearch,
+    saturation,
+    sepia,
     theme,
     undoTasks,
     updateInfo,
@@ -178,7 +183,13 @@
         page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
       )}
     >
-      <div class={cn("w-screen h-screen", $useFilter && $filter)}>
+      <div
+        class={cn(
+          "w-screen h-screen filter-effects",
+          $blackWhiteMode && "!grayscale",
+        )}
+        style="--contrast: {$contrast}; --brightness: {$brightness}; --saturation: {$saturation}; --sepia: {$sepia};"
+      >
         {#if $customTitlebar}
           <TitleBar />
         {/if}
@@ -193,3 +204,10 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .filter-effects {
+    filter: contrast(var(--contrast)) brightness(var(--brightness))
+      saturate(var(--saturation)) sepia(var(--sepia));
+  }
+</style>

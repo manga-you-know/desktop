@@ -48,6 +48,11 @@
     keepReading,
     filter,
     useFilter,
+    blackWhiteMode,
+    saturation,
+    sepia,
+    brightness,
+    contrast,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme, Select } from "@/components";
@@ -83,11 +88,9 @@
   });
 
   const filters = [
-    "filter grayscale",
     "bg-amber-500/20",
     "bg-amber-900/10",
     "bg-red-900/20",
-    "contrast-125",
     "bg-teal-200/20",
     "bg-red-500/20",
     "bg-blue-500/20",
@@ -98,11 +101,9 @@
     "bg-orange-500/20",
   ];
   const filtersLabel = {
-    "filter grayscale": "Black & white",
     "bg-amber-500/20": "Portable Mexico",
     "bg-teal-200/20": "Shine emerald",
     "bg-amber-900/10": "Warm heart",
-    "contrast-125": "High contrast",
     "bg-red-900/20": "Great wine",
     "bg-blue-500/20": "Frozen ice",
     "bg-violet-200/20": "Violet dream",
@@ -314,10 +315,116 @@
                 onCheckedChange={saveSettings}
               />
               <Label class="cursor-pointer" for="window-effects">
-                Window effects (experimental & Windows only)
+                Window high transparency
               </Label>
             </div>
+            <div class="flex gap-2 items-center">
+              <Slider
+                class="max-w-36"
+                type="single"
+                bind:value={$brightness}
+                onValueChange={saveSettings}
+                min={0.1}
+                max={10}
+                step={0.1}
+                disabled={$blackWhiteMode}
+              />
+              <Label
+                class="cursor-pointer text-nowrap !w-28"
+                onclick={() => {
+                  brightness.set(1);
+                  saveSettings();
+                }}
+              >
+                Brightness
+                <span class="text-gray-500">
+                  {Math.ceil($brightness * 100)}%
+                </span>
+              </Label>
+            </div>
+            <div class="flex gap-2 items-center">
+              <Slider
+                class="max-w-36"
+                type="single"
+                bind:value={$contrast}
+                onValueChange={saveSettings}
+                min={0.1}
+                max={10}
+                step={0.1}
+                disabled={$blackWhiteMode}
+              />
+              <Label
+                class="cursor-pointer text-nowrap !w-28"
+                onclick={() => {
+                  contrast.set(1);
+                  saveSettings();
+                }}
+              >
+                Contrast
+                <span class="text-gray-500">
+                  {Math.ceil($contrast * 100)}%
+                </span>
+              </Label>
+            </div>
+            <div class="flex gap-2 items-center">
+              <Slider
+                class="max-w-36"
+                type="single"
+                bind:value={$saturation}
+                onValueChange={saveSettings}
+                max={10}
+                step={0.1}
+                disabled={$blackWhiteMode}
+              />
+              <Label
+                class="cursor-pointer text-nowrap !w-28"
+                onclick={() => {
+                  saturation.set(1);
+                  saveSettings();
+                }}
+              >
+                Saturation
+                <span class="text-gray-500">
+                  {Math.ceil($saturation * 100)}%
+                </span>
+              </Label>
+            </div>
+
+            <div class="flex gap-2 items-center">
+              <Slider
+                class="max-w-36"
+                type="single"
+                bind:value={$sepia}
+                onValueChange={saveSettings}
+                max={1}
+                step={0.1}
+                disabled={$blackWhiteMode}
+              />
+              <Label
+                class="cursor-pointer text-nowrap !w-28"
+                onclick={() => {
+                  sepia.set(0);
+                  saveSettings();
+                }}
+              >
+                Sepia
+                <span class="text-gray-500">
+                  {Math.ceil($sepia * 100)}%
+                </span>
+              </Label>
+            </div>
+
             <Label>Filter</Label>
+            <div class="flex gap-2 items-center">
+              <Switch
+                id="black-white"
+                bind:checked={$blackWhiteMode}
+                onCheckedChange={saveSettings}
+              />
+              <Label class="cursor-pointer" for="black-white">
+                Black & White
+              </Label>
+            </div>
             <div class="flex gap-2 items-center">
               <Switch
                 id="use-filter"
@@ -406,7 +513,7 @@
               </div>
               <div class="flex flex-col gap-2 justify-center">
                 <Label class="cursor-pointer" for="custom-titlebar">
-                  Custom Titlebar
+                  Titlebar
                 </Label>
                 <div class="flex gap-2 items-center">
                   <Label
@@ -414,8 +521,9 @@
                     onclick={() => {
                       customTitlebar.set(false);
                       saveSettings();
-                    }}>OFF</Label
-                  >
+                    }}
+                    >Native
+                  </Label>
                   <Switch
                     bind:checked={$customTitlebar}
                     onCheckedChange={saveSettings}
@@ -425,8 +533,9 @@
                     onclick={() => {
                       customTitlebar.set(true);
                       saveSettings();
-                    }}>ON</Label
-                  >
+                    }}
+                    >Custom
+                  </Label>
                 </div>
               </div>
             </div>
