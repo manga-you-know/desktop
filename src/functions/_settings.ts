@@ -41,6 +41,7 @@ import {
   brightness,
   saturation,
   sepia,
+  filterReader,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -109,6 +110,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   saturation: { store: saturation, default: 1 },
   sepia: { store: sepia, default: 0 },
   use_filter: { store: useFilter, default: false },
+  filter_reader: { store: filterReader, default: false },
   filter: { store: filter, default: "bg-amber-500/20" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },

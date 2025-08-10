@@ -19,6 +19,7 @@
     contrast,
     customTitlebar,
     filter,
+    filterReader,
     isFullscreen,
     isMaximized,
     openSearch,
@@ -172,8 +173,10 @@
   {:else}
     <div
       class={cn(
-        "fixed z-[999] pointer-events-none w-screen h-screen",
-        $useFilter && $filter,
+        "fixed z-[999] pointer-events-none w-screen h-screen transition-colors duration-300",
+        $useFilter &&
+          (!$filterReader || page.route.id?.startsWith("/(root)/reader")) &&
+          $filter,
       )}
     ></div>
     <div

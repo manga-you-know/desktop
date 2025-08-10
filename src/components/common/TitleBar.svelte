@@ -28,6 +28,7 @@
   import type { Downloading, FavoriteLoaded } from "@/types";
   import Tooltip from "./Tooltip.svelte";
   import { goto } from "$app/navigation";
+  import { toast } from "svelte-sonner";
 
   const window = getCurrentWindow();
   let version = $state("0.0.0");
@@ -95,9 +96,11 @@
           <Menubar.Item
             class="pointer-events-auto"
             onclick={async () => {
-              const pathToGo = await join(downloadPath, "favorite-panels");
+              const pathToGo = await join(downloadPath, "mangas");
               if (await exists(pathToGo)) {
                 openPath(pathToGo);
+              } else {
+                toast.warning("There's no downloadings");
               }
             }}
           >
@@ -110,6 +113,8 @@
               const pathToGo = await join(documentsPath, "favorite-panels");
               if (await exists(pathToGo)) {
                 openPath(pathToGo);
+              } else {
+                toast.warning("There's no favorited panels");
               }
             }}
           >
@@ -177,7 +182,7 @@
     </Menubar.Root>
     <Label
       class={cn(
-        "ml-8 dark!text-gray-400 hidden underline select-none",
+        "ml-8 dark!text-gray-400 hidden underline select-none text-nowrap",
         downloadingCount > 0 && "block",
       )}
       data-tauri-drag-region={!$isFullscreen}

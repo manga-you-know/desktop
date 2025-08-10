@@ -77,6 +77,7 @@ export const saturation = writable<number>(1);
 export const sepia = writable<number>(0);
 export const brightness = writable<number>(1);
 export const useFilter = writable<boolean>(false);
+export const filterReader = writable<boolean>(false);
 export const filter = writable<string>("bg-amber-500/20");
 export const blurEffects = writable<boolean>(true);
 export const windowEffects = writable<boolean>(false);

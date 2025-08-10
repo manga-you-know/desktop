@@ -26,7 +26,7 @@
     <Tilt
       class={cn(
         "hover:scale-[1.2] no-blurry transition duration-500 [perspective:200px]",
-        contextOpen && "!scale-[1.546]",
+        contextOpen && "!scale-[1.2]",
       )}
     >
       <button
