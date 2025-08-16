@@ -2,9 +2,9 @@
 <img style="width: 100%" src="/docs/assets/banner-github.png" />
 </div>
 
-[![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest) [![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/manga-you-know/desktop)
+[![](https://dcbadge.limes.pink/api/server/EVqHFtP2r8?style=flat)](https://discord.gg/EVqHFtP2r8) [![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest) [![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/manga-you-know/desktop) 
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
 <div align="center" style="flex: auto">
   <img
@@ -31,10 +31,6 @@ Available platforms:
 | <b style="width: 100%; display: flex; justify-content: center">Android</b> | I need more time and RAM on my device to make it useful                                             | <p style="white-space:nowrap" >⛔Partially</p> |
 | <b style="width: 100%; display: flex; justify-content: center">iOS</b>     | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                          |
  
-<p style="display: flex; align-items: center; gap: 0.5rem" >
-    <img src="/docs/assets/discord.png" width="16" />
-Discord server to contact me: <a href="https://discord.gg/FK37mJtFD4" target="_blank">MangaYouKnow server</a>
-</p> 
 
 ## About 
 
