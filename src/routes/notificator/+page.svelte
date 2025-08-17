@@ -5,10 +5,13 @@
   import { delay } from "@/utils";
   import type { NotificationPayload } from "@/types";
   import { emit, listen } from "@tauri-apps/api/event";
-  import { getCurrentWindow, Window } from "@tauri-apps/api/window";
+  import {
+    getCurrentWindow,
+    LogicalSize,
+    Window,
+  } from "@tauri-apps/api/window";
   import { moveWindow, Position } from "@tauri-apps/plugin-positioner";
   import { onMount } from "svelte";
-  import { writable } from "svelte/store";
   import Icon from "@iconify/svelte";
 
   const window = getCurrentWindow();
@@ -82,6 +85,7 @@
   onMount(async () => {
     await moveWindow(Position.BottomRight);
     await window.setIgnoreCursorEvents(true);
+    window.setSize(new LogicalSize(500, 100));
     mainWindow = await Window.getByLabel("main");
   });
 
@@ -96,7 +100,7 @@
 
 <div
   class={cn(
-    "size-full relative flex flex-col bg-transparent",
+    "w-full h-full relative flex flex-col bg-transparent",
     theme === "dark" && "dark",
   )}
 >
