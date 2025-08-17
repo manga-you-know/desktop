@@ -61,7 +61,6 @@ async function preloadCache(cache: ReadCache) {
   for (let data of oldList) {
     if (data.favorite.id === cache.favorite.id) {
       final.push(oldCache)
-      console.log(oldCache)
     } else {
       final.push(data)
     }

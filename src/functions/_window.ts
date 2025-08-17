@@ -5,6 +5,8 @@ import {
   discordIntegration,
   showCountIconTray,
   extraTitle,
+  customNotificator,
+  openPatchNotes,
 } from "@/store";
 import { start, setActivity, stop } from "tauri-plugin-drpc";
 import { readFile } from "@tauri-apps/plugin-fs";
@@ -19,7 +21,7 @@ import { Menu } from "@tauri-apps/api/menu";
 import { defaultWindowIcon, getVersion } from "@tauri-apps/api/app";
 import { Effect, getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { fetch } from "@tauri-apps/plugin-http";
-import { load } from "@tauri-apps/plugin-store";
+import { load, Store } from "@tauri-apps/plugin-store";
 import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { toast } from "svelte-sonner";
@@ -32,17 +34,23 @@ import {
 import { titleCase } from "@/utils";
 import { FavoriteDB } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
-import { DISCORD_WEBHOOK_URL, ICONS_TO_LOAD } from "@/constants";
+import { DISCORD_WEBHOOK_URL, DISCORD_FEEDBACK_WEBHOOK, ICONS_TO_LOAD } from "@/constants";
 import { exit, relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 import { join, resourceDir } from "@tauri-apps/api/path";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 const currentWindow = getCurrentWindow();
 const system = type();
+let settingsStore: Store
 let isMaximized = false;
 
 export async function getEnv(key: string): Promise<string> {
   return await invoke("get_env", { name: key });
+}
+
+export async function loadStore() {
+  if (!settingsStore) settingsStore = await load("settings.json")
 }
 
 export async function addBlurWindow() {
@@ -150,6 +158,43 @@ export function loadAppIcons() {
   loadIcons(ICONS_TO_LOAD);
 }
 
+export async function verifyCustomNotificator() {
+  const notificator = await Window.getByLabel("notificator")
+  if (get(customNotificator)) {
+    if (!notificator) {
+      new WebviewWindow("notificator",
+        {
+          "url": "index.html",
+          "width": 450,
+          "height": 100,
+          "title": "Notificator",
+          "transparent": true,
+          "skipTaskbar": true,
+          "alwaysOnTop": true,
+          "visibleOnAllWorkspaces": true,
+          "decorations": false,
+          "shadow": false,
+          "closable": false,
+          "resizable": false
+        })
+    }
+  } else {
+    notificator?.destroy();
+  }
+}
+
+export async function sendFeedbackDiscord(message: string) {
+  await fetch(DISCORD_FEEDBACK_WEBHOOK, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      content: message,
+    }),
+  });
+}
+
 export async function sendMessageDiscord(message: string) {
   await fetch(DISCORD_WEBHOOK_URL, {
     method: "POST",
@@ -165,7 +210,7 @@ export async function sendMessageDiscord(message: string) {
 export async function sendLogDiscord() {
   const favsLength = (await FavoriteDB.getRawFavorites()).length;
   await sendMessageDiscord(`
-### User logged! maybe cringe!
+### User logged! A LOTTA USERS MAYBE!
 - Date: **${Date()}**
 - Version: **${await getVersion()}**
 - Platform: **${titleCase(type())}**
@@ -173,11 +218,21 @@ export async function sendLogDiscord() {
 }
 
 export async function logNewUser() {
-  const loadedSettings = await load("settings.json");
-  const hasLogged = await loadedSettings.get<boolean>("has_logged_6");
-  if (hasLogged === undefined) {
+  await loadStore()
+  const hasLogged = await settingsStore.get<boolean>("has_logged_7");
+  if (!hasLogged) {
     sendLogDiscord();
-    await loadedSettings.set("has_logged_6", true);
+    await settingsStore.set("has_logged_7", true);
+  }
+}
+
+export async function showPatchNotes() {
+  await loadStore()
+  const appVersion = await getVersion()
+  const sawPatchNotes = await settingsStore.get<boolean>(`v${appVersion}`);
+  if (!sawPatchNotes) {
+    openPatchNotes.set(true)
+    await settingsStore.set(`v${appVersion}`, true);
   }
 }
 

@@ -173,7 +173,7 @@
       <div class="flex flex-col gap-4">
         <Input
           id="folderName-{favorite.id}"
-          placeholder="Folder name"
+          placeholder="Folder path"
           floatingLabel
           required
           variant="secondary"

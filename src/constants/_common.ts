@@ -79,6 +79,7 @@ export const ICONS_TO_LOAD = [
   "material-symbols:notifications-rounded",
   "material-symbols:sunny-outline-rounded",
   "material-symbols:rule-settings-rounded",
+  "material-symbols-light:stylus-note-rounded",
   "material-symbols:book-ribbon-outline-rounded",
   "typcn:plus",
   "typcn:plus-outline",

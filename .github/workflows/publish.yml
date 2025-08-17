@@ -115,6 +115,7 @@ jobs:
         run: bun create-env
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_FEEDBACK_WEBHOOK: ${{ secrets.DISCORD_FEEDBACK_WEBHOOK }}
 
       - name: Publish Release
         uses: tauri-apps/tauri-action@v0

@@ -24,6 +24,7 @@
     "core:window:allow-destroy",
     "core:window:allow-show",
     "core:window:allow-hide",
+    "core:window:allow-set-size",
     "core:window:allow-set-overlay-icon",
     "core:window:allow-set-badge-count",
     "core:window:allow-set-badge-label",

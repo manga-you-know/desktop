@@ -10,6 +10,10 @@ const REPLACEMENTS = [
     pattern: /export const DISCORD_WEBHOOK_URL\s*=\s*["'`].*?["'`];/,
     replacement: `export const DISCORD_WEBHOOK_URL = "${process.env.DISCORD_WEBHOOK_URL}";`,
   },
+  {
+    pattern: /export const DISCORD_FEEDBACK_WEBHOOK\s*=\s*["'`].*?["'`];/,
+    replacement: `export const DISCORD_FEEDBACK_WEBHOOK = "${process.env.DISCORD_FEEDBACK_WEBHOOK}";`,
+  },
 ];
 
 const fullPath = path.resolve(DIR, FILE);

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getVersion } from "@tauri-apps/api/app";
+  import { open as openFolder } from "@tauri-apps/plugin-dialog";
   import { enable, isEnabled, disable } from "@tauri-apps/plugin-autostart";
   import { load, Store } from "@tauri-apps/plugin-store";
   import { relaunch } from "@tauri-apps/plugin-process";
@@ -58,6 +59,7 @@
     showCurrentChapter,
     readerClock,
     filterReader,
+    downloadPath,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme, Select } from "@/components";
@@ -94,6 +96,18 @@
       ? await setDiscordActivity("Changing settings...")
       : await stopDiscordPresence();
   });
+
+  async function pickFolder() {
+    const path = await openFolder({
+      title: "Select a folder for downloads",
+      multiple: false,
+      directory: true,
+      defaultPath: $downloadPath === "Mangas/" ? undefined : $downloadPath,
+    });
+    if (path) {
+      downloadPath.set(path);
+    }
+  }
 
   const filters = [
     "bg-amber-500/20",
@@ -334,7 +348,36 @@
                     Show count of favorites with chapter to read in icon
                   </Label>
                 </div>
-
+                <div class="flex flex-col gap-2">
+                  <Label>Default reading language</Label>
+                  <Language
+                    bind:selectedLanguage={$preferableLanguage}
+                    onChange={saveSettings}
+                    languageOptions={LANGUAGE_OPTIONS}
+                  />
+                </div>
+                <Label>Download path</Label>
+                <div class="inline-flex">
+                  <Input
+                    class="w-80 rounded-r-none"
+                    id="downloadPath"
+                    placeholder="Path base for download"
+                    floatingLabel
+                    readonly
+                    required
+                    variant="outline"
+                    onchange={saveSettings}
+                    onenter={saveSettings}
+                    bind:value={$downloadPath}
+                  />
+                  <Button
+                    class="rounded-l-none"
+                    variant="outline"
+                    onclick={pickFolder}
+                  >
+                    <Icon class="!size-4" icon="lucide:paperclip" />
+                  </Button>
+                </div>
                 <Label>Notifications</Label>
                 <div class="flex gap-2 items-center">
                   <Switch
@@ -568,6 +611,7 @@
               <Select
                 class="w-44"
                 classPopup="w-44"
+                wheelControls
                 bind:selected={$filter}
                 items={filters}
                 itemsLabel={filtersLabel}
@@ -866,14 +910,7 @@
                 <Icon class="!size-4" icon="lucide:trash" />
                 Clear cache
               </Button>
-              <div class="flex flex-col gap-2">
-                <Label>Preferable language</Label>
-                <Language
-                  bind:selectedLanguage={$preferableLanguage}
-                  onChange={saveSettings}
-                  languageOptions={LANGUAGE_OPTIONS}
-                />
-              </div>
+
               {#if !IS_MOBILE}
                 <div class="flex items-center">
                   <Checkbox

@@ -23,6 +23,8 @@
     isMaximized,
     favoritesLoaded,
     globalChapters,
+    openPatchNotes,
+    openFeedback,
   } from "@/store";
   import { setFullscreen } from "@/functions";
   import type { Downloading, FavoriteLoaded } from "@/types";
@@ -137,6 +139,24 @@
           )}>About</Menubar.Trigger
         >
         <Menubar.Content class="z-[51]">
+          <Menubar.Item
+            class="pointer-events-auto"
+            onclick={() => openPatchNotes.set(true)}
+          >
+            <Label>Patch notes</Label>
+            <Icon
+              class="!size-6 -my-0.5"
+              icon="material-symbols-light:stylus-note-rounded"
+            />
+          </Menubar.Item>
+          <!--
+          <Menubar.Item
+            class="pointer-events-auto"
+            onclick={() => openFeedback.set(true)}
+          >
+            <Label>Give feedback</Label>
+            <Icon class="!size-5" icon="mdi:github" />
+          </Menubar.Item> -->
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openUrl("https://github.com/ReiLoko4")}

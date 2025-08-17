@@ -33,6 +33,7 @@ export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";
 export { default as ChaptersMenu } from "./modals/ChaptersMenu.svelte";
 export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";
 export { default as EditFavorite } from "./modals/EditFavorite.svelte";
+export { default as PatchNotes } from "./modals/PatchNotes.svelte";
 export { default as PanelModal } from "./modals/PanelModal.svelte";
 export { default as AddCustom } from "./modals/AddCustom.svelte";
 export { default as Downloads } from "./modals/Downloads.svelte";

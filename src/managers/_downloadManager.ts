@@ -29,6 +29,8 @@ import type { Favorite, Chapter, Episode, Language } from "@/types";
 import { memoizeExpiring, retry } from "@/utils";
 import { load, Store } from "@tauri-apps/plugin-store";
 import { invoke } from "@tauri-apps/api/core";
+import { downloadPath } from "@/store";
+import { get } from "svelte/store";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
@@ -409,11 +411,18 @@ export class DownloadManager {
       images,
       this.getBaseUrl(chapter.source)
     );
-    const chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
-    await mkdir(chapterPath, {
-      baseDir: BaseDirectory.Download,
-      recursive: true,
-    });
+    let chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
+    if (get(downloadPath) === "Mangas/") {
+      await mkdir(chapterPath, {
+        baseDir: BaseDirectory.Download,
+        recursive: true,
+      });
+    } else {
+      chapterPath = `${get(downloadPath)}/${favorite.folder_name}/${chapter.number}`;
+      await mkdir(chapterPath, {
+        recursive: true,
+      });
+    }
     imagesBase64.forEach(async (imageBase64, i) => {
       const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
       const binaryStr = atob(base64Data);
@@ -421,11 +430,19 @@ export class DownloadManager {
       for (let i = 0; i < binaryStr.length; i++) {
         bytes[i] = binaryStr.charCodeAt(i);
       }
-      await writeFile(
-        `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
-        bytes,
-        { baseDir: BaseDirectory.Download }
-      );
+      if (get(downloadPath) === "Mangas/") {
+        await writeFile(
+          `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
+          bytes,
+          { baseDir: BaseDirectory.Download }
+        );
+      }
+      else {
+        await writeFile(
+          `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
+          bytes,
+        );
+      }
     });
     await store.set(chapter.number.toString(), chapter);
   }

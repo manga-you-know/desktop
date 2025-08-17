@@ -15,6 +15,7 @@
     classPopover?: string;
     itemClass?: string;
     disabled?: boolean;
+    wheelControls?: boolean;
     inverseDisabled?: boolean;
     selectedLanguage: Language;
     languageOptions: Language[];
@@ -28,6 +29,7 @@
     itemClass,
     disabled = $bindable(false),
     inverseDisabled = false,
+    wheelControls = false,
     selectedLanguage = $bindable({ id: "en", label: "English" }),
     languageOptions: options,
     onChange,
@@ -40,25 +42,27 @@
       <Button
         class={cn(
           "min-w-[165px] max-w-[165px] justify-between bg-slate-300 dark:bg-secondary dark:text-white",
-          className
+          className,
         )}
         {...props}
         variant="outline"
         role="combobox"
         onwheel={(e) => {
-          e.preventDefault();
-          if (e.deltaY < 0) {
-            selectedLanguage =
-              options.at(
-                options.findIndex((v) => v.id === selectedLanguage.id) - 1
-              ) ?? options[0];
-          } else {
-            selectedLanguage =
-              options.at(
-                options.findIndex((v) => v.id === selectedLanguage.id) + 1
-              ) ?? options[0];
+          if (wheelControls) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+              selectedLanguage =
+                options.at(
+                  options.findIndex((v) => v.id === selectedLanguage.id) - 1,
+                ) ?? options[0];
+            } else {
+              selectedLanguage =
+                options.at(
+                  options.findIndex((v) => v.id === selectedLanguage.id) + 1,
+                ) ?? options[0];
+            }
+            onChange?.();
           }
-          onChange?.();
         }}
         aria-expanded={open}
         disabled={inverseDisabled ? !disabled : disabled}
@@ -81,7 +85,7 @@
                 language.id === selectedLanguage.id
                   ? "!bg-slate-400 dark:!bg-background/70"
                   : "aria-selected:bg-slate-400 dark:aria-selected:bg-background/20",
-                itemClass
+                itemClass,
               )}
               value={language.id}
               onSelect={() => {
