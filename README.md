@@ -2,7 +2,8 @@
 <img style="width: 100%" src="/docs/assets/banner-github.png" />
 </div>
 
-[![](https://dcbadge.limes.pink/api/server/EVqHFtP2r8?style=flat)](https://discord.gg/EVqHFtP2r8) [![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest) [![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/manga-you-know/desktop) 
+[![](https://dcbadge.limes.pink/api/server/EVqHFtP2r8?style=flat)](https://discord.gg/EVqHFtP2r8) [![release](https://img.shields.io/github/v/release/manga-you-know/desktop)](https://github.com/manga-you-know/desktop/releases/latest) [![downloads](https://img.shields.io/github/downloads/manga-you-know/desktop/total)](https://github.com/manga-you-know/desktop/releases/latest) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/manga-you-know/desktop) ![GitHub Repo stars](https://img.shields.io/github/stars/manga-you-know/desktop)
+
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
