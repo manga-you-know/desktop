@@ -6,6 +6,7 @@
     AddCustom,
     Downloads,
     EditTags,
+    PatchNotes,
     Search,
     Settings,
     TitleBar,
@@ -49,6 +50,7 @@
     refreshPanels,
     updateBadge,
     destroyEverything,
+    showPatchNotes,
   } from "@/functions";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
@@ -121,6 +123,7 @@
   onMount(async () => {
     loadDatabase();
     logNewUser();
+    showPatchNotes();
     createTray();
     loadSettings();
     loadAppIcons();
@@ -168,6 +171,7 @@
   <Downloads />
   <Update />
   <EditTags />
+  <PatchNotes />
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

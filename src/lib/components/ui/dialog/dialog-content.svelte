@@ -59,7 +59,8 @@
   >
     {@render children?.()}
     <DialogPrimitive.Close
-      class="ring-offset-background focus:ring-ring absolute right-4 top-4 rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none dark:text-white"
+      class="ring-offset-background focus:ring-ring absolute right-4 top-4 rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none dark:text-white"
+      tabindex={-1}
     >
       <X class="size-5" />
       <span class="sr-only">Close</span>
