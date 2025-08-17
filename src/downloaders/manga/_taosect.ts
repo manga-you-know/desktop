@@ -89,21 +89,16 @@ export class TaosectDl implements MangaDl {
     const text = await response.text();
     const $ = cheerio.load(text);
     const chapters: Chapter[] = [];
-    const links = $('a[href*="leitor-online"]');
-    links.each((_, link) => {
-      const href = $(link).attr("href");
-      const text = $(link).text().replace(/\t/g, "");
-
-      if (
-        href &&
-        href.includes(mangaId) &&
-        !(
-          text.includes("Último Capítulo") || text.includes("Primeiro Capítulo")
-        )
-      ) {
-        const id = href?.split("/").slice(-3, -1).join("/");
+    const tds = $('td[align="left"]');
+    tds.each((_, td) => {
+      const a = $(td).find("a");
+      const href = a.attr("href");
+      const text = a.text().replace(/\t/g, "");
+      const chpt = text.split(" ")[1] ?? "0"
+      const id = href?.split("/")?.slice(-3, -1)?.join("/") ?? "";
+      if (!chapters.find(chp => chp.chapter_id === id || chp.number === chpt)) {
         chapters.push({
-          number: text.split(" ")[1] ?? "0",
+          number: chpt,
           title: text,
           chapter_id: id,
           source: "Taosect",
