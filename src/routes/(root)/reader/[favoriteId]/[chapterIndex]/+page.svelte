@@ -739,7 +739,9 @@
       />
     </Button>
   </div>
-  <div class="fixed w-screen h-screen p-6 flex justify-end items-start">
+  <div
+    class="fixed w-screen h-screen p-6 flex justify-end items-start pointer-events-none"
+  >
     <div
       class={cn(
         "flex gap-2 p-2 transition-all duration-400 rounded-2xl bg-secondary/30 backdrop-blur-sm",
