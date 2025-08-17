@@ -29,6 +29,7 @@
     downloadManager,
     preferableLanguage,
     isChaptersDescending,
+    downloadPath,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -67,12 +68,17 @@
   let isUltraFavorite = $state(Boolean(favorite.is_ultra_favorite));
   let chaptersMode: "web" | "local" = $state("web");
   let jsonChapters: { [key: string]: Chapter } = $state({});
+  let favoritePath = $derived(
+    $downloadPath === "Mangas/"
+      ? `Mangas/${favorite.folder_name}`
+      : `${$downloadPath}/${favorite.folder_name}`,
+  );
   let chaptersDl = $derived(
     downloaded
       .filter((d) => jsonChapters[d.name])
       .map((d) => ({
         ...jsonChapters[d.name],
-        path: `Mangas/${favorite.folder_name}/${d.name}`,
+        path: `${favoritePath}/${d.name}`,
       }))
       .toReversed(),
   );
@@ -163,13 +169,20 @@
   }
 
   async function refreshDownloadeds() {
-    const path = `Mangas/${favorite.folder_name}`;
-    if (await exists(path, { baseDir: BaseDirectory.Download })) {
-      downloaded = (
-        await readDir(path, {
-          baseDir: BaseDirectory.Download,
-        })
-      ).sort((a, b) => Number(a.name) - Number(b.name));
+    if (favoritePath.startsWith("Mangas/")) {
+      if (await exists(favoritePath, { baseDir: BaseDirectory.Download })) {
+        downloaded = (
+          await readDir(favoritePath, {
+            baseDir: BaseDirectory.Download,
+          })
+        ).sort((a, b) => Number(a.name) - Number(b.name));
+      }
+    } else {
+      if (await exists(favoritePath)) {
+        downloaded = (await readDir(favoritePath)).sort(
+          (a, b) => Number(a.name) - Number(b.name),
+        );
+      }
     }
   }
   async function refreshJsonChapters() {
@@ -265,7 +278,7 @@
     isFetching = true;
     setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
     globalChapters.set([]);
-    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
+    store = await load(`${favoritePath}/chapters.json`);
     await refreshDownloadeds();
     refreshJsonChapters();
     isMulti = $downloadManager.isMultiLanguage(favorite.source);
@@ -285,7 +298,10 @@
           $downloadManager.getChapters(favorite, $preferableLanguage.id),
           $downloadManager.getFavoriteLanguages(favorite),
         ]);
-        if (!languageOptions.includes(localSelectedLanguage)) {
+        console.log(languageOptions);
+        if (
+          !languageOptions.find((lang) => lang.id === localSelectedLanguage.id)
+        ) {
           localSelectedLanguage = languageOptions[0];
           chapters = await $downloadManager.getChapters(
             favorite,
@@ -461,13 +477,22 @@
                   removeDownloading(nextChapter);
                   refreshJsonChapters();
                 } else {
-                  const path = await join(
-                    await downloadDir(),
-                    "Mangas",
-                    favorite.folder_name,
-                    nextChapter.number,
-                  );
-                  openPath(path);
+                  if ($downloadPath === "Mangas/") {
+                    const path = await join(
+                      await downloadDir(),
+                      "Mangas",
+                      favorite.folder_name,
+                      nextChapter.number,
+                    );
+                    openPath(path);
+                  } else {
+                    const path = await join(
+                      $downloadPath,
+                      favorite.folder_name,
+                      nextChapter.number,
+                    );
+                    openPath(path);
+                  }
                 }
               }}
               ><Icon
@@ -606,6 +631,7 @@
               globalChapters.set(result);
               isFetching = false;
             }}
+            wheelControls
             disabled={!isMulti || isFetching || languageOptions.length < 2}
           />
           <Button
@@ -810,13 +836,22 @@
                           await refreshDownloadeds();
                           refreshJsonChapters();
                         } else {
-                          const path = await join(
-                            await downloadDir(),
-                            "Mangas",
-                            favorite.folder_name,
-                            chapter.number,
-                          );
-                          openPath(path);
+                          if ($downloadPath === "Mangas/") {
+                            const path = await join(
+                              await downloadDir(),
+                              "Mangas",
+                              favorite.folder_name,
+                              chapter.number,
+                            );
+                            openPath(path);
+                          } else {
+                            const path = await join(
+                              $downloadPath,
+                              favorite.folder_name,
+                              chapter.number,
+                            );
+                            openPath(path);
+                          }
                         }
                       }}
                       onreadclick={async (e: Event) => {
@@ -879,13 +914,22 @@
                       }}
                       ondownloadclick={async (e: Event) => {
                         e.stopPropagation();
-                        const path = await join(
-                          await downloadDir(),
-                          "Mangas",
-                          favorite.folder_name,
-                          chapter.number,
-                        );
-                        openPath(path);
+                        if ($downloadPath === "Mangas/") {
+                          const path = await join(
+                            await downloadDir(),
+                            "Mangas",
+                            favorite.folder_name,
+                            chapter.number,
+                          );
+                          openPath(path);
+                        } else {
+                          const path = await join(
+                            $downloadPath,
+                            favorite.folder_name,
+                            chapter.number,
+                          );
+                          openPath(path);
+                        }
                       }}
                       onreadclick={async (e: Event) => {
                         e.stopPropagation();
