@@ -1,6 +1,6 @@
 [package]
 name = "MangaYouKnow"
-version = "0.9.22"
+version = "0.9.23"
 description = "A manga app!"
 authors = ["ReiLoko4"]
 license = "MIT"
