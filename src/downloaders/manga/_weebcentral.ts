@@ -10,8 +10,10 @@ export class WeebCentralDl implements MangaDl {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
     Accept: "*/*",
-    "Accept-Language": "en-US,en;q=0.5",
-
+    Referer:
+      "https://weebcentral.com",
+    Origin: "https://weebcentral.com",
+    Connection: "keep-alive",
   };
 
   async getMangaById(mangaId: string): Promise<Favorite> {
