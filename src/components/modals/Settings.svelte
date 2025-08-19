@@ -106,6 +106,7 @@
     });
     if (path) {
       downloadPath.set(path);
+      saveSettings();
     }
   }
 

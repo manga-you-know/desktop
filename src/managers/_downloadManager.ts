@@ -18,6 +18,7 @@ import {
   MangaFireDl,
   WeebCentralDl,
   MangaLivreDl,
+  MangaSwat,
   // ComicDl,
   BatcaveBizDl,
   // AnimeDl
@@ -64,6 +65,7 @@ export class DownloadManager {
       MangaReaderTo: new MangaReaderToDl(),
       WeebCentral: new WeebCentralDl(),
       MangaLivre: new MangaLivreDl(),
+      MangaSwat: new MangaSwat(),
     };
     this.comicSources = {
       BatcaveBiz: new BatcaveBizDl(),

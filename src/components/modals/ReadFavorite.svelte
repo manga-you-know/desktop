@@ -298,7 +298,6 @@
           $downloadManager.getChapters(favorite, $preferableLanguage.id),
           $downloadManager.getFavoriteLanguages(favorite),
         ]);
-        console.log(languageOptions);
         if (
           !languageOptions.find((lang) => lang.id === localSelectedLanguage.id)
         ) {

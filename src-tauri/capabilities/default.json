@@ -360,6 +360,14 @@
     "core:image:default",
     "notification:default",
     "fs:default",
+    {
+      "identifier": "fs:default",
+      "allow": [
+        {
+          "path": "*/**"
+        }
+      ]
+    },
     "store:default",
     "dialog:default"
   ]

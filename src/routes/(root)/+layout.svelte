@@ -59,6 +59,7 @@
   import { IS_MOBILE } from "@/constants";
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
+  import { exit } from "@tauri-apps/plugin-process";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -101,14 +102,12 @@
   }
 
   window.onCloseRequested((e) => {
-    e.preventDefault();
     if (get(closeTray)) {
+      e.preventDefault();
       window.hide();
     } else {
-      destroyEverything();
-      clearInterval(interval);
+      exit();
     }
-    saveScreenState();
   });
 
   async function loadDatabase() {

@@ -11,14 +11,15 @@ import type { Source } from "@/types";
 // ];
 
 export const MANGASOURCES: Source[] = [
-  { name: "MangaDex", language: "Multi" },
   { name: "MangaFire", language: "Multi", isRecommended: true },
+  { name: "MangaDex", language: "Multi" },
   { name: "WeebCentral", language: "English", isRecommended: true },
-  { name: "MangaLivre", language: "Portuguese" },
+  { name: "MangaLivre", language: "Português" },
   { name: "TCB", language: "English", isRecommended: true },
   { name: "MangaReaderTo", language: "English", isProblem: true },
   // { name: "MangaPill", language: "English", isProblem: true },
-  { name: "Taosect", language: "Portuguese" },
+  { name: "Taosect", language: "Português" },
+  // { name: "MangaSwat", language: "العربية", }
 ];
 
 export const COMICSOURCES: Source[] = [
@@ -26,8 +27,8 @@ export const COMICSOURCES: Source[] = [
 ];
 
 export const READSOURCES_LANGUAGE: { [key: string]: string } = {
-  MangaDex: "Multi",
   MangaFire: "Multi",
+  MangaDex: "Multi",
   MangaSee: "English",
   TCB: "English",
   MangaReaderTo: "English",
@@ -36,6 +37,7 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   MangaLivre: "Português",
   WeebCentral: "English",
   BatcaveBiz: "English",
+  MangaSwat: "العربية",
 };
 
 export const ANIMESOURCES: Source[] = [
