@@ -25,6 +25,7 @@
     globalChapters,
     openPatchNotes,
     openFeedback,
+    downloadPath,
   } from "@/store";
   import { setFullscreen } from "@/functions";
   import type { Downloading, FavoriteLoaded } from "@/types";
@@ -35,7 +36,7 @@
   const window = getCurrentWindow();
   let version = $state("0.0.0");
   let appPath = $state("");
-  let downloadPath = $state("");
+  let dlDir = $state("");
   let documentsPath = $state("");
   let divFavs: HTMLDivElement = $state(null!);
   let favoritesWithChapters: FavoriteLoaded[] = $derived(
@@ -53,7 +54,7 @@
   onMount(async () => {
     version = await getVersion();
     appPath = await appDataDir();
-    downloadPath = await downloadDir();
+    dlDir = await downloadDir();
     documentsPath = await documentDir();
   });
 </script>
@@ -98,9 +99,14 @@
           <Menubar.Item
             class="pointer-events-auto"
             onclick={async () => {
-              const pathToGo = await join(downloadPath, "mangas");
-              if (await exists(pathToGo)) {
-                openPath(pathToGo);
+              let path = "";
+              if ($downloadPath === "Mangas/") {
+                path = await join(dlDir, "Mangas");
+              } else {
+                path = $downloadPath;
+              }
+              if (await exists(path)) {
+                openPath(path);
               } else {
                 toast.warning("There's no downloadings");
               }

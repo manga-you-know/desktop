@@ -49,6 +49,7 @@ import type { Language } from "@/types";
 import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 import { updateBadge, addBlurWindow, removeBlurWindow, removeCountIcon, verifyCustomNotificator } from "@/functions";
+import { toast } from "svelte-sonner";
 
 let loadedSettings: Store;
 const window = getCurrentWindow();
@@ -113,7 +114,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   use_filter: { store: useFilter, default: false },
   filter_reader: { store: filterReader, default: false },
   filter: { store: filter, default: "bg-amber-500/20" },
-  download_path: { store: downloadPath, default: "Mangas" },
+  download_path: { store: downloadPath, default: "Mangas/" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
   custom_titlebar: { store: customTitlebar, default: true },
@@ -167,6 +168,9 @@ export async function loadSettings() {
   } else {
     removeBlurWindow();
   }
+  if (get(downloadPath) === "Mangas") {
+    downloadPath.set("Mangas/")
+  }
   verifyCustomNotificator();
 }
 
@@ -206,4 +210,5 @@ export async function resetSettings() {
     )
   );
   await loadSettings();
+  toast.success("Settings reseted!")
 }

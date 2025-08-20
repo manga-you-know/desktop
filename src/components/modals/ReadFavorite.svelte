@@ -169,7 +169,7 @@
   }
 
   async function refreshDownloadeds() {
-    if (favoritePath.startsWith("Mangas/")) {
+    if ($downloadPath === "Mangas/") {
       if (await exists(favoritePath, { baseDir: BaseDirectory.Download })) {
         downloaded = (
           await readDir(favoritePath, {
@@ -189,7 +189,7 @@
     jsonChapters = Object.fromEntries(await store.entries()) as {
       [key: string]: Chapter;
     };
-    displayedChapters = chaptersDl;
+    displayedLocalChapters = chaptersDl;
     search();
   }
 
@@ -278,7 +278,7 @@
     isFetching = true;
     setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
     globalChapters.set([]);
-    store = await load(`${favoritePath}/chapters.json`);
+    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
     await refreshDownloadeds();
     refreshJsonChapters();
     isMulti = $downloadManager.isMultiLanguage(favorite.source);
@@ -471,7 +471,11 @@
                 if (nextChapter === undefined) return;
                 if (!isNextDownloaded) {
                   pushDownloading(nextChapter);
-                  await $downloadManager.downloadChapter(nextChapter, favorite);
+                  await $downloadManager.downloadChapter(
+                    nextChapter,
+                    favorite,
+                    store,
+                  );
                   await refreshDownloadeds();
                   removeDownloading(nextChapter);
                   refreshJsonChapters();
@@ -830,6 +834,7 @@
                           await $downloadManager.downloadChapter(
                             chapter,
                             favorite,
+                            store,
                           );
                           removeDownloading(chapter);
                           await refreshDownloadeds();

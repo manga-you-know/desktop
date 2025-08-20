@@ -32,6 +32,7 @@ import { load, Store } from "@tauri-apps/plugin-store";
 import { invoke } from "@tauri-apps/api/core";
 import { downloadPath } from "@/store";
 import { get } from "svelte/store";
+import { join } from "@tauri-apps/api/path";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
@@ -301,7 +302,8 @@ export class DownloadManager {
       baseDir: BaseDirectory.Document,
       recursive: true,
     });
-    await writeFile("favorite-panels\\" + fileName, bytes, {
+    const path = await join("favorite-panels", fileName)
+    await writeFile(path, bytes, {
       baseDir: BaseDirectory.Document,
     });
   }
@@ -446,6 +448,7 @@ export class DownloadManager {
         );
       }
     });
+    chapter.path = chapterPath
     await store.set(chapter.number.toString(), chapter);
   }
 }

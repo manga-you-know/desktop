@@ -50,6 +50,7 @@
     rawFavorites,
     markReaded,
     keepReading,
+    downloadPath,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import {
@@ -434,17 +435,29 @@
       goHome();
       return [];
     }
-    if (await exists(chapter.path, { baseDir: BaseDirectory.Download })) {
-      let images = [];
-      const dlDir = await downloadDir();
-      downloadedImages = await readDir(chapter.path, {
-        baseDir: BaseDirectory.Download,
-      });
-      for (const image of downloadedImages) {
-        const path = await join(dlDir, chapter.path, image.name);
-        images.push(convertFileSrc(path));
+    if ($downloadPath === "Mangas/") {
+      if (await exists(chapter.path, { baseDir: BaseDirectory.Download })) {
+        let images = [];
+        const dlDir = await downloadDir();
+        downloadedImages = await readDir(chapter.path, {
+          baseDir: BaseDirectory.Download,
+        });
+        for (const image of downloadedImages) {
+          const path = await join(dlDir, chapter.path, image.name);
+          images.push(convertFileSrc(path));
+        }
+        return images;
       }
-      return images;
+    } else {
+      if (await exists(chapter.path)) {
+        let images = [];
+        downloadedImages = await readDir(chapter.path, {});
+        for (const image of downloadedImages) {
+          const path = await join(chapter.path, image.name);
+          images.push(convertFileSrc(path));
+        }
+        return images;
+      }
     }
     goHome();
     return [];
