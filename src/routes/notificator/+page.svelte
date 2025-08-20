@@ -6,6 +6,7 @@
   import type { NotificationPayload } from "@/types";
   import { emit, listen } from "@tauri-apps/api/event";
   import {
+    Effect,
     getCurrentWindow,
     LogicalSize,
     Window,
@@ -126,18 +127,20 @@
         isHover = false;
         pass = true;
       }}
-      class="w-[27rem] h-[4.5rem] flex items-center justify-between gap-3 p-3 bg-sidebar rounded-xl cursor-default border-[0.5px] border-secondary"
+      class="w-[27rem] h-[4.5rem] flex items-center justify-between gap-3 p-3 bg-sidebar/80 rounded-xl cursor-default border-[0.5px] border-secondary cursor-pointer"
     >
       <div class="h-full items-start">
         <img class="h-6 object-contain" src="/icon.png" alt="logo" />
       </div>
       <div class="w-[22rem] flex flex-col items-start">
         <Label
-          class="w-[20rem] flex justify-start text-lg select-none truncate"
+          class="w-[20rem] flex justify-start text-lg select-none truncate cursor-pointer"
         >
           {title}
         </Label>
-        <Label class="text-md select-none !text-primary/60">{body}</Label>
+        <Label class="text-md select-none !text-primary/60 cursor-pointer"
+          >{body}</Label
+        >
       </div>
       <div class="h-full flex flex-col">
         <Button
