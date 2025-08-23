@@ -98,6 +98,16 @@ Available platforms:
 </details>
 -->
 
+### Stars
+
+<a href="https://star-history.com/#manga-you-know/desktop&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=manga-you-know/desktop&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=manga-you-know/desktop&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=manga-you-know/desktop&type=Date" />
+  </picture>
+</a>
+
 ## Contribution
 
 Since this project is made with Tauri, you have to install all of its [prerequisites](https://v2.tauri.app/start/prerequisites/) based on which platform you are on.
