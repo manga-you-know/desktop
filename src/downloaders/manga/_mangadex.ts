@@ -7,6 +7,7 @@ export class MangaDexDl implements MangaDl {
   baseUrl = "https://mangadex.org";
   apiUrl = "https://api.mangadex.org";
   isMultiLanguage = true;
+
   getMangaById(id: string): Promise<Favorite> {
     throw new Error("Method not implemented.");
   }
@@ -57,10 +58,10 @@ export class MangaDexDl implements MangaDl {
         //@ts-ignore
         extra_name: manga.attributes.altTitles?.length
           ? (Object.values(
-              manga.attributes.altTitles[
-                Math.floor(Math.random() * manga.attributes.altTitles.length)
-              ]
-            )[0] ?? "")
+            manga.attributes.altTitles[
+            Math.floor(Math.random() * manga.attributes.altTitles.length)
+            ]
+          )[0] ?? "")
           : "",
         description: manga.attributes.description.en,
         cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
@@ -114,7 +115,7 @@ export class MangaDexDl implements MangaDl {
     const chaptersList: any[] = [];
     while (true) {
       const response = await fetch(
-        `${this.apiUrl}/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&order[chapter]=desc&includeExternalUrl=0&offset=${offset}`
+        `${this.apiUrl}/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&includes[]=scanlation_group&order[chapter]=desc&includeExternalUrl=0&offset=${offset}`
       );
       const responseJson = await response.json();
       if (!response || !response.ok || responseJson.data.length === 0) {
@@ -134,6 +135,7 @@ export class MangaDexDl implements MangaDl {
         chapter_id: chapter.id,
         source: "MangaDex",
         language: language,
+        scan: chapter.relationships?.filter((r: any) => r.type === "scanlation_group")[0]?.attributes.name
       };
     });
   }

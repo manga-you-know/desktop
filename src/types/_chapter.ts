@@ -5,5 +5,6 @@ export interface Chapter {
   source: string;
   path?: string;
   language?: string;
+  scan?: string;
   thumbnail?: string;
 }
