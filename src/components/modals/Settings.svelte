@@ -152,13 +152,13 @@
             "h-6 bg-background mx-2 rounded-lg transition-all duration-500 w-[4.5rem] translate-x-0",
             currentTab === "appearance" && "w-[6rem] translate-x-[4.8rem]",
             currentTab === "reader" && "w-[4rem] translate-x-[11rem]",
-            currentTab === "player" && "w-[4rem] translate-x-[15.3rem]",
+            currentTab === "player" && "w-[4rem] translate-x-[15.2rem]",
           )}
         ></div>
       </div>
       <Button
         class={cn(
-          "z-[2] h-6 w-[4.5rem] rounded-lg duration-500 bg-transparent hover:!text-primary !text-background",
+          "z-[2] h-6 w-[4.5rem] rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
           currentTab === "behavior" && "!text-primary hover:bg-primary/20",
         )}
         size="sm"
@@ -171,7 +171,7 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-24 rounded-lg duration-500 bg-transparent hover:!text-primary !text-background",
+          "z-[2] h-6 w-24 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
           currentTab === "appearance" && "!text-primary hover:bg-primary/20",
         )}
         size="sm"
@@ -184,7 +184,7 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!text-primary !text-background",
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
           currentTab === "reader" && "!text-primary hover:bg-primary/20",
         )}
         size="sm"
@@ -197,8 +197,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!text-primary !text-background",
-          currentTab === "player" && "!text-primary hover:bg-primary/20",
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent",
+          currentTab === "player" ? "text-primary hover:bg-primary/20" : "!text-background hover:!text-background/70 hover:bg-secondary/30",
         )}
         size="sm"
         variant="secondary"
