@@ -53,6 +53,7 @@ export const openFeedback = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
 export const openTag = writable<boolean>(false);
 export const customTitlebar = writable<boolean>(true);
+export const openFavoriteChapter = writable<boolean>(false)
 export const isRefreshing = writable<boolean>(false);
 export const isChaptersUniqueNumber = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);

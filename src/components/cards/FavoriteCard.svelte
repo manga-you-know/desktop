@@ -19,6 +19,7 @@
     preferableLanguage,
     useMpv,
     coversLoaded,
+    openFavoriteChapter,
   } from "@/store";
   import { FavoriteDB, MarkFavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -158,7 +159,7 @@
       isContext && "!scale-[1.15] !border-1 !border-white opacity-100",
     )}
     onclick={() => {
-      if (favoriteLoad.nextChapter === null) {
+      if (favoriteLoad.nextChapter === null || !$openFavoriteChapter) {
         isOpen = true;
       } else {
         gotoNext();

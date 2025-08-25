@@ -60,6 +60,7 @@
     readerClock,
     filterReader,
     downloadPath,
+    openFavoriteChapter,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme, Select } from "@/components";
@@ -198,7 +199,9 @@
       <Button
         class={cn(
           "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent",
-          currentTab === "player" ? "text-primary hover:bg-primary/20" : "!text-background hover:!text-background/70 hover:bg-secondary/30",
+          currentTab === "player"
+            ? "text-primary hover:bg-primary/20"
+            : "!text-background hover:!text-background/70 hover:bg-secondary/30",
         )}
         size="sm"
         variant="secondary"
@@ -356,6 +359,18 @@
                     onChange={saveSettings}
                     languageOptions={LANGUAGE_OPTIONS}
                   />
+                </div>
+                <Label>Favorite</Label>
+                <div class="flex items-center">
+                  <Switch
+                    id="open-favorite-chapter"
+                    bind:checked={$openFavoriteChapter}
+                    class="flex-shrink-0 mr-2"
+                    onCheckedChange={saveSettings}
+                  />
+                  <Label class="cursor-pointer" for="open-favorite-chapter">
+                    Click on favorite card opens the next chapter
+                  </Label>
                 </div>
                 <Label>Download path</Label>
                 <div class="inline-flex">

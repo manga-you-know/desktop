@@ -107,6 +107,11 @@ export class ComickDl implements MangaDl {
       throw new Error(`Error fetching images for chapter with id: ${chapterID}`)
     }
     const resJson = await response.json()
-    return resJson.map((img: { b2key: string }) => { return `${this.baseImage}/${img.b2key.replace(".png", "-m.png")}` })
+    console.log(resJson)
+    return resJson.map((img: { b2key: string, optimized: number | null }) => {
+      console.log(img.optimized === null)
+      const id = img.optimized === null ? img.b2key.replace(".png", "-m.png") : img.b2key.replace(".jpg", "-m.jpg")
+      return `${this.baseImage}/${id}`
+    })
   }
 }

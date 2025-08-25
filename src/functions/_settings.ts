@@ -44,6 +44,7 @@ import {
   filterReader,
   downloadPath,
   isChaptersUniqueNumber,
+  openFavoriteChapter,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -119,6 +120,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   download_path: { store: downloadPath, default: "Mangas/" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
+  open_favorite_chapter: { store: openFavoriteChapter, default: false },
   custom_titlebar: { store: customTitlebar, default: true },
   show_count_icon: { store: showCountIcon, default: true },
   show_count_icon_tray: { store: showCountIconTray, default: false },

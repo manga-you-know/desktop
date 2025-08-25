@@ -10,7 +10,7 @@
     type DirEntry,
   } from "@tauri-apps/plugin-fs";
   import Icon from "@iconify/svelte";
-  import { ScrollingValue } from "svelte-ux";
+  import { Badge as BadgeCount, ScrollingValue } from "svelte-ux";
   import {
     Dialog,
     ScrollArea,
@@ -726,8 +726,8 @@
       "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
       "h-[100vh] max-w-[100vw] py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
-        ? "w-[calc(100vw-10rem)] ml-[4.2rem]"
-        : "w-[calc(100vw-5rem)] ml-[2rem]",
+        ? "w-[calc(100vw-11rem)] ml-[3.2rem] !mr-[2rem]"
+        : "w-[calc(100vw-6rem)] ml-[1rem] !mr-[2rem]",
       $customTitlebar && "h-[calc(100vh-3.5rem)] mt-[1.2rem]",
       isMobile && "flex flex-col items-center h-[90vh]",
     )}
@@ -780,7 +780,7 @@
               draggable={false}
               src={favorite.cover}
               alt={favorite.name}
-              class="w-full h-full object-contain"
+              class="w-full h-full object-contain select-none"
             />
           </div>
           <div
@@ -789,25 +789,32 @@
               isMobile && "justify-end p-2 h-full",
             )}
           >
-            <Language
-              class="min-w-full max-w-full w-full mt-1"
-              bind:selectedLanguage={localSelectedLanguage}
-              {languageOptions}
-              onChange={async () => {
-                isFetching = true;
-                const result = await $downloadManager.getChapters(
-                  favorite,
-                  localSelectedLanguage.id,
-                );
-                await refreshReadeds(favorite);
-                await new Promise((resolve) => setTimeout(resolve, 10));
-                // displayedChapters = result;
-                globalChapters.set(result);
-                isFetching = false;
-              }}
-              wheelControls
-              disabled={!isMulti || isFetching || languageOptions.length < 2}
-            />
+            <div class="w-full relative">
+              <Language
+                class="min-w-full max-w-full w-full mt-1"
+                bind:selectedLanguage={localSelectedLanguage}
+                {languageOptions}
+                onChange={async () => {
+                  isFetching = true;
+                  const result = await $downloadManager.getChapters(
+                    favorite,
+                    localSelectedLanguage.id,
+                  );
+                  await refreshReadeds(favorite);
+                  await new Promise((resolve) => setTimeout(resolve, 10));
+                  // displayedChapters = result;
+                  globalChapters.set(result);
+                  isFetching = false;
+                }}
+                wheelControls
+                disabled={!isMulti || isFetching || languageOptions.length < 2}
+              />
+              <div
+                class="absolute top-0 size-5 text-sm font-semibold bg-primary/70 text-background flex justify-center items-center rounded-full"
+              >
+                {languageOptions.length}
+              </div>
+            </div>
             <Button
               class="w-full"
               variant="outline"

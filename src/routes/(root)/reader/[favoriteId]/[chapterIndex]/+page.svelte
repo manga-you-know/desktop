@@ -598,7 +598,7 @@
     totalPage = images.length;
     setChapterActivity(favorite.name);
     if (get(keepReading)) {
-      if (cache) {
+      if (cache && cache?.chapter?.chapter_id === chapter.chapter_id) {
         currentlyCount = cache.currentPage;
         currentlyImage = images[currentlyCount - 1];
       } else if (totalPage > 1) {
