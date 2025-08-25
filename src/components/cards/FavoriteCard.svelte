@@ -180,10 +180,10 @@
             {variant}
           > -->
       <div
-        class="h-52 w-[168px] max-w-[168px] rounded-t-2xl flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+        class="h-52 w-[158px] max-w-[158px] rounded-t-2xl flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
       >
         <Label
-          class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
+          class="max-w-[145px] mt-[7px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
         >
           {favorite.name}
         </Label>
@@ -224,6 +224,7 @@
         class={cn(
           "w-full h-full flex fixed items-end justify-center transform transition-all ease-in-out duration-300",
           !IS_MOBILE &&
+            (favoriteLoad.chapters.length > 0 || favoriteLoad.isLoading) &&
             "translate-y-[15%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
         )}
       >
