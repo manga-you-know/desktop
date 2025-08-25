@@ -3,6 +3,7 @@
   import type { WithElementRef } from "bits-ui";
   import { type VariantProps, tv } from "tailwind-variants";
   import { cn } from "$lib/utils.js";
+  import { readText } from "tauri-plugin-clipboard-api";
 
   export const inputVariants = tv({
     base: "flex h-10 text-sm font-medium rounded-2xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
@@ -40,6 +41,7 @@
     variant?: InputVariant;
     borderFocus?: InputBorderFocus;
     floatingLabel?: boolean;
+    rightToCopy?: boolean;
     labelClass?: string;
     divClass?: string;
     onenter?: VoidFunction;
@@ -56,6 +58,7 @@
     variant = "default",
     borderFocus = false,
     floatingLabel = false,
+    rightToCopy = true,
     required = false,
     onenter,
     disabled,
@@ -73,7 +76,6 @@
 <button
   class={cn(
     divClass,
-
     "relative focus-visible:ring-0 ring-0",
     disabled ? "cursor-default" : "!cursor-text",
     variant === "link" && "underline underline-primary",
@@ -83,6 +85,9 @@
     if (!disabled) {
       ref?.focus();
     }
+  }}
+  oncontextmenu={async () => {
+    if (rightToCopy) value = await readText();
   }}
   tabindex={-1}
 >
