@@ -7,4 +7,5 @@ export { MangaPillDl } from "./_mangapill";
 export { MangaFireDl } from "./_mangafire";
 export { WeebCentralDl } from "./_weebcentral";
 export { MangaLivreDl } from "./_mangalivre";
-export { MangaSwat } from "./_mangaswat";
+export { MangaSwatDl } from "./_mangaswat";
+export { ComickDl } from "./_comick";

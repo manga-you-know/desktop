@@ -43,6 +43,7 @@ import {
   sepia,
   filterReader,
   downloadPath,
+  isChaptersUniqueNumber,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -98,6 +99,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   fit_mode: { store: fitMode, default: "width" },
   zoom_level: { store: zoomLevel, default: 100 },
   open_read_menu: { store: openReadMenu, default: true },
+  is_chapters_unique_number: { store: isChaptersUniqueNumber, default: false },
   is_chapters_descending: { store: isChaptersDescending, default: true },
   chapter_pages_counter: { store: chapterPagesCounter, default: true },
   chapter_percentage: { store: chapterPercentage, default: false },

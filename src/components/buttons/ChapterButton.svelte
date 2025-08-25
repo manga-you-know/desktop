@@ -40,54 +40,59 @@
   size="sm"
   bind:onclick
 >
-  <div class="flex items-center gap-2">
-    <Tooltip
-      text={isDownloading
-        ? "Downloading..."
-        : isDownloaded
-          ? "Open folder"
-          : "Download"}
-    >
-      <Button
-        class="h-7 w-7"
-        variant="ghost"
-        size="sm"
-        tabindex={-1}
-        disabled={isDownloading && !isDownloaded}
-        bind:onclick={ondownloadclick}
-        ><Icon
-          icon={isDownloading && !isDownloaded
-            ? "line-md:loading-alt-loop"
+  <div class="flex items-center gap-2 w-full">
+    <div class="flex items-center justify-between w-full gap-2">
+      <div class="flex justify-start items-center gap-2">
+        <Tooltip
+          text={isDownloading
+            ? "Downloading..."
             : isDownloaded
-              ? "lucide:folder-check"
-              : "lucide:download"}
-        />
-      </Button>
-    </Tooltip>
-    <div class="flex items-center gap-2">
-      <span
-        class="group-hover:underline group-hover:underline-offset-4 truncate w-9 text-start"
-      >
-        {chapter.number}
-      </span>
+              ? "Open folder"
+              : "Download"}
+        >
+          <Button
+            class="h-7 w-7"
+            variant="ghost"
+            size="sm"
+            tabindex={-1}
+            disabled={isDownloading && !isDownloaded}
+            bind:onclick={ondownloadclick}
+            ><Icon
+              icon={isDownloading && !isDownloaded
+                ? "line-md:loading-alt-loop"
+                : isDownloaded
+                  ? "lucide:folder-check"
+                  : "lucide:download"}
+            />
+          </Button>
+        </Tooltip>
+        <span
+          class="group-hover:underline group-hover:underline-offset-4 truncate w-9 text-start"
+        >
+          {chapter.number}
+        </span>
+      </div>
       <Tooltip text={chapter?.title}>
         <span
-          class="group-hover:underline group-hover:underline-offset-4 truncate w-20 text-start"
+          class="group-hover:underline group-hover:underline-offset-4 truncate w-[60%] text-start"
         >
           {chapter?.title}
         </span>
       </Tooltip>
+      <Tooltip text={isReaded ? "Remove readed" : "Mark as read"}>
+        <Button
+          class="h-7 w-7 "
+          variant="ghost"
+          size="sm"
+          tabindex={-1}
+          bind:onclick={onreadclick}
+        >
+          <Icon
+            icon={isReaded ? "lucide:check" : "lucide:minus"}
+            class="size-5"
+          />
+        </Button>
+      </Tooltip>
     </div>
   </div>
-  <Tooltip text={isReaded ? "Remove readed" : "Mark as read"}>
-    <Button
-      class="h-7 w-7 "
-      variant="ghost"
-      size="sm"
-      tabindex={-1}
-      bind:onclick={onreadclick}
-    >
-      <Icon icon={isReaded ? "lucide:check" : "lucide:minus"} class="size-5" />
-    </Button>
-  </Tooltip>
 </Button>

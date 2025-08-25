@@ -11,9 +11,10 @@ import type { Source } from "@/types";
 // ];
 
 export const MANGASOURCES: Source[] = [
-  { name: "MangaFire", language: "Multi", isRecommended: true },
+  { name: "Comick", language: "Multi", isRecommended: true },
   { name: "MangaDex", language: "Multi" },
-  { name: "WeebCentral", language: "English", isRecommended: true },
+  { name: "MangaFire", language: "Multi", isProblem: true },
+  { name: "WeebCentral", language: "English", isProblem: true },
   { name: "MangaLivre", language: "Português" },
   { name: "TCB", language: "English", isRecommended: true },
   { name: "MangaReaderTo", language: "English", isProblem: true },
@@ -30,6 +31,7 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   MangaFire: "Multi",
   MangaDex: "Multi",
   MangaSee: "English",
+  Comick: "Multi",
   TCB: "English",
   MangaReaderTo: "English",
   // MangaPill: "English",

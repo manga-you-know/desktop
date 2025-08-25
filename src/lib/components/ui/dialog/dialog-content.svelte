@@ -20,22 +20,31 @@
   let {
     ref = $bindable(null),
     class: className,
+    overlay = true,
+    closeButton = true,
+    overlayClass,
     portalProps,
     children,
     ...restProps
   }: WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
     portalProps?: DialogPrimitive.PortalProps;
+    overlay?: boolean;
+    closeButton?: boolean;
+    overlayClass?: string;
     children: Snippet;
   } = $props();
 </script>
 
 <Dialog.Portal {...portalProps}>
-  <Dialog.Overlay
-    class={cn(
-      $customTitlebar && "mt-[2.5rem] max-h-[calc(100vh-2.5rem)]",
-      $blackWhiteMode && "grayscale",
-    )}
-  />
+  {#if overlay}
+    <Dialog.Overlay
+      class={cn(
+        $customTitlebar && "mt-[2.5rem] max-h-[calc(100vh-2.5rem)]",
+        $blackWhiteMode && "grayscale",
+        overlayClass,
+      )}
+    />
+  {/if}
   <DialogPrimitive.Content
     onInteractOutside={(e) => {
       let el = e?.target as HTMLElement | null;
@@ -54,17 +63,19 @@
       $blackWhiteMode && "grayscale",
       className,
     )}
-    style="--contrast: {contrast}; --brightness: {brightness}; --saturate: {saturation}; --sepia: {sepia};"
+    style="--contrast: {$contrast}; --brightness: {$brightness}; --saturate: {$saturation}; --sepia: {$sepia};"
     {...restProps}
   >
     {@render children?.()}
-    <DialogPrimitive.Close
-      class="ring-offset-background focus:ring-ring absolute right-4 top-4 rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none dark:text-white"
-      tabindex={-1}
-    >
-      <X class="size-5" />
-      <span class="sr-only">Close</span>
-    </DialogPrimitive.Close>
+    {#if closeButton}
+      <DialogPrimitive.Close
+        class="ring-offset-background focus:ring-ring absolute right-4 top-4 rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none dark:text-white"
+        tabindex={-1}
+      >
+        <X class="size-5" />
+        <span class="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    {/if}
   </DialogPrimitive.Content>
 </Dialog.Portal>
 

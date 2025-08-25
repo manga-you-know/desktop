@@ -3,7 +3,7 @@ import { load } from "cheerio";
 import type { MangaDl } from "@/interfaces";
 import type { Favorite, Chapter } from "@/types";
 
-export class MangaSwat implements MangaDl {
+export class MangaSwatDl implements MangaDl {
   baseUrl = "https://swatscans.com"
   isMultiLanguage = false;
   headers = {

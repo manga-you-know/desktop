@@ -20,6 +20,7 @@
     search?: boolean;
     itemsLabel?: Record<string, string>;
     icons?: { [key: string]: string };
+    disabled?: boolean;
     openIcon?: boolean;
     invertIcons?: boolean;
     closeButton?: boolean;
@@ -29,6 +30,7 @@
     variant?: ButtonVariant;
     effect?: ButtonEffect;
     class?: string;
+    classRoot?: string;
     classPopup?: string;
     classItem?: string;
   };
@@ -43,12 +45,14 @@
     onmouseup,
     variant = "outline",
     effect = null,
+    disabled = false,
     search = false,
     openIcon = true,
     invertIcons = false,
     closeButton = true,
     wheelControls = false,
     class: className,
+    classRoot,
     classPopup,
     classItem,
   }: Props = $props();
@@ -57,13 +61,13 @@
   let triggerRef = $state<HTMLButtonElement>(null!);
 </script>
 
-<div class="inline-flex relative">
+<div class={cn("inline-flex relative", classRoot)}>
   <Popover.Root bind:open>
     <Popover.Trigger bind:ref={triggerRef}>
       {#snippet child({ props })}
         <Button
           class={className}
-          disabled={items.length === 0}
+          disabled={items.length === 0 || disabled}
           {variant}
           {effect}
           {...props}
@@ -161,7 +165,9 @@
   <Button
     class={cn(
       "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
-      selected !== "" && closeButton ? "opacity-100" : "pointer-events-none",
+      selected !== "" && closeButton && !disabled
+        ? "opacity-100"
+        : "pointer-events-none",
     )}
     variant="outline"
     onclick={() => {

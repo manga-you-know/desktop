@@ -10,7 +10,9 @@ export class WeebCentralDl implements MangaDl {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
     Accept: "*/*",
-    Origin: "https://weebcentral.com",
+    Host: "weebcentral.com",
+    Referer:
+      "https://weebcentral.com",
   };
 
   async getMangaById(mangaId: string): Promise<Favorite> {
@@ -87,7 +89,6 @@ export class WeebCentralDl implements MangaDl {
   async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(
       `${this.baseUrl}/series/${mangaId}/full-chapter-list`,
-      { headers: this.headers }
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);

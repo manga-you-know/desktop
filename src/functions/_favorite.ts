@@ -226,6 +226,7 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   let chaptersToRead: Chapter[] = [];
   let nextChapter: Chapter | null = null;
   readeds = await ReadedDB.getReadeds(favorite);
+  updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
   if (favorite.type === "anime") {
     chapters = await dl.getEpisodes(favorite);
   } else {
