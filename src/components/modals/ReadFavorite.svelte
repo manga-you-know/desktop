@@ -11,16 +11,7 @@
   } from "@tauri-apps/plugin-fs";
   import Icon from "@iconify/svelte";
   import { Badge as BadgeCount, ScrollingValue } from "svelte-ux";
-  import {
-    Dialog,
-    ScrollArea,
-    Button,
-    Input,
-    Separator,
-    Badge,
-    Skeleton,
-    Label,
-  } from "@/lib/components";
+  import { Dialog, Button, Input, Badge, Label } from "@/lib/components";
   import {
     ChapterButton,
     Image,
@@ -40,6 +31,7 @@
     customTitlebar,
     sidebarBehavior,
     isChaptersUniqueNumber,
+    sidebarSide,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -383,33 +375,27 @@
     )}
   >
     <div class="flex w-[40%]">
-      <div class="w-full flex justify-start">
+      <div class="w-full flex relative">
         <Input
-          class="w-full"
-          placeholder="Chapter..."
+          class="w-full max-w-full"
+          divClass="w-full"
+          placeholder="Search..."
           floatingLabel
-          variant="link"
+          variant="outline"
           bind:value={searchTerm}
           tabindex={IS_MOBILE ? -1 : 1}
         />
         <Button
           class={cn(
-            "w-2 hover:text-primary/60 flex items-center",
-            searchTerm === "" && "pointer-events-none",
+            "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
+            searchTerm !== "" ? "opacity-100" : "pointer-events-none",
           )}
-          variant="link"
+          variant="outline"
           onclick={() => {
             searchTerm = "";
-            // search();
           }}
         >
-          <Icon
-            class={cn(
-              "transition-all duration-300 !size-0 mt-1",
-              searchTerm.length > 0 && "!size-4",
-            )}
-            icon="lucide:x"
-          />
+          <Icon icon="lucide:x" />
         </Button>
       </div>
     </div>
@@ -422,7 +408,7 @@
         items={scans}
         wheelControls
         disabled={chaptersMode === "local"}
-        label="Scan..."
+        label="Select scan"
       />
       <Tooltip
         text={$isChaptersUniqueNumber
@@ -518,7 +504,7 @@
       items={scans}
       wheelControls
       disabled={chaptersMode === "local"}
-      label="Scan..."
+      label="Select scan"
     />
     <div class="flex gap-2">
       <Tooltip
@@ -672,9 +658,12 @@
             </Tooltip>
             <Tooltip text={nextChapter ? "Mark as read" : ""}>
               <Button
-                class="h-7 w-7 "
+                class="h-7 w-7"
                 variant="ghost"
                 size="sm"
+                disabled={nextChapter
+                  ? isDownloading(nextChapter) && !isNextDownloaded
+                  : true}
                 tabindex={-1}
                 onclick={async (e) => {
                   e.stopPropagation();
@@ -726,8 +715,12 @@
       "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
       "h-[100vh] max-w-[100vw] py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
-        ? "w-[calc(100vw-11rem)] ml-[3.2rem] !mr-[2rem]"
-        : "w-[calc(100vw-6rem)] ml-[1rem] !mr-[2rem]",
+        ? $sidebarSide === "left"
+          ? "w-[calc(100vw-11rem)] ml-[3.2rem] !mr-[2rem]"
+          : "w-[calc(100vw-11rem)] mr-[6rem] !ml-[0rem]"
+        : $sidebarSide === "left"
+          ? "w-[calc(100vw-6rem)] ml-[1rem] !mr-[2rem]"
+          : "w-[calc(100vw-6rem)] mr-[4rem] !ml-[0rem]",
       $customTitlebar && "h-[calc(100vh-3.5rem)] mt-[1.2rem]",
       isMobile && "flex flex-col items-center h-[90vh]",
     )}
@@ -769,7 +762,7 @@
       >
         <div
           class={cn(
-            "flex flex-col h-full items-center gap-2 w-1/2",
+            "flex flex-col h-full items-end gap-2 w-2/5",
             isMobile ? "w-full justify-center " : "justify-center pr-10",
           )}
         >
@@ -867,7 +860,7 @@
             {/if}
           </div>
         </div>
-        <div class={cn(isMobile ? "flex justify-center w-1/2" : "w-1/2")}>
+        <div class={cn(isMobile ? "flex justify-start w-1/2" : "w-3/5")}>
           <div class="w-[40vw] flex flex-col gap-3">
             <Label
               class="group text-3xl !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
@@ -879,7 +872,7 @@
                 class="!size-0 mr-2 group-hover:!size-5 transition-all duration-300"
                 icon="ic:baseline-content-copy"
               />
-              {favorite.name}
+              {limitStr(favorite.name, 60)}
             </Label>
             {#if !isMobile}
               {@render chapterControls()}

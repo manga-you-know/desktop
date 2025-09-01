@@ -307,13 +307,13 @@
         />
         <div class="flex w-full flex-col items-center justify-between">
           <Label class="dark:text-white text-clip text-gray-500 p-2 pr-2">
-            {favoriteOpen?.name}
+            {limitStr(favoriteOpen?.name ?? "", 130)}
           </Label>
           <div class="flex flex-col max-h-52 justify-center items-center px-3">
             <Label
               class="text-xs text-ellipsis dark:text-gray-300 text-gray-800"
             >
-              {favoriteOpen?.extra_name}
+              {limitStr(favoriteOpen?.extra_name ?? "", 130)}
             </Label>
             <p
               class="text-[10px] text-ellipsis max-h-[88px] overflow-hidden max-w-52 dark:text-white text-gray-500"
