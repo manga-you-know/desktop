@@ -10,7 +10,7 @@
     SIDEBAR_WIDTH_ICON,
   } from "./constants.js";
   import { setSidebar } from "./context.svelte.js";
-  import { customTitlebar, windowEffects } from "@/store";
+  import { customTitlebar, sidebarSide, windowEffects } from "@/store";
 
   let {
     ref = $bindable(null),
@@ -54,6 +54,7 @@
       $windowEffects
         ? "has-[[data-variant=inset]]:bg-transparent"
         : "has-[[data-variant=inset]]:bg-sidebar/60",
+      $sidebarSide === "right" && "flex-row-reverse",
       className,
     )}
     bind:this={ref}

@@ -19,7 +19,6 @@
   import { IS_MOBILE } from "@/constants";
   import type { Favorite } from "@/types";
   import { ScrollingValue } from "svelte-ux";
-  import ScrollArea from "@/lib/components/ui/scroll-area/scroll-area.svelte";
 
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);

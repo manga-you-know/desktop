@@ -1,7 +1,12 @@
 <script lang="ts">
   import { Sidebar as SidebarProv } from "@/lib/components";
   import { Sidebar, BottomNavigation } from "@/components";
-  import { customTitlebar, lastPage, sidebarBehavior } from "@/store";
+  import {
+    customTitlebar,
+    lastPage,
+    sidebarBehavior,
+    sidebarSide,
+  } from "@/store";
   import { page } from "$app/state";
   import { fly } from "svelte/transition";
   import { saveSettings } from "@/functions";
@@ -57,7 +62,7 @@
   <div class="w-full flex select-none overflow-hidden relative">
     <SidebarProv.Provider class="h-full" open={$sidebarBehavior === "expand"}>
       <Sidebar variant="inset" />
-      <SidebarProv.Inset class="p-2">
+      <SidebarProv.Inset class={cn("p-2")}>
         {#key page.route.id}
           <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
           <div

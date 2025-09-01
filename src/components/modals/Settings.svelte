@@ -61,6 +61,7 @@
     filterReader,
     downloadPath,
     openFavoriteChapter,
+    sidebarSide,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme, Select } from "@/components";
@@ -671,6 +672,51 @@
               </div>
 
               <Label>Sidebar</Label>
+              <div
+                class="flex relative w-[11rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+              >
+                <div class="z-[1] absolute w-full h-9">
+                  <div
+                    class={cn(
+                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[4.8rem] translate-x-0",
+                      $sidebarSide === "right" && "translate-x-[5.2rem]",
+                    )}
+                  ></div>
+                </div>
+                <Button
+                  class={cn(
+                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    $sidebarSide === "left" &&
+                      "!text-secondary hover:bg-background/20",
+                  )}
+                  size="sm"
+                  variant="secondary"
+                  effect={$sidebarSide === "left" ? "ringHover" : null}
+                  onclick={() => {
+                    $sidebarSide = "left";
+                    saveSettings();
+                  }}
+                >
+                  Left
+                </Button>
+                <Button
+                  class={cn(
+                    "z-[2] h-9 w-24 duration-300 bg-transparent ",
+                    $sidebarSide === "right" &&
+                      "!text-secondary hover:bg-background/20",
+                  )}
+                  size="sm"
+                  variant="secondary"
+                  effect={$sidebarSide === "right" ? "ringHover" : null}
+                  onclick={() => {
+                    $sidebarSide = "right";
+                    saveSettings();
+                  }}
+                >
+                  Right
+                </Button>
+              </div>
+
               <div
                 class="flex relative w-[21rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
               >

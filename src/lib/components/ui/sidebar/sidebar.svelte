@@ -58,7 +58,10 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     bind:this={ref}
-    class="text-sidebar-foreground group peer hidden ssm:block ![background:transparent] hover:![background:transparent] focus:![background:transparent]"
+    class={cn(
+      "text-sidebar-foreground group peer hidden ssm:block !bg-transparent hover:!bg-transparent focus:!bg-transparent",
+      side === "right" && "flex flex-row-reverse",
+    )}
     data-state={sidebar.state}
     data-collapsible={sidebar.state === "collapsed" ? collapsible : ""}
     data-variant={variant}
@@ -73,7 +76,8 @@
         "relative w-[--sidebar-width] transition-[width] duration-200 ease-linear",
         $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         "group-data-[collapsible=offcanvas]:w-0",
-        "group-data-[side=right]:!rotate-180",
+        // "group-data-[side=right]:!rotate-180",
+        side === "right" && "!translate-x-10",
         variant === "floating" || variant === "inset"
           ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
           : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",

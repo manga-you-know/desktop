@@ -70,6 +70,7 @@ export const extraTitle = writable<string>("");
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
   "collapse"
 );
+export const sidebarSide = writable<"left" | "right">("left")
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
 export const notifyFavorites = writable<boolean>(true);

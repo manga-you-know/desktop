@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { openPath, openUrl } from "@tauri-apps/plugin-opener";
-  import { Button, Label } from "@/lib/components";
+  import { Button, Input, Label } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import { Menubar } from "@/lib/components";
   import { onMount } from "svelte";
@@ -219,12 +219,30 @@
     class="w-full flex justify-center z-10 items-center gap-1 md:gap-6 lg:gap-16 lg"
     data-tauri-drag-region={!$isFullscreen}
   >
-    <Label
-      class="select-none text-nowrap !text-primary/70 z-[3]"
-      data-tauri-drag-region={!$isFullscreen}
-    >
-      {$extraTitle}
-    </Label>
+    {#if page.route.id?.startsWith("/(root)/reader")}
+      <Label
+        class="select-none text-nowrap !text-primary/70 z-[3]"
+        data-tauri-drag-region={!$isFullscreen}
+      >
+        {$extraTitle}
+      </Label>
+    {:else}
+      <!-- <div -->
+      <!--   class="absolute w-full h-full flex justify-center items-center pointer-events-none" -->
+      <!-- > -->
+      <!--   <div -->
+      <!--     class="flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary" -->
+      <!--   > -->
+      <!--     <Icon class="!size-5 text-primary" icon="mingcute:search-2-fill" /> -->
+      <!--     <Input -->
+      <!--       class="w-64 h-9 pointer-events-auto" -->
+      <!--       variant="link" -->
+      <!--       placeholder="Search..." -->
+      <!--       floatingLabel -->
+      <!--     /> -->
+      <!--   </div> -->
+      <!-- </div> -->
+    {/if}
     {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")}
       <div
         bind:this={divFavs}
@@ -303,3 +321,5 @@
     </Button>
   </div>
 </div>
+
+<div class="absolute w-screen h-screen z-50 pointer-events-none"></div>

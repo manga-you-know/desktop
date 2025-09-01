@@ -26,6 +26,7 @@
     downloadManager,
     preferableLanguage,
     keepReading,
+    sidebarSide,
   } from "@/store";
   import Icon from "@iconify/svelte";
   import type { Downloading, FavoriteLoaded } from "@/types";
@@ -124,12 +125,12 @@
 </script>
 
 <Sidebar.Root
-  class={cn("px-[2.5px] pb-0 border-0", $customTitlebar && "pt-7")}
+  class={cn("px-0 pb-0 border-0", $customTitlebar && "pt-7")}
   {variant}
-  side="left"
+  side={$sidebarSide}
   collapsible="icon"
 >
-  <Sidebar.Header class="px-0">
+  <Sidebar.Header class="px-0 group-data-[side=left]:-ml-[2px]">
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
@@ -138,9 +139,9 @@
             class={cn(
               "absolute transition-translate duration-300",
               page.url.pathname === "/home" && "translate-y-0",
-              page.url.pathname === "/favorites" && "translate-y-12",
-              page.url.pathname === "/library" && "translate-y-24",
-              page.url.pathname === "/panels" && "translate-y-36",
+              page.url.pathname === "/favorites" && "translate-y-14",
+              page.url.pathname === "/library" && "translate-y-28",
+              page.url.pathname === "/panels" && "translate-y-[10.5rem]",
             )}
             variant="secondary"
           />
@@ -163,7 +164,12 @@
               >
                 {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
                   <Icon
-                    class="!size-7 -ml-[10px]"
+                    class={cn(
+                      "!size-7 -ml-[10px] transition-transform duration-500",
+                      item.path === "/favorites" &&
+                        page.url.pathname === item.path &&
+                        "rotate-180",
+                    )}
                     icon={page.url.pathname === item.path
                       ? item.iconActive
                       : item.icon}
@@ -179,10 +185,13 @@
                     small
                   >
                     <Icon
+                      class={cn(
+                        "!size-7 -ml-[10px] transition-transform duration-400",
+                        page.url.pathname === item.path && "rotate-[145deg]",
+                      )}
                       icon={page.url.pathname === item.path
                         ? item.iconActive
                         : item.icon}
-                      class="!size-7 -ml-[10px]"
                     />
                   </Badge>
                 {/if}
@@ -201,7 +210,7 @@
   </Sidebar.Header>
   <Separator class="bg-secondary w-[95%]" />
   <Sidebar.Content
-    class="group-data-[collapsible=icon]:overflow-y-auto scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
+    class="-ml-[2px] group-data-[collapsible=icon]:overflow-y-auto scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
   >
     <Sidebar.Group>
       <Sidebar.GroupContent>
@@ -445,7 +454,7 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  <Sidebar.Group>
+  <Sidebar.Group class="group-data-[side=left]:-ml-[1.5px]">
     <Sidebar.GroupContent>
       <Sidebar.Menu
         class="flex flex-row-reverse justify-center gap-1 transition-[gap] duration-300 ease-in-out
@@ -493,10 +502,13 @@
             tabindex={-1}
           >
             <Icon
+              class={cn(
+                " !size-7 -ml-[14px] group-data-[collapsible=icon]:-ml-[10px] transition-all duration-500",
+                $openSettings && "rotate-180",
+              )}
               icon={$openSettings
                 ? "heroicons:cog-6-tooth-solid"
                 : "heroicons:cog-6-tooth"}
-              class="!size-7 -ml-[10px]"
             />
             <Label
               class={cn(
@@ -510,7 +522,7 @@
         </Sidebar.MenuItem>
         <Sidebar.MenuItem class="group-data-[collapsible=icon]:ssmh:hidden">
           <Sidebar.MenuButton
-            class="size-10"
+            class="size-10 relative"
             onclick={(e) => {
               e.currentTarget.blur();
               $theme = $theme === "dark" ? "light" : "dark";
@@ -519,18 +531,32 @@
             tabindex={-1}
           >
             <Icon
-              icon={$theme === "dark"
-                ? "material-symbols:sunny-outline-rounded"
-                : "material-symbols:dark-mode-outline"}
-              class="!size-7 -ml-[10px]"
+              class={cn(
+                "absolute !size-7 left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
+                $theme === "dark"
+                  ? "opacity-100"
+                  : "opacity-0 scale-0 rotate-180",
+              )}
+              icon="material-symbols:sunny-outline-rounded"
             />
-            <Label class="cursor-pointer">Theme</Label>
+            <Icon
+              class={cn(
+                "absolute !size-7 left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
+                $theme === "light"
+                  ? "opacity-100"
+                  : "opacity-0 scale-0 -rotate-180",
+              )}
+              icon="material-symbols:dark-mode-outline"
+            />
+            <Label class="ml-8 cursor-pointer">Theme</Label>
           </Sidebar.MenuButton>
         </Sidebar.MenuItem>
       </Sidebar.Menu>
     </Sidebar.GroupContent>
   </Sidebar.Group>
-  <Sidebar.Footer class="flex items-center overflow-hidden mt-0 ssmh:-mt-3">
+  <Sidebar.Footer
+    class="flex items-center overflow-hidden ml-1 mt-0 ssmh:-mt-3"
+  >
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
     <Sidebar.MenuItem>
       <Sidebar.MenuButton

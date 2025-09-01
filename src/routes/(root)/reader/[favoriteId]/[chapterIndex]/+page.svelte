@@ -20,14 +20,7 @@
     getCache,
   } from "@/functions";
   import type { Chapter, Favorite } from "@/types";
-  import {
-    Button,
-    Badge,
-    HoverCard,
-    Tooltip,
-    Switch,
-    Label,
-  } from "@/lib/components";
+  import { Button, Badge, Switch, Label } from "@/lib/components";
   import {
     downloadManager,
     globalChapters,

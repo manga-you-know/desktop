@@ -115,14 +115,14 @@
             variant="secondary"
             size="sm"
             tabindex={-1}
-            onclick={async (e: Event) => {
+            onclick={(e: Event) => {
               e.stopPropagation();
-              markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
-              isPicking = true;
+              isDelete = true;
             }}
           >
-            <Icon icon="lucide:bookmark" class="w-4 h-4" />
+            <Icon icon="lucide:trash" class="w-4 h-4" />
           </Button>
+
           <Button
             class="rounded-none !-mx-[1px]"
             variant="secondary"
@@ -140,12 +140,13 @@
             variant="secondary"
             size="sm"
             tabindex={-1}
-            onclick={(e: Event) => {
+            onclick={async (e: Event) => {
               e.stopPropagation();
-              isDelete = true;
+              markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
+              isPicking = true;
             }}
           >
-            <Icon icon="lucide:trash" class="w-4 h-4" />
+            <Icon icon="lucide:bookmark" class="w-4 h-4" />
           </Button>
         </div>
       </div>

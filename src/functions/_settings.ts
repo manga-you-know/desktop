@@ -45,6 +45,7 @@ import {
   downloadPath,
   isChaptersUniqueNumber,
   openFavoriteChapter,
+  sidebarSide,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -81,7 +82,7 @@ interface SettingConfig {
 }
 
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
-  selected_source: { store: selectedSource, default: "MangaFire" },
+  selected_source: { store: selectedSource, default: "Comick" },
   auto_search_updates: { store: autoSearchUpdates, default: true },
   preferable_language: {
     store: preferableLanguage,
@@ -120,6 +121,7 @@ const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   download_path: { store: downloadPath, default: "Mangas/" },
   discord_integration: { store: discordIntegration, default: false },
   sidebar_behavior: { store: sidebarBehavior, default: "collapse" },
+  sidebar_side: { store: sidebarSide, default: "left" },
   open_favorite_chapter: { store: openFavoriteChapter, default: false },
   custom_titlebar: { store: customTitlebar, default: true },
   show_count_icon: { store: showCountIcon, default: true },
