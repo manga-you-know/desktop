@@ -42,7 +42,7 @@ export class ComickDl implements MangaDl {
   }
 
   async search(query: string): Promise<Favorite[]> {
-    const response = await fetch(`${this.baseApi}/v1.0/search/?type=comic&showall=true&q=${query}&t=true`,
+    const response = await fetch(`${this.baseApi}/v1.0/search/?type=comic&q=${query}&t=true`,
       { headers: { "accept": "application/json" } }
     )
     if (response.status !== 200) {
@@ -79,7 +79,7 @@ export class ComickDl implements MangaDl {
 
   async getChapters(favoriteID: string, language: string): Promise<Chapter[]> {
     const id = favoriteID.split("<-*->")[0]
-    const response = await fetch(`${this.baseApi}/comic/${id}/chapters?lang=${language}&limit=10000`,
+    const response = await fetch(`${this.baseApi}/comic/${id}/chapters?lang=${language}&limit=100000`,
       { headers: { "accept": "application/json" } }
     )
     if (response.status !== 200) {
@@ -96,11 +96,11 @@ export class ComickDl implements MangaDl {
         scan: chapter.md_chapters_groups.length > 0 ? chapter.md_chapters_groups[0].md_groups.title : undefined
       }
     })
-    return chapters.filter((c: Chapter) => c.number !== null || c.title !== null)
+    return chapters
   }
 
   async getChapterImages(chapterID: string): Promise<string[]> {
-    const response = await fetch(`${this.baseApi}/chapter/${chapterID}/get_images`,
+    const response = await fetch(`${this.baseApi}/chapter/${chapterID}?tachiyomi=true`,
       { headers: { "accept": "application/json" } }
     )
     if (response.status !== 200) {
@@ -108,10 +108,6 @@ export class ComickDl implements MangaDl {
     }
     const resJson = await response.json()
     console.log(resJson)
-    return resJson.map((img: { b2key: string, optimized: number | null }) => {
-      console.log(img.optimized === null)
-      const id = img.optimized === null ? img.b2key.replace(".png", "-m.png") : img.b2key.replace(".jpg", "-m.jpg")
-      return `${this.baseImage}/${id}`
-    })
+    return resJson.chapter.images.map(((img: { url: string }) => img.url))
   }
 }
