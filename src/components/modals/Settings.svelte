@@ -62,10 +62,17 @@
     downloadPath,
     openFavoriteChapter,
     sidebarSide,
+    activatedSources,
   } from "@/store";
   import { onMount } from "svelte";
   import { Language, Theme, Select } from "@/components";
-  import { IS_MOBILE, LANGUAGE_OPTIONS } from "@/constants";
+  import {
+    ANIMESOURCES,
+    COMICSOURCES,
+    IS_MOBILE,
+    LANGUAGE_OPTIONS,
+    MANGASOURCES,
+  } from "@/constants";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { emit, listen } from "@tauri-apps/api/event";
@@ -77,9 +84,9 @@
   let autoStart = $state(false);
   let startInTray = $state(false);
   let receivedNotification = $state(false);
-  let currentTab = $state<"behavior" | "appearance" | "reader" | "player">(
-    "behavior",
-  );
+  let currentTab = $state<
+    "behavior" | "search" | "appearance" | "reader" | "player"
+  >("behavior");
   let store: Store | null = null;
   onMount(async () => {
     version = await getVersion();
@@ -146,15 +153,16 @@
   >
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
     <div
-      class="flex relative w-[20.2rem] text-sm items-center justify-center p-1 gap-1 bg-primary rounded-xl z-10"
+      class="flex relative w-[24.4rem] text-sm items-center justify-center p-1 gap-1 bg-primary rounded-xl z-10"
     >
       <div class="z-[1] absolute w-full h-6">
         <div
           class={cn(
             "h-6 bg-background mx-2 rounded-lg transition-all duration-500 w-[4.5rem] translate-x-0",
-            currentTab === "appearance" && "w-[6rem] translate-x-[4.8rem]",
-            currentTab === "reader" && "w-[4rem] translate-x-[11rem]",
-            currentTab === "player" && "w-[4rem] translate-x-[15.2rem]",
+            currentTab === "search" && "w-[4rem] translate-x-[4.7rem]",
+            currentTab === "appearance" && "w-[6rem] translate-x-[8.9rem]",
+            currentTab === "reader" && "w-[4rem] translate-x-[15.1rem]",
+            currentTab === "player" && "w-[4rem] translate-x-[19.3rem]",
           )}
         ></div>
       </div>
@@ -170,6 +178,19 @@
         }}
       >
         Behavior
+      </Button>
+      <Button
+        class={cn(
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
+          currentTab === "search" && "!text-primary hover:bg-primary/20",
+        )}
+        size="sm"
+        variant="secondary"
+        onclick={() => {
+          currentTab = "search";
+        }}
+      >
+        Search
       </Button>
       <Button
         class={cn(
@@ -217,18 +238,20 @@
     <div class="relative overflow-hidden max-h-[75vh] w-full mb-2">
       <div
         class="flex transition-transform duration-500 ease-in-out"
-        style="width: 400%; transform: translateX({currentTab === 'behavior'
+        style="width: 500%; transform: translateX({currentTab === 'behavior'
           ? '0%'
-          : currentTab === 'appearance'
-            ? '-25%'
-            : currentTab === 'reader'
-              ? '-50%'
-              : currentTab === 'player'
-                ? '-75%'
-                : '0%'})"
+          : currentTab === 'search'
+            ? '-20%'
+            : currentTab === 'appearance'
+              ? '-40%'
+              : currentTab === 'reader'
+                ? '-60%'
+                : currentTab === 'player'
+                  ? '-80%'
+                  : '0%'})"
       >
         <ScrollArea
-          class="w-1/4 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
         >
           <div
             class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
@@ -487,24 +510,202 @@
             </Card.Content>
           </Card.Root>
           {#if !IS_MOBILE}{/if}
-          <!-- <div class="border-b-4 my-4 text-center relative rounded-3xl">
-        <span
-          class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-background px-4 dark:text-gray-300 font-bold"
-        >
-          Others
-        </span>
-      </div>
-      <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
-        <Card.Content class="flex flex-col gap-4">
-          <Label>Default page</Label>
-          <div class="flex">
-            <DefaultPage onChange={async () => await saveSettings()} />
-          </div>
-        </Card.Content>
-      </Card.Root> -->
         </ScrollArea>
         <ScrollArea
-          class="w-1/4 max-h-[80vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+        >
+          <div
+            class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
+          >
+            <span
+              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+            >
+              Search
+            </span>
+          </div>
+          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+            <Card.Content class="flex flex-col gap-4">
+              <Label
+                >Sources <span class="text-gray-500">
+                  - Using less should improve performance on low end PC's
+                </span></Label
+              >
+
+              <div class="flex flex-col gap-0">
+                <div class="flex items-center gap-2">
+                  <Checkbox
+                    id="manga-sources"
+                    checked={$activatedSources.some((s) =>
+                      MANGASOURCES.map((s) => s.name).includes(s),
+                    )}
+                    onCheckedChange={() => {
+                      if (
+                        $activatedSources.some((s) =>
+                          MANGASOURCES.map((s) => s.name).includes(s),
+                        )
+                      ) {
+                        $activatedSources = $activatedSources.filter(
+                          (s) => !MANGASOURCES.map((sr) => sr.name).includes(s),
+                        );
+                        saveSettings();
+                      } else {
+                        $activatedSources = $activatedSources.concat(
+                          MANGASOURCES.map((s) => s.name),
+                        );
+                        saveSettings();
+                      }
+                    }}
+                  />
+                  <Label class="cursor-pointer" for="manga-sources">Manga</Label
+                  >
+                </div>
+                {#each MANGASOURCES as source (source.name)}
+                  <div class="flex items-center gap-2">
+                    <Separator
+                      class="border-y-[12px] border-x-2"
+                      orientation="vertical"
+                    />
+
+                    <Checkbox
+                      id="{source.name}-source"
+                      checked={$activatedSources.includes(source.name)}
+                      onCheckedChange={() => {
+                        if ($activatedSources.includes(source.name)) {
+                          $activatedSources = $activatedSources.filter(
+                            (s) => s !== source.name,
+                          );
+                        } else {
+                          $activatedSources.push(source.name);
+                        }
+                        saveSettings();
+                      }}
+                    />
+                    <Label class="cursor-pointer" for="{source.name}-source"
+                      >{source.name}</Label
+                    ><span class="text-sm text-gray-500"
+                      >- {source.language}</span
+                    >
+                  </div>
+                {/each}
+              </div>
+              <div class="flex flex-col gap-0">
+                <div class="flex items-center gap-2">
+                  <Checkbox
+                    id="comic-sources"
+                    checked={$activatedSources.some((s) =>
+                      COMICSOURCES.map((s) => s.name).includes(s),
+                    )}
+                    onCheckedChange={() => {
+                      if (
+                        $activatedSources.some((s) =>
+                          COMICSOURCES.map((s) => s.name).includes(s),
+                        )
+                      ) {
+                        $activatedSources = $activatedSources.filter(
+                          (s) => !COMICSOURCES.map((sr) => sr.name).includes(s),
+                        );
+                        saveSettings();
+                      } else {
+                        $activatedSources = $activatedSources.concat(
+                          COMICSOURCES.map((s) => s.name),
+                        );
+                        saveSettings();
+                      }
+                    }}
+                  />
+                  <Label class="cursor-pointer" for="comic-sources">Comic</Label
+                  >
+                </div>
+                {#each COMICSOURCES as source (source.name)}
+                  <div class="flex items-center gap-2">
+                    <Separator
+                      class="border-y-[12px] border-x-2"
+                      orientation="vertical"
+                    />
+
+                    <Checkbox
+                      id="{source.name}-source"
+                      checked={$activatedSources.includes(source.name)}
+                      onCheckedChange={() => {
+                        if ($activatedSources.includes(source.name)) {
+                          $activatedSources = $activatedSources.filter(
+                            (s) => s !== source.name,
+                          );
+                        } else {
+                          $activatedSources.push(source.name);
+                        }
+                        saveSettings();
+                      }}
+                    />
+                    <Label class="cursor-pointer" for="{source.name}-source"
+                      >{source.name}</Label
+                    ><span class="text-sm text-gray-500"
+                      >- {source.language}</span
+                    >
+                  </div>
+                {/each}
+              </div>
+              <div class="flex flex-col gap-0">
+                <div class="flex items-center gap-2">
+                  <Checkbox
+                    id="anime-sources"
+                    checked={$activatedSources.some((s) =>
+                      ANIMESOURCES.map((s) => s.name).includes(s),
+                    )}
+                    onCheckedChange={() => {
+                      if (
+                        $activatedSources.some((s) =>
+                          ANIMESOURCES.map((s) => s.name).includes(s),
+                        )
+                      ) {
+                        $activatedSources = $activatedSources.filter(
+                          (s) => !ANIMESOURCES.map((sr) => sr.name).includes(s),
+                        );
+                        saveSettings();
+                      } else {
+                        $activatedSources = $activatedSources.concat(
+                          ANIMESOURCES.map((s) => s.name),
+                        );
+                        saveSettings();
+                      }
+                    }}
+                  />
+                  <Label class="cursor-pointer" for="anime-sources">Anime</Label
+                  >
+                </div>
+                {#each ANIMESOURCES as source (source.name)}
+                  <div class="flex items-center gap-2">
+                    <Separator
+                      class="border-y-[12px] border-x-2"
+                      orientation="vertical"
+                    />
+                    <Checkbox
+                      id="{source.name}-source"
+                      checked={$activatedSources.includes(source.name)}
+                      onCheckedChange={() => {
+                        if ($activatedSources.includes(source.name)) {
+                          $activatedSources = $activatedSources.filter(
+                            (s) => s !== source.name,
+                          );
+                        } else {
+                          $activatedSources.push(source.name);
+                        }
+                        saveSettings();
+                      }}
+                    />
+                    <Label class="cursor-pointer" for="{source.name}-source"
+                      >{source.name}</Label
+                    ><span class="text-sm text-gray-500"
+                      >- {source.language}</span
+                    >
+                  </div>
+                {/each}
+              </div>
+            </Card.Content>
+          </Card.Root>
+        </ScrollArea>
+        <ScrollArea
+          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
         >
           <div
             class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
@@ -817,7 +1018,7 @@
           </Card.Root>
         </ScrollArea>
         <ScrollArea
-          class="w-1/4 max-h-[80vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
         >
           <div
             class="border-b-4 border-secondary my-5 text-center relative rounded-3xl"
@@ -990,7 +1191,7 @@
           </Card.Root>
         </ScrollArea>
         <ScrollArea
-          class="w-1/4 max-h-[80vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
         >
           <div
             class="border-b-4 border-secondary my-4 text-center relative rounded-3xl"

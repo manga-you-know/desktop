@@ -1,6 +1,6 @@
 import { writable, readable, get } from "svelte/store";
 import { DownloadManager } from "@/managers";
-import { IS_MOBILE, MANGASOURCES } from "@/constants";
+import { ANIMESOURCES, COMICSOURCES, IS_MOBILE, MANGASOURCES } from "@/constants";
 import {
   type Mark,
   type Panel,
@@ -71,6 +71,7 @@ export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
   "collapse"
 );
 export const sidebarSide = writable<"left" | "right">("left")
+export const activatedSources = writable<string[]>([...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)])
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
 export const notifyFavorites = writable<boolean>(true);
