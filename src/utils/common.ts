@@ -1,4 +1,3 @@
-import type { StringChain } from "lodash";
 
 export function isEmpty(obj: any): boolean {
   return Object.keys(obj).length === 0;
@@ -10,6 +9,19 @@ export function titleCase(str: string): string {
 
 export function strNotEmpty(str: string | number | undefined): string {
   return str?.toString() ?? "";
+}
+
+
+export function getBool(bool: undefined | null | string | boolean) {
+  if (bool === null || bool === undefined || bool === false || bool === "false") {
+    return false;
+  }
+
+  if (typeof bool === "string") {
+    return bool.length > 0;
+  }
+
+  return Boolean(bool);
 }
 
 export function imageFail(id: string) {

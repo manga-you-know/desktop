@@ -2,7 +2,7 @@
   import { Button, Command, Popover, ScrollArea } from "@/lib/components";
   import { ChevronsUpDown } from "lucide-svelte";
   import { MANGASOURCES, ANIMESOURCES, COMICSOURCES } from "@/constants";
-  import { selectedSource } from "@/store";
+  import { activatedSources, selectedSource } from "@/store";
   import type { Source } from "@/types";
   import Icon from "@iconify/svelte";
   import { saveSettings } from "@/functions";
@@ -39,11 +39,11 @@
     comic: comicSources,
     anime: animeSources,
   };
-  const sources = {
-    manga: MANGASOURCES,
-    comic: COMICSOURCES,
-    anime: ANIMESOURCES,
-  };
+  const sources = $derived({
+    manga: MANGASOURCES.filter((s) => $activatedSources.includes(s.name)),
+    comic: COMICSOURCES.filter((s) => $activatedSources.includes(s.name)),
+    anime: ANIMESOURCES.filter((s) => $activatedSources.includes(s.name)),
+  });
   let sourceType: "manga" | "comic" | "anime" = $state("manga");
   let open = $state(false);
   let triggerRef = $state<HTMLButtonElement>(null!);
@@ -53,6 +53,7 @@
   //     triggerRef.focus();
   //   });
   // }
+
   selectedSource.subscribe(saveSettings);
 
   onMount(() => {
@@ -121,31 +122,36 @@
           {#each Object.keys(sourcesByType[sourceType]) as language}
             <Command.Group heading={language}>
               {#each sourcesByType[sourceType][language] as source}
-                <Command.Item
-                  class={cn(
-                    "flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 ",
-                    source.name === $selectedSource
-                      ? "!bg-gray-300 dark:!bg-secondary"
-                      : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
-                  )}
-                  value={source.name}
-                  onSelect={() => {
-                    selectedSource.set(source.name);
-                    open = false;
-                    // closeAndFocusTrigger();
-                  }}
-                >
-                  {source.name}
-                  {#if source.isRecommended}
-                    <Icon
-                      icon="lucide:circle-check"
-                      class="w-4 h-4 text-green-500"
-                    />
-                  {/if}
-                  {#if source.isProblem}
-                    <Icon icon="lucide:circle-x" class="w-4 h-4 text-red-500" />
-                  {/if}
-                </Command.Item>
+                {#if $activatedSources.includes(source.name)}
+                  <Command.Item
+                    class={cn(
+                      "flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 ",
+                      source.name === $selectedSource
+                        ? "!bg-gray-300 dark:!bg-secondary"
+                        : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
+                    )}
+                    value={source.name}
+                    onSelect={() => {
+                      selectedSource.set(source.name);
+                      open = false;
+                      // closeAndFocusTrigger();
+                    }}
+                  >
+                    {source.name}
+                    {#if source.isRecommended}
+                      <Icon
+                        icon="lucide:circle-check"
+                        class="w-4 h-4 text-green-500"
+                      />
+                    {/if}
+                    {#if source.isProblem}
+                      <Icon
+                        icon="lucide:circle-x"
+                        class="w-4 h-4 text-red-500"
+                      />
+                    {/if}
+                  </Command.Item>
+                {/if}
               {/each}
             </Command.Group>
           {/each}

@@ -10,6 +10,7 @@ import {
   refreshLibrary,
   removeFavorite,
 } from "@/functions";
+import { getBool } from "@/utils";
 
 let db: Database = null!;
 
@@ -17,37 +18,38 @@ async function loadDb() {
   db = await Database.load(`sqlite:${DATABASE_NAME}`);
 }
 
-export async function createFavorite(favorite: Favorite): Promise<void> {
+export async function createFavorite(favorite: Favorite): Promise<Favorite> {
   if (!db) await loadDb();
   const user = await UserDB.getDefaultUser();
-  try {
-    await db.execute(
-      "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        user.id,
-        favorite.name,
-        favorite.folder_name,
-        favorite.cover,
-        favorite.link,
-        favorite.source,
-        favorite.source_id,
-        favorite.type ?? "manga",
-        favorite.extra_name,
-        favorite.title_color,
-        favorite.card_color,
-        favorite.grade,
-        favorite.author,
-        favorite.description,
-        favorite.status ?? "",
-        favorite.mal_id ?? "",
-        favorite.anilist_id ?? "",
-      ]
-    );
-  } catch (error) {
-    console.log(error);
-  } finally {
-    // db.close()
+  await db.execute(
+    "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      user.id,
+      favorite.name,
+      favorite.folder_name,
+      favorite.cover,
+      favorite.link,
+      favorite.source,
+      favorite.source_id,
+      favorite.type ?? "manga",
+      favorite.extra_name,
+      favorite.title_color,
+      favorite.card_color,
+      favorite.grade,
+      favorite.author,
+      favorite.description,
+      favorite.status ?? "",
+      favorite.mal_id ?? "",
+      favorite.anilist_id ?? "",
+    ]
+  );
+  const results = await db.select<Favorite[]>("SELECT * FROM favorite WHERE source = ? AND source_id = ? LIMIT 1", [favorite.source, favorite.source_id])
+  if (results) {
+    return results[0]
+  } else {
+    throw Error("Error adding favorite")
   }
+
 }
 
 export async function createFavoritesFromJson(
@@ -223,19 +225,19 @@ export async function getFavoritesBySource(
     const favorites: Favorite[] =
       query === ""
         ? await db.select(
-            "SELECT * FROM favorite WHERE user_id = ? AND source = ?",
-            [userID, source]
-          )
+          "SELECT * FROM favorite WHERE user_id = ? AND source = ?",
+          [userID, source]
+        )
         : await db.select(
-            `
+          `
 			SELECT * FROM favorite
 			WHERE user_id = ?
 			AND source = ?
 			AND (INSTR(LOWER(NAME), LOWER(?)) > 0
 			OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)
 			`,
-            [userID, source, query, query]
-          );
+          [userID, source, query, query]
+        );
     return favorites;
   } catch (error) {
     console.log(error);
@@ -297,7 +299,7 @@ export async function isUltraFavorite(favoriteId: number) {
     "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
     [favoriteId]
   );
-  return result[0].is_ultra_favorite === "true";
+  return getBool(result[0].is_ultra_favorite);
 }
 
 export async function toggleUltraFavorite(

@@ -61,9 +61,9 @@
   });
 </script>
 
-<div class="h-full flex flex-col overflow-hidden">
+<div class="h-full flex flex-col mr-4 overflow-hidden">
   <div
-    class="scrollbar w-[99.2%] h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-scroll overflow-x-hidden pb-5"
+    class="scrollbar w-full h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-scroll overflow-x-hidden pb-5"
     bind:this={favoriteDiv}
     bind:clientWidth={favdivWidth}
   >
@@ -136,7 +136,7 @@
         </Button>
       </div>
     </div>
-    <div class="w-full h-0 smh:h-14"></div>
+    <div class="w-full h-12 smh:h-14"></div>
     {#if displayedFavorites.length === 0}
       <div class="flex w-full justify-center mt-10">
         <Badge

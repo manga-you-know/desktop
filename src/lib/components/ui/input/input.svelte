@@ -78,7 +78,7 @@
     divClass,
     "relative focus-visible:ring-0 ring-0",
     disabled ? "cursor-default" : "!cursor-text",
-    variant === "link" && "underline underline-primary",
+    variant === "link" && value !== "" && "underline decoration-primary",
     variant === "outline" && "bg-transparent",
   )}
   onclick={() => {

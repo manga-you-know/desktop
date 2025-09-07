@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   const window = getCurrentWindow();
-  onMount(async () => {
+  onMount(() => {
     if (window.label === "main") {
       goto($lastPage);
     } else {

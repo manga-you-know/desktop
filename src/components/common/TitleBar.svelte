@@ -1,9 +1,16 @@
 <script lang="ts">
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { openPath, openUrl } from "@tauri-apps/plugin-opener";
-  import { Button, Input, Label } from "@/lib/components";
+  import {
+    Badge,
+    Button,
+    Input,
+    Label,
+    Popover,
+    ScrollArea,
+    Menubar,
+  } from "@/lib/components";
   import Icon from "@iconify/svelte";
-  import { Menubar } from "@/lib/components";
   import { onMount } from "svelte";
   import { page } from "$app/state";
   import { getVersion } from "@tauri-apps/api/app";
@@ -26,12 +33,26 @@
     openPatchNotes,
     openFeedback,
     downloadPath,
+    rawFavorites,
+    selectedSource,
+    downloadManager,
+    activatedSources,
+    isAscending,
   } from "@/store";
-  import { setFullscreen } from "@/functions";
-  import type { Downloading, FavoriteLoaded } from "@/types";
+  import {
+    refreshLibrary,
+    refreshRawFavorites,
+    setFullscreen,
+  } from "@/functions";
+  import type { Downloading, Favorite, FavoriteLoaded } from "@/types";
   import Tooltip from "./Tooltip.svelte";
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
+  import { getBool, limitStr } from "@/utils";
+  import { AskDelete, ReadFavorite, WatchFavorite } from "@/components";
+  import { VList } from "virtua/svelte";
+  import { ANIMESOURCES, COMICSOURCES, MANGASOURCES } from "@/constants";
+  import { FavoriteDB } from "@/repositories";
 
   const window = getCurrentWindow();
   let version = $state("0.0.0");
@@ -50,6 +71,115 @@
       0,
     ),
   );
+  let isSearching = $state(false);
+  let query = $state("");
+  let libraryResults: Favorite[] = $derived(
+    query === ""
+      ? []
+      : $isAscending
+        ? $rawFavorites.filter(
+            (f) =>
+              f.name.toLowerCase().includes(query.toLowerCase()) ||
+              f.folder_name.toLowerCase().includes(query.toLowerCase()) ||
+              f.extra_name?.toLowerCase().includes(query.toLowerCase()) ||
+              f.author?.toLowerCase().includes(query.toLowerCase()),
+          )
+        : $rawFavorites
+            .filter(
+              (f) =>
+                f.name.toLowerCase().includes(query.toLowerCase()) ||
+                f.folder_name.toLowerCase().includes(query.toLowerCase()) ||
+                f.extra_name?.toLowerCase().includes(query.toLowerCase()) ||
+                f.author?.toLowerCase().includes(query.toLowerCase()),
+            )
+            .toReversed(),
+  );
+  let searchResults: Record<string, Favorite[]> = $state({});
+  let foundSources: string[] = $derived(
+    Object.keys(searchResults).sort((a, b) => {
+      if (a === $selectedSource) return -1;
+      if (b === $selectedSource) return 1;
+      return 0;
+    }),
+  );
+  let collapsibles: Record<string, boolean> = $state({});
+  let favoriteOpen: Favorite | null = $state(null);
+  let isFavoriteOpen = $state(false);
+  let isSearchPopOpen = $state(false);
+  let isDeleteOpen = $state(false);
+
+  async function searchBySource(nowQuery: string, source: string) {
+    delete searchResults[source];
+    const results = await $downloadManager.search(nowQuery, source);
+    if (nowQuery === query && results.length > 0) {
+      searchResults[source] = results;
+    }
+  }
+
+  async function search() {
+    if (query === "") {
+      isSearching = false;
+      searchResults = {};
+      return;
+    }
+    searchResults = {};
+    isSearchPopOpen = true;
+    isSearching = true;
+    if ($rawFavorites.length === 0) {
+      refreshRawFavorites();
+    }
+    const nowQuery = query;
+    for (let source of MANGASOURCES) {
+      if (
+        source.name === $selectedSource ||
+        !$activatedSources.includes(source.name)
+      )
+        continue;
+      searchBySource(nowQuery, source.name);
+    }
+    for (let source of COMICSOURCES) {
+      if (
+        source.name === $selectedSource ||
+        !$activatedSources.includes(source.name)
+      )
+        continue;
+      searchBySource(nowQuery, source.name);
+    }
+    for (let source of ANIMESOURCES) {
+      if (
+        source.name === $selectedSource ||
+        !$activatedSources.includes(source.name)
+      )
+        continue;
+      searchBySource(nowQuery, source.name);
+    }
+    if (!$activatedSources.includes($selectedSource)) {
+      isSearching = false;
+      return;
+    }
+    await searchBySource(nowQuery, $selectedSource);
+    if (nowQuery === query) isSearching = false;
+  }
+
+  function isFavorite(favorite: Favorite) {
+    return $rawFavorites.find(
+      (f) => f.source_id === favorite.source_id && f.source === favorite.source,
+    );
+  }
+
+  async function saveResult(result: Favorite) {
+    if (isFavorite(result)) {
+      const favorite = await FavoriteDB.getFavoriteBySource(
+        result.source_id,
+        result.source,
+      );
+      await FavoriteDB.deleteFavorite(favorite);
+    } else {
+      await FavoriteDB.createFavorite(result);
+    }
+    refreshRawFavorites();
+    refreshLibrary();
+  }
 
   onMount(async () => {
     version = await getVersion();
@@ -59,19 +189,14 @@
   });
 </script>
 
-<!--
-<div
-  class={cn(
-    "absolute flex w-full h-10 items-center justify-center translate-y-0 transition-all duration-300",
-    page.route.id?.startsWith("/(root)/reader") &&
-      $isFullscreen &&
-      !$openMenuChapters &&
-      "h-0 -translate-y-[3rem]",
-  )}
->
-  <div class="size-8 rounded-full bg-primary/40"></div>
-</div>
--->
+{#if favoriteOpen !== null}
+  <AskDelete bind:open={isDeleteOpen} favorite={favoriteOpen} />
+  {#if favoriteOpen?.type === "anime"}
+    <WatchFavorite favorite={favoriteOpen} bind:open={isFavoriteOpen} />
+  {:else}
+    <ReadFavorite favorite={favoriteOpen} bind:open={isFavoriteOpen} />
+  {/if}
+{/if}
 <div
   class={cn(
     "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
@@ -227,21 +352,288 @@
         {$extraTitle}
       </Label>
     {:else}
-      <!-- <div -->
-      <!--   class="absolute w-full h-full flex justify-center items-center pointer-events-none" -->
-      <!-- > -->
-      <!--   <div -->
-      <!--     class="flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary" -->
-      <!--   > -->
-      <!--     <Icon class="!size-5 text-primary" icon="mingcute:search-2-fill" /> -->
-      <!--     <Input -->
-      <!--       class="w-64 h-9 pointer-events-auto" -->
-      <!--       variant="link" -->
-      <!--       placeholder="Search..." -->
-      <!--       floatingLabel -->
-      <!--     /> -->
-      <!--   </div> -->
-      <!-- </div> -->
+      <div
+        class="absolute w-full h-full flex justify-center items-center pointer-events-none"
+      >
+        <Popover.Root
+          bind:open={isSearchPopOpen}
+          onOpenChange={refreshRawFavorites}
+        >
+          <Popover.Trigger
+            class="focus:outline-none"
+            onkeydown={(e) => {
+              if (e.key === " " || e.code === "Space") {
+                e.preventDefault();
+                query += " ";
+                search();
+              }
+              if (e.key === "Enter") {
+                e.preventDefault();
+              }
+            }}
+          >
+            <div
+              class="flex items-center px-2 rounded-xl border border-secondary bg-background/30 hover:bg-secondary ml-32 md:ml-12 lg:ml-0"
+            >
+              <Icon
+                class="!size-5 text-primary pointer-events-auto"
+                icon={isSearching
+                  ? "eos-icons:bubble-loading"
+                  : query.length > 0
+                    ? "lucide:x"
+                    : "mingcute:search-2-fill"}
+                onclick={() => {
+                  query = "";
+                  searchResults = {};
+                  isSearching = false;
+                  const input = document.querySelector(
+                    `input[id="central-search"]`,
+                  ) as HTMLInputElement;
+                  input?.focus();
+                }}
+              />
+              <Input
+                class="w-[20vw] sm:w-[30vw] md:w-[40vw] h-8 pointer-events-auto"
+                id="central-search"
+                bind:value={query}
+                oninput={search}
+                variant="link"
+                placeholder="Search..."
+              />
+            </div>
+          </Popover.Trigger>
+          <Popover.Content
+            class={cn(
+              "w-[42vw] h-[13rem] ml-32 md:ml-12 lg:ml-0 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
+              // libraryResults.length > 0 && "min-h-[8rem]",
+            )}
+            trapFocus={false}
+          >
+            <!--   <div class="flex flex-col overflow-x-hidden scrollbar"> -->
+            {#if libraryResults.length === 0 && foundSources.length === 0}
+              <Badge class="flex items-center w-full h-6 rounded-lg"
+                >{query === ""
+                  ? "Type anything..."
+                  : isSearching
+                    ? "Searching..."
+                    : "No results found."}</Badge
+              >
+            {/if}
+            {#if libraryResults.length > 0}
+              <Button
+                class="w-full h-6 flex justify-between items-center rounded-lg p-2 focus:outline-none"
+                variant="ghost"
+                onclick={() => {
+                  if (collapsibles["library"] !== undefined) {
+                    collapsibles["library"] = !collapsibles["library"];
+                  } else {
+                    collapsibles["library"] = true;
+                  }
+                }}
+              >
+                <Label
+                  class="flex items-center gap-2 cursor-pointer !text-primary/80"
+                  >Library <Badge class="h-5 flex justify-center px-1"
+                    >{libraryResults.length}</Badge
+                  >
+                </Label>
+                <Icon
+                  class={cn(
+                    "mr-4 transition-all duration-300",
+                    collapsibles["library"] && "rotate-180",
+                  )}
+                  icon="lucide:chevron-down"
+                />
+              </Button>
+              <VList
+                class={cn(
+                  "max-h-[8rem] mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                  collapsibles["library"] && "!hidden",
+                )}
+                data={libraryResults}
+                getKey={(_, i) => i}
+                tabindex={-1}
+              >
+                {#snippet children(result, _)}
+                  <div
+                    class="w-full h-7 inline-flex transition-all duration-300 overflow-hidden"
+                  >
+                    <Button
+                      class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
+                      variant="ghost"
+                      onclick={() => {
+                        favoriteOpen = result;
+                        isFavoriteOpen = true;
+                        isSearchPopOpen = false;
+                      }}
+                    >
+                      {result.name}
+                    </Button>
+                    <Tooltip
+                      text={getBool(result.is_ultra_favorite)
+                        ? "Remove favorite"
+                        : "Add favorite"}
+                    >
+                      <Button
+                        class="size-7 rounded-none relative"
+                        variant="ghost"
+                        onclick={async () => {
+                          result.is_ultra_favorite = !getBool(
+                            result.is_ultra_favorite,
+                          );
+                          result.is_ultra_favorite =
+                            await FavoriteDB.toggleUltraFavorite(result);
+                          refreshRawFavorites();
+                        }}
+                      >
+                        <Icon
+                          class={cn(
+                            "absolute left-2 transition-all duration-400",
+                            getBool(result.is_ultra_favorite) &&
+                              "opacity-0 scale-0 rotate-180",
+                          )}
+                          icon="heroicons:star"
+                        />
+                        <Icon
+                          class={cn(
+                            "absolute left-2 transition-all duration-400",
+                            !getBool(result.is_ultra_favorite) &&
+                              "opacity-0 scale-0 -rotate-180",
+                          )}
+                          icon="heroicons:star-solid"
+                        />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip text="Delete">
+                      <Button
+                        class="size-7 rounded-l-none rounded-r-xl"
+                        variant="ghost"
+                        onclick={() => {
+                          favoriteOpen = result;
+                          isDeleteOpen = true;
+                          isSearchPopOpen = false;
+                        }}><Icon icon="lucide:x" /></Button
+                      >
+                    </Tooltip>
+                  </div>
+                {/snippet}
+              </VList>
+            {/if}
+            {#if foundSources.length > 0}
+              {#each foundSources as source (source)}
+                {#if $activatedSources.includes(source)}
+                  <Button
+                    class="w-full h-6 flex justify-between items-center rounded-lg p-2 focus:outline-none"
+                    variant="ghost"
+                    onclick={() => {
+                      if (collapsibles[source] !== undefined) {
+                        collapsibles[source] = !collapsibles[source];
+                      } else {
+                        collapsibles[source] = true;
+                      }
+                    }}
+                  >
+                    <Label
+                      class="flex items-center gap-2 cursor-pointer !text-primary/80"
+                      >{source}
+                      <Badge class="h-5 flex justify-center px-1"
+                        >{searchResults[source].length}</Badge
+                      >
+                    </Label>
+                    <Icon
+                      class={cn(
+                        "mr-4 transition-all duration-300",
+                        collapsibles[source] && "rotate-180",
+                      )}
+                      icon="lucide:chevron-down"
+                    />
+                  </Button>
+                  <VList
+                    class={cn(
+                      "max-h-[6rem] transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                      collapsibles[source] && "!hidden",
+                    )}
+                    data={searchResults[source]}
+                    getKey={(_, i) => i}
+                    tabindex={-1}
+                  >
+                    {#snippet children(result, _)}
+                      <div
+                        class="w-full h-7 inline-flex transition-all duration-300 overflow-hidden"
+                      >
+                        <Button
+                          class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
+                          variant="ghost"
+                          onclick={() => {
+                            favoriteOpen = result;
+                            isFavoriteOpen = true;
+                            isSearchPopOpen = false;
+                          }}
+                        >
+                          {result.name}
+                        </Button>
+                        <Tooltip
+                          text={isFavorite(result)
+                            ? "Remove saved"
+                            : "Save to library"}
+                        >
+                          <Button
+                            class="w-10 h-7 rounded-l-none rounded-r-xl"
+                            variant="ghost"
+                            onclick={() => saveResult(result)}
+                            ><Icon
+                              icon={isFavorite(result)
+                                ? "tabler:bookmark-filled"
+                                : "tabler:bookmark"}
+                            />
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    {/snippet}
+                  </VList>
+                {/if}
+              {/each}
+            {/if}
+            <!-- </div> -->
+            <!-- <ScrollArea class="flex flex-col max-h-[10rem] select-none"> -->
+            <!--   {#if libraryResults.length > 0} -->
+            <!--     <Button -->
+            <!--       class="w-full h-6 flex justify-between items-center p-2 focus:outline-none" -->
+            <!--       variant="link" -->
+            <!--       onclick={() => { -->
+            <!--         if (collapsibles["library"] !== undefined) { -->
+            <!--           collapsibles["library"] = !collapsibles["library"]; -->
+            <!--         } else { -->
+            <!--           collapsibles["library"] = true; -->
+            <!--         } -->
+            <!--       }} -->
+            <!--     > -->
+            <!--       <Label -->
+            <!--         class="flex items-center gap-2 cursor-pointer !text-primary/80" -->
+            <!--         >Library <Badge class="flex justify-center px-2 " -->
+            <!--           >{libraryResults.length}</Badge -->
+            <!--         > -->
+            <!--       </Label> -->
+            <!--       <Icon -->
+            <!--         class={cn( -->
+            <!--           "mr-4 transition-all duration-300", -->
+            <!--           collapsibles["library"] && "rotate-180", -->
+            <!--         )} -->
+            <!--         icon="lucide:chevron-down" -->
+            <!--       /> -->
+            <!--     </Button> -->
+            <!---->
+            <!--   {/if} -->
+            <!--   {#if foundSources.length > 0} -->
+            <!--     {#each foundSources as source (source)} -->
+            <!--       {#each searchResults[source] as result (result.source_id + result.source)}{/each} -->
+            <!--     {/each} -->
+            <!--   {/if} -->
+            <!-- </ScrollArea> -->
+          </Popover.Content>
+        </Popover.Root>
+        <div class="w-[calc(2.25rem*3+0.25rem)]"></div>
+      </div>
     {/if}
     {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")}
       <div
@@ -321,5 +713,3 @@
     </Button>
   </div>
 </div>
-
-<div class="absolute w-screen h-screen z-50 pointer-events-none"></div>

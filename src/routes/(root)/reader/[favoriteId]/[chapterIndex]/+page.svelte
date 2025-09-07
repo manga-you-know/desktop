@@ -62,7 +62,7 @@
   import { ChaptersMenu, Image } from "@/components";
   import { join, documentDir, downloadDir } from "@tauri-apps/api/path";
   import { cn } from "@/lib/utils";
-  import { delay } from "@/utils";
+  import { delay, getBool } from "@/utils";
   import { convertFileSrc } from "@tauri-apps/api/core";
   import { IS_MOBILE } from "@/constants";
   import { ScrollingValue, SpringValue } from "svelte-ux";
@@ -170,7 +170,7 @@
     await addReadedBelow(chapter, $globalChapters, favorite, $readeds, true);
     const newReadeds = await ReadedDB.getReadeds(favorite);
     readeds.set(newReadeds);
-    if (favorite.is_ultra_favorite) {
+    if (getBool(favorite.is_ultra_favorite)) {
       loadFavoriteChapters(favorite);
     }
   }
@@ -259,7 +259,7 @@
   function goHome() {
     currentlyImage = "/myk.png";
     setFullscreen(false);
-    if (favorite.is_ultra_favorite) {
+    if (getBool(favorite.is_ultra_favorite)) {
       loadFavoriteChapters(favorite);
     }
     goto($lastPage);
@@ -560,7 +560,7 @@
         cache?.images?.length > 0
       ) {
         images = cache.images;
-      } else if (favorite.is_ultra_favorite) {
+      } else if (getBool(favorite.is_ultra_favorite)) {
         if (
           $favoritesLoaded[favorite.id.toString()]?.nextImages.length > 0 &&
           $favoritesLoaded[favorite.id.toString()]?.nextChapter?.chapter_id ===
@@ -1051,7 +1051,7 @@
             class="w-11 px-5 flex justify-center items-center rounded-xl select-none"
             variant="secondary"
           >
-            {chapter?.number.toString()}
+            {chapter?.number}
           </Badge>
         </div>
         <div class="w-full flex flex-col items-start gap-2">

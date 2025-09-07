@@ -78,25 +78,32 @@
   );
   function handleKeydown(e: KeyboardEvent) {
     const isCtrl = e.metaKey || e.ctrlKey;
-    if (e.key === "F11") {
+    const key = e.key.toLowerCase();
+    if (key === "11") {
       toggleFullscreen();
     }
 
-    if (e.key === "Escape") {
+    if (key === "escape") {
       setFullscreen(false);
     }
 
-    if (e.key.toUpperCase() === "Z" && isCtrl) {
+    if (key === "z" && isCtrl) {
       const task = $undoTasks.pop();
       if (task === undefined) return;
       task.do();
       toast.info(task.message);
     }
-    if (e.key.toUpperCase() === "K" && isCtrl) {
+    if (key === "k" && isCtrl) {
+      const input = document.querySelector(
+        `input[id="central-search"]`,
+      ) as HTMLInputElement;
+      input?.focus();
+    }
+    if (key === "p" && isCtrl) {
       openSearch.set(!$openSearch);
     }
 
-    if (e.key === "F5" && (e.metaKey || e.ctrlKey)) {
+    if (key === "f5" && (e.metaKey || e.ctrlKey)) {
       reloadApp();
     }
   }

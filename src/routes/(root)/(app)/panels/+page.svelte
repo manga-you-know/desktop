@@ -105,125 +105,131 @@
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
-
-<div
-  class="scrollbar w-[99.2%] h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
-  bind:this={panelDiv}
->
+<div class="h-full mr-4 overflow-hidden flex flex-col items-center">
   <div
-    class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+    class="scrollbar w-full h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
+    bind:this={panelDiv}
   >
-    <Badge class="h-10 w-12 flex justify-center items-center" variant="outline">
-      <ScrollingValue axis="y" value={count} />
-    </Badge>
-    <div class="inline-flex relative items-center">
-      <Icon
-        class={cn(
-          "!size-5 ml-3 !text-primary absolute z-10",
-          searchTerm !== "" && "cursor-pointer",
-        )}
-        icon={searchTerm === "" ? "uil:search" : "lucide:x"}
-        onclick={() => {
-          searchTerm = "";
+    <div
+      class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+    >
+      <Badge
+        class="h-10 w-12 flex justify-center items-center"
+        variant="outline"
+      >
+        <ScrollingValue axis="y" value={count} />
+      </Badge>
+      <div class="inline-flex relative items-center">
+        <Icon
+          class={cn(
+            "!size-5 ml-3 !text-primary absolute z-10",
+            searchTerm !== "" && "cursor-pointer",
+          )}
+          icon={searchTerm === "" ? "uil:search" : "lucide:x"}
+          onclick={() => {
+            searchTerm = "";
+            search();
+          }}
+        />
+        <Input
+          bind:value={searchTerm}
+          class="w-52 pl-9"
+          labelClass="ml-6"
+          variant="outline"
+          placeholder="Search name | chapter..."
+          floatingLabel
+          autocomplete="off"
+          tabindex={-1}
+          oninput={search}
+        />
+      </div>
+      <Select
+        class="max-w-52"
+        classPopup="w-[11rem]"
+        bind:selected={selectedTitle}
+        items={panelsTitle}
+        label="Title"
+        search
+        itemsLabel={panelsTitleLabel}
+        wheelControls
+        onselect={async () => {
+          selectedChapter = "";
           search();
+          await delay(5);
+          if (panelsChapter.length === 1) selectedChapter = panelsChapter[0];
         }}
       />
-      <Input
-        bind:value={searchTerm}
-        class="w-52 pl-9"
-        labelClass="ml-6"
-        variant="outline"
-        placeholder="Search name | chapter..."
-        floatingLabel
-        autocomplete="off"
-        tabindex={-1}
-        oninput={search}
+      <Select
+        class="w-28"
+        classPopup="w-24"
+        bind:selected={selectedChapter}
+        items={panelsChapter}
+        label="Chapter"
+        search
+        wheelControls
+        closeButton={panelsChapter.length > 1}
+        onselect={search}
       />
     </div>
-    <Select
-      class="max-w-52"
-      classPopup="w-[11rem]"
-      bind:selected={selectedTitle}
-      items={panelsTitle}
-      label="Title"
-      search
-      itemsLabel={panelsTitleLabel}
-      wheelControls
-      onselect={async () => {
-        selectedChapter = "";
-        search();
-        await delay(5);
-        if (panelsChapter.length === 1) selectedChapter = panelsChapter[0];
-      }}
-    />
-    <Select
-      class="w-28"
-      classPopup="w-24"
-      bind:selected={selectedChapter}
-      items={panelsChapter}
-      label="Chapter"
-      search
-      wheelControls
-      closeButton={panelsChapter.length > 1}
-      onselect={search}
-    />
-  </div>
-  <div class="w-full h-32 ssmh:h-0"></div>
-  {#each displayedPanels as panel}
-    <FavoritePanel
-      path={panel.path}
-      title={rawFavorites.find((f) => f.id === panel.id)?.name ?? panel.name}
-      chapter={panel.chapter}
-      bind:shouldCopy={panel.shouldCopy}
-    />
-  {/each}
-  {#if displayedPanels.length === 0}
-    <Badge class="h-10">
-      No panel found, try adding it with Ctrl + S while in a chapter
-    </Badge>
-  {/if}
-  {#if panelsWithQuery.length > perPage}
-    <div class="w-full h-10"></div>
-    <div
-      class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] z-20 absolute bottom-6 smh:mt-3 p-2 transition-all"
-    >
-      <Pagination.Root
-        {count}
-        {perPage}
-        {siblingCount}
-        bind:page
-        onPageChange={() => panelDiv.scrollTo({ top: 0 })}
+    <div class="w-full h-32 ssmh:h-0"></div>
+    {#each displayedPanels as panel}
+      <FavoritePanel
+        path={panel.path}
+        title={rawFavorites.find((f) => f.id === panel.id)?.name ?? panel.name}
+        chapter={panel.chapter}
+        bind:shouldCopy={panel.shouldCopy}
+      />
+    {/each}
+    {#if displayedPanels.length === 0}
+      <Badge class="h-10">
+        No panel found, try adding it with Ctrl + S while in a chapter
+      </Badge>
+    {/if}
+    {#if panelsWithQuery.length > perPage}
+      <div class="w-full h-10"></div>
+      <div
+        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] z-20 absolute bottom-6 smh:mt-3 p-2 transition-all"
       >
-        {#snippet children({ pages, currentPage })}
-          <Pagination.Content tabindex={-1}>
-            <Pagination.Item>
-              <Pagination.PrevButton class="dark:text-white" tabindex={-1} />
-            </Pagination.Item>
-            {#each pages as page (page.key)}
-              {#if page.type === "ellipsis"}
-                <Pagination.Item tabindex={-1}>
-                  <Pagination.Ellipsis class="dark:text-white" />
-                </Pagination.Item>
-              {:else}
-                <Pagination.Item>
-                  <Pagination.Link
-                    {page}
-                    variant={currentPage === page.value ? "secondary" : "ghost"}
-                    effect={currentPage === page.value ? "ringHover" : null}
-                    isActive={currentPage === page.value}
-                    tabindex={-1}
-                  >
-                    {page.value}
-                  </Pagination.Link>
-                </Pagination.Item>
-              {/if}
-            {/each}
-            <Pagination.Item>
-              <Pagination.NextButton class="dark:text-white" tabindex={-1} />
-            </Pagination.Item>
-          </Pagination.Content>
-        {/snippet}
-      </Pagination.Root>
-    </div>
-  {/if}
+        <Pagination.Root
+          {count}
+          {perPage}
+          {siblingCount}
+          bind:page
+          onPageChange={() => panelDiv.scrollTo({ top: 0 })}
+        >
+          {#snippet children({ pages, currentPage })}
+            <Pagination.Content tabindex={-1}>
+              <Pagination.Item>
+                <Pagination.PrevButton class="dark:text-white" tabindex={-1} />
+              </Pagination.Item>
+              {#each pages as page (page.key)}
+                {#if page.type === "ellipsis"}
+                  <Pagination.Item tabindex={-1}>
+                    <Pagination.Ellipsis class="dark:text-white" />
+                  </Pagination.Item>
+                {:else}
+                  <Pagination.Item>
+                    <Pagination.Link
+                      {page}
+                      variant={currentPage === page.value
+                        ? "secondary"
+                        : "ghost"}
+                      effect={currentPage === page.value ? "ringHover" : null}
+                      isActive={currentPage === page.value}
+                      tabindex={-1}
+                    >
+                      {page.value}
+                    </Pagination.Link>
+                  </Pagination.Item>
+                {/if}
+              {/each}
+              <Pagination.Item>
+                <Pagination.NextButton class="dark:text-white" tabindex={-1} />
+              </Pagination.Item>
+            </Pagination.Content>
+          {/snippet}
+        </Pagination.Root>
+      </div>
+    {/if}
+  </div>
 </div>

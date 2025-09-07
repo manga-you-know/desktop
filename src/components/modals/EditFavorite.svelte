@@ -12,6 +12,8 @@
   } from "@/functions";
   import type { Favorite } from "@/types";
   import Icon from "@iconify/svelte";
+  import { getBool } from "@/utils";
+  import { cn } from "@/lib/utils";
 
   interface Props {
     favorite: Favorite;
@@ -27,7 +29,7 @@
   let anilistId = $state(favorite.anilist_id);
   let folderName = $state(favorite.folder_name);
   let description = $state(favorite.description);
-  let isUltraFavorite = $state(favorite.is_ultra_favorite);
+  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
 
   let isRefreshing = $state(false);
   let isRefreshed = $state(false);
@@ -222,9 +224,8 @@
         bind:value={author}
       />
       <Button
-        class="w-28 h-10 ml-[0.6rem] flex justify-between"
+        class="w-28 h-10 ml-[0.6rem] flex justify-between relative"
         variant="outline"
-        effect="ringHoverSecondary"
         onclick={async () => {
           isUltraFavorite = !isUltraFavorite;
           favorite.is_ultra_favorite = isUltraFavorite;
@@ -233,10 +234,18 @@
       >
         {isUltraFavorite ? "Remove" : "Favorite"}
         <Icon
-          class="!w-5 !h-5 -mx-[5px]"
-          icon={isUltraFavorite
-            ? "fluent:star-emphasis-32-filled"
-            : "fluent:star-emphasis-32-regular"}
+          class={cn(
+            "absolute right-3 !size-5 transition-all duration-500",
+            isUltraFavorite && "opacity-0 scale-0 rotate-180",
+          )}
+          icon="heroicons:star"
+        />
+        <Icon
+          class={cn(
+            "absolute right-3 !size-5 transition-all duration-500",
+            !isUltraFavorite && "opacity-0 scale-0 -rotate-180",
+          )}
+          icon="heroicons:star-solid"
         />
       </Button>
 

@@ -28,7 +28,7 @@
       <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
       <AlertDialog.Description>
         This will permanently delete
-        <span class="font-bold"> {favorite.name} </span> and all readed chapters
+        <span class="font-bold"> {favorite.name} </span> and its reading history
         within it.
       </AlertDialog.Description>
     </AlertDialog.Header>

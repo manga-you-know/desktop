@@ -83,11 +83,11 @@
   });
 </script>
 
-<div class="h-full overflow-hidden flex flex-col items-center">
+<div class="h-full mr-4 overflow-hidden flex flex-col items-center">
   <div
     bind:this={libraryDiv}
     bind:clientWidth={libdivWidth}
-    class="scrollbar w-[98.4%] h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
+    class="scrollbar w-full h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll pb-5"
   >
     <div
       class={cn(
