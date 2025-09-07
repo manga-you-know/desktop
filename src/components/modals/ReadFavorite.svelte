@@ -32,6 +32,7 @@
     sidebarBehavior,
     isChaptersUniqueNumber,
     sidebarSide,
+    rawFavorites,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -46,6 +47,7 @@
     saveSettings,
     removeFavorite,
     copyText,
+    refreshRawFavorites,
   } from "@/functions";
   import type { Favorite, Chapter, Language as LanguageType } from "@/types";
   import {
@@ -53,7 +55,7 @@
     LANGUAGE_LABELS,
     READSOURCES_LANGUAGE,
   } from "@/constants";
-  import { imageFail, limitStr } from "@/utils";
+  import { getBool, imageFail, limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
   import { load, Store } from "@tauri-apps/plugin-store";
   import { IsMobile } from "@/lib/hooks";
@@ -94,14 +96,17 @@
     if (!$isChaptersUniqueNumber || selectedScan !== "") {
       return $globalChapters.filter(
         (chapter) =>
-          chapter.number?.toString().includes(searchTerm) &&
+          (chapter.number?.toString().includes(searchTerm) ||
+            chapter.title?.toLowerCase().includes(searchTerm) ||
+            (chapter.number === null && chapter.title === null)) &&
           (selectedScan === "" || chapter?.scan === selectedScan),
       );
     }
     const seenNumbers = new Set();
     return $globalChapters.filter((chapter) => {
       if (
-        chapter.number?.toString().includes(searchTerm) &&
+        (chapter.number?.toString().includes(searchTerm) ||
+          chapter.title?.toLowerCase().includes(searchTerm)) &&
         !seenNumbers.has(chapter.number)
       ) {
         seenNumbers.add(chapter.number);
@@ -141,7 +146,7 @@
       ? displayedChapters.length
       : displayedLocalChapters.length,
   );
-  let isLoaded = $state(false);
+  let loaded = $state("");
   let isFetching = $state(false);
 
   interface Props {
@@ -227,6 +232,7 @@
   }
 
   async function downloadAll() {
+    await saveResult(favorite);
     const maxCurrently = 5;
     let downloadingNow = 0;
     const reversedChapters = $globalChapters.slice().reverse();
@@ -303,7 +309,7 @@
   // }
 
   const loadUltraFavorite = async () => {
-    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
+    isUltraFavorite = getBool(favorite.is_ultra_favorite);
   };
 
   async function onOpened() {
@@ -355,16 +361,33 @@
     // displayedChapters = $globalChapters;
     await refreshReadeds(favorite);
     isFetching = false;
-    isLoaded = true;
+    loaded = favorite.source + favorite.source_id;
   }
   const isMobileInstance = new IsMobile();
   const isMobile = $derived(isMobileInstance.current);
+  function isFavorite(favorite: Favorite) {
+    return $rawFavorites.find(
+      (f) => f.source_id === favorite.source_id && f.source === favorite.source,
+    );
+  }
+
+  async function saveResult(result: Favorite) {
+    if (!isFavorite(result)) {
+      favorite = await FavoriteDB.createFavorite(result);
+      refreshRawFavorites();
+      refreshLibrary();
+    }
+  }
+
   $effect(() => {
-    if (open && !isLoaded) {
+    if (open && loaded !== favorite.source + favorite.source_id) {
       onOpened();
     } else {
+      selectedScan = "";
     }
   });
+
+  $inspect($globalChapters);
 </script>
 
 {#snippet chapterControls()}
@@ -375,28 +398,30 @@
     )}
   >
     <div class="flex w-[40%]">
-      <div class="w-full flex relative">
+      <div
+        class="w-full flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary"
+      >
+        <Button
+          class={cn(
+            "!size-6 px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
+            searchTerm !== "" && "pointer-events-auto",
+          )}
+          variant="ghost"
+          onclick={() => {
+            searchTerm = "";
+          }}
+        >
+          <Icon icon={searchTerm === "" ? "lucide:search" : "lucide:x"} />
+        </Button>
         <Input
           class="w-full max-w-full"
           divClass="w-full"
           placeholder="Search..."
           floatingLabel
-          variant="outline"
+          variant="link"
           bind:value={searchTerm}
           tabindex={IS_MOBILE ? -1 : 1}
         />
-        <Button
-          class={cn(
-            "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
-            searchTerm !== "" ? "opacity-100" : "pointer-events-none",
-          )}
-          variant="outline"
-          onclick={() => {
-            searchTerm = "";
-          }}
-        >
-          <Icon icon="lucide:x" />
-        </Button>
       </div>
     </div>
 
@@ -556,7 +581,8 @@
         )}
         variant="secondary"
         size="sm"
-        onclick={() => {
+        onclick={async () => {
+          await saveResult(favorite);
           if (nextChapter) {
             const originalIndex =
               chaptersMode === "web"
@@ -594,6 +620,7 @@
                     : true}
                   onclick={async (e) => {
                     e.stopPropagation();
+                    await saveResult(favorite);
                     if (nextChapter === undefined) return;
                     if (!isNextDownloaded) {
                       pushDownloading(nextChapter);
@@ -667,6 +694,7 @@
                 tabindex={-1}
                 onclick={async (e) => {
                   e.stopPropagation();
+                  await saveResult(favorite);
                   if (nextChapter) {
                     await addReadedBelow(
                       nextChapter,
@@ -703,7 +731,7 @@
 <Dialog.Root
   bind:open
   onOpenChange={() => {
-    isLoaded = false;
+    loaded = "";
     if (isUltraFavorite) loadFavoriteChapters(favorite);
     refreshFavorites();
     refreshLibrary();
@@ -716,11 +744,11 @@
       "h-[100vh] max-w-[100vw] py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
         ? $sidebarSide === "left"
-          ? "w-[calc(100vw-11rem)] ml-[3.2rem] !mr-[2rem]"
-          : "w-[calc(100vw-11rem)] mr-[6rem] !ml-[0rem]"
+          ? "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] ml-[3.2rem] !mr-[2rem]"
+          : "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] mr-[6rem] !ml-[0rem]"
         : $sidebarSide === "left"
-          ? "w-[calc(100vw-6rem)] ml-[1rem] !mr-[2rem]"
-          : "w-[calc(100vw-6rem)] mr-[4rem] !ml-[0rem]",
+          ? "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] ml-[1rem] !mr-[2rem]"
+          : "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] mr-[4rem] !ml-[0rem]",
       $customTitlebar && "h-[calc(100vh-3.5rem)] mt-[1.2rem]",
       isMobile && "flex flex-col items-center h-[90vh]",
     )}
@@ -745,12 +773,15 @@
     <!--   > -->
     <!-- </Dialog.Header> -->
     <div class="w-full h-full relative">
-      <div class="absolute flex w-full h-full justify-end pointer-events-none">
+      <div
+        class="absolute flex w-full h-full justify-end pointer-events-none px-8 sm:px-4 md:px-0"
+      >
         <Button
           class="bg-background/60 border-0.5 pointer-events-auto"
           variant="outline"
           onclick={() => (open = false)}
         >
+          Back
           <Icon class="rotate-180" icon="ion:caret-back" />
         </Button>
       </div>
@@ -789,6 +820,7 @@
                 {languageOptions}
                 onChange={async () => {
                   isFetching = true;
+                  selectedScan = "";
                   const result = await $downloadManager.getChapters(
                     favorite,
                     localSelectedLanguage.id,
@@ -819,28 +851,39 @@
               </span>
             </Button>
             <div class="flex gap-2 w-full">
-              <Button
-                class="flex gap-2"
-                variant="outline"
-                effect="ringHoverSecondary"
-                onclick={async (e: Event) => {
-                  e.stopPropagation();
-                  isUltraFavorite = !isUltraFavorite;
-                  favorite.is_ultra_favorite = isUltraFavorite;
-                  isUltraFavorite = await FavoriteDB.toggleUltraFavorite(
-                    favorite,
-                    false,
-                  );
-                }}
+              <Tooltip
+                text={isUltraFavorite ? "Remove favorite" : "Add to favorites"}
               >
-                {isUltraFavorite ? "X" : "Add"}
-                <Icon
-                  class="!size-5"
-                  icon={isUltraFavorite
-                    ? "fluent:star-emphasis-32-filled"
-                    : "fluent:star-emphasis-32-regular"}
-                />
-              </Button>
+                <Button
+                  class="flex gap-2 w-12 relative"
+                  variant="outline"
+                  onclick={async (e: Event) => {
+                    e.stopPropagation();
+                    await saveResult(favorite);
+                    isUltraFavorite = !isUltraFavorite;
+                    favorite.is_ultra_favorite = isUltraFavorite;
+                    isUltraFavorite = await FavoriteDB.toggleUltraFavorite(
+                      favorite,
+                      false,
+                    );
+                  }}
+                >
+                  <Icon
+                    class={cn(
+                      "absolute !size-5 transition-all duration-500",
+                      isUltraFavorite && "opacity-0 rotate-180 scale-0",
+                    )}
+                    icon="heroicons:star"
+                  />
+                  <Icon
+                    class={cn(
+                      "absolute !size-5 transition-all duration-500",
+                      !isUltraFavorite && "opacity-0 -rotate-180 scale-0",
+                    )}
+                    icon="heroicons:star-solid"
+                  />
+                </Button>
+              </Tooltip>
               <Button
                 class="w-full"
                 effect="ringHover"
@@ -991,11 +1034,11 @@
                     data={!$isChaptersDescending || searchTerm !== ""
                       ? displayedChapters.toReversed()
                       : displayedChapters}
-                    itemSize={25}
                     getKey={(_, i) => i}
+                    overscan={20}
                     tabindex={-1}
                   >
-                    {#snippet children(chapter, i)}
+                    {#snippet children(chapter, _)}
                       {@const isDownloaded = downloaded
                         .map((d) => d.name)
                         .includes(chapter.number)}
@@ -1007,7 +1050,8 @@
                         {isDownloaded}
                         isReaded={isReadedHere}
                         isDownloading={isDownloadingHere}
-                        onclick={() => {
+                        onclick={async () => {
+                          await saveResult(favorite);
                           const originalIndex = $globalChapters.findIndex(
                             (c) => c.chapter_id === chapter.chapter_id,
                           );
@@ -1017,6 +1061,7 @@
                         }}
                         ondownloadclick={async (e: Event) => {
                           e.stopPropagation();
+                          await saveResult(favorite);
                           if (!isDownloaded) {
                             pushDownloading(chapter);
                             await $downloadManager.downloadChapter(
@@ -1048,6 +1093,7 @@
                         }}
                         onreadclick={async (e: Event) => {
                           e.stopPropagation();
+                          await saveResult(favorite);
                           await addReadedBelow(
                             chapter,
                             $globalChapters,
@@ -1085,8 +1131,8 @@
                     data={$isChaptersDescending || searchTerm !== ""
                       ? displayedLocalChapters
                       : displayedLocalChapters.toReversed()}
-                    itemSize={25}
                     getKey={(_, i) => i}
+                    overscan={20}
                     tabindex={-1}
                   >
                     {#snippet children(chapter, i)}
@@ -1097,7 +1143,8 @@
                         isDownloaded
                         isReaded={isReadedHere}
                         isDownloading={false}
-                        onclick={() => {
+                        onclick={async () => {
+                          await saveResult(favorite);
                           $globalChapters = chaptersDl;
                           const originalIndex = $globalChapters.findIndex(
                             (c) => c.chapter_id === chapter.chapter_id,
@@ -1108,6 +1155,7 @@
                         }}
                         ondownloadclick={async (e: Event) => {
                           e.stopPropagation();
+                          await saveResult(favorite);
                           if ($downloadPath === "Mangas/") {
                             const path = await join(
                               await downloadDir(),
@@ -1127,6 +1175,7 @@
                         }}
                         onreadclick={async (e: Event) => {
                           e.stopPropagation();
+                          await saveResult(favorite);
                           await addReadedBelow(chapter, chaptersDl, favorite);
                           await refreshReadeds(favorite);
                         }}
