@@ -69,7 +69,7 @@
   >
     <div
       class={cn(
-        "bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "backdrop-blur-md flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14",
       )}
     >
@@ -109,8 +109,8 @@
           }}
         >
           <Switch
-            class="rounded-[10px] dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
-            classThumb="rounded-lg"
+            class="rounded-[11px] dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
+            classThumb="rounded-xl"
             id="show-only-new"
             bind:checked={$showOnlyNew}
           />
@@ -169,7 +169,7 @@
     {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
       <div class="w-full h-10"></div>
       <div
-        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl absolute bottom-6 mt-10 py-2 px-2"
+        class="bg-secondary/30 backdrop-blur-md flex rounded-3xl absolute bottom-6 mt-10 py-2 px-2"
       >
         <Pagination.Root
           {count}

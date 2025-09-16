@@ -29,7 +29,7 @@
   let libdivWidth: number = $state(0);
   let showedFilter = $state(0);
   let page = $state(1);
-  let perPage = $derived(Math.floor(libdivWidth / 169) * 3);
+  let perPage = $derived(Math.floor(libdivWidth / 168) * 3);
   const count = $derived($libraryFavorites.length);
   let displayedLibrary: Favorite[] = $derived(
     $isAscending
@@ -91,7 +91,7 @@
   >
     <div
       class={cn(
-        "bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "backdrop-blur-md flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14",
       )}
     >
@@ -151,7 +151,7 @@
     {#if $libraryFavorites.length > perPage}
       <div class="w-full h-10"></div>
       <div
-        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
+        class="bg-secondary/30 backdrop-blur-md flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
       >
         <Pagination.Root
           {count}

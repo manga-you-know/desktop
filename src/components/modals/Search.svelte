@@ -353,7 +353,6 @@
                 }
                 isFavoriteOpen = true;
               }}
-              disabled={!(favoriteOpen ? isFavorite(favoriteOpen) : false)}
             >
               <Icon
                 class="!size-5"

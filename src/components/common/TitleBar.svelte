@@ -49,7 +49,12 @@
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
   import { getBool, limitStr } from "@/utils";
-  import { AskDelete, ReadFavorite, WatchFavorite } from "@/components";
+  import {
+    AskDelete,
+    FavoriteContext,
+    ReadFavorite,
+    WatchFavorite,
+  } from "@/components";
   import { VList } from "virtua/svelte";
   import { ANIMESOURCES, COMICSOURCES, MANGASOURCES } from "@/constants";
   import { FavoriteDB } from "@/repositories";
@@ -393,7 +398,7 @@
                 }}
               />
               <Input
-                class="w-[20vw] sm:w-[30vw] md:w-[40vw] h-8 pointer-events-auto"
+                class="max-w-[33rem] w-[20vw] sm:w-[30vw] md:w-[40vw] h-8 pointer-events-auto"
                 id="central-search"
                 bind:value={query}
                 oninput={search}
@@ -404,7 +409,7 @@
           </Popover.Trigger>
           <Popover.Content
             class={cn(
-              "w-[42vw] h-[13rem] ml-32 md:ml-12 lg:ml-0 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
+              "max-w-[35.5rem] w-[42.5vw] h-[14rem] ml-32 md:ml-12 lg:ml-0 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
               // libraryResults.length > 0 && "min-h-[8rem]",
             )}
             trapFocus={false}
@@ -447,7 +452,11 @@
               </Button>
               <VList
                 class={cn(
-                  "max-h-[8rem] mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                  "max-h-[8.75rem] mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                  libraryResults.length === 1 && "max-h-[1.75rem]",
+                  libraryResults.length === 2 && "max-h-[3.5rem]",
+                  libraryResults.length === 3 && "max-h-[5.25rem]",
+                  libraryResults.length === 4 && "max-h-[7rem]",
                   collapsibles["library"] && "!hidden",
                 )}
                 data={libraryResults}
@@ -550,7 +559,10 @@
                   </Button>
                   <VList
                     class={cn(
-                      "max-h-[6rem] transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                      "max-h-[7rem] transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
+                      searchResults[source].length === 1 && "max-h-[1.75rem]",
+                      searchResults[source].length === 2 && "max-h-[3.5rem]",
+                      searchResults[source].length === 3 && "max-h-[5.25rem]",
                       collapsibles[source] && "!hidden",
                     )}
                     data={searchResults[source]}

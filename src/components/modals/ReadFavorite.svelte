@@ -18,6 +18,7 @@
     Tooltip,
     Language,
     Select,
+    PickReaded,
   } from "@/components";
   import {
     readeds,
@@ -106,7 +107,8 @@
     return $globalChapters.filter((chapter) => {
       if (
         (chapter.number?.toString().includes(searchTerm) ||
-          chapter.title?.toLowerCase().includes(searchTerm)) &&
+          chapter.title?.toLowerCase().includes(searchTerm) ||
+          (chapter.number === null && chapter.title === null)) &&
         !seenNumbers.has(chapter.number)
       ) {
         seenNumbers.add(chapter.number);
@@ -122,10 +124,8 @@
       )
       .toReversed(),
   );
-  let readedLenghtDisplayed: number = $derived(
-    chaptersMode === "web"
-      ? displayedChapters.filter((c) => isReaded(c, $readeds)).length
-      : displayedLocalChapters.filter((c) => isReaded(c, $readeds)).length,
+  let chaptersToPick: Chapter[] = $derived(
+    chaptersMode === "web" ? displayedChapters : displayedLocalChapters,
   );
   let nextChapter: Chapter | undefined = $derived(
     chaptersMode === "web"
@@ -140,11 +140,6 @@
   let store: Store = $state(null!);
   let chaptersLength = $derived(
     chaptersMode === "web" ? $globalChapters.length : chaptersDl.length,
-  );
-  let displayedChaptersLength = $derived(
-    chaptersMode === "web"
-      ? displayedChapters.length
-      : displayedLocalChapters.length,
   );
   let loaded = $state("");
   let isFetching = $state(false);
@@ -353,6 +348,9 @@
       }
       globalChapters.set(chapters);
     } else {
+      languageOptions = [
+        { id: "", label: READSOURCES_LANGUAGE[favorite.source] },
+      ];
       localSelectedLanguage.label = READSOURCES_LANGUAGE[favorite.source];
       const result = await $downloadManager.getChapters(favorite);
       await new Promise((resolve) => setTimeout(resolve, 10));
@@ -386,8 +384,6 @@
       selectedScan = "";
     }
   });
-
-  $inspect($globalChapters);
 </script>
 
 {#snippet chapterControls()}
@@ -510,14 +506,7 @@
         </div>
       </Tooltip>
       {#if isMobile}
-        <Badge
-          variant="secondary"
-          class="w-20 p-1 mr-1 flex justify-center select-none"
-        >
-          <ScrollingValue value={readedLenghtDisplayed} axis="y" />
-          /
-          <ScrollingValue value={displayedChaptersLength} axis="y" />
-        </Badge>
+        <PickReaded {favorite} readeds={$readeds} chapters={chaptersToPick} />
       {/if}
     </div>
   </div>
@@ -716,14 +705,7 @@
       </Button>
     </div>
     {#if !isMobile}
-      <Badge
-        variant="secondary"
-        class="w-20 p-1 mr-1 flex justify-center rounded-xl select-none"
-      >
-        <ScrollingValue value={readedLenghtDisplayed} axis="y" />
-        /
-        <ScrollingValue value={displayedChaptersLength} axis="y" />
-      </Badge>
+      <PickReaded {favorite} readeds={$readeds} chapters={chaptersToPick} />
     {/if}
   </div>
 {/snippet}

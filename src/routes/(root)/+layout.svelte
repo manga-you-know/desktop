@@ -79,7 +79,7 @@
   function handleKeydown(e: KeyboardEvent) {
     const isCtrl = e.metaKey || e.ctrlKey;
     const key = e.key.toLowerCase();
-    if (key === "11") {
+    if (key === "f11" || key === "f") {
       toggleFullscreen();
     }
 
@@ -103,7 +103,7 @@
       openSearch.set(!$openSearch);
     }
 
-    if (key === "f5" && (e.metaKey || e.ctrlKey)) {
+    if (key === "r" && isCtrl) {
       reloadApp();
     }
   }
