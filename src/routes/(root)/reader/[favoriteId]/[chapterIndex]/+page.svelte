@@ -69,6 +69,7 @@
   import { fly } from "svelte/transition";
   import { flip } from "svelte/animate";
   import { get } from "svelte/store";
+  import { getCurrentWindow, ProgressBarStatus } from "@tauri-apps/api/window";
 
   let { favoriteId, chapterIndex } = page.params;
   let favoriteIdEx = $state(favoriteId);
@@ -107,8 +108,17 @@
   let currentlyImagePath = $derived(
     `${favorite.id}~${favorite.folder_name}~${chapter?.number}~${currentlyCount}.png`,
   );
+  let readingPercentage = $derived(
+    isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
+      !isFinite(Math.round((currentlyCount / totalPage) * 100))
+      ? 0
+      : currentlyCount === 1 && totalPage === 1
+        ? 100
+        : Math.round((currentlyCount / totalPage) * 100),
+  );
   let downloadedImages: DirEntry[] = $state([]);
   let pagesDiv: HTMLDivElement = $state(null!);
+  let currentWindow = getCurrentWindow();
   let menuFromTop: number = $state(20);
   let time = $state(new Date());
 
@@ -615,10 +625,14 @@
     }
   });
 
+  const isInput = () => {
+    return document.activeElement?.tagName === "INPUT";
+  };
+
   function handleKeydown(event: KeyboardEvent) {
     const key = event.key.toLowerCase();
     const ctrl = event.metaKey || event.ctrlKey;
-    if (!$openSearch) {
+    if (!$openSearch && !isInput()) {
       if (key === "arrowleft") {
         prevPage();
       }
@@ -711,6 +725,13 @@
       nextPage();
     }
   }
+
+  $effect(() => {
+    currentWindow.setProgressBar({
+      status: ProgressBarStatus.Normal,
+      progress: readingPercentage,
+    });
+  });
 </script>
 
 <svelte:window onkeydown={handleKeydown} onmousedown={handleMouse} />
@@ -788,15 +809,7 @@
         )}
         variant="secondary"
       >
-        <SpringValue
-          format="integer"
-          value={isNaN(Math.round((currentlyCount / totalPage) * 100)) ||
-          !isFinite(Math.round((currentlyCount / totalPage) * 100))
-            ? 0
-            : currentlyCount === 1 && totalPage === 1
-              ? 100
-              : Math.round((currentlyCount / totalPage) * 100)}
-        />%
+        <SpringValue format="integer" value={readingPercentage} />%
       </Badge>
       <Badge
         class={cn(

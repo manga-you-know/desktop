@@ -43,7 +43,7 @@ pub async fn get_aniplay_episode(
 
 #[tauri::command(async)]
 pub async fn get_base64_image(url: &str, referer: &str) -> Result<String, String> {
-    if referer == "https://mangadex.org" {
+    if referer == "https://mangadex.org" || referer == "https://mangapark.io" {
         let client = reqwest::Client::builder()
             .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
             .build()

@@ -9,3 +9,4 @@ export { WeebCentralDl } from "./_weebcentral";
 export { MangaLivreDl } from "./_mangalivre";
 export { MangaSwatDl } from "./_mangaswat";
 export { ComickDl } from "./_comick";
+export { MangaParkDl } from "./_mangapark"

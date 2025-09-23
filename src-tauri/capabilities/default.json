@@ -14,6 +14,7 @@
     "core:window:allow-set-title",
     "core:window:allow-create",
     "core:window:allow-destroy",
+    "core:window:allow-set-progress-bar",
     "core:webview:default",
     "core:webview:allow-clear-all-browsing-data",
     "core:webview:allow-create-webview",

@@ -153,12 +153,12 @@
   >
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
     <div
-      class="flex relative w-[24.4rem] text-sm items-center justify-center p-1 gap-1 bg-primary rounded-xl z-10"
+      class="flex relative w-[24.4rem] text-sm items-center justify-center p-1 gap-1 bg-background rounded-xl z-10"
     >
       <div class="z-[1] absolute w-full h-6">
         <div
           class={cn(
-            "h-6 bg-background mx-2 rounded-lg transition-all duration-500 w-[4.5rem] translate-x-0",
+            "h-6 bg-primary mx-2 rounded-lg transition-all duration-500 w-[4.5rem] translate-x-0",
             currentTab === "search" && "w-[4rem] translate-x-[4.7rem]",
             currentTab === "appearance" && "w-[6rem] translate-x-[8.9rem]",
             currentTab === "reader" && "w-[4rem] translate-x-[15.1rem]",
@@ -168,8 +168,8 @@
       </div>
       <Button
         class={cn(
-          "z-[2] h-6 w-[4.5rem] rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
-          currentTab === "behavior" && "!text-primary hover:bg-primary/20",
+          "z-[2] h-6 w-[4.5rem] rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
+          currentTab === "behavior" && "!text-background hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -181,8 +181,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
-          currentTab === "search" && "!text-primary hover:bg-primary/20",
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
+          currentTab === "search" && "!text-background hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -194,8 +194,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-24 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
-          currentTab === "appearance" && "!text-primary hover:bg-primary/20",
+          "z-[2] h-6 w-24 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
+          currentTab === "appearance" && "!text-background hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -207,8 +207,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-background",
-          currentTab === "reader" && "!text-primary hover:bg-primary/20",
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
+          currentTab === "reader" && "!text-background hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -220,10 +220,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent",
-          currentTab === "player"
-            ? "text-primary hover:bg-primary/20"
-            : "!text-background hover:!text-background/70 hover:bg-secondary/30",
+          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
+          currentTab === "player" && "!text-background hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"

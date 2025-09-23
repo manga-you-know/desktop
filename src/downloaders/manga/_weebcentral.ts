@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
 import type { MangaDl } from "@/interfaces";
-import type { Favorite, Chapter, Language } from "@/types";
+import type { Favorite, Chapter } from "@/types";
 
 export class WeebCentralDl implements MangaDl {
   baseUrl = "https://weebcentral.com";
@@ -9,10 +9,21 @@ export class WeebCentralDl implements MangaDl {
   headers = {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
-    Accept: "*/*",
+    // Accept: "*/*",
     Host: "weebcentral.com",
     Referer:
       "https://weebcentral.com",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    // "Accept-Encoding": "gzip, deflate, br, zstd",
+    // "Sec-GPC": "1",
+    // "Upgrade-Insecure-Requests": "1",
+    // "Sec-Fetch-Dest": "document",
+    // "Sec-Fetch-Mode": "navigate",
+    // "Sec-Fetch-Site": "none",
+    // "Sec-Fetch-User": "?1",
+    // Connection: "keep-alive",
+    // Cookie: "cf_clearance=QzPl4HmHh6bdFZdxGEOumsEeK97O_vJbnUszGFbISik-1758394207-1.2.1.1-YONj6G6Y_sTPzwOakC39EFBlecuqnNR53ySbZsDFl.17Hv.Gwzza_f11CF1O5BxeuvXFKQLMJk34IFQpmclST80kurKTRfyHHT9GrAwd3E4lyugDlz9aisgeNgprpHQYdV3CZlODj4oT0qxeVPScOLHiDzZnVVT_e2q3gzdL64Eo.O7zUqEaqYwecrsZSzap.xPN4A6tmUHPLXLg5XNa4c5WnzemTEtlFbqprAuh9fE"
   };
 
   async getMangaById(mangaId: string): Promise<Favorite> {
@@ -61,6 +72,7 @@ export class WeebCentralDl implements MangaDl {
       { headers: this.headers }
     );
     if (response.status !== 200) {
+      console.log(await response.text(), "coisas")
       throw new Error(`Failed to get mangas ${response.status}`);
     }
     const mangas: Favorite[] = [];
@@ -89,6 +101,7 @@ export class WeebCentralDl implements MangaDl {
   async getChapters(mangaId: string): Promise<Chapter[]> {
     const response = await fetch(
       `${this.baseUrl}/series/${mangaId}/full-chapter-list`,
+      { headers: this.headers }
     );
     if (response.status !== 200) {
       throw new Error(`Failed to get chapters ${mangaId} ${response.status}`);
@@ -96,6 +109,7 @@ export class WeebCentralDl implements MangaDl {
     const chapters: Chapter[] = [];
     const text = await response.text();
     const $ = cheerio.load(text);
+    console.log(text)
     $("div.flex.items-center[x-data]")
       .find("a")
       .each((_, a) => {
@@ -115,7 +129,6 @@ export class WeebCentralDl implements MangaDl {
       { headers: this.headers }
     );
     if (response.status !== 200) {
-      console.log(response.url);
       throw new Error(
         `Failed to get chapter images ${chapterId} ${response.status}`
       );

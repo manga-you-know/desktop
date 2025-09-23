@@ -57,6 +57,7 @@
     const getResults = await $downloadManager.search(
       $searchTerm.toLowerCase(),
       $selectedSource,
+      true
     );
     if (term === $searchTerm.toLowerCase() && source === $selectedSource) {
       results = getResults;
@@ -165,7 +166,7 @@
       <Separator />
       <div
         class={cn(
-          "flex flex-col bg-secondary/50 py-1 pl-1  flex gap-1 rounded-b-3xl relative",
+          "flex flex-col bg-secondary/50 py-1 pl-1 gap-1 rounded-b-3xl relative",
           isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52",
         )}
       >

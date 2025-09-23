@@ -227,24 +227,34 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
   let nextChapter: Chapter | null = null;
   readeds = await ReadedDB.getReadeds(favorite);
   updateFavoriteProperty(strNotEmpty(favorite.id), "readeds", readeds);
-  if (favorite.type === "anime") {
-    chapters = await dl.getEpisodes(favorite);
-  } else {
-    const isMulti = dl.isMultiLanguage(favorite.source);
-    if (isMulti) {
-      const lastReaded = await ReadedDB.getLastReaded(favorite);
-      if (lastReaded) {
-        chapters = await dl.getChapters(favorite, lastReaded.language);
-      } else {
-        chapters = await dl.getChapters(favorite, get(preferableLanguage).id);
-      }
-      if (chapters.length === 0) {
-        const languages = await dl.getFavoriteLanguages(favorite);
-        chapters = await dl.getChapters(favorite, languages[0].id);
-      }
+  try {
+    if (favorite.type === "anime") {
+      chapters = await dl.getEpisodes(favorite);
     } else {
-      chapters = await dl.getChapters(favorite);
+      const isMulti = dl.isMultiLanguage(favorite.source);
+      if (isMulti) {
+        const lastReaded = await ReadedDB.getLastReaded(favorite);
+        if (lastReaded) {
+          chapters = await dl.getChapters(favorite, lastReaded.language);
+        } else {
+          chapters = await dl.getChapters(favorite, get(preferableLanguage).id);
+        }
+        if (chapters.length === 0) {
+          const languages = await dl.getFavoriteLanguages(favorite);
+          chapters = await dl.getChapters(favorite, languages[0].id);
+        }
+      } else {
+        chapters = await dl.getChapters(favorite);
+      }
     }
+  } catch (e) {
+    updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
+    console.log(e)
+    return
+  }
+  if (chapters.length === 0) {
+    updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
+    return
   }
   chaptersToRead = [];
   if (favorite.type === "anime") {

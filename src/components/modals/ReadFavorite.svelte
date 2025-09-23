@@ -68,7 +68,7 @@
   let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
-  let isUltraFavorite = $state(Boolean(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
   let chaptersMode: "web" | "local" = $state("web");
   let jsonChapters: { [key: string]: Chapter } = $state({});
   let favoritePath = $derived(
@@ -126,6 +126,11 @@
   );
   let chaptersToPick: Chapter[] = $derived(
     chaptersMode === "web" ? displayedChapters : displayedLocalChapters,
+  );
+  let readedLenghtDisplayed: number = $derived(
+    chaptersMode === "web"
+      ? displayedChapters.filter((c) => isReaded(c, $readeds)).length
+      : displayedLocalChapters.filter((c) => isReaded(c, $readeds)).length,
   );
   let nextChapter: Chapter | undefined = $derived(
     chaptersMode === "web"
@@ -389,86 +394,37 @@
 {#snippet chapterControls()}
   <div
     class={cn(
-      "flex w-[40vw] items-center justify-between gap-1",
+      "flex w-[40vw] max-w-[38rem] items-center justify-between gap-2",
       isMobile && "flex-col",
     )}
   >
-    <div class="flex w-[40%]">
-      <div
-        class="w-full flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary"
+    <div
+      class="w-full flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary"
+    >
+      <Button
+        class={cn(
+          "!size-6 px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
+          searchTerm !== "" && "pointer-events-auto",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchTerm = "";
+        }}
       >
-        <Button
-          class={cn(
-            "!size-6 px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
-            searchTerm !== "" && "pointer-events-auto",
-          )}
-          variant="ghost"
-          onclick={() => {
-            searchTerm = "";
-          }}
-        >
-          <Icon icon={searchTerm === "" ? "lucide:search" : "lucide:x"} />
-        </Button>
-        <Input
-          class="w-full max-w-full"
-          divClass="w-full"
-          placeholder="Search..."
-          floatingLabel
-          variant="link"
-          bind:value={searchTerm}
-          tabindex={IS_MOBILE ? -1 : 1}
-        />
-      </div>
+        <Icon icon={searchTerm === "" ? "lucide:search" : "lucide:x"} />
+      </Button>
+      <Input
+        class="w-full"
+        divClass="w-full text-nowrap overflow-hidden truncate"
+        placeholder="Search number or title..."
+        floatingLabel
+        variant="link"
+        bind:value={searchTerm}
+        tabindex={IS_MOBILE ? -1 : 1}
+      />
     </div>
 
     <div class="flex gap-0.5 sm:gap-2 items-center">
-      <Select
-        class="max-w-[11vw]"
-        classRoot="hidden md:flex"
-        bind:selected={selectedScan}
-        items={scans}
-        wheelControls
-        disabled={chaptersMode === "local"}
-        label="Select scan"
-      />
-      <Tooltip
-        text={$isChaptersUniqueNumber
-          ? "Show repeated chapters"
-          : "Hide repeated chapters"}
-      >
-        <Button
-          class="hidden md:flex size-11"
-          variant="secondary"
-          disabled={chaptersMode === "local" || selectedScan !== ""}
-          onclick={() => {
-            isChaptersUniqueNumber.set(!$isChaptersUniqueNumber);
-            saveSettings();
-          }}
-        >
-          <Icon
-            class="!size-6"
-            icon={$isChaptersUniqueNumber
-              ? "line-md:text-box"
-              : "line-md:text-box-multiple"}
-          />
-        </Button>
-      </Tooltip>
-      <Button
-        class="hidden md:flex size-11"
-        variant="secondary"
-        onclick={() => {
-          isChaptersDescending.set(!$isChaptersDescending);
-          saveSettings();
-        }}
-      >
-        <Icon
-          class={cn(
-            "!size-6 duration-300 transition-all",
-            $isChaptersDescending ? "rotate-0" : "rotate-180",
-          )}
-          icon="typcn:arrow-sorted-down"
-        />
-      </Button>
       <Tooltip text="Web / downloaded chapters">
         <div
           class="relative flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-2xl z-10"
@@ -506,14 +462,19 @@
         </div>
       </Tooltip>
       {#if isMobile}
-        <PickReaded {favorite} readeds={$readeds} chapters={chaptersToPick} />
+        <PickReaded
+          {favorite}
+          readeds={$readeds}
+          readedLenght={readedLenghtDisplayed}
+          chapters={chaptersToPick}
+        />
       {/if}
     </div>
   </div>
-  <div class="flex w-[40vw] items-center justify-between">
+  <div class="flex w-[40vw] max-w-[38rem] items-center justify-between gap-2">
     <Select
-      class="w-32"
-      classRoot="flex md:hidden"
+      class="w-full"
+      classRoot="flex w-full"
       bind:selected={selectedScan}
       items={scans}
       wheelControls
@@ -527,7 +488,7 @@
           : "Hide repeated chapters"}
       >
         <Button
-          class="flex md:hidden size-11"
+          class="flex size-11"
           variant="secondary"
           disabled={chaptersMode === "local" || selectedScan !== ""}
           onclick={() => {
@@ -544,7 +505,7 @@
         </Button>
       </Tooltip>
       <Button
-        class="flex md:hidden size-11"
+        class="flex size-11"
         variant="secondary"
         onclick={() => {
           isChaptersDescending.set(!$isChaptersDescending);
@@ -561,12 +522,12 @@
       </Button>
     </div>
   </div>
-  <div class="flex w-[40vw] justify-start gap-1">
-    <div class="w-[calc(40vw-5rem)] flex rounded-xl bg-secondary">
+  <div class="flex w-[40vw] max-w-[38rem] justify-start gap-1 items-center">
+    <div class="w-[calc(40vw-5rem)] flex rounded-xl bg-secondary items-center">
       <Button
         class={cn(
           "chapter-button w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
-          nextChapter === undefined ? "cursor-default" : "",
+          nextChapter === undefined && "cursor-default",
         )}
         variant="secondary"
         size="sm"
@@ -705,7 +666,12 @@
       </Button>
     </div>
     {#if !isMobile}
-      <PickReaded {favorite} readeds={$readeds} chapters={chaptersToPick} />
+      <PickReaded
+        {favorite}
+        readeds={$readeds}
+        readedLenght={readedLenghtDisplayed}
+        chapters={chaptersToPick}
+      />
     {/if}
   </div>
 {/snippet}
@@ -723,7 +689,7 @@
   <Dialog.Content
     class={cn(
       "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
-      "h-[100vh] max-w-[100vw] py-4 px-6 duration-400",
+      "h-[100vh] max-h-[67rem] max-w-[65rem] py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
         ? $sidebarSide === "left"
           ? "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] ml-[3.2rem] !mr-[2rem]"
@@ -886,7 +852,7 @@
           </div>
         </div>
         <div class={cn(isMobile ? "flex justify-start w-1/2" : "w-3/5")}>
-          <div class="w-[40vw] flex flex-col gap-3">
+          <div class="w-[40vw] max-w-[30rem] flex flex-col gap-3">
             <Label
               class="group text-3xl !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
               onclick={() => {
@@ -904,13 +870,13 @@
             {/if}
             <div
               class={cn(
-                "bg-secondary rounded-xl relative overflow-hidden",
+                "bg-secondary rounded-xl relative overflow-hidden max-w-[38rem] max-h-[42rem]",
                 isMobile ? "!h-[75vh] w-[15rem]" : "!h-[50vh] w-[40vw]",
               )}
             >
               <div
                 class={cn(
-                  "flex justify-center items-center absolute transition-all duration-300 ease-in-out",
+                  "flex justify-center items-center absolute transition-all duration-300 ease-in-out max-w-[38rem]",
                   chaptersMode === "web"
                     ? "translate-x-0"
                     : "-translate-x-full",
@@ -1091,7 +1057,7 @@
               </div>
               <div
                 class={cn(
-                  "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out",
+                  "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out max-w-[38rem]",
                   chaptersMode === "local"
                     ? "translate-x-0"
                     : "translate-x-full",

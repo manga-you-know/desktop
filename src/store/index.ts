@@ -67,6 +67,7 @@ export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
 export const searchTerm = writable<string>("");
 export const extraTitle = writable<string>("");
+export const blockKeyboard = writable<boolean>(false);
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
   "collapse"
 );

@@ -77,6 +77,7 @@
     ),
   );
   let isSearching = $state(false);
+  let showSearch = $state(false);
   let query = $state("");
   let libraryResults: Favorite[] = $derived(
     query === ""
@@ -110,7 +111,7 @@
   let collapsibles: Record<string, boolean> = $state({});
   let favoriteOpen: Favorite | null = $state(null);
   let isFavoriteOpen = $state(false);
-  let isSearchPopOpen = $state(false);
+  let showPopSearch = $state(false);
   let isDeleteOpen = $state(false);
 
   async function searchBySource(nowQuery: string, source: string) {
@@ -128,7 +129,7 @@
       return;
     }
     searchResults = {};
-    isSearchPopOpen = true;
+    showPopSearch = true;
     isSearching = true;
     if ($rawFavorites.length === 0) {
       refreshRawFavorites();
@@ -346,26 +347,51 @@
     </Label>
   </div>
   <div
-    class="w-full flex justify-center z-10 items-center gap-1 md:gap-6 lg:gap-16 lg"
+    class="w-full flex justify-center z-10 items-center"
     data-tauri-drag-region={!$isFullscreen}
   >
-    {#if page.route.id?.startsWith("/(root)/reader")}
-      <Label
-        class="select-none text-nowrap !text-primary/70 z-[3]"
-        data-tauri-drag-region={!$isFullscreen}
+    <div
+      class="absolute w-full h-full flex justify-center items-center pointer-events-none"
+    >
+      <button
+        class="flex w-screen justify-center items-center transition-all pointer-events-none duration-500 gap-2 md:gap-3 xl:gap-10 ml-32 md:ml-12 lg:ml-0"
+        onfocusout={() => {
+          showSearch = false;
+          if (query.length === 0 && page.route.id?.startsWith("/(root)/reader"))
+            showPopSearch = false;
+        }}
       >
-        {$extraTitle}
-      </Label>
-    {:else}
-      <div
-        class="absolute w-full h-full flex justify-center items-center pointer-events-none"
-      >
+        {#if page.route.id?.startsWith("/(root)/reader")}
+          <Label
+            class={cn(
+              "select-none text-nowrap !text-primary/70 z-[3] max-w-0 overflow-x-hidden truncate transition-all duration-500",
+              !(showSearch || showPopSearch || query.length > 0) &&
+                "max-w-[40vw]",
+            )}
+            data-tauri-drag-region={!$isFullscreen}
+          >
+            {$extraTitle}
+          </Label>
+        {/if}
         <Popover.Root
-          bind:open={isSearchPopOpen}
+          bind:open={showPopSearch}
           onOpenChange={refreshRawFavorites}
         >
           <Popover.Trigger
-            class="focus:outline-none"
+            class={cn(
+              "outline-none focus:outline-none max-w-12 transition-all duration-500",
+              (!page.route.id?.startsWith("/(root)/reader") ||
+                showSearch ||
+                query.length > 0) &&
+                "max-w-[38rem] px-2",
+            )}
+            onclick={() => {
+              showSearch = true;
+              const input = document.querySelector(
+                `input[id="central-search"]`,
+              ) as HTMLInputElement;
+              input?.focus();
+            }}
             onkeydown={(e) => {
               if (e.key === " " || e.code === "Space") {
                 e.preventDefault();
@@ -376,9 +402,16 @@
                 e.preventDefault();
               }
             }}
+            tabindex={-1}
           >
             <div
-              class="flex items-center px-2 rounded-xl border border-secondary bg-background/30 hover:bg-secondary ml-32 md:ml-12 lg:ml-0"
+              class={cn(
+                "flex items-center px-2 rounded-xl border border-secondary bg-background/30 hover:bg-secondary overflow-x-hidden",
+                // (!page.route.id?.startsWith("/(root)/reader") ||
+                //   showSearch ||
+                //   query.length > 0) &&
+                //   "ml-32 md:ml-12 lg:ml-0",
+              )}
             >
               <Icon
                 class="!size-5 text-primary pointer-events-auto"
@@ -398,7 +431,13 @@
                 }}
               />
               <Input
-                class="max-w-[33rem] w-[20vw] sm:w-[30vw] md:w-[40vw] h-8 pointer-events-auto"
+                class={cn(
+                  "w-[20vw] sm:w-[30vw] md:w-[32vw] lg:w-[40vw] h-8 pointer-events-auto max-w-[0] px-0 outline-none border-none transition-all duration-300",
+                  (!page.route.id?.startsWith("/(root)/reader") ||
+                    showSearch ||
+                    query.length > 0) &&
+                    "max-w-[33rem] px-2",
+                )}
                 id="central-search"
                 bind:value={query}
                 oninput={search}
@@ -409,7 +448,7 @@
           </Popover.Trigger>
           <Popover.Content
             class={cn(
-              "max-w-[35.5rem] w-[42.5vw] h-[14rem] ml-32 md:ml-12 lg:ml-0 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
+              "max-w-[35.5rem] w-[42.5vw] h-[14rem] p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
               // libraryResults.length > 0 && "min-h-[8rem]",
             )}
             trapFocus={false}
@@ -473,7 +512,7 @@
                       onclick={() => {
                         favoriteOpen = result;
                         isFavoriteOpen = true;
-                        isSearchPopOpen = false;
+                        showPopSearch = false;
                       }}
                     >
                       {result.name}
@@ -520,7 +559,7 @@
                         onclick={() => {
                           favoriteOpen = result;
                           isDeleteOpen = true;
-                          isSearchPopOpen = false;
+                          showPopSearch = false;
                         }}><Icon icon="lucide:x" /></Button
                       >
                     </Tooltip>
@@ -579,7 +618,7 @@
                           onclick={() => {
                             favoriteOpen = result;
                             isFavoriteOpen = true;
-                            isSearchPopOpen = false;
+                            showPopSearch = false;
                           }}
                         >
                           {result.name}
@@ -644,45 +683,45 @@
             <!-- </ScrollArea> -->
           </Popover.Content>
         </Popover.Root>
-        <div class="w-[calc(2.25rem*3+0.25rem)]"></div>
-      </div>
-    {/if}
-    {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")}
-      <div
-        bind:this={divFavs}
-        onwheel={(e) => {
-          const scrollLeft = divFavs.scrollLeft;
-          if (e.deltaY < 0) {
-            divFavs.scroll({ left: scrollLeft - 50, behavior: "smooth" });
-          } else {
-            divFavs.scrollTo({ left: scrollLeft + 50, behavior: "smooth" });
-          }
-        }}
-        class="flex !max-w-36 md:!max-w-52 lg:!max-w-96 2xl:!max-w-[30rem] 2xl:!ml-16 transition-all duration-400 overflow-x-scroll overflow-y-hidden bg-background/30 rounded-xl border border-secondary [&::-webkit-scrollbar]:size-0 [&::-webkit-scrollbar-thumb]:bg-transparent"
-      >
-        {#each favoritesWithChapters as fav}
-          {#if fav.self.id.toString() !== page.params?.favoriteId}
-            <Tooltip class="font-bold" text={fav.self.name} delay={200}>
-              <Button
-                class="w-10 h-8 rounded-xl"
-                variant="link"
-                onclick={() => {
-                  openMenuChapters.set(false);
-                  globalChapters.set(fav.chapters);
-                  goto(
-                    `/reader/${fav.self.id}/${$globalChapters.indexOf(
-                      fav.nextChapter ?? fav.chapters[0],
-                    )}`,
-                  );
-                }}
-              >
-                {fav?.nextChapter?.number}
-              </Button>
-            </Tooltip>
-          {/if}
-        {/each}
-      </div>
-    {/if}
+      </button>
+      <div class="w-[calc(2.25rem*3+0.25rem)]"></div>
+    </div>
+    <!-- {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")} -->
+    <!--   <div -->
+    <!--     bind:this={divFavs} -->
+    <!--     onwheel={(e) => { -->
+    <!--       const scrollLeft = divFavs.scrollLeft; -->
+    <!--       if (e.deltaY < 0) { -->
+    <!--         divFavs.scroll({ left: scrollLeft - 50, behavior: "smooth" }); -->
+    <!--       } else { -->
+    <!--         divFavs.scrollTo({ left: scrollLeft + 50, behavior: "smooth" }); -->
+    <!--       } -->
+    <!--     }} -->
+    <!--     class="flex !max-w-36 md:!max-w-52 lg:!max-w-96 2xl:!max-w-[30rem] 2xl:!ml-16 transition-all duration-400 overflow-x-scroll overflow-y-hidden bg-background/30 rounded-xl border border-secondary [&::-webkit-scrollbar]:size-0 [&::-webkit-scrollbar-thumb]:bg-transparent" -->
+    <!--   > -->
+    <!--     {#each favoritesWithChapters as fav} -->
+    <!--       {#if fav.self.id.toString() !== page.params?.favoriteId} -->
+    <!--         <Tooltip class="font-bold" text={fav.self.name} delay={200}> -->
+    <!--           <Button -->
+    <!--             class="w-10 h-8 rounded-xl" -->
+    <!--             variant="link" -->
+    <!--             onclick={() => { -->
+    <!--               openMenuChapters.set(false); -->
+    <!--               globalChapters.set(fav.chapters); -->
+    <!--               goto( -->
+    <!--                 `/reader/${fav.self.id}/${$globalChapters.indexOf( -->
+    <!--                   fav.nextChapter ?? fav.chapters[0], -->
+    <!--                 )}`, -->
+    <!--               ); -->
+    <!--             }} -->
+    <!--           > -->
+    <!--             {fav?.nextChapter?.number} -->
+    <!--           </Button> -->
+    <!--         </Tooltip> -->
+    <!--       {/if} -->
+    <!--     {/each} -->
+    <!--   </div> -->
+    <!-- {/if} -->
   </div>
   <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">
     <Button

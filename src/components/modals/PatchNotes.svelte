@@ -13,18 +13,22 @@
 </script>
 
 <Dialog.Root bind:open={$openPatchNotes}>
-  <Dialog.Content class="max-w-[40rem]">
+  <Dialog.Content class="max-w-[40rem] max-h-[60rem]">
     <div class="flex gap-6 w-full select-none">
       <div class="flex items-center">
-        <Image class="w-[28rem] object-contain" src="/chill-woojack.png" />
+        <Image class="w-[28rem] object-contain" src="/dark-woojack.png" />
       </div>
       <div class="flex flex-col h-full justify-center gap-6 py-6">
         <div class="flex flex-col justify-center gap-2">
           <Label class="font-[minecraftia, sans] text-2xl"
-            >Mid update, but good.</Label
-          >
-          <Label class="text-md">
-            As ever, feel free to join my server, just click in the top menu:
+            >Press F for Comick :(
+          </Label>
+          <Label class="text-md"
+            >I think everyday about rewriting the app with a proper structure
+            asyncd much less bugs and much more performance. it can happen
+          </Label>
+          <Label class="text-md"
+            >As ever, feel free to join my server, just click in the top menu:
             About > Discord :)</Label
           >
           <Label class="text-md">Patch notes for v{version}</Label>
@@ -32,11 +36,20 @@
         <div class="flex flex-col gap-2">
           <Label class="text-lg">New features</Label>
           <Label class="list-disc list-item"
-            >Top search: searchs everywhere, including your library</Label
+            >To ammend losing Comick, I've fixed WeebCentral (even though they
+            probably block me again) and added MangaPark. which is not so
+            reliable but looks good</Label
           >
           <Label class="list-disc list-item"
-            >Selected sources: now you can toggle sources you don't want
-            searching, it helps improving performance in the top search</Label
+            >Progress bar to show how much you read of the currently chapter in
+            taskbar. looks sick :)</Label
+          >
+          <Label class="list-disc list-item"
+            >Top search now works in reader and you still have your title</Label
+          >
+          <Label class="list-disc list-item"
+            >Make the app more responsible since there's some freak using it on
+            a **TV**</Label
           >
           <!--
           <Label class="list-disc list-item cursor-pointer" onclick={() => {}}
@@ -45,18 +58,12 @@
           >
           -->
           <Label class="text-lg">Fixed bugs</Label>
+          <Label class="list-disc list-item">Several bugs in UI</Label>
           <Label class="list-disc list-item"
-            >Chapters from other saveds taking wrong place in modal</Label
-          >
-          <Label class="list-disc list-item"
-            >Comick images not loading sometimes</Label
-          >
-          <Label class="list-disc list-item"
-            >Toggling favorite going wrong in a lot of places</Label
+            >I probably added some but lets be cool about that!!!</Label
           >
         </div>
-        <Label>Not as big as I wanted, but a brick by brick we get there.</Label
-        >
+        <Label>Brick by brickkkkkk</Label>
       </div>
     </div>
   </Dialog.Content>

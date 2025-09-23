@@ -20,7 +20,7 @@ import {
   MangaLivreDl,
   MangaSwatDl,
   ComickDl,
-  // ComicDl,
+  MangaParkDl,
   BatcaveBizDl,
   // AnimeDl
   AniplayDl,
@@ -68,6 +68,7 @@ export class DownloadManager {
       WeebCentral: new WeebCentralDl(),
       MangaLivre: new MangaLivreDl(),
       MangaSwat: new MangaSwatDl(),
+      MangaPark: new MangaParkDl(),
       Comick: new ComickDl(),
     };
     this.comicSources = {
@@ -165,18 +166,23 @@ export class DownloadManager {
     return await retry(() => sourceDl.getMangaById(id));
   }
 
-  async search(query: string, source: string): Promise<Favorite[]> {
-    const sourceDl = this.getSource(source);
-    const results: Favorite[] = await retry(() => sourceDl.search(query));
-    this.prefetchSearch(query, source, this.getSourceType(source));
-    return results.slice(0, 20);
+  async search(query: string, source: string, prefetchOthers = false): Promise<Favorite[]> {
+    try {
+      const sourceDl = this.getSource(source);
+      const results: Favorite[] = await retry(() => sourceDl.search(query));
+      if (prefetchOthers) this.prefetchSearch(query, source);
+      return results.slice(0, 20);
+    } catch (e) {
+      console.log(e)
+      return []
+    }
   }
 
   async prefetchSearch(
     query: string,
     sourceToExclude: string,
-    type: "manga" | "comic" | "anime"
   ) {
+    const type = this.getSourceType(sourceToExclude)
     const sourceNames = this.getSourcesNames(type);
     for (let source of sourceNames) {
       if (source === sourceToExclude) continue;
@@ -196,8 +202,8 @@ export class DownloadManager {
     favorite: Favorite,
     language?: string
   ): Promise<Chapter[]> {
-    const sourceDl = this.getImageBasedSource(favorite.source);
     try {
+      const sourceDl = this.getImageBasedSource(favorite.source);
       return language !== undefined
         ? await retry(() => sourceDl.getChapters(favorite.source_id, language))
         : await retry(() => sourceDl.getChapters(favorite.source_id));
@@ -217,8 +223,13 @@ export class DownloadManager {
   }
 
   async getChapterImages(chapter: Chapter): Promise<string[]> {
-    const sourceDl = this.getImageBasedSource(chapter.source);
-    return await retry(() => sourceDl.getChapterImages(chapter.chapter_id));
+    try {
+      const sourceDl = this.getImageBasedSource(chapter.source);
+      return await retry(() => sourceDl.getChapterImages(chapter.chapter_id));
+    } catch (e) {
+      console.log(e)
+      return []
+    }
   }
 
   async getEpisodeContent(chapter: Chapter): Promise<Episode> {

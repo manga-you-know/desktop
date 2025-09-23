@@ -51,12 +51,15 @@
 </script>
 
 <SheetPrimitive.Portal {...portalProps}>
-  <SheetOverlay class={overlayClass} />
+  <SheetOverlay
+    class={cn($customTitlebar && "h-[calc(100vh-2.5rem)] mt-10", overlayClass)}
+  />
   <SheetPrimitive.Content
     onInteractOutside={(e) => {
       let el = e?.target as HTMLElement | null;
       if (
         el?.tagName === "BUTTON" ||
+        el?.tagName === "INPUT" ||
         el?.hasAttribute("data-tauri-drag-region")
       )
         e.preventDefault();

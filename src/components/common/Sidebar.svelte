@@ -168,7 +168,7 @@
                       "!size-7 -ml-[10px] transition-transform duration-500",
                       item.path === "/favorites" &&
                         page.url.pathname === item.path &&
-                        "rotate-180",
+                        "rotate-[calc(145deg*2)]",
                     )}
                     icon={page.url.pathname === item.path
                       ? item.iconActive
@@ -187,7 +187,8 @@
                     <Icon
                       class={cn(
                         "!size-7 -ml-[10px] transition-transform duration-400",
-                        page.url.pathname === item.path && "rotate-[145deg]",
+                        page.url.pathname === item.path &&
+                          "rotate-[calc(145deg*2)]",
                       )}
                       icon={page.url.pathname === item.path
                         ? item.iconActive

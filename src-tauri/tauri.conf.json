@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MangaYouKnow",
-  "version": "0.9.30",
+  "version": "0.9.29",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
@@ -36,7 +36,8 @@
           "**/*"
         ]
       }
-    }
+    },
+    "macOSPrivateApi": true
   },
   "bundle": {
     "active": true,

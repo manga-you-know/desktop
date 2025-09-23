@@ -16,12 +16,19 @@
   interface Props {
     class?: string;
     favorite: Favorite;
+    readedLenght: number;
     readeds: Readed[];
     chapters: Chapter[];
   }
 
   let open = $state(false);
-  let { class: className, favorite, readeds, chapters }: Props = $props();
+  let {
+    class: className,
+    favorite,
+    readeds,
+    readedLenght,
+    chapters,
+  }: Props = $props();
 </script>
 
 <Popover.Root bind:open>
@@ -35,14 +42,14 @@
         aria-expanded={open}
       >
         <div class="w-full flex justify-center">
-          <ScrollingValue value={readeds.length} axis="y" />
+          <ScrollingValue value={readedLenght} axis="y" />
           /
           <ScrollingValue value={chapters.length} axis="y" />
         </div>
       </Button>
     {/snippet}
   </Popover.Trigger>
-  <Popover.Content class="max-w-16 p-0">
+  <Popover.Content class="max-w-24 p-0">
     <Command.Root>
       <Command.Input />
       <Command.Empty>Nothing found.</Command.Empty>
@@ -51,12 +58,11 @@
           {#each chapters as chapter}
             <Command.Item
               class={cn(
-                "flex justify-center hover:!bg-slate-300 dark:hover:!bg-background/40",
-                readeds.find((r) => r.chapter_id === chapter.chapter_id)
-                  ? "!bg-slate-400 dark:!bg-background/70"
-                  : "aria-selected:bg-slate-400 dark:aria-selected:bg-background/20",
+                "flex rounded-xl justify-center hover:!bg-secondary/50",
+                readeds.find((r) => r.chapter_id === chapter.chapter_id) &&
+                  "border border-[1px] border-primary",
               )}
-              value={chapter.chapter_id}
+              value={chapter.number}
               onSelect={async () => {
                 await addReadedBelow(
                   chapter,

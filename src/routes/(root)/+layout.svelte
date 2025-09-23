@@ -15,6 +15,7 @@
   import {
     autoSearchUpdates,
     blackWhiteMode,
+    blockKeyboard,
     brightness,
     closeTray,
     contrast,
@@ -52,7 +53,7 @@
     destroyEverything,
     showPatchNotes,
   } from "@/functions";
-  import { getCurrentWindow } from "@tauri-apps/api/window";
+  import { getCurrentWindow, ProgressBarStatus } from "@tauri-apps/api/window";
   import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
   import { cn } from "@/lib/utils";
@@ -76,10 +77,15 @@
     },
     1000 * 60 * 10,
   );
+
+  const isInput = () => {
+    return document.activeElement?.tagName === "INPUT";
+  };
+
   function handleKeydown(e: KeyboardEvent) {
     const isCtrl = e.metaKey || e.ctrlKey;
     const key = e.key.toLowerCase();
-    if (key === "f11" || key === "f") {
+    if (key === "f11" || (key === "f" && !isInput())) {
       toggleFullscreen();
     }
 
@@ -87,23 +93,23 @@
       setFullscreen(false);
     }
 
-    if (key === "z" && isCtrl) {
+    if (key === "z" && isCtrl && !isInput()) {
       const task = $undoTasks.pop();
       if (task === undefined) return;
       task.do();
       toast.info(task.message);
     }
-    if (key === "k" && isCtrl) {
+    if (key === "k" && isCtrl && !isInput()) {
       const input = document.querySelector(
         `input[id="central-search"]`,
       ) as HTMLInputElement;
       input?.focus();
     }
-    if (key === "p" && isCtrl) {
+    if (key === "p" && isCtrl && !isInput()) {
       openSearch.set(!$openSearch);
     }
 
-    if (key === "r" && isCtrl) {
+    if (key === "r" && isCtrl && !isInput()) {
       reloadApp();
     }
   }
@@ -154,6 +160,13 @@
   });
   onDestroy(() => {
     clearInterval(interval);
+  });
+
+  $effect(() => {
+    if (!page.route?.id?.startsWith("/(root)/reader"))
+      window.setProgressBar({
+        status: ProgressBarStatus.None,
+      });
   });
 </script>
 

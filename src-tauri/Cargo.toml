@@ -1,6 +1,6 @@
 [package]
 name = "MangaYouKnow"
-version = "0.9.30"
+version = "0.9.29"
 description = "A manga app!"
 authors = ["ReiLoko4"]
 license = "MIT"
@@ -38,7 +38,7 @@ features = ["derive"]
 
 [dependencies.tauri]
 version = "2"
-features = ["protocol-asset", "tray-icon", "image-png", "image-ico"]
+features = [ "macos-private-api", "protocol-asset", "tray-icon", "image-png", "image-ico"]
 
 [dependencies.tauri-plugin-sql]
 version = "2"
