@@ -5,6 +5,8 @@
   import type { Favorite, MarkFavorites } from "@/types";
   import type { Snippet } from "svelte";
   import Icon from "@iconify/svelte";
+  import { getBool, titleCase } from "@/utils";
+  import { openUrl } from "@tauri-apps/plugin-opener";
 
   type Props = {
     favorite: Favorite;
@@ -20,7 +22,7 @@
 
   let {
     favorite,
-    isUltraFavorite = $bindable(false),
+    isUltraFavorite = $bindable(getBool(favorite.is_ultra_favorite)),
     markeds = $bindable([]),
     open = $bindable(false),
     openRead = $bindable(false),
@@ -51,7 +53,7 @@
         await refreshFavorites();
       }}
     >
-      <Label>{favorite.is_ultra_favorite ? "Remove" : "Favorite"}</Label>
+      <Label>{isUltraFavorite ? "Remove" : "Favorite"}</Label>
       <Icon
         class="!size-5 -mr-[2px]"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
@@ -66,7 +68,7 @@
     >
       <Label>Open</Label>
       <Icon
-        class="!size-4 !h-5"
+        class="!w-4 !h-5"
         icon={favorite.type === "anime"
           ? "lucide:tv-minimal-play"
           : "lucide:book-open-text"}
@@ -91,7 +93,17 @@
       }}
     >
       <Label>Edit</Label>
-      <Icon class="!size-4 !h-5" icon="lucide:square-pen" />
+      <Icon class="!w-4 !h-5" icon="lucide:square-pen" />
+    </ContextMenu.Item>
+    <ContextMenu.Item
+      class="flex justify-between"
+      onclick={(e: Event) => {
+        e.stopPropagation();
+        openUrl(favorite.link);
+      }}
+    >
+      <Label>Browser</Label>
+      <Icon class="!w-4 !h-5" icon="lucide:square-arrow-out-up-right" />
     </ContextMenu.Item>
     <ContextMenu.Sub>
       <ContextMenu.SubTrigger class="flex justify-between">
@@ -143,6 +155,30 @@
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
           onmousedown={() => {
+            copyText(favorite.source, "Source name");
+          }}
+          onclick={() => {
+            copyText(favorite.source, "Source name");
+          }}
+        >
+          <Label>Source name</Label>
+          <Icon class="!size-4" icon="fluent:text-case-title-16-filled" />
+        </ContextMenu.Item>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onmousedown={() => {
+            copyText(favorite.source_id, "Source ID");
+          }}
+          onclick={() => {
+            copyText(favorite.source_id, "Source ID");
+          }}
+        >
+          <Label>Source ID</Label>
+          <Icon class="!size-4" icon="lucide:key-round" />
+        </ContextMenu.Item>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onmousedown={() => {
             copyText(favorite.cover, "cover");
           }}
           onclick={() => {
@@ -153,6 +189,18 @@
             Cover {favorite.cover.startsWith("http") ? "URL" : "path"}
           </Label>
           <Icon class="!size-4" icon="tabler:photo" />
+        </ContextMenu.Item>
+        <ContextMenu.Item
+          class="flex justify-between hover:bg-accent"
+          onmousedown={() => {
+            copyText(favorite.link, "URL");
+          }}
+          onclick={() => {
+            copyText(favorite.link, "URL");
+          }}
+        >
+          <Label>{titleCase(favorite.type)} URL</Label>
+          <Icon class="!size-4" icon="lucide:link" />
         </ContextMenu.Item>
       </ContextMenu.SubContent>
     </ContextMenu.Sub>

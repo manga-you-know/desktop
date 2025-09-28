@@ -14,7 +14,7 @@ function whatBump(commits) {
       break;
     }
     if (
-      (commit.header.startsWith("feat!") || commit.header.startsWith("fix!")) &&
+      (commit.header.startsWith("build!")) &&
       releaseType > 1
     ) {
       releaseType = 1;
@@ -30,7 +30,7 @@ function whatBump(commits) {
       reason = "Found a commit with a chore(bump-mc) header..";
       break;
     case "minor":
-      reason = "Found a commit with a feat! or fix! header.";
+      reason = "Foud a commit with a build header..";
       break;
   }
 

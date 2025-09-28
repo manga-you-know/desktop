@@ -14,6 +14,7 @@ export const MANGASOURCES: Source[] = [
   // { name: "Comick", language: "Multi", isRecommended: true },
   { name: "MangaDex", language: "Multi" },
   { name: "MangaFire", language: "Multi", isProblem: true },
+  { name: "Atsumaru", language: "English", isRecommended: true },
   { name: "WeebCentral", language: "English", isProblem: true },
   { name: "MangaPark", language: "English" },
   { name: "MangaLivre", language: "Português" },
@@ -41,7 +42,8 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   WeebCentral: "English",
   BatcaveBiz: "English",
   MangaSwat: "العربية",
-  MangaPark: "English"
+  MangaPark: "English",
+  Atsumaru: "English",
 };
 
 export const ANIMESOURCES: Source[] = [

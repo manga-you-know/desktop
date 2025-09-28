@@ -10,20 +10,20 @@ export class WeebCentralDl implements MangaDl {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
     // Accept: "*/*",
-    Host: "weebcentral.com",
+    // Host: "weebcentral.com",
     Referer:
       "https://weebcentral.com",
     Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.5",
     // "Accept-Encoding": "gzip, deflate, br, zstd",
-    // "Sec-GPC": "1",
-    // "Upgrade-Insecure-Requests": "1",
-    // "Sec-Fetch-Dest": "document",
-    // "Sec-Fetch-Mode": "navigate",
-    // "Sec-Fetch-Site": "none",
-    // "Sec-Fetch-User": "?1",
+    "Sec-GPC": "1",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
     // Connection: "keep-alive",
-    // Cookie: "cf_clearance=QzPl4HmHh6bdFZdxGEOumsEeK97O_vJbnUszGFbISik-1758394207-1.2.1.1-YONj6G6Y_sTPzwOakC39EFBlecuqnNR53ySbZsDFl.17Hv.Gwzza_f11CF1O5BxeuvXFKQLMJk34IFQpmclST80kurKTRfyHHT9GrAwd3E4lyugDlz9aisgeNgprpHQYdV3CZlODj4oT0qxeVPScOLHiDzZnVVT_e2q3gzdL64Eo.O7zUqEaqYwecrsZSzap.xPN4A6tmUHPLXLg5XNa4c5WnzemTEtlFbqprAuh9fE"
+    // 'Cookie': 'cf_clearance=LbDFevuKRYdYn5hEtPE5xwwc5KYYQaUIG7obbWqy_GM-1758762111-1.2.1.1-ehfdzBn.Z_ErXtbF1B5KwJWL4I9GYM1JDpnYcioqXqoinqvpdmZ2Vnm5EFhrT6oceYhnIjGGmZwCfmz8LVPNudsulldslXYwsbisJ8tGE9jW0zSnjsEuOWskgODn72PeElj3DaJVFR8FJEhNl3AGeGx34F.bcyS5Vs3xkyGpT0cW_459bsD8Lyolya9NIVdyF_EUWQ5P8opN3ue9Nv03mcY49EEgSMYOrGzIZRoENnM'
   };
 
   async getMangaById(mangaId: string): Promise<Favorite> {

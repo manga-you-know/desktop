@@ -1,26 +1,31 @@
 <script lang="ts">
   import { Button, Badge, Tooltip, Label } from "@/lib/components";
   import Icon from "@iconify/svelte";
-  import { ReadFavorite, EditFavorite, AskDelete, Image } from "@/components";
-  import type { Suggestion } from "@/types";
+  import { ReadFavorite, Image, SuggestionModal } from "@/components";
+  import type { Favorite, Suggestion } from "@/types";
   import { FavoriteDB } from "@/repositories";
 
   interface Props {
     suggestion: Suggestion;
   }
 
-  interface Event {
-    stopPropagation: () => void;
-  }
   let { suggestion }: Props = $props();
   let isOpen = $state(false);
-  let isEdit = $state(false);
-  let isDelete = $state(false);
+  let openReadModal = $state(false);
+  let openFavorite: Favorite = $state(null!);
 </script>
 
-<!-- <FavoriteModal {favorite} bind:open={isOpen} /> -->
-<!-- <EditFavorite {favorite} bind:open={isEdit} /> -->
-<!-- <AskDelete {favorite} bind:open={isDelete} /> -->
+{#if openFavorite}
+  <ReadFavorite favorite={openFavorite} bind:open={isOpen} />
+{/if}
+
+<SuggestionModal
+  {suggestion}
+  bind:open={isOpen}
+  bind:openReadModal
+  bind:openFavorite
+/>
+
 <button
   class="group relative rounded-2xl h-[244px] max-h-[264px] w-[160px] max-w-[160px] flex flex-col p-1 items-center justify-center transition-transform duration-300 ease-in-out border-transparent outline-none bg-secondary hover:bg-background hover:border-b-2 hover:border-x-2 hover:border-secondary hover:scale-[0.95] hover:cursor-pointer hover:absolute transform hover:border-1"
   onclick={() => (isOpen = true)}
@@ -34,15 +39,11 @@
   <div
     class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center -m-[5.5px]"
   >
-    <!-- <Badge
-      class=" w-40 max-w-40 flex justify-center rounded-xl bg-"
-      {variant}
-    > -->
     <div
-      class="h-[244px] w-[160px] max-w-[168px] -mt-[1px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+      class="h-[244px] w-[160px] max-w-[168px] -mt-[1px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent transition-all duration-500 group-hover:op"
     >
       <Label
-        class="max-w-[150px] mt-[12px] text-sm truncate opacity-100 text-primary-foreground"
+        class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-primary-foreground transition-all duration-500 group-hover:-translate-y-8"
       >
         {suggestion.name}
       </Label>
@@ -92,19 +93,20 @@
       </div>
     </div>
 
-    <!-- Hover effect overlay -->
     <div
       class="absolute inset-0 bg-background opacity-0 group-hover:opacity-50 rounded-xl transition-opacity duration-300"
     ></div>
     <div
-      class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
     >
       <Label
-        class="max-w-[150px] mt-[12px] text-xl truncate opacity-100 text-primary"
+        class="text-primary cursor-pointer max-w-[150px] text-md truncate opacity-0 group-hover:opacity-100 transition-all  duration-300"
       >
         {suggestion.name}
       </Label>
-      <!-- Content to show on hover -->
+      <p class="text-primary text-[10px] line-clamp-[9]">
+        {suggestion.description}
+      </p>
     </div>
   </div></button
 >

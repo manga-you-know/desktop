@@ -34,6 +34,7 @@
     isChaptersUniqueNumber,
     sidebarSide,
     rawFavorites,
+    selectedScan,
   } from "@/store";
   import { FavoriteDB, ReadedDB } from "@/repositories";
   import {
@@ -83,7 +84,6 @@
       ),
     ),
   );
-  let selectedScan = $state("");
   let chaptersDl = $derived(
     downloaded
       .filter((d) => jsonChapters[d.name])
@@ -94,13 +94,13 @@
       .toReversed(),
   );
   let displayedChapters: Chapter[] = $derived.by(() => {
-    if (!$isChaptersUniqueNumber || selectedScan !== "") {
+    if (!$isChaptersUniqueNumber || $selectedScan !== "") {
       return $globalChapters.filter(
         (chapter) =>
           (chapter.number?.toString().includes(searchTerm) ||
             chapter.title?.toLowerCase().includes(searchTerm) ||
             (chapter.number === null && chapter.title === null)) &&
-          (selectedScan === "" || chapter?.scan === selectedScan),
+          ($selectedScan === "" || chapter?.scan === $selectedScan),
       );
     }
     const seenNumbers = new Set();
@@ -386,7 +386,7 @@
     if (open && loaded !== favorite.source + favorite.source_id) {
       onOpened();
     } else {
-      selectedScan = "";
+      $selectedScan = "";
     }
   });
 </script>
@@ -415,7 +415,7 @@
       </Button>
       <Input
         class="w-full"
-        divClass="w-full text-nowrap overflow-hidden truncate"
+        divClass="w-full text-nowrap overflow-x-hidden truncate"
         placeholder="Search number or title..."
         floatingLabel
         variant="link"
@@ -475,10 +475,10 @@
     <Select
       class="w-full"
       classRoot="flex w-full"
-      bind:selected={selectedScan}
+      bind:selected={$selectedScan}
       items={scans}
       wheelControls
-      disabled={chaptersMode === "local"}
+      disabled={chaptersMode === "local" || $isChaptersUniqueNumber}
       label="Select scan"
     />
     <div class="flex gap-2">
@@ -490,7 +490,7 @@
         <Button
           class="flex size-11"
           variant="secondary"
-          disabled={chaptersMode === "local" || selectedScan !== ""}
+          disabled={chaptersMode === "local" || $selectedScan !== ""}
           onclick={() => {
             isChaptersUniqueNumber.set(!$isChaptersUniqueNumber);
             saveSettings();
@@ -542,6 +542,10 @@
                 : chaptersDl.findIndex(
                     (c) => c.chapter_id === nextChapter.chapter_id,
                   );
+            if ($selectedScan !== "" || $isChaptersUniqueNumber) {
+              searchTerm = "";
+              globalChapters.set(displayedChapters);
+            }
             goto(`/reader/${favorite.id}/${originalIndex}`);
             open = false;
             openSearch.set(false);
@@ -768,7 +772,7 @@
                 {languageOptions}
                 onChange={async () => {
                   isFetching = true;
-                  selectedScan = "";
+                  $selectedScan = "";
                   const result = await $downloadManager.getChapters(
                     favorite,
                     localSelectedLanguage.id,
@@ -1003,6 +1007,11 @@
                           const originalIndex = $globalChapters.findIndex(
                             (c) => c.chapter_id === chapter.chapter_id,
                           );
+                          if ($selectedScan !== "" || $isChaptersUniqueNumber) {
+                            searchTerm = "";
+                            globalChapters.set(displayedChapters);
+                          }
+
                           goto(`/reader/${favorite.id}/${originalIndex}`);
                           open = false;
                           openSearch.set(false);

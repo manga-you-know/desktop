@@ -3,13 +3,26 @@ export function isEmpty(obj: any): boolean {
   return Object.keys(obj).length === 0;
 }
 
-export function titleCase(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+export function titleCase(str: string | undefined): string {
+  return str === undefined ? "" : str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export function strNotEmpty(str: string | number | undefined): string {
   return str?.toString() ?? "";
 }
+
+export const getSlug = (text: string) => {
+  return text
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
 
 
 export function getBool(bool: undefined | null | string | boolean) {

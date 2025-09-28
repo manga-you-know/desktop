@@ -1,2 +1,2 @@
-export { AniplayDl } from "./_aniplay";
-export { AnimeOwlDl } from "./_animeowl";
+export { AniplayDl } from "./aniplay";
+export { AnimeOwlDl } from "./animeowl";

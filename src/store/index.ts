@@ -30,6 +30,7 @@ export const librarySource = writable<string>("");
 export const libraryTag = writable<Mark | undefined>(undefined);
 export const libraryOrder = writable<string>("id");
 export const globalChapters = writable<Chapter[]>([]);
+export const selectedScan = writable<string>("");
 export const downloadPath = writable<string>("Mangas/");
 export const readeds = writable<Readed[]>([]);
 export const tags = writable<Mark[]>([]);

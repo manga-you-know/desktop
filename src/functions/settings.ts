@@ -46,6 +46,7 @@ import {
   isChaptersUniqueNumber,
   openFavoriteChapter,
   sidebarSide,
+  activatedSources,
 } from "@/store";
 import { goto } from "$app/navigation";
 import type { Language } from "@/types";
@@ -53,12 +54,14 @@ import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
 import { updateBadge, addBlurWindow, removeBlurWindow, removeCountIcon, verifyCustomNotificator } from "@/functions";
 import { toast } from "svelte-sonner";
+import { ANIMESOURCES, COMICSOURCES, MANGASOURCES } from "@/constants";
 
 let loadedSettings: Store;
 const window = getCurrentWindow();
 
 type SettingValue =
   | string
+  | string[]
   | boolean
   | number
   | Language
@@ -83,6 +86,7 @@ interface SettingConfig {
 
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   selected_source: { store: selectedSource, default: "Comick" },
+  activated_sources: { store: activatedSources, default: [...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)] },
   auto_search_updates: { store: autoSearchUpdates, default: true },
   preferable_language: {
     store: preferableLanguage,

@@ -13,43 +13,37 @@
 </script>
 
 <Dialog.Root bind:open={$openPatchNotes}>
-  <Dialog.Content class="max-w-[40rem] max-h-[60rem]">
+  <Dialog.Content
+    class="w-[80vw] h-[80vh] max-w-[40rem] max-h-[35rem] overflow-y-auto scrollbar-chapters"
+  >
     <div class="flex gap-6 w-full select-none">
       <div class="flex items-center">
-        <Image class="w-[28rem] object-contain" src="/dark-woojack.png" />
+        <Image class="w-[28rem] object-contain" src="/employed-woojack.png" />
       </div>
-      <div class="flex flex-col h-full justify-center gap-6 py-6">
+      <div class="flex flex-col h-full justify-center gap-4 py-6">
         <div class="flex flex-col justify-center gap-2">
-          <Label class="font-[minecraftia, sans] text-2xl"
-            >Press F for Comick :(
-          </Label>
+          <Label class="font-[minecraftia, sans] text-2xl">BIG W</Label>
           <Label class="text-md"
-            >I think everyday about rewriting the app with a proper structure
-            asyncd much less bugs and much more performance. it can happen
+            >Well, I'll refactor the app. Enjoy the update!
           </Label>
           <Label class="text-md"
             >As ever, feel free to join my server, just click in the top menu:
-            About > Discord :)</Label
-          >
+            About > Discord :) <br /> I litteraly read everything there.
+          </Label>
           <Label class="text-md">Patch notes for v{version}</Label>
         </div>
         <div class="flex flex-col gap-2">
           <Label class="text-lg">New features</Label>
           <Label class="list-disc list-item"
-            >To ammend losing Comick, I've fixed WeebCentral (even though they
-            probably block me again) and added MangaPark. which is not so
-            reliable but looks good</Label
+            >A INSANE GOOD SOURCE NOW! Atsumaru is really really well made</Label
           >
           <Label class="list-disc list-item"
-            >Progress bar to show how much you read of the currently chapter in
-            taskbar. looks sick :)</Label
+            >YES, the home now has a purpose. You can click in the suggestions
+            there and see more :O</Label
           >
           <Label class="list-disc list-item"
-            >Top search now works in reader and you still have your title</Label
-          >
-          <Label class="list-disc list-item"
-            >Make the app more responsible since there's some freak using it on
-            a **TV**</Label
+            >Add new functions in when right clicking a saved, like opening it
+            on browser and copying other things</Label
           >
           <!--
           <Label class="list-disc list-item cursor-pointer" onclick={() => {}}
@@ -58,12 +52,11 @@
           >
           -->
           <Label class="text-lg">Fixed bugs</Label>
-          <Label class="list-disc list-item">Several bugs in UI</Label>
           <Label class="list-disc list-item"
-            >I probably added some but lets be cool about that!!!</Label
+            >Honestly, I might've fixed some things but i dont remember at all</Label
           >
         </div>
-        <Label>Brick by brickkkkkk</Label>
+        <Label>Refactor coming soon</Label>
       </div>
     </div>
   </Dialog.Content>

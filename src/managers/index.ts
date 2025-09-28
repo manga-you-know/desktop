@@ -1,1 +1,1 @@
-export { DownloadManager } from './_downloadManager';
+export { DownloadManager } from './downloadManager';

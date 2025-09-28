@@ -21,6 +21,7 @@
     stopDiscordPresence,
     setDiscordActivity,
     refreshRawFavorites,
+    refreshFavorites,
   } from "@/functions";
   import type { Favorite } from "@/types";
   import { onMount } from "svelte";
@@ -57,7 +58,7 @@
     const getResults = await $downloadManager.search(
       $searchTerm.toLowerCase(),
       $selectedSource,
-      true
+      true,
     );
     if (term === $searchTerm.toLowerCase() && source === $selectedSource) {
       results = getResults;
@@ -80,6 +81,7 @@
     }
     refreshRawFavorites();
     refreshLibrary();
+    refreshFavorites();
   }
 
   openSearch.subscribe(async (open) => {

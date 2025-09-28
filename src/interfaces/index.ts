@@ -1,2 +1,2 @@
-export type { MangaDl } from "./_mangaDl";
-export type { AnimeDl } from "./_animeDl";
+export type { MangaDl } from "./mangaDl";
+export type { AnimeDl } from "./animeDl";

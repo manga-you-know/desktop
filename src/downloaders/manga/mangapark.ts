@@ -120,14 +120,11 @@ export class MangaParkDl implements MangaDl {
         'Cache-Control': 'no-cache'
       }
     })
-    console.log(response.url)
     if (response.status !== 200) {
       throw new Error(`Error getting images for id: ${chapterID} with status code ${response.status}`)
     }
     const text = await response.text()
     const $ = load(text)
-    console.log(text)
-    console.log($("img"))
     return $("img").slice(1).map((_, img) => $(img).attr("src")).get()
   }
 }

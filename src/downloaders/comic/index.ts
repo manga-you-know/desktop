@@ -1,1 +1,1 @@
-export { BatcaveBizDl } from "./_batcavebiz";
+export { BatcaveBizDl } from "./batcavebiz";

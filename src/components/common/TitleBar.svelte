@@ -40,6 +40,7 @@
     isAscending,
   } from "@/store";
   import {
+    refreshFavorites,
     refreshLibrary,
     refreshRawFavorites,
     setFullscreen,
@@ -185,6 +186,7 @@
     }
     refreshRawFavorites();
     refreshLibrary();
+    refreshFavorites();
   }
 
   onMount(async () => {
@@ -357,8 +359,7 @@
         class="flex w-screen justify-center items-center transition-all pointer-events-none duration-500 gap-2 md:gap-3 xl:gap-10 ml-32 md:ml-12 lg:ml-0"
         onfocusout={() => {
           showSearch = false;
-          if (query.length === 0 && page.route.id?.startsWith("/(root)/reader"))
-            showPopSearch = false;
+          if (query.length === 0) showPopSearch = false;
         }}
       >
         {#if page.route.id?.startsWith("/(root)/reader")}

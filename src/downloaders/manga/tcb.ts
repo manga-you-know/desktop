@@ -131,7 +131,8 @@ export class TCBScansDl implements MangaDl {
     const chapterImgs: string[] = [];
 
     $("img.fixed-ratio-content[src]").each((_, img) => {
-      chapterImgs.push($(img).attr("src") || "");
+      if ($(img).attr("src") !== undefined)
+        chapterImgs.push($(img).attr("src") ?? "");
     });
     return chapterImgs;
   }

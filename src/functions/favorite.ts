@@ -249,11 +249,12 @@ export async function loadFavoriteChapters(favorite: Favorite): Promise<void> {
     }
   } catch (e) {
     updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
-    console.log(e)
+    updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);
     return
   }
   if (chapters.length === 0) {
     updateFavoriteProperty(strNotEmpty(favorite.id), "isLoading", false);
+    updateFavoriteProperty(strNotEmpty(favorite.id), "isLoaded", true);
     return
   }
   chaptersToRead = [];

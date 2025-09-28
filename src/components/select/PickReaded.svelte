@@ -12,6 +12,7 @@
   import { ScrollingValue } from "svelte-ux";
   import { addReadedBelow, refreshReadeds } from "@/functions";
   import { globalChapters } from "@/store";
+  import { VList } from "virtua/svelte";
 
   interface Props {
     class?: string;
@@ -51,16 +52,22 @@
   </Popover.Trigger>
   <Popover.Content class="max-w-24 p-0">
     <Command.Root>
-      <Command.Input />
+      <Command.Input placeholder="Chapter..." />
       <Command.Empty>Nothing found.</Command.Empty>
-      <ScrollArea class="h-36">
-        <Command.Group>
-          {#each chapters as chapter}
+      <Command.Group>
+        <VList
+          class="min-h-36 scrollbar-chapters"
+          data={chapters}
+          getKey={(_, i) => i}
+          overscan={20}
+          tabindex={-1}
+        >
+          {#snippet children(chapter, _)}
             <Command.Item
               class={cn(
                 "flex rounded-xl justify-center hover:!bg-secondary/50",
                 readeds.find((r) => r.chapter_id === chapter.chapter_id) &&
-                  "border border-[1px] border-primary",
+                  "border-[1px] border-primary",
               )}
               value={chapter.number}
               onSelect={async () => {
@@ -76,9 +83,9 @@
             >
               <Label>{chapter.number}</Label>
             </Command.Item>
-          {/each}
-        </Command.Group>
-      </ScrollArea>
+          {/snippet}
+        </VList>
+      </Command.Group>
     </Command.Root>
   </Popover.Content>
 </Popover.Root>
