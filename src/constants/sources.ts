@@ -13,7 +13,7 @@ import type { Source } from "@/types";
 export const MANGASOURCES: Source[] = [
   // { name: "Comick", language: "Multi", isRecommended: true },
   { name: "MangaDex", language: "Multi" },
-  { name: "MangaFire", language: "Multi", isProblem: true },
+  { name: "MangaFire", language: "Multi" },
   { name: "Atsumaru", language: "English", isRecommended: true },
   { name: "WeebCentral", language: "English", isProblem: true },
   { name: "MangaPark", language: "English" },

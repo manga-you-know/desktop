@@ -118,6 +118,7 @@
             class="rounded-none max-w-32"
             bind:selected={source}
             items={sources}
+            wheelControls
             closeButton={false}
             disabled={sources.length < 2}
           />
@@ -150,6 +151,7 @@
             class="max-w-32"
             bind:selected={source}
             items={sources}
+            wheelControls
             closeButton={false}
             disabled={sources.length < 2}
           />

@@ -198,7 +198,8 @@
                       onclick={() => {
                         favoriteOpen = null;
                         isResultOpen = true;
-                        favoriteOpen = result;
+                        const toOpen = isFavorite(result);
+                        favoriteOpen = toOpen ? toOpen : result;
                       }}
                     >
                       <span class="ml-2 truncate"
@@ -245,7 +246,8 @@
                   onclick={() => {
                     favoriteOpen = null;
                     isResultOpen = true;
-                    favoriteOpen = result;
+                    const toOpen = isFavorite(result);
+                    favoriteOpen = toOpen ? toOpen : result;
                   }}
                 >
                   <span class="ml-2 truncate"
@@ -328,8 +330,9 @@
             <Button
               class="w-[110px] flex justify-between text-xs rounded-r-none"
               variant="secondary"
-              onclick={async () =>
-                favoriteOpen ? saveResult(favoriteOpen) : ""}
+              onclick={() => {
+                if (favoriteOpen) saveResult(favoriteOpen);
+              }}
             >
               <div class="flex justify-center w-full">
                 {favoriteOpen

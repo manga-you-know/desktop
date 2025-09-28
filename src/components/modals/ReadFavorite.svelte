@@ -57,12 +57,12 @@
     LANGUAGE_LABELS,
     READSOURCES_LANGUAGE,
   } from "@/constants";
-  import { getBool, imageFail, limitStr } from "@/utils";
+  import { getBool, limitStr } from "@/utils";
   import { cn } from "@/lib/utils";
   import { load, Store } from "@tauri-apps/plugin-store";
   import { IsMobile } from "@/lib/hooks";
 
-  let { favorite, open = $bindable(false) }: Props = $props();
+  let { favorite, open = $bindable(false), onClose }: Props = $props();
 
   let isMulti = $state(false);
   let localSelectedLanguage = $state($preferableLanguage);
@@ -152,6 +152,7 @@
   interface Props {
     favorite: Favorite;
     open: boolean;
+    onClose?: VoidFunction;
   }
 
   interface Event {
@@ -387,6 +388,7 @@
       onOpened();
     } else {
       $selectedScan = "";
+      onClose?.();
     }
   });
 </script>
@@ -522,8 +524,10 @@
       </Button>
     </div>
   </div>
-  <div class="flex w-[40vw] max-w-[38rem] justify-start gap-1 items-center">
-    <div class="w-[calc(40vw-5rem)] flex rounded-xl bg-secondary items-center">
+  <div class="flex w-[40vw] max-w-[38rem] justify-between gap-1 items-center">
+    <div
+      class="w-full flex rounded-xl max-w-[calc(40vw-6rem)] sm:max-w-full bg-secondary items-center"
+    >
       <Button
         class={cn(
           "chapter-button w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
@@ -682,12 +686,15 @@
 
 <Dialog.Root
   bind:open
-  onOpenChange={() => {
-    loaded = "";
-    if (isUltraFavorite) loadFavoriteChapters(favorite);
-    refreshFavorites();
-    refreshLibrary();
-    stopDiscordPresence();
+  onOpenChange={(v) => {
+    if (v) {
+      loaded = "";
+      onOpened();
+      if (isUltraFavorite) loadFavoriteChapters(favorite);
+      refreshFavorites();
+      refreshLibrary();
+      stopDiscordPresence();
+    }
   }}
 >
   <Dialog.Content

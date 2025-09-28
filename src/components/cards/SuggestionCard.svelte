@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { Button, Badge, Tooltip, Label } from "@/lib/components";
-  import Icon from "@iconify/svelte";
+  import { Button, Badge, Label } from "@/lib/components";
   import { ReadFavorite, Image, SuggestionModal } from "@/components";
   import type { Favorite, Suggestion } from "@/types";
-  import { FavoriteDB } from "@/repositories";
 
   interface Props {
     suggestion: Suggestion;
@@ -16,7 +14,7 @@
 </script>
 
 {#if openFavorite}
-  <ReadFavorite favorite={openFavorite} bind:open={isOpen} />
+  <ReadFavorite favorite={openFavorite} bind:open={openReadModal} />
 {/if}
 
 <SuggestionModal

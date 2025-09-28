@@ -35,7 +35,7 @@ export class AtsumaruDl implements MangaDl {
   }
 
   async search(query: string): Promise<Favorite[]> {
-    const response = await fetch(`${this.baseUrl}/collections/manga/documents/search?q=${query}&limit=24&query_by=title,englishTitle,otherNames&query_by_weights=3,2,1&include_fields=id,title,englishTitle,poster,authors,synopsis,status,tags&num_typos=4,3,2`)
+    const response = await fetch(`${this.baseUrl}/collections/manga/documents/search?q=${query}&limit=24&query_by=title,englishTitle,otherNames,authors&query_by_weights=4,3,2,1&include_fields=id,title,englishTitle,poster,authors,synopsis,status,tags&num_typos=4,3,2,1`)
     if (response.status !== 200) {
       throw new Error(`Search failed with query: ${query} and status: ${response.status}`)
     }

@@ -511,7 +511,8 @@
                       class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
                       variant="ghost"
                       onclick={() => {
-                        favoriteOpen = result;
+                        const toOpen = isFavorite(result);
+                        favoriteOpen = toOpen ? toOpen : result;
                         isFavoriteOpen = true;
                         showPopSearch = false;
                       }}
@@ -558,7 +559,8 @@
                         class="size-7 rounded-l-none rounded-r-xl"
                         variant="ghost"
                         onclick={() => {
-                          favoriteOpen = result;
+                          const toOpen = isFavorite(result);
+                          favoriteOpen = toOpen ? toOpen : result;
                           isDeleteOpen = true;
                           showPopSearch = false;
                         }}><Icon icon="lucide:x" /></Button
@@ -617,7 +619,8 @@
                           class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
                           variant="ghost"
                           onclick={() => {
-                            favoriteOpen = result;
+                            const toOpen = isFavorite(result);
+                            favoriteOpen = toOpen ? toOpen : result;
                             isFavoriteOpen = true;
                             showPopSearch = false;
                           }}

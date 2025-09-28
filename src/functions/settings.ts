@@ -85,7 +85,7 @@ interface SettingConfig {
 }
 
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
-  selected_source: { store: selectedSource, default: "Comick" },
+  selected_source: { store: selectedSource, default: "Atsumaru" },
   activated_sources: { store: activatedSources, default: [...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)] },
   auto_search_updates: { store: autoSearchUpdates, default: true },
   preferable_language: {

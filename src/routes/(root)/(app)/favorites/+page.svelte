@@ -37,7 +37,6 @@
   const countFound = $derived(
     !$showOnlyNew ? $ultraFavorites.length : favoritesWithChapter.length,
   );
-  const count = $derived($ultraFavorites.length);
   function extraSpaceCards(): number {
     const x = perPage / 3;
     const n = displayedFavorites.length;
@@ -172,8 +171,8 @@
         class="bg-secondary/30 backdrop-blur-md flex rounded-3xl absolute bottom-6 mt-10 py-2 px-2"
       >
         <Pagination.Root
-          {count}
           {perPage}
+          count={countFound}
           siblingCount={1}
           bind:page
           onPageChange={() => favoriteDiv.scrollTo({ top: 0 })}
