@@ -20,6 +20,7 @@
   import { onNavigate } from "$app/navigation";
   import {} from "@/components/animations";
   import { fade } from "svelte/transition";
+  import { getBool } from "@/utils";
 
   interface Props {
     favorite: Favorite;
@@ -34,7 +35,7 @@
   let isDelete = $state(false);
   let isContext = $state(false);
   let isPicking = $state(false);
-  let isUltraFavorite = $state(Boolean(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
   let readeds: Readed[] = $state([]);
   let chapters: Chapter[] = $state([]);
   let markeds: MarkFavorites[] = $state([]);

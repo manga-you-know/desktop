@@ -30,7 +30,7 @@
   } from "@/functions";
   import type { Favorite, Chapter, Readed } from "@/types";
   import { goto } from "$app/navigation";
-  import { strNotEmpty } from "@/utils";
+  import { getBool, strNotEmpty } from "@/utils";
   import { cn } from "@/lib/utils";
   import type { MarkFavorites } from "@/types";
   import Icon from "@iconify/svelte";
@@ -42,7 +42,7 @@
   let isDelete = $state(false);
   let isContext = $state(false);
   let isPicking = $state(false);
-  let isUltraFavorite = $state(Boolean(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
   let markeds: MarkFavorites[] = $state([]);
   let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);
