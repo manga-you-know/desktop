@@ -8,8 +8,8 @@
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
 <div align="center" style="flex: auto">
-  <img
-    src="/docs/assets/overall-demonstration.gif"
+  <video
+    src="/docs/assets/demo2.mp4"
     style="width: 100%; object-fit: contain; border-radius: 6px" />
 </div>
 
