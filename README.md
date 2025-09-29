@@ -7,10 +7,10 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
-<div align="center" style="flex: auto">
+<div align="center" style="flex: auto;">
   <img
     src="/docs/assets/demo-2.gif"
-    style="width: 100%; object-fit: contain; border-radius: 6px" />
+    style="height: 35rem; object-fit: contain; border-radius: 6px" />
 </div>
 
 # MangaYouKnow desktop
