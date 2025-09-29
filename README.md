@@ -10,7 +10,7 @@
 <div align="center" style="flex: auto;">
   <img
     src="/docs/assets/demo-2.gif"
-    style="height: 35rem; object-fit: contain; border-radius: 6px" />
+    style="height: 100%; object-fit: contain; border-radius: 6px" />
 </div>
 
 # MangaYouKnow desktop
