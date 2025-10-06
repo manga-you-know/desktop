@@ -28,21 +28,23 @@ import { documentDir, join } from "@tauri-apps/api/path";
 import { removeFavorite } from "@/functions";
 import { get } from "svelte/store";
 import { toast } from "svelte-sonner";
+import { db, favorites } from "@/db";
+import { eq } from "drizzle-orm";
 
-let db: Database = null!;
+let dbOld: Database = null!;
 
 async function loadDb() {
-  db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  dbOld = await Database.load(`sqlite:${DATABASE_NAME}`);
 }
 
 async function ensureConnected() {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
 }
 
 export async function initDatabase() {
   await ensureConnected();
   try {
-    await db.execute(DATABASE_INIT);
+    await dbOld.execute(DATABASE_INIT);
   } catch (error) {
     console.log(error);
   } finally {
@@ -54,13 +56,13 @@ export async function migrateDatabase() {
   await ensureConnected();
 
   try {
-    const databaseInfo: { name: string }[] = await db.select(
+    const databaseInfo: { name: string }[] = await dbOld.select(
       "PRAGMA table_info(favorite);"
     );
     const columns = databaseInfo.map((column) => column.name);
     for (const migration of DATABASE_MIGRATION) {
       if (columns.includes(migration.name)) continue;
-      await db.execute(
+      await dbOld.execute(
         `ALTER TABLE favorite ADD COLUMN ${migration.name} ${migration.type} DEFAULT "?";`,
         [migration.default]
       );
@@ -87,7 +89,7 @@ export async function isFavorite(favorite: Favorite): Promise<boolean> {
   const rawFavs = await FavoriteDB.getRawFavorites();
   return rawFavs.some(
     (fav) =>
-      fav.source_id === favorite.source_id || fav.source === favorite.source
+      fav.sourceId === favorite.sourceId || fav.source === favorite.source
   );
 }
 
@@ -160,7 +162,9 @@ export async function refreshLibrary() {
 }
 
 export async function refreshFavorites() {
-  const favs = await FavoriteDB.getUltraFavorites();
+  // const favs = await FavoriteDB.getUltraFavorites();
+  const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
+  console.log(favs)
   ultraFavorites.set(favs);
   const uload = get(favoritesLoaded);
   for (let id of Object.keys(uload)) {

@@ -42,7 +42,7 @@
   let isDelete = $state(false);
   let isContext = $state(false);
   let isPicking = $state(false);
-  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.isUltraFavorite));
   let markeds: MarkFavorites[] = $state([]);
   let nextChaptersImages: string[] = $state([]);
   let favoriteLoad = $derived($favoritesLoaded[strNotEmpty(favorite.id)]);

@@ -69,13 +69,13 @@
   let languageOptions: LanguageType[] = $state([]);
   let downloaded: DirEntry[] = $state([]);
   let searchTerm = $state("");
-  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.isUltraFavorite));
   let chaptersMode: "web" | "local" = $state("web");
   let jsonChapters: { [key: string]: Chapter } = $state({});
   let favoritePath = $derived(
     $downloadPath === "Mangas/"
-      ? `Mangas/${favorite.folder_name}`
-      : `${$downloadPath}/${favorite.folder_name}`,
+      ? `Mangas/${favorite.folderName}`
+      : `${$downloadPath}/${favorite.folderName}`,
   );
   let scans: string[] = $derived(
     Array.from(
@@ -310,7 +310,7 @@
   // }
 
   const loadUltraFavorite = async () => {
-    isUltraFavorite = getBool(favorite.is_ultra_favorite);
+    isUltraFavorite = getBool(favorite.isUltraFavorite);
   };
 
   async function onOpened() {
@@ -318,7 +318,7 @@
     isFetching = true;
     setDiscordActivity("Selecting a chapter:", `[${favorite.name}]`);
     globalChapters.set([]);
-    store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
+    store = await load(`Mangas/${favorite.folderName}/chapters.json`);
     await refreshDownloadeds();
     refreshJsonChapters();
     isMulti = $downloadManager.isMultiLanguage(favorite.source);
@@ -365,13 +365,13 @@
     // displayedChapters = $globalChapters;
     await refreshReadeds(favorite);
     isFetching = false;
-    loaded = favorite.source + favorite.source_id;
+    loaded = favorite.source + favorite.sourceId;
   }
   const isMobileInstance = new IsMobile();
   const isMobile = $derived(isMobileInstance.current);
   function isFavorite(favorite: Favorite) {
     return $rawFavorites.find(
-      (f) => f.source_id === favorite.source_id && f.source === favorite.source,
+      (f) => f.sourceId === favorite.sourceId && f.source === favorite.source,
     );
   }
 
@@ -384,7 +384,7 @@
   }
 
   $effect(() => {
-    if (open && loaded !== favorite.source + favorite.source_id) {
+    if (open && loaded !== favorite.source + favorite.sourceId) {
       onOpened();
     } else {
       $selectedScan = "";
@@ -595,14 +595,14 @@
                         const path = await join(
                           await downloadDir(),
                           "Mangas",
-                          favorite.folder_name,
+                          favorite.folderName,
                           nextChapter.number,
                         );
                         openPath(path);
                       } else {
                         const path = await join(
                           $downloadPath,
-                          favorite.folder_name,
+                          favorite.folderName,
                           nextChapter.number,
                         );
                         openPath(path);
@@ -820,7 +820,7 @@
                     e.stopPropagation();
                     await saveResult(favorite);
                     isUltraFavorite = !isUltraFavorite;
-                    favorite.is_ultra_favorite = isUltraFavorite;
+                    favorite.isUltraFavorite = isUltraFavorite;
                     isUltraFavorite = await FavoriteDB.toggleUltraFavorite(
                       favorite,
                       false,
@@ -1041,14 +1041,14 @@
                               const path = await join(
                                 await downloadDir(),
                                 "Mangas",
-                                favorite.folder_name,
+                                favorite.folderName,
                                 chapter.number,
                               );
                               openPath(path);
                             } else {
                               const path = await join(
                                 $downloadPath,
-                                favorite.folder_name,
+                                favorite.folderName,
                                 chapter.number,
                               );
                               openPath(path);
@@ -1124,14 +1124,14 @@
                             const path = await join(
                               await downloadDir(),
                               "Mangas",
-                              favorite.folder_name,
+                              favorite.folderName,
                               chapter.number,
                             );
                             openPath(path);
                           } else {
                             const path = await join(
                               $downloadPath,
-                              favorite.folder_name,
+                              favorite.folderName,
                               chapter.number,
                             );
                             openPath(path);
