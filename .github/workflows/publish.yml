@@ -95,6 +95,11 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: 'src-tauri -> src-tauri/target'
+
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
@@ -148,7 +153,7 @@ jobs:
       - name: Update Cargo.toml
         id: update-version
         run: |
-          bash myk u ${{ needs.changelog.outputs.version }}
+          bash ./scripts/myk u ${{ needs.changelog.outputs.version }}
 
       - name: Commit files
         run: |
@@ -183,6 +188,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: 'src-tauri -> src-tauri/target'
 
       - name: Install dependencies
         run: bun install

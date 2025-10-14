@@ -2,10 +2,12 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { vite as vidstack } from "vidstack/plugins";
 import { enhancedImages } from "@sveltejs/enhanced-img";
 import { defineConfig } from "vite";
+
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: [sveltekit(), vidstack({ include: /player\// }), enhancedImages()],
+  plugins: [sveltekit(), enhancedImages()],
+  clearScreen: false,
   server: {
     host: host || false,
     strictPort: true,
@@ -13,6 +15,9 @@ export default defineConfig({
     hmr: {
       protocol: "ws",
       port: 5174,
+    },
+    watch: {
+      ignored: ['**/src-tauri/**'],
     },
   },
   envPrefix: ["VITE_", "TAURI_"],

@@ -24,6 +24,7 @@
   import { IS_MOBILE } from "@/constants";
   import { get, has, set } from "tauri-plugin-cache-api";
   import { ScrollingValue } from "svelte-ux";
+  import { delay } from "@/utils";
 
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);

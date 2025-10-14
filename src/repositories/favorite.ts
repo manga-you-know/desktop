@@ -11,17 +11,19 @@ import {
   removeFavorite,
 } from "@/functions";
 import { getBool } from "@/utils";
+import { db, favorites, } from "@/db";
+import { eq } from "drizzle-orm";
 
-let db: Database = null!;
+let dbOld: Database = null!;
 
 async function loadDb() {
-  db = await Database.load(`sqlite:${DATABASE_NAME}`);
+  dbOld = await Database.load(`sqlite:${DATABASE_NAME}`);
 }
 
 export async function createFavorite(favorite: Favorite): Promise<Favorite> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   const user = await UserDB.getDefaultUser();
-  await db.execute(
+  await dbOld.execute(
     "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     [
       user.id,
@@ -43,7 +45,7 @@ export async function createFavorite(favorite: Favorite): Promise<Favorite> {
       favorite.anilist_id ?? "",
     ]
   );
-  const results = await db.select<Favorite[]>("SELECT * FROM favorite WHERE source = ? AND source_id = ? LIMIT 1", [favorite.source, favorite.source_id])
+  const results = await dbOld.select<Favorite[]>("SELECT * FROM favorite WHERE source = ? AND source_id = ? LIMIT 1", [favorite.source, favorite.source_id])
   if (results) {
     return results[0]
   } else {
@@ -55,12 +57,12 @@ export async function createFavorite(favorite: Favorite): Promise<Favorite> {
 export async function createFavoritesFromJson(
   favorites: Favorite[]
 ): Promise<void> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
     const placeholders = favorites
       .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
       .join(", ");
-    await db.execute(
+    await dbOld.execute(
       `INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES ${placeholders}`,
       favorites.flatMap((favorite) => [
         defaultUser.id,
@@ -90,8 +92,8 @@ export async function createFavoritesFromJson(
 export async function getFavorite(
   id: number | string | string[]
 ): Promise<Favorite> {
-  if (!db) await loadDb();
-  const favorite: Favorite[] = await db.select(
+  if (!dbOld) await loadDb();
+  const favorite: Favorite[] = await dbOld.select(
     "SELECT * FROM favorite WHERE id = ? LIMIT 1",
     [id]
   );
@@ -105,8 +107,8 @@ export async function getFavoriteBySource(
   sourceId: string,
   source: string
 ): Promise<Favorite> {
-  if (!db) await loadDb();
-  const favorite: Favorite[] = await db.select(
+  if (!dbOld) await loadDb();
+  const favorite: Favorite[] = await dbOld.select(
     "SELECT * FROM favorite WHERE source_id = ? AND source = ? LIMIT 1",
     [sourceId, source]
   );
@@ -117,7 +119,7 @@ export async function getFavoriteBySource(
 }
 
 export async function getLibraryFavorites(): Promise<Favorite[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   let query = "SELECT * FROM favorite WHERE user_id = ?";
   const params: (string | number | boolean)[] = [defaultUser.id ?? 0];
   const favoriteQuery = get(libraryQuery);
@@ -143,9 +145,9 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
   query += ` ORDER BY ${get(libraryOrder)} ASC`;
 
   try {
-    const favorites: Favorite[] = await db.select(query, params);
+    const favorites: Favorite[] = await dbOld.select(query, params);
     if (libraryMark?.id === -1)
-      return favorites.filter((f) => f.is_ultra_favorite === "true");
+      return favorites.filter((f) => f.isUltraFavorite);
     return favorites;
   } catch (error) {
     console.log(error);
@@ -156,8 +158,8 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
 }
 
 export async function getRawFavorites(): Promise<Favorite[]> {
-  if (!db) await loadDb();
-  const favorites: Favorite[] = await db.select(
+  if (!dbOld) await loadDb();
+  const favorites: Favorite[] = await dbOld.select(
     "SELECT * FROM favorite WHERE user_id = ?",
     [defaultUser.id]
   );
@@ -165,10 +167,14 @@ export async function getRawFavorites(): Promise<Favorite[]> {
 }
 
 export async function getUltraFavorites(): Promise<Favorite[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    const favorites: Favorite[] = await getRawFavorites();
-    return favorites.filter((f) => f.is_ultra_favorite === "true");
+    // const favorites: Favorite[] = await db.query.favorites.findMany({
+    //   where: (favorites, { eq }) => eq(favorites.isUltraFavorite, true)
+    // });
+    const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
+    console.log(favs)
+    return favs
   } catch (error) {
     console.log(error);
     return [];
@@ -181,9 +187,9 @@ export async function getFavoritesByMark(
   userID: number | undefined,
   mark: Mark
 ): Promise<Favorite[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    const favorites: Favorite[] = await db.select(
+    const favorites: Favorite[] = await dbOld.select(
       "SELECT * FROM favorite WHERE user_id = ? AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)",
       [userID, mark.id]
     );
@@ -200,9 +206,9 @@ export async function getFavoritesByTypes(
   userID: number | undefined,
   types: string[]
 ): Promise<Favorite[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    const favorites: Favorite[] = await db.select(
+    const favorites: Favorite[] = await dbOld.select(
       "SELECT * FROM favorite WHERE user_id = ? AND type in (?)",
       [userID, types]
     );
@@ -220,15 +226,15 @@ export async function getFavoritesBySource(
   source: string,
   query = ""
 ): Promise<Favorite[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
     const favorites: Favorite[] =
       query === ""
-        ? await db.select(
+        ? await dbOld.select(
           "SELECT * FROM favorite WHERE user_id = ? AND source = ?",
           [userID, source]
         )
-        : await db.select(
+        : await dbOld.select(
           `
 			SELECT * FROM favorite
 			WHERE user_id = ?
@@ -248,9 +254,9 @@ export async function getFavoritesBySource(
 }
 
 export async function getFavoriteSources(): Promise<string[]> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    const sources: string[] = await db.select(
+    const sources: string[] = await dbOld.select(
       "SELECT DISTINCT source FROM favorite WHERE user_id = ?",
       [defaultUser.id]
     );
@@ -265,9 +271,9 @@ export async function getFavoriteSources(): Promise<string[]> {
 }
 
 export async function updateFavorite(favorite: Favorite): Promise<void> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    await db.execute(
+    await dbOld.execute(
       "UPDATE favorite SET name = ?, folder_name = ?, cover = ?, link = ?, source = ?, source_id = ?, type = ?, extra_name = ?, title_color = ?, card_color = ?, grade = ?, author = ?, description = ?, is_ultra_favorite = ? WHERE id = ?",
       [
         favorite.name,
@@ -295,7 +301,7 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
 }
 
 export async function isUltraFavorite(favoriteId: number) {
-  const result: { is_ultra_favorite: string }[] = await db.select(
+  const result: { is_ultra_favorite: string }[] = await dbOld.select(
     "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
     [favoriteId]
   );
@@ -306,14 +312,11 @@ export async function toggleUltraFavorite(
   favorite: Favorite,
   refresh: boolean = true
 ): Promise<boolean> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    await db.execute("UPDATE favorite SET is_ultra_favorite = ? WHERE id = ?", [
-      favorite.is_ultra_favorite,
-      favorite.id,
-    ]);
 
-    const result: { is_ultra_favorite: string }[] = await db.select(
+    await db.update(favorites).set({ isUltraFavorite: true }).where(eq(favorites.id, favorite.id))
+    const result: { is_ultra_favorite: string }[] = await dbOld.select(
       "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
       [favorite.id]
     );
@@ -333,10 +336,10 @@ export async function toggleUltraFavorite(
 }
 
 export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
     const placeholders = favorites.map(() => "?").join(", ");
-    await db.execute(
+    await dbOld.execute(
       `UPDATE favorite SET is_ultra_favorite = 1 WHERE id IN (${placeholders})'`,
       favorites.map((favorite: Favorite) => favorite.id)
     );
@@ -352,14 +355,14 @@ export async function deleteFavorite(favorite: Favorite): Promise<{
   markFavorites: { favorite_id: number; mark_id: number }[];
   readed: { favorite_id: number; chapter_id: string }[];
 }> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    const markFavorites = await db.select<
+    const markFavorites = await dbOld.select<
       { favorite_id: number; mark_id: number }[]
     >("SELECT favorite_id, mark_id FROM mark_favorites WHERE favorite_id = ?", [
       favorite.id,
     ]);
-    const readed = await db.select<
+    const readed = await dbOld.select<
       {
         favorite_id: number;
         chapter_id: string;
@@ -370,7 +373,7 @@ export async function deleteFavorite(favorite: Favorite): Promise<{
       [favorite.id]
     );
 
-    await db.execute(
+    await dbOld.execute(
       `
       BEGIN TRANSACTION;
       DELETE FROM mark_favorites WHERE favorite_id = ?;
@@ -388,7 +391,7 @@ export async function deleteFavorite(favorite: Favorite): Promise<{
     };
   } catch (error) {
     console.log(error);
-    await db.execute("ROLLBACK;");
+    await dbOld.execute("ROLLBACK;");
     throw error;
   }
 }
@@ -398,9 +401,9 @@ export async function undoDeleteFavorite(data: {
   markFavorites: { favorite_id: number; mark_id: number }[];
   readed: { favorite_id: number; chapter_id: string; language?: string }[];
 }): Promise<void> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
-    await db.execute(
+    await dbOld.execute(
       `
       BEGIN TRANSACTION;
       INSERT INTO favorite (id, user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id, is_ultra_favorite) 
@@ -440,24 +443,24 @@ export async function undoDeleteFavorite(data: {
     );
   } catch (error) {
     console.log(error);
-    await db.execute("ROLLBACK;");
+    await dbOld.execute("ROLLBACK;");
     throw error;
   }
 }
 
 export async function deleteFavorites(favorites: Favorite[]): Promise<void> {
-  if (!db) await loadDb();
+  if (!dbOld) await loadDb();
   try {
     const placeholders = favorites.map(() => "?").join(", ");
-    await db.execute(
+    await dbOld.execute(
       `DELETE FROM mark_favorites WHERE favorite_id IN (${placeholders})`,
       favorites.map((favorite: Favorite) => favorite.id)
     );
-    await db.execute(
+    await dbOld.execute(
       `DELETE FROM readed WHERE favorite_id IN (${placeholders})`,
       favorites.map((favorite: Favorite) => favorite.id)
     );
-    await db.execute(
+    await dbOld.execute(
       `DELETE FROM favorite WHERE id IN (${placeholders})`,
       favorites.map((favorite: Favorite) => favorite.id)
     );

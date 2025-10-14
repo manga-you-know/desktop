@@ -1,4 +1,3 @@
-
 import { fetch } from "@tauri-apps/plugin-http";
 import { load } from "cheerio";
 import type { MangaDl } from "@/interfaces";

@@ -7,7 +7,9 @@ const config = {
   // for more information about preprocessors
   preprocess: vitePreprocess(),
   kit: {
-    adapter: adapter(),
+    adapter: adapter({
+      fallback: "index.html"
+    }),
     alias: {
       "@/*": "./path/to/lib/*",
       "@/*": "./src/*",
@@ -21,11 +23,7 @@ const config = {
         "/panels",
         "/notificator",
         "/reader/0/0",
-        "/reader/2/1",
-        "/reader/4/2",
         "/player/0/0",
-        "/player/2/1",
-        "/player/4/2",
       ],
     },
   },

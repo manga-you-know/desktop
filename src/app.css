@@ -93,6 +93,11 @@ html {
     #ffdc5a 20px -3px 30px;
 }
 
+.backdrop-blur-sm {
+   -webkit-backdrop-filter: blur(5px) ;
+   backdrop-filter: blur(8px);
+}
+
 @layer utilities {
   .scrollbar::-webkit-scrollbar {
     width: 12px;

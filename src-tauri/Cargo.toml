@@ -12,6 +12,12 @@ rust-version = "1.87.0"
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "lib"]
 
+[profile.release]
+opt-level = 3 
+lto = true 
+strip = true
+codegen-units = 1
+
 [build-dependencies.tauri-build]
 version = "2"
 features = []
@@ -37,8 +43,8 @@ version = "1.0"
 features = ["derive"]
 
 [dependencies.tauri]
-version = "2"
-features = [ "macos-private-api", "protocol-asset", "tray-icon", "image-png", "image-ico"]
+version = "2.8.5"
+features = ["macos-private-api", "protocol-asset", "tray-icon", "image-png", "image-ico"]
 
 [dependencies.tauri-plugin-sql]
 version = "2"

@@ -61,6 +61,7 @@
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
+  import { system24 } from "@/states";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -230,6 +231,11 @@
     </div>
   {/if}
 </div>
+<svelte:head>
+  {@html system24.active
+    ? "<style>* { border-radius: 0 !important; }</style>"
+    : ""}
+</svelte:head>
 
 <style>
   .filter-effects {
