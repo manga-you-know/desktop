@@ -8,7 +8,7 @@ export const themeMode = new class {
   }
 }
 
-export const system24 = new class {
+export const retroTheme = new class {
   #active = $state(false)
   get active() {
     return this.#active
