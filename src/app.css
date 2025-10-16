@@ -1,7 +1,73 @@
-@tailwind base;
+@import 'tailwindcss';
 
-@tailwind components;
-@tailwind utilities;
+@config '../tailwind.config.ts';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: color-mix(
+      in oklab,
+      hsl(var(--color-surface-content) / 1) 20%,
+      transparent
+    );
+  }
+}
+
+@utility scrollbar {
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    @apply bg-secondary/40 px-5;
+    height: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @apply bg-secondary;
+    pointer-events: auto;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    @apply bg-secondary/80;
+  }
+}
+
+@utility scrollbar-chapters {
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    @apply bg-background/20 px-5;
+    height: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @apply bg-accent z-50;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent/80;
+  }
+}
 
 @layer base {
   :root {
@@ -70,75 +136,34 @@
   }
 }
 
-html {
-  height: 100%;
-  overflow: hidden;
-}
-
-.no-blurry {
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  -webkit-font-smoothing: subpixel-antialiased;
-}
-
-.group:has(button:hover) {
-  @apply dark:bg-background/40 bg-slate-300;
-}
-
-.logo-shadow {
-  box-shadow:
-    #ff67c3 -20px 15px 30px,
-    #ff8ab8 -10px -12px 30px,
-    #ffaa9f 0px 4px 30px,
-    #ffc37d 10px 8px 30px,
-    #ffdc5a 20px -3px 30px;
-}
-
-.backdrop-blur-sm {
-   -webkit-backdrop-filter: blur(5px) ;
-   backdrop-filter: blur(8px);
-}
-
 @layer utilities {
-  .scrollbar::-webkit-scrollbar {
-    width: 12px;
+  html {
+    height: 100%;
+    overflow: hidden;
   }
 
-  .scrollbar::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    @apply bg-secondary/40 px-5;
-    height: 20px;
+  .no-blurry {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased;
   }
 
-  .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-secondary;
-    pointer-events: auto;
-    padding: 8px;
-    border-radius: 6px;
+  .group:has(button:hover) {
+    @apply dark:bg-background/40 bg-slate-300;
   }
 
-  .scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-secondary/80;
+  .logo-shadow {
+    box-shadow:
+      #ff67c3 -20px 15px 30px,
+      #ff8ab8 -10px -12px 30px,
+      #ffaa9f 0px 4px 30px,
+      #ffc37d 10px 8px 30px,
+      #ffdc5a 20px -3px 30px;
   }
 
-  .scrollbar-chapters::-webkit-scrollbar {
-    width: 12px;
-  }
-
-  .scrollbar-chapters::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    @apply bg-background/20 px-5;
-    height: 20px;
-  }
-
-  .scrollbar-chapters::-webkit-scrollbar-thumb {
-    @apply bg-accent z-50;
-    padding: 8px;
-    border-radius: 6px;
-  }
-
-  .scrollbar-chapters::-webkit-scrollbar-thumb:hover {
-    @apply bg-accent/80;
+  .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
   }
 }
 
