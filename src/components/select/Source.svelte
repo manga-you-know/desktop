@@ -125,9 +125,9 @@
                 {#if $activatedSources.includes(source.name)}
                   <Command.Item
                     class={cn(
-                      "flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 ",
+                      "flex justify-between hover:bg-slate-400! dark:hover:bg-secondary/50! ",
                       source.name === $selectedSource
-                        ? "!bg-gray-300 dark:!bg-secondary"
+                        ? "bg-gray-300! dark:bg-secondary!"
                         : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit",
                     )}
                     value={source.name}

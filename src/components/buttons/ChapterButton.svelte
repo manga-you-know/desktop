@@ -5,11 +5,11 @@
   import type { Chapter } from "@/types";
   import { cn } from "@/lib/utils";
 
-  interface Event {
+  type Event = {
     stopPropagation: () => void;
-  }
+  };
 
-  interface Props {
+  type Props = {
     chapter: Chapter;
     isDownloaded: boolean;
     isDownloading: boolean;
@@ -18,7 +18,7 @@
     onclick?: () => void;
     ondownloadclick?: (e: Event) => void;
     onreadclick?: (e: Event) => void;
-  }
+  };
 
   let {
     chapter,

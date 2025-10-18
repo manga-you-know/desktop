@@ -155,21 +155,21 @@
     <div
       class="flex relative w-[24.4rem] text-sm items-center justify-center p-1 gap-1 bg-background rounded-xl z-10"
     >
-      <div class="z-[1] absolute w-full h-6">
+      <div class="z-1 absolute w-full h-6">
         <div
           class={cn(
-            "h-6 bg-primary mx-2 rounded-lg transition-all duration-500 w-[4.5rem] translate-x-0",
-            currentTab === "search" && "w-[4rem] translate-x-[4.7rem]",
-            currentTab === "appearance" && "w-[6rem] translate-x-[8.9rem]",
-            currentTab === "reader" && "w-[4rem] translate-x-[15.1rem]",
-            currentTab === "player" && "w-[4rem] translate-x-[19.3rem]",
+            "h-6 bg-primary mx-2 rounded-lg transition-all duration-500 w-18 translate-x-0",
+            currentTab === "search" && "w-16 translate-x-[4.7rem]",
+            currentTab === "appearance" && "w-24 translate-x-[8.9rem]",
+            currentTab === "reader" && "w-16 translate-x-[15.1rem]",
+            currentTab === "player" && "w-16 translate-x-[19.3rem]",
           )}
         ></div>
       </div>
       <Button
         class={cn(
-          "z-[2] h-6 w-[4.5rem] rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
-          currentTab === "behavior" && "!text-background hover:bg-primary/20",
+          "z-2 h-6 w-18 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          currentTab === "behavior" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -181,8 +181,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
-          currentTab === "search" && "!text-background hover:bg-primary/20",
+          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          currentTab === "search" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -194,8 +194,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-24 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
-          currentTab === "appearance" && "!text-background hover:bg-primary/20",
+          "z-2 h-6 w-24 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          currentTab === "appearance" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -207,8 +207,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
-          currentTab === "reader" && "!text-background hover:bg-primary/20",
+          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          currentTab === "reader" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -220,8 +220,8 @@
       </Button>
       <Button
         class={cn(
-          "z-[2] h-6 w-16 rounded-lg duration-500 bg-transparent hover:!bg-secondary/30 !text-primary",
-          currentTab === "player" && "!text-background hover:bg-primary/20",
+          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          currentTab === "player" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
         variant="secondary"
@@ -295,7 +295,7 @@
                   <Switch
                     id="auto-update"
                     bind:checked={$autoSearchUpdates}
-                    class="flex-shrink-0 mr-2"
+                    class="shrink-0 mr-2"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="auto-update">
@@ -306,7 +306,7 @@
               <Checkbox
                 id="discord-integration"
                 bind:checked={$discordIntegration}
-                class="flex-shrink-0 mr-2"
+                class="shrink-0 mr-2"
                 onCheckedChange={async () => {
                   await saveSettings();
                   await stopDiscordPresence();
@@ -317,7 +317,7 @@
                 for="discord-integration"
               >
                 Discord <Icon
-                  class="!w-5 !h-5 mr-1 m-0.5"
+                  class="w-5! h-5! mr-1 m-0.5"
                   icon="ic:round-discord"
                 />integration
               </Label>
@@ -338,7 +338,7 @@
                 </div>
                 <div class="flex gap-2 items-center">
                   <Separator
-                    class="border-y-[12px] border-x-2"
+                    class="border-y-12 border-x-2"
                     orientation="vertical"
                   />
                   <Checkbox
@@ -367,7 +367,7 @@
                   <Switch
                     id="show-count-icon"
                     bind:checked={$showCountIcon}
-                    class="flex-shrink-0 mr-2"
+                    class="shrink-0 mr-2"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="show-count-icon">
@@ -387,7 +387,7 @@
                   <Switch
                     id="open-favorite-chapter"
                     bind:checked={$openFavoriteChapter}
-                    class="flex-shrink-0 mr-2"
+                    class="shrink-0 mr-2"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="open-favorite-chapter">
@@ -413,7 +413,7 @@
                     variant="outline"
                     onclick={pickFolder}
                   >
-                    <Icon class="!size-4" icon="lucide:paperclip" />
+                    <Icon class="size-4!" icon="lucide:paperclip" />
                   </Button>
                 </div>
                 <Label>Notifications</Label>
@@ -432,7 +432,7 @@
                   <Switch
                     id="notify-favorites"
                     bind:checked={$notifyFavorites}
-                    class="flex-shrink-0 mr-2"
+                    class="shrink-0 mr-2"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="notify-favorites">
@@ -473,7 +473,7 @@
                   }}
                 >
                   <Icon
-                    class="!size-5"
+                    class="size-5!"
                     icon={receivedNotification
                       ? "lucide:check"
                       : "material-symbols:notifications-rounded"}
@@ -488,7 +488,7 @@
               {/if}
               <div class="flex gap-3">
                 <Button class="w-44" effect="ringHover" onclick={relaunch}>
-                  <Icon icon="ic:round-refresh" class="!size-5" />
+                  <Icon icon="ic:round-refresh" class="size-5!" />
                   Reload app
                 </Button>
                 <Button
@@ -500,7 +500,7 @@
                 >
                   <Icon
                     icon="material-symbols:rule-settings-rounded"
-                    class="!size-5"
+                    class="size-5!"
                   />
                   Reset all settings
                 </Button>
@@ -560,7 +560,7 @@
                 {#each MANGASOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-[12px] border-x-2"
+                      class="border-y-12 border-x-2"
                       orientation="vertical"
                     />
 
@@ -617,7 +617,7 @@
                 {#each COMICSOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-[12px] border-x-2"
+                      class="border-y-12 border-x-2"
                       orientation="vertical"
                     />
 
@@ -674,7 +674,7 @@
                 {#each ANIMESOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-[12px] border-x-2"
+                      class="border-y-12 border-x-2"
                       orientation="vertical"
                     />
                     <Checkbox
@@ -730,7 +730,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap !w-28"
+                  class="cursor-pointer text-nowrap w-28!"
                   onclick={() => {
                     brightness.set(1);
                     saveSettings();
@@ -754,7 +754,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap !w-28"
+                  class="cursor-pointer text-nowrap w-28!"
                   onclick={() => {
                     contrast.set(1);
                     saveSettings();
@@ -777,7 +777,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap !w-28"
+                  class="cursor-pointer text-nowrap w-28!"
                   onclick={() => {
                     saturation.set(1);
                     saveSettings();
@@ -800,7 +800,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap !w-28"
+                  class="cursor-pointer text-nowrap w-28!"
                   onclick={() => {
                     sepia.set(0);
                     saveSettings();
@@ -816,7 +816,7 @@
                 <Checkbox
                   id="window-effects"
                   bind:checked={$windowEffects}
-                  class="flex-shrink-0 mr-2"
+                  class="shrink-0 mr-2"
                   onCheckedChange={saveSettings}
                 />
                 <Label class="cursor-pointer" for="window-effects">
@@ -846,7 +846,7 @@
               </div>
               <div class="flex gap-2 items-center">
                 <Separator
-                  class="border-y-[12px] border-x-2"
+                  class="border-y-12 border-x-2"
                   orientation="vertical"
                 />
                 <Switch
@@ -872,9 +872,9 @@
 
               <Label>Sidebar</Label>
               <div
-                class="flex relative w-[11rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+                class="flex relative w-44 text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
               >
-                <div class="z-[1] absolute w-full h-9">
+                <div class="z-1 absolute w-full h-9">
                   <div
                     class={cn(
                       "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[4.8rem] translate-x-0",
@@ -884,9 +884,9 @@
                 </div>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 duration-300 bg-transparent",
                     $sidebarSide === "left" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -900,9 +900,9 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent ",
+                    "z-2 h-9 w-24 duration-300 bg-transparent ",
                     $sidebarSide === "right" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -917,24 +917,24 @@
               </div>
 
               <div
-                class="flex relative w-[21rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+                class="flex relative w-84 text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
               >
-                <div class="z-[1] absolute w-full h-9">
+                <div class="z-1 absolute w-full h-9">
                   <div
                     class={cn(
-                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[5.5rem] translate-x-0",
+                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-22 translate-x-0",
                       $sidebarBehavior === "collapse" &&
-                        "w-[5.5rem] translate-x-[5.8rem]",
+                        "w-22 translate-x-[5.8rem]",
                       $sidebarBehavior === "on-hover" &&
-                        "w-[8.5rem] translate-x-[11.7rem]",
+                        "w-34 translate-x-[11.7rem]",
                     )}
                   ></div>
                 </div>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 duration-300 bg-transparent",
                     $sidebarBehavior === "expand" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -948,9 +948,9 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent ",
+                    "z-2 h-9 w-24 duration-300 bg-transparent ",
                     $sidebarBehavior === "collapse" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -964,9 +964,9 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-[2] h-9 duration-300 bg-transparent",
+                    "z-2 h-9 duration-300 bg-transparent",
                     $sidebarBehavior === "on-hover" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -1090,20 +1090,20 @@
               <div
                 class="flex relative w-[20rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
               >
-                <div class="z-[1] absolute w-full h-9">
+                <div class="z-1 absolute w-full h-9">
                   <div
                     class={cn(
-                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[6rem] translate-x-0",
-                      $markReaded === "end" && "translate-x-[6.5rem]",
-                      $markReaded === "manual" && "translate-x-[13rem]",
+                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-24 translate-x-0",
+                      $markReaded === "end" && "translate-x-26",
+                      $markReaded === "manual" && "translate-x-52",
                     )}
                   ></div>
                 </div>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 duration-300 bg-transparent",
                     $markReaded === "start" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -1117,9 +1117,9 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 duration-300 bg-transparent",
                     $markReaded === "end" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -1133,9 +1133,9 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-[2] h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 duration-300 bg-transparent",
                     $markReaded === "manual" &&
-                      "!text-secondary hover:bg-background/20",
+                      "text-secondary! hover:bg-background/20",
                   )}
                   size="sm"
                   variant="secondary"
@@ -1168,7 +1168,7 @@
                   toast.info("Cache cleared!");
                 }}
               >
-                <Icon class="!size-4" icon="lucide:trash" />
+                <Icon class="size-4!" icon="lucide:trash" />
                 Clear cache
               </Button>
 
@@ -1177,7 +1177,7 @@
                   <Checkbox
                     id="auto-fullscreen"
                     bind:checked={$autoEnterFullscreen}
-                    class="flex-shrink-0 mr-2"
+                    class="shrink-0 mr-2"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="auto-fullscreen"
@@ -1206,7 +1206,7 @@
                 <Checkbox
                   id="use-mpv"
                   bind:checked={$useMpv}
-                  class="flex-shrink-0 mr-2"
+                  class="shrink-0 mr-2"
                   onCheckedChange={saveSettings}
                 />
                 <Label class="cursor-pointer" for="use-mpv">

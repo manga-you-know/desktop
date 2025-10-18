@@ -1,12 +1,13 @@
-import { sveltekit } from "@sveltejs/kit/vite";
-import { vite as vidstack } from "vidstack/plugins";
-import { enhancedImages } from "@sveltejs/enhanced-img";
+// import { vite as vidstack } from "vidstack/plugins";
 import { defineConfig } from "vite";
+import { sveltekit } from "@sveltejs/kit/vite";
+// import { enhancedImages } from "@sveltejs/enhanced-img";
+import tailwindcss from "@tailwindcss/vite"
 
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: [sveltekit(), enhancedImages()],
+  plugins: [tailwindcss(), sveltekit()],
   clearScreen: false,
   server: {
     host: host || false,
@@ -20,7 +21,7 @@ export default defineConfig({
       ignored: ['**/src-tauri/**'],
     },
   },
-  envPrefix: ["VITE_", "TAURI_"],
+  // envPrefix: ["VITE_", "TAURI_"],
   build: {
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
     target:

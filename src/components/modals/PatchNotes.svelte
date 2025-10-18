@@ -14,11 +14,11 @@
 
 <Dialog.Root bind:open={$openPatchNotes}>
   <Dialog.Content
-    class="w-[80vw] h-[80vh] max-w-[40rem] max-h-[35rem] overflow-y-auto scrollbar-chapters"
+    class="w-[80vw] h-[80vh] max-w-160 max-h-140 overflow-y-auto scrollbar-chapters"
   >
     <div class="flex gap-6 w-full select-none">
       <div class="flex items-center">
-        <Image class="w-[28rem] object-contain" src="/woojack-uau.png" />
+        <Image class="w-md object-contain" src="/woojack-uau.png" />
       </div>
       <div
         class="flex flex-col h-full jhttps://x.com/EduardoAraoR/status/1971726361091027311ustify-center gap-4 py-6"

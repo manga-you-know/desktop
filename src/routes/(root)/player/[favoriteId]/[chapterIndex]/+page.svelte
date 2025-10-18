@@ -5,10 +5,10 @@
   import "vidstack/player/layouts";
   import { fetch } from "@tauri-apps/plugin-http";
   import {
-    defineCustomElement,
-    MediaPlayerElement,
-    MediaTimeElement,
-    MediaCaptionsRadioGroupElement,
+    defineCustomElements,
+    // // MediaPlayerElement,
+    // MediaTimeElement,
+    // MediaCaptionsRadioGroupElement,
   } from "vidstack/elements";
   import { goto, onNavigate, afterNavigate } from "$app/navigation";
   import { onDestroy, onMount } from "svelte";
@@ -32,17 +32,17 @@
   import Icon from "@iconify/svelte";
   import { Button, Label } from "@/lib/components";
   import {
-    isHLSProvider,
-    type MediaProviderAdapter,
+    // isHLSProvider,
+    // type MediaProviderAdapter,
     type MediaProviderChangeEvent,
   } from "vidstack";
 
   let { favoriteId, chapterIndex } = page.params;
-  let player: MediaPlayerElement;
-  defineCustomElement(MediaTimeElement);
-  defineCustomElement(MediaCaptionsRadioGroupElement);
+  // // let player: MediaPlayerElement;
+  // defineCustomElement(MediaTimeElement);
+  // defineCustomElement(MediaCaptionsRadioGroupElement);
   let isTheFirstChapter = $state(
-    Number(chapterIndex) === $globalChapters.length - 1
+    Number(chapterIndex) === $globalChapters.length - 1,
   );
   let isTheLastChapter = $state(Number(chapterIndex) === 0);
   let chapter = $state($globalChapters[Number(chapterIndex)]);
@@ -69,11 +69,11 @@
   });
   function handleGoChapter(way: "next" | "prev") {
     goto(
-      `/player/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`
+      `/player/${favoriteId}/${Number(chapterIndex) + (way === "next" ? -1 : 1)}`,
     );
   }
   onMount(async () => {
-    player.enterFullscreen();
+    // player.enterFullscreen();
     // player.addEventListener("provider-change", (event) => {
     //   const provider = event.detail;
     //   if (provider?.type === "hls") {
@@ -89,17 +89,17 @@
     //     };
     //   }
     // });
-    player.subscribe(({ volume }) => {
-      volumeIcon =
-        volume > 0.5
-          ? "lucide:volume-2"
-          : volume === 0
-            ? "lucide:volume-x"
-            : "lucide:volume-1";
-    });
-    player.subscribe(({ playing }) => {
-      playIcon = playing ? "lucide:pause" : "lucide:play";
-    });
+    // player.subscribe(({ volume }) => {
+    //   volumeIcon =
+    //     volume > 0.5
+    //       ? "lucide:volume-2"
+    //       : volume === 0
+    //         ? "lucide:volume-x"
+    //         : "lucide:volume-1";
+    // });
+    // player.subscribe(({ playing }) => {
+    //   playIcon = playing ? "lucide:pause" : "lucide:play";
+    // });
     if ($autoEnterFullscreen) {
       await setFullscreen(true);
     }
@@ -116,12 +116,8 @@
 <div
   class="dark:bg-background w-screen h-screen max-w-screen max-h-screen flex items-center overflow-hidden"
 >
-  <media-player
-    class="flex flex-col items-center"
-    bind:this={player}
-    src={currentSrc}
-    autoplay
-  >
+  <!-- bind:this={player} -->
+  <media-player class="flex flex-col items-center" src={currentSrc} autoplay>
     <media-provider>
       <media-poster
         class="vds-poster"

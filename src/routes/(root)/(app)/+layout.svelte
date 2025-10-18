@@ -97,11 +97,11 @@
   <SidebarProv.Provider class="h-full!" open={false} controlledOpen>
     <Sidebar variant="floating" />
     <div
-      class="dark:bg-background !w-screen !h-screen !max-h-screen flex flex-col justify-end select-none !overflow-hidden"
+      class="dark:bg-background w-screen! h-screen! max-h-screen! flex flex-col justify-end select-none overflow-hidden!"
     >
       {#key page.route.id}
         <div
-          class="!h-[90vh] !max-h-[90vh] !max-w-screen absolute pb-5 mb-20"
+          class="h-[90vh]! max-h-[90vh]! max-w-screen! absolute pb-5 mb-20"
           in:fly={{
             x: getTransitionY(
               getPageId(page.route.id?.replace("/(app)/", "") ?? ""),

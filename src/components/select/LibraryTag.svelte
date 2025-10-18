@@ -104,12 +104,12 @@
                 {$libraryTag?.name ?? "Select tag"}
               </Label>
             </div>
-            <Icon class="!w-4 text-gray-500" icon="lucide:chevron-down" />
+            <Icon class="w-4! text-gray-500" icon="lucide:chevron-down" />
           </div>
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[10rem] max-h-48 p-0">
+    <Popover.Content class="w-40 max-h-48 p-0">
       <Command.Root onValueChange={(v) => (shouldAdd = v.length === 0)}>
         <Command.Input
           bind:value={searchTag}
@@ -134,9 +134,9 @@
                 <ContextMenu.Trigger>
                   <Command.Item
                     class={cn(
-                      "w-full rounded-xl flex justify-center hover:!bg-slate-300 dark:hover:!bg-secondary/50",
+                      "w-full rounded-xl flex justify-center hover:bg-slate-300! dark:hover:bg-secondary/50!",
                       tag === $libraryTag
-                        ? "!bg-slate-400 dark:!bg-secondary"
+                        ? "bg-slate-400! dark:bg-secondary!"
                         : "aria-selected:bg-slate-400 dark:aria-selected:bg-inherit",
                     )}
                     value={tag.name}
@@ -162,7 +162,7 @@
                     }}
                   >
                     <Label>Delete</Label>
-                    <Icon class="!size-4" icon="lucide:trash" />
+                    <Icon class="size-4!" icon="lucide:trash" />
                   </ContextMenu.Item>
                 </ContextMenu.Content>
               </ContextMenu.Root>
@@ -174,7 +174,7 @@
   </Popover.Root>
   <Button
     class={cn(
-      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
+      "size-6! px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
       $libraryTag !== undefined ? "opacity-100" : "pointer-events-none",
     )}
     variant="outline"

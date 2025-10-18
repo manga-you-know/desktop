@@ -25,7 +25,7 @@
 />
 
 <button
-  class="group relative rounded-2xl h-[244px] max-h-[264px] w-[160px] max-w-[160px] flex flex-col p-1 items-center justify-center transition-transform duration-300 ease-in-out border-transparent outline-none bg-secondary hover:bg-background hover:border-b-2 hover:border-x-2 hover:border-secondary hover:scale-[0.95] hover:cursor-pointer hover:absolute transform hover:border-1"
+  class="group relative rounded-2xl h-[244px] max-h-[264px] w-[160px] max-w-[160px] flex flex-col p-1 items-center justify-center transition-transform duration-300 ease-in-out border-transparent outline-none bg-secondary hover:bg-background hover:border-b-2 hover:border-x-2 hover:border-secondary hover:scale-[0.95] hover:cursor-pointer hover:absolute transform hover:border"
   onclick={() => (isOpen = true)}
   tabindex={-1}
 >
@@ -38,7 +38,7 @@
     class="w-full h-full fixed rounded-t-[80%] flex flex-col justify-between items-center -m-[5.5px]"
   >
     <div
-      class="h-[244px] w-[160px] max-w-[168px] -mt-[1px] flex justify-center from-background bg-gradient-to-b to-50% to-transparent transition-all duration-500 group-hover:op"
+      class="h-[244px] w-[160px] max-w-[168px] -mt-px flex justify-center from-background bg-linear-to-b to-50% to-transparent transition-all duration-500 group-hover:op"
     >
       <Label
         class="max-w-[150px] mt-[7px] text-sm truncate opacity-100 text-primary-foreground transition-all duration-500 group-hover:-translate-y-8"
@@ -64,7 +64,7 @@
           <Icon icon="lucide:book-open-text" class="w-4 h-4" />
         </Button>
         <Button
-          class="rounded-none !-mx-[0.7px]"
+          class="rounded-none -mx-[0.7px]!"
           variant="secondary"
           size="sm"
           tabindex={-1}
@@ -102,7 +102,7 @@
       >
         {suggestion.name}
       </Label>
-      <p class="text-primary text-[10px] line-clamp-[9]">
+      <p class="text-primary text-[10px] line-clamp-9">
         {suggestion.description}
       </p>
     </div>

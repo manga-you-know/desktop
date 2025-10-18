@@ -857,7 +857,7 @@
   <div
     class={cn(
       "fixed h-screen w-screen p-6 flex justify-end items-start z-50 pointer-events-none transition-all duration-500",
-      $openReadMenu ? "translate-x-0" : "translate-x-[14rem]",
+      $openReadMenu ? "translate-x-0" : "translate-x-56",
     )}
   >
     <div class="flex h-44 items-center absolute mt-36">
@@ -876,7 +876,7 @@
         >
           <Icon
             class={cn(
-              "!size-5 transition-all duration-700",
+              "size-5! transition-all duration-700",
               $openReadMenu ? "rotate-180" : "rotate-0 opacity-50",
             )}
             icon="typcn:chevron-left"
@@ -930,24 +930,24 @@
         </div>
         <div class="flex gap-1">
           <Button
-            class="w-[5.75rem] pointer-events-auto"
+            class="w-23 pointer-events-auto"
             size="sm"
             variant="secondary"
             disabled={isTheFirstChapter}
             onclick={() => handleGoChapter("prev")}
           >
-            <Icon class="!size-4" icon="lucide:arrow-left" />
+            <Icon class="size-4!" icon="lucide:arrow-left" />
             Prev
           </Button>
           <Button
-            class="w-[5.75rem] pointer-events-auto"
+            class="w-23 pointer-events-auto"
             size="sm"
             variant="secondary"
             disabled={isTheLastChapter}
             onclick={() => handleGoChapter("next")}
           >
             Next
-            <Icon class="!size-4" icon="lucide:arrow-right" />
+            <Icon class="size-4!" icon="lucide:arrow-right" />
           </Button>
         </div>
         <div class="flex gap-1 z-30">
@@ -966,7 +966,7 @@
             }}
           >
             <Icon
-              class="!size-5"
+              class="size-5!"
               icon={$fitMode === "width"
                 ? "tabler:arrow-autofit-content-filled"
                 : "tabler:arrow-autofit-content"}
@@ -979,7 +979,7 @@
             disabled={isLocal || $viewMode === "scroll"}
             onclick={resetImages}
           >
-            <Icon class="!size-5" icon="ic:round-refresh" />
+            <Icon class="size-5!" icon="ic:round-refresh" />
           </Button>
           <Button
             class="w-11 pointer-events-auto"
@@ -988,7 +988,7 @@
             disabled={isLocal || $viewMode === "scroll"}
             onclick={joinCurrentlyImageToNext}
           >
-            <Icon class="!size-5" icon="fluent:image-split-24-filled" />
+            <Icon class="size-5!" icon="fluent:image-split-24-filled" />
           </Button>
           <Button
             class="w-11 pointer-events-auto"
@@ -997,7 +997,7 @@
             onclick={favoriteImage}
           >
             <Icon
-              class="!size-5"
+              class="size-5!"
               icon={downloadedImages
                 .map((img) => img.name)
                 .includes(currentlyImagePath)
@@ -1021,7 +1021,7 @@
               <Icon icon="lucide:minus" />
             </Button>
             <Button
-              class="w-[5.75rem] flex justify-center"
+              class="w-23 flex justify-center"
               size="sm"
               variant="secondary"
               disabled={$fitMode !== "" && $viewMode !== "scroll"}

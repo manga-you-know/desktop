@@ -102,7 +102,7 @@
             <Label
               class={cn(
                 "w-full text-sm cursor-pointer truncate",
-                selected === "" && "dark:!text-gray-400",
+                selected === "" && "dark:text-gray-400!",
               )}
             >
               {selected !== "" ? (itemsLabel[selected] ?? selected) : label}
@@ -114,7 +114,7 @@
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class={cn("w-[7rem]  p-0", classPopup)}>
+    <Popover.Content class={cn("w-28  p-0", classPopup)}>
       <Command.Root>
         {#if search}
           <Command.Input
@@ -128,10 +128,10 @@
             {#each items as item}
               <Command.Item
                 class={cn(
-                  "w-full flex justify-between hover:!bg-slate-400 dark:hover:!bg-secondary/50 select-none",
+                  "w-full flex justify-between hover:bg-slate-400! dark:hover:bg-secondary/50! select-none",
                   classItem,
                   item === selected
-                    ? "!bg-gray-300 dark:!bg-secondary"
+                    ? "bg-gray-300! dark:bg-secondary!"
                     : " dark:aria-selected:bg-inherit",
                 )}
                 value={item}
@@ -164,7 +164,7 @@
   </Popover.Root>
   <Button
     class={cn(
-      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
+      "size-6! px-0 absolute -top-0.5 right-0 transition-all duration-400 opacity-0",
       selected !== "" && closeButton && !disabled
         ? "opacity-100"
         : "pointer-events-none",

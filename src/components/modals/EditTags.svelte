@@ -54,8 +54,8 @@
 </script>
 
 <AlertDialog.Root bind:open={$openTag}>
-  <AlertDialog.Content class="w-[26rem] px-2">
-    <div class="w-[26rem] flex flex-col items-center gap-2">
+  <AlertDialog.Content class="w-104 px-2">
+    <div class="w-104 flex flex-col items-center gap-2">
       <div class="inline-flex gap-2">
         <Input
           class="w-80 -ml-[12px]"
@@ -72,7 +72,7 @@
           disabled={editing !== null}
           onclick={addTag}
         >
-          <Icon class="!w-5 !h-5" icon="lucide:plus" />
+          <Icon class="w-5! h-5!" icon="lucide:plus" />
         </Button>
       </div>
       <ScrollArea class="h-80 p-0 rounded-xl">
@@ -81,7 +81,7 @@
             <div class="inline-flex">
               <Input
                 id={tag.id.toString()}
-                class="rounded-r-none w-[17rem]"
+                class="rounded-r-none w-68"
                 variant="secondary"
                 bind:value={tag.name}
                 readonly={tag.id !== editing}
@@ -128,7 +128,7 @@
       if (!value) editing = null;
     }}
   >
-    <AlertDialog.Content class="w-[28rem]" overlayClass="bg-black/30">
+    <AlertDialog.Content class="w-md" overlayClass="bg-black/30">
       <AlertDialog.Header>
         <AlertDialog.Title>Are you sure?</AlertDialog.Title>
         <AlertDialog.Description>

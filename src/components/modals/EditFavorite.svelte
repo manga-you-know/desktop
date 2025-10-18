@@ -132,7 +132,7 @@
       <div class="flex gap-4">
         <Input
           id="name-{favorite.id}"
-          divClass="!w-full"
+          divClass="w-full!"
           class="w-64"
           placeholder="Name"
           floatingLabel
@@ -145,7 +145,7 @@
           <Input
             id="image-{favorite.id}"
             class="w-full rounded-r-none"
-            divClass="!w-full"
+            divClass="w-full!"
             placeholder="Cover"
             floatingLabel
             required
@@ -235,14 +235,14 @@
         {isUltraFavorite ? "Remove" : "Favorite"}
         <Icon
           class={cn(
-            "absolute right-3 !size-5 transition-all duration-500",
+            "absolute right-3 size-5! transition-all duration-500",
             isUltraFavorite && "opacity-0 scale-0 rotate-180",
           )}
           icon="heroicons:star"
         />
         <Icon
           class={cn(
-            "absolute right-3 !size-5 transition-all duration-500",
+            "absolute right-3 size-5! transition-all duration-500",
             !isUltraFavorite && "opacity-0 scale-0 -rotate-180",
           )}
           icon="heroicons:star-solid"

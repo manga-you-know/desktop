@@ -69,16 +69,16 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="w-[78vw] h-[80vh] max-w-[41rem] max-h-[40rem]">
+  <Dialog.Content class="w-[78vw] h-[80vh] max-w-164 max-h-160">
     <Dialog.Header>
       <Label
-        class="group text-3xl !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
+        class="group text-3xl bg-transparent! w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
         onclick={() => {
           copyText(suggestion.name, "title");
         }}
       >
         <Icon
-          class="!size-0 mr-2 group-hover:!size-5 transition-all duration-300"
+          class="size-0! mr-2 group-hover:size-5! transition-all duration-300"
           icon="ic:baseline-content-copy"
         />
         {limitStr(suggestion.name, 60)}
@@ -87,7 +87,7 @@
     <div class="flex gap-2">
       <div class="w-3/5 flex items-center justify-center">
         <Image
-          class="w-full h-[50vh] max-h-[30rem] rounded-md object-contain"
+          class="w-full h-[50vh] max-h-120 rounded-md object-contain"
           src={suggestion.cover}
         />
       </div>
@@ -97,7 +97,7 @@
           {suggestion.author}
         </Label>
         <p
-          class="text-primary text-[13px] line-clamp-[10] ssmh:line-clamp-[7] md:line-clamp-[15]"
+          class="text-primary text-[13px] line-clamp-10 ssmh:line-clamp-7 md:line-clamp-15"
         >
           {suggestion.description}
         </p>
@@ -110,7 +110,7 @@
             }}
           >
             <Icon
-              class="!size-4 -mr-1"
+              class="size-4! -mr-1"
               icon="lucide:square-arrow-out-up-right"
             />
           </Button>
@@ -131,7 +131,7 @@
               openReadModal = true;
             }}
           >
-            <Icon class="!size-4 -mx-1" icon="lucide:book-open-text" />
+            <Icon class="size-4! -mx-1" icon="lucide:book-open-text" />
           </Button>
           <Button
             class="rounded-l-none px-3"
@@ -139,7 +139,7 @@
             onclick={() => saveSuggestion(suggestionToAdd)}
           >
             <Icon
-              class="!size-4"
+              class="size-4!"
               icon={isFavorite(suggestionToAdd)
                 ? "tabler:bookmark-filled"
                 : "tabler:bookmark"}
@@ -164,7 +164,7 @@
               }}
             >
               <Icon
-                class="!size-4 -mr-1"
+                class="size-4! -mr-1"
                 icon="lucide:square-arrow-out-up-right"
               />
             </Button>
@@ -177,7 +177,7 @@
                 openReadModal = true;
               }}
             >
-              <Icon class="!size-4 -mx-1" icon="lucide:book-open-text" />
+              <Icon class="size-4! -mx-1" icon="lucide:book-open-text" />
             </Button>
             <Button
               class="rounded-l-none"
@@ -185,7 +185,7 @@
               onclick={() => saveSuggestion(suggestionToAdd)}
             >
               <Icon
-                class="!size-4 -ml-1"
+                class="size-4! -ml-1"
                 icon={isFavorite(suggestionToAdd)
                   ? "tabler:bookmark-filled"
                   : "tabler:bookmark"}

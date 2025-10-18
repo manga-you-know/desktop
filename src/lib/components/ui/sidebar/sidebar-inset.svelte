@@ -18,8 +18,8 @@
     "relative flex flex-1 flex-col scrollbar",
     "ssm:peer-data-[variant=inset]:m-2 ssm:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 ssm:peer-data-[variant=inset]:rounded-xl",
     $customTitlebar
-      ? "ssm:peer-data-[variant=inset]:ml-0 ssm:peer-data-[variant=inset]:mt-[1px] ssm:peer-data-[state=collapsed]:peer-data-[variant=inset]:mt-[1px]"
-      : " ssm:peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))]",
+      ? "ssm:peer-data-[variant=inset]:ml-0 ssm:peer-data-[variant=inset]:mt-px ssm:peer-data-[state=collapsed]:peer-data-[variant=inset]:mt-px"
+      : " ssm:peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))]",
     $windowEffects ? "bg-transparent" : "bg-background",
     className,
   )}

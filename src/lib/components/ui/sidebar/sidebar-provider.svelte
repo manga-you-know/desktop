@@ -52,8 +52,8 @@
       "group/sidebar-wrapper flex w-full",
       $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "min-h-svh",
       $windowEffects
-        ? "has-[[data-variant=inset]]:bg-transparent"
-        : "has-[[data-variant=inset]]:bg-sidebar/60",
+        ? "has-data-[variant=inset]:bg-transparent"
+        : "has-data-[variant=inset]:bg-sidebar/60",
       $sidebarSide === "right" && "flex-row-reverse",
       className,
     )}

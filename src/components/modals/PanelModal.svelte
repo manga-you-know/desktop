@@ -54,7 +54,7 @@
       </Button>
       <div class="w-[60%] inline-flex">
         <Select
-          class="!min-w-36 pr-0 w-[40%] rounded-r-none"
+          class="min-w-36! pr-0 w-[40%] rounded-r-none"
           variant="outline"
           effect="ringHoverSecondary"
           bind:selected={copyMode}

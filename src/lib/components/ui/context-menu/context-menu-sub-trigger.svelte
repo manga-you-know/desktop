@@ -20,7 +20,7 @@
 <ContextMenuPrimitive.SubTrigger
 	bind:ref
 	class={cn(
-		"data-[highlighted]:bg-accent data-[state=open]:bg-accent data-[highlighted]:text-primary data-[state=open]:text-primary flex cursor-default select-none items-center rounded-lg px-2 py-1.5 text-sm outline-none",
+		"data-highlighted:bg-accent data-[state=open]:bg-accent data-highlighted:text-primary data-[state=open]:text-primary flex cursor-default select-none items-center rounded-lg px-2 py-1.5 text-sm outline-none",
 		inset && "pl-8",
 		className,
 	)}

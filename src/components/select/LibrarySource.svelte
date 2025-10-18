@@ -85,12 +85,12 @@
                 {$librarySource || "Select source"}
               </Label>
             </div>
-            <Icon class="!w-4 text-gray-500" icon="lucide:chevron-down" />
+            <Icon class="w-4! text-gray-500" icon="lucide:chevron-down" />
           </div>
         </Button>
       {/snippet}
     </Popover.Trigger>
-    <Popover.Content class="w-[10rem] p-0">
+    <Popover.Content class="w-40 p-0">
       <Command.Root>
         <Command.Input
           placeholder="Search source..."
@@ -101,9 +101,9 @@
           <Command.Group>
             {#each sources.toReversed() as source}
               <Command.Item
-                class="w-full rounded-xl flex justify-between hover:!bg-slate-300 dark:hover:!bg-secondary/50
+                class="w-full rounded-xl flex justify-between hover:bg-slate-300! dark:hover:bg-secondary/50!
                 {source === $librarySource
-                  ? '!bg-slate-400 dark:!bg-secondary'
+                  ? 'bg-slate-400! dark:bg-secondary!'
                   : 'aria-selected:bg-slate-400 dark:aria-selected:bg-inherit'}"
                 value={source}
                 onSelect={async () => {
@@ -122,7 +122,7 @@
   </Popover.Root>
   <Button
     class={cn(
-      "!size-6 px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
+      "size-6! px-0 absolute -top-0.5 right-0 transition-all duration-300 opacity-0",
       $librarySource !== "" ? "opacity-100" : "pointer-events-none",
     )}
     variant="outline"

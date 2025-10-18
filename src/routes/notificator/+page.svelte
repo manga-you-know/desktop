@@ -127,18 +127,18 @@
         isHover = false;
         pass = true;
       }}
-      class="w-[27rem] h-[4.5rem] flex items-center justify-between gap-3 p-3 bg-sidebar/80 rounded-xl cursor-default border-[0.5px] border-secondary cursor-pointer"
+      class="w-108 h-18 flex items-center justify-between gap-3 p-3 bg-sidebar/80 rounded-xl cursor-default border-[0.5px] border-secondary cursor-pointer"
     >
       <div class="h-full items-start">
         <img class="h-6 object-contain" src="/icon.png" alt="logo" />
       </div>
-      <div class="w-[22rem] flex flex-col items-start">
+      <div class="w-88 flex flex-col items-start">
         <Label
           class="w-[20rem] flex justify-start text-lg select-none truncate cursor-pointer"
         >
           {title}
         </Label>
-        <Label class="text-md select-none !text-primary/60 cursor-pointer"
+        <Label class="text-md select-none text-primary/60! cursor-pointer"
           >{body}</Label
         >
       </div>
@@ -153,7 +153,7 @@
           class="size-7 p-2 rounded-lg"
           variant="destructive"
         >
-          <Icon class="!size-4" icon="lucide:x" />
+          <Icon class="size-4!" icon="lucide:x" />
         </Button>
       </div>
     </button>

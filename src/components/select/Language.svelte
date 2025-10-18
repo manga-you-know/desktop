@@ -81,9 +81,9 @@
           {#each options as language}
             <Command.Item
               class={cn(
-                "hover:!bg-slate-300 dark:hover:!bg-background/40",
+                "hover:bg-slate-300! dark:hover:bg-background/40!",
                 language.id === selectedLanguage.id
-                  ? "!bg-slate-400 dark:!bg-background/70"
+                  ? "bg-slate-400! dark:bg-background/70!"
                   : "aria-selected:bg-slate-400 dark:aria-selected:bg-background/20",
                 itemClass,
               )}

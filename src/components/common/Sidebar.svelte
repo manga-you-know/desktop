@@ -141,15 +141,15 @@
               page.url.pathname === "/home" && "translate-y-0",
               page.url.pathname === "/favorites" && "translate-y-14",
               page.url.pathname === "/library" && "translate-y-28",
-              page.url.pathname === "/panels" && "translate-y-[10.5rem]",
+              page.url.pathname === "/panels" && "translate-y-42",
             )}
             variant="secondary"
           />
           {#each items as item (item.name)}
-            <Sidebar.MenuItem class="!min-w-16">
+            <Sidebar.MenuItem class="min-w-16!">
               <Sidebar.MenuButton
                 class={cn(
-                  "bg-transparent transition-all",
+                  "bg-transparent transition-all parent",
                   page.url.pathname === item.path &&
                     "hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
                 )}
@@ -165,7 +165,7 @@
                 {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
                   <Icon
                     class={cn(
-                      "!size-7 -ml-[10px] transition-transform duration-500",
+                      "size-7! -ml-[10px] transition-transform duration-500",
                       item.path === "/favorites" &&
                         page.url.pathname === item.path &&
                         "rotate-[calc(145deg*2)]",
@@ -177,6 +177,7 @@
                 {:else}
                   <Badge
                     class={cn(
+                      "fixed ml-2.5 -mt-8",
                       page.url.pathname === item.path
                         ? "bg-sidebar text-primary"
                         : "bg-primary text-sidebar",
@@ -186,7 +187,7 @@
                   >
                     <Icon
                       class={cn(
-                        "!size-7 -ml-[10px] transition-transform duration-400",
+                        "size-7! -ml-[10px] transition-transform duration-400",
                         page.url.pathname === item.path &&
                           "rotate-[calc(145deg*2)]",
                       )}
@@ -199,7 +200,7 @@
                 <Label
                   class={cn(
                     "cursor-pointer transition-all",
-                    page.url.pathname === item.path && "!text-sidebar",
+                    page.url.pathname === item.path && "text-sidebar!",
                   )}>{item.name}</Label
                 >
               </Sidebar.MenuButton>
@@ -235,12 +236,12 @@
                 icon={$openSearch
                   ? "mingcute:search-3-fill"
                   : "mingcute:search-3-line"}
-                class="!size-7 -ml-[10px]"
+                class="size-7! -ml-[10px]"
               />
               <Label
                 class={cn(
                   "cursor-pointer transition-all",
-                  $openSearch && "!text-sidebar",
+                  $openSearch && "text-sidebar!",
                 )}
               >
                 Search
@@ -263,13 +264,13 @@
               tabindex={-1}
             >
               <Icon
-                class="!size-7 -ml-[10px]"
+                class="size-7! -ml-[10px]"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
               <Label
                 class={cn(
                   "cursor-pointer transition-all",
-                  $openTag && "!text-sidebar",
+                  $openTag && "text-sidebar!",
                 )}>Tags</Label
               >
             </Sidebar.MenuButton>
@@ -290,12 +291,12 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="!size-7 -ml-[2px] "
+                class="size-7! -ml-[2px] "
               />
               <Label
                 class={cn(
                   "cursor-pointer transition-all",
-                  $openAdd && "!text-sidebar",
+                  $openAdd && "text-sidebar!",
                 )}>Add</Label
               >
             </Sidebar.MenuButton>
@@ -324,7 +325,7 @@
                     delay={200}
                   >
                     <Sidebar.MenuButton
-                      class="rounded-md group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline relative group/cache"
+                      class="rounded-md group-data-[collapsible=icon]:h-4! h-4! hover:bg-transparent hover:underline relative group/cache"
                       onclick={async () => {
                         if (cache.chapters.length === 0) {
                           toast.loading("Loading chapters...", {
@@ -395,7 +396,7 @@
                         }}
                       >
                         <Icon
-                          class="group-hover/cache:!size-4"
+                          class="group-hover/cache:size-4!"
                           icon="lucide:x"
                         />
                       </Button>
@@ -427,7 +428,7 @@
                     delay={200}
                   >
                     <Sidebar.MenuButton
-                      class="group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline"
+                      class="group-data-[collapsible=icon]:h-4! h-4! hover:bg-transparent hover:underline"
                       onclick={() => {
                         globalChapters.set(fav.chapters);
                         goto(
@@ -481,9 +482,9 @@
               icon={$openInfo
                 ? "material-symbols:info-rounded"
                 : "material-symbols:info-outline-rounded"}
-              class="!size-7 -ml-[10px]"
+              class="size-7! -ml-[10px]"
             />
-            <Label class={cn("cursor-pointer transition-all", $openInfo && "!text-sidebar")}>Info</Label>
+            <Label class={cn("cursor-pointer transition-all", $openInfo && "text-sidebar!")}>Info</Label>
           </Sidebar.MenuButton>
         </Sidebar.MenuItem> -->
         <Sidebar.MenuItem>
@@ -504,7 +505,7 @@
           >
             <Icon
               class={cn(
-                " !size-7 -ml-[14px] group-data-[collapsible=icon]:-ml-[10px] transition-all duration-500",
+                " size-7! -ml-[14px] group-data-[collapsible=icon]:-ml-[10px] transition-all duration-500",
                 $openSettings && "rotate-180",
               )}
               icon={$openSettings
@@ -514,7 +515,7 @@
             <Label
               class={cn(
                 "cursor-pointer transition-all",
-                $openSettings && "!text-sidebar",
+                $openSettings && "text-sidebar!",
               )}
             >
               Settings
@@ -533,7 +534,7 @@
           >
             <Icon
               class={cn(
-                "absolute !size-7 left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
+                "absolute size-7! left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
                 $theme === "dark"
                   ? "opacity-100"
                   : "opacity-0 scale-0 rotate-180",
@@ -542,7 +543,7 @@
             />
             <Icon
               class={cn(
-                "absolute !size-7 left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
+                "absolute size-7! left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
                 $theme === "light"
                   ? "opacity-100"
                   : "opacity-0 scale-0 -rotate-180",
@@ -569,9 +570,9 @@
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <img
           bind:this={imgElement}
-          class="!size-9 min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0"
+          class="rounded-md size-9! min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0"
           draggable={false}
-          src="/icon.png"
+          src="/square-icon.png"
           alt="icon"
         />
         <Label class="text-nowrap cursor-pointer">漫画君知る</Label>

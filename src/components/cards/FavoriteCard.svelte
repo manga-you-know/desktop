@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { ScrollingValue } from "svelte-ux";
   import { toast } from "svelte-sonner";
-  import { Button, Badge, Label } from "@/lib/components";
+  import { Button, Badge, Label, ScrollingValue } from "@/lib/components";
   import {
     ReadFavorite,
     EditFavorite,
@@ -153,10 +152,10 @@
 >
   <button
     class={cn(
-      "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center justify-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border-1 dark:hover:border-gray-500 no-blurry",
+      "group relative rounded-2xl h-[234px] max-h-[234px] w-[158px] max-w-[158px] border-transparent flex flex-col p-1 items-center justify-center transition-* duration-200 ease-in-out outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary dark:hover:bg-secondary/50 dark:hover:shadow-lg transform focus:bg-slate-400 dark:focus:bg-gray-800 focus:shadow-lg hover:opacity-100 hover:bg-transparent hover:border dark:hover:border-gray-500 no-blurry",
       favoriteLoad.toReadCount > 0 ? "opacity-100" : "opacity-60",
       IS_MOBILE ? "" : "hover:scale-[1.08]",
-      isContext && "!scale-[1.15] !border-1 !border-white opacity-100",
+      isContext && "scale-[1.15]! border! border-white! opacity-100",
     )}
     onclick={() => {
       if (favoriteLoad.nextChapter === null || !$openFavoriteChapter) {
@@ -170,7 +169,7 @@
     <Image
       src={$coversLoaded[favorite.cover] ?? favorite.cover}
       alt={favorite.name}
-      class="w-[155px] min-w-[155px] max-w-[155px] max-h-[225px] object-contain rounded-2xl !bg-transparent"
+      class="w-[155px] min-w-[155px] max-w-[155px] max-h-[225px] object-contain rounded-2xl bg-transparent!"
       id={strNotEmpty(favorite.id)}
     />
     <div
@@ -181,7 +180,7 @@
             {variant}
           > -->
       <div
-        class="h-52 w-[158px] max-w-[158px] rounded-t-2xl flex justify-center from-background bg-gradient-to-b to-50% to-transparent"
+        class="h-52 w-[158px] max-w-[158px] rounded-t-2xl flex justify-center from-background bg-linear-to-b to-50% to-transparent"
       >
         <Label
           class="max-w-[145px] mt-[7px] text-sm truncate opacity-100 text-gray-600 dark:text-white"
@@ -211,13 +210,16 @@
           tabindex={-1}
         >
           {#if favoriteLoad.isLoading}
-            <Icon icon="line-md:loading-alt-loop" class="w-5 h-5" />
-          {:else if favoriteLoad.toReadCount > 0}
-            <Label class="text-nowrap" tabindex={-1}>
-              +<ScrollingValue axis="y" value={favoriteLoad.toReadCount ?? 0} />
+            <Icon icon="line-md:loading-alt-loop" class="!size-5" />
+          {:else if favoriteLoad.toReadCount >= 0}
+            <Label class="flex items-center" tabindex={-1}>
+              +<ScrollingValue
+                class="-mt-3"
+                value={favoriteLoad.toReadCount ?? 0}
+              />
             </Label>
           {:else}
-            <Icon icon="mingcute:check-2-fill" class="w-5 h-5" />
+            <Icon icon="mingcute:check-2-fill" class="!size-5" />
           {/if}
         </Badge>
       </div>
@@ -270,10 +272,10 @@
             onclick={gotoNext}
             {variant}
           >
-            <Icon icon="lucide:chevrons-right" class="!size-4" />
+            <Icon icon="lucide:chevrons-right" class="size-4!" />
           </Button>
           <Button
-            class="rounded-none -my-[1px]"
+            class="rounded-none -my-px"
             size="sm"
             tabindex={-1}
             {variant}
@@ -282,7 +284,7 @@
               isEdit = true;
             }}
           >
-            <Icon icon="lucide:square-pen" class="!size-4" />
+            <Icon icon="lucide:square-pen" class="size-4!" />
           </Button>
           <Button
             class="rounded-t-none rounded-b-2xl"
@@ -298,7 +300,7 @@
               icon={favorite.type === "anime"
                 ? "lucide:tv-minimal-play"
                 : "lucide:book-open-text"}
-              class="!size-4"
+              class="size-4!"
             />
           </Button>
         </div>

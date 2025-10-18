@@ -6,6 +6,9 @@ export const themeMode = new class {
   set value(t) {
     this.#value = t
   }
+  toggle() {
+    this.#value = this.#value === "dark" ? "light" : "dark"
+  }
 }
 
 export const retroTheme = new class {

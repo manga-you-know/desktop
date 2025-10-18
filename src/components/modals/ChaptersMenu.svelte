@@ -46,13 +46,13 @@
   >
     <Sheet.Header class="mb-2">
       <Sheet.Title
-        class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none"
+        class="group bg-transparent! w-full flex justify-center items-center dark:text-white select-none"
         onclick={() => {
           copyText(favorite?.name ?? "", "title");
         }}
       >
         <Icon
-          class="!size-0 mr-2  group-hover:!size-6 transition-all duration-300"
+          class="size-0! mr-2  group-hover:size-6! transition-all duration-300"
           icon="ic:baseline-content-copy"
         />
         {limitStr(favorite?.name ?? "", 80)}
@@ -88,7 +88,7 @@
         >
           <Icon
             class={cn(
-              "!size-6 duration-300 transition-all",
+              "size-6! duration-300 transition-all",
               $isChaptersDescending ? "rotate-0" : "rotate-180",
             )}
             icon="typcn:arrow-sorted-down"
@@ -112,7 +112,7 @@
         : displayedChapters.toReversed()} -->
     <VList
       id="list-chapter"
-      class="scrollbar-chapters overflow-x-hidden scroll-smooth !h-[70rem] bottom-0"
+      class="scrollbar-chapters overflow-x-hidden scroll-smooth h-280! bottom-0"
       itemSize={25}
       data={$isChaptersDescending
         ? $globalChapters
@@ -127,7 +127,7 @@
             ? "currently"
             : null}
           class={cn(
-            "chapter-button my-[1px] w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
+            "chapter-button my-px w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
             isReadedHere && "opacity-60",
             currentlyChapter?.chapter_id === chapter.chapter_id &&
               "bg-accent border  border-black dark:border-white",

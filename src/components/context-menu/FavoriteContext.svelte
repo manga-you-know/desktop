@@ -55,7 +55,7 @@
     >
       <Label>{isUltraFavorite ? "Remove" : "Favorite"}</Label>
       <Icon
-        class="!size-5 -mr-[2px]"
+        class="size-5! -mr-[2px]"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
       />
     </ContextMenu.Item>
@@ -68,7 +68,7 @@
     >
       <Label>Open</Label>
       <Icon
-        class="!w-4 !h-5"
+        class="w-4! h-5!"
         icon={favorite.type === "anime"
           ? "lucide:tv-minimal-play"
           : "lucide:book-open-text"}
@@ -83,7 +83,7 @@
       }}
     >
       <Label>Tags</Label>
-      <Icon class="!size-5 -mr-[2px]" icon="lucide:bookmark" />
+      <Icon class="size-5! -mr-[2px]" icon="lucide:bookmark" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"
@@ -93,7 +93,7 @@
       }}
     >
       <Label>Edit</Label>
-      <Icon class="!w-4 !h-5" icon="lucide:square-pen" />
+      <Icon class="w-4! h-5!" icon="lucide:square-pen" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"
@@ -103,7 +103,7 @@
       }}
     >
       <Label>Browser</Label>
-      <Icon class="!w-4 !h-5" icon="lucide:square-arrow-out-up-right" />
+      <Icon class="w-4! h-5!" icon="lucide:square-arrow-out-up-right" />
     </ContextMenu.Item>
     <ContextMenu.Sub>
       <ContextMenu.SubTrigger class="flex justify-between">
@@ -120,7 +120,7 @@
           }}
         >
           <Label>Title</Label>
-          <Icon class="!size-4" icon="tabler:text-size" />
+          <Icon class="size-4!" icon="tabler:text-size" />
         </ContextMenu.Item>
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
@@ -134,7 +134,7 @@
         >
           <Label>Author</Label>
           <Icon
-            class="!size-5 -m-0.5"
+            class="size-5! -m-0.5"
             icon="material-symbols:person-2-outline"
           />
         </ContextMenu.Item>
@@ -150,7 +150,7 @@
           }}
         >
           <Label>Description</Label>
-          <Icon class="!size-4" icon="solar:document-text-outline" />
+          <Icon class="size-4!" icon="solar:document-text-outline" />
         </ContextMenu.Item>
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
@@ -162,7 +162,7 @@
           }}
         >
           <Label>Source name</Label>
-          <Icon class="!size-4" icon="fluent:text-case-title-16-filled" />
+          <Icon class="size-4!" icon="fluent:text-case-title-16-filled" />
         </ContextMenu.Item>
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
@@ -174,7 +174,7 @@
           }}
         >
           <Label>Source ID</Label>
-          <Icon class="!size-4" icon="lucide:key-round" />
+          <Icon class="size-4!" icon="lucide:key-round" />
         </ContextMenu.Item>
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
@@ -188,7 +188,7 @@
           <Label>
             Cover {favorite.cover.startsWith("http") ? "URL" : "path"}
           </Label>
-          <Icon class="!size-4" icon="tabler:photo" />
+          <Icon class="size-4!" icon="tabler:photo" />
         </ContextMenu.Item>
         <ContextMenu.Item
           class="flex justify-between hover:bg-accent"
@@ -200,20 +200,20 @@
           }}
         >
           <Label>{titleCase(favorite.type)} URL</Label>
-          <Icon class="!size-4" icon="lucide:link" />
+          <Icon class="size-4!" icon="lucide:link" />
         </ContextMenu.Item>
       </ContextMenu.SubContent>
     </ContextMenu.Sub>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="flex justify-between hover:!bg-destructive relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-gradient-to-l from-white/40 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
+      class="flex justify-between hover:bg-destructive! relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-linear-to-l from-white/40 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
       onclick={(e: Event) => {
         e.stopPropagation();
         openDelete = true;
       }}
     >
       <Label>Delete</Label>
-      <Icon class="!size-4 !h-5" icon="lucide:trash" />
+      <Icon class="size-4! h-5!" icon="lucide:trash" />
     </ContextMenu.Item>
   </ContextMenu.Content>
 </ContextMenu.Root>

@@ -78,9 +78,9 @@
   <button
     id="library-{favorite.id}"
     class={cn(
-      "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border-1 focus:shadow-lg no-blurry",
+      "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border focus:shadow-lg no-blurry",
       !IS_MOBILE && "hover:scale-[1.08]",
-      isContext && "!scale-[1.15]",
+      isContext && "scale-[1.15]!",
     )}
     onclick={() => (isOpen = true)}
   >
@@ -125,7 +125,7 @@
           </Button>
 
           <Button
-            class="rounded-none !-mx-[1px]"
+            class="rounded-none -mx-px!"
             variant="secondary"
             size="sm"
             tabindex={-1}

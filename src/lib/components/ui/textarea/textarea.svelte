@@ -1,8 +1,7 @@
 <script lang="ts" module>
-  import type { WithElementRef, WithoutChildren } from "bits-ui";
   import type { HTMLTextareaAttributes } from "svelte/elements";
   import { type VariantProps, tv } from "tailwind-variants";
-  import { cn } from "$lib/utils.js";
+  import { cn, type WithElementRef, type WithoutChildren } from "$lib/utils.js";
 
   export const textareaVariants = tv({
     base: "flex min-h-[60px] w-full rounded-xl px-3 py-2 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
@@ -86,9 +85,9 @@
       class={cn(
         labelClass,
         value?.toString().length === 0
-          ? "!translate-y-0 !top-[10%] !scale-100 "
+          ? "translate-y-0! top-[10%]! scale-100! "
           : "bg-white dark:bg-secondary/50",
-        "absolute select-none text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-gray-500 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1 peer-focus:bg-white peer-focus:dark:bg-secondary/50 rounded-xl"
+        "absolute select-none text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 peer-focus:px-2 peer-focus:text-gray-500 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1 peer-focus:bg-white peer-focus:dark:bg-secondary/50 rounded-xl",
       )}
       >{placeholder}
     </label>

@@ -1,3 +1,3 @@
 <script lang="ts">
-  import "vidstack/bundle";
+  // import "vidstack/bundle";
 </script>

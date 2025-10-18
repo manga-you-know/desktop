@@ -207,19 +207,19 @@
 {/if}
 <div
   class={cn(
-    "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 !z-[80] h-10 translate-y-0 pointer-events-auto transition-all duration-300",
+    "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 z-80! h-10 translate-y-0 pointer-events-auto transition-all duration-300",
     page.route.id?.startsWith("/(root)/reader") &&
       $isFullscreen &&
       !$openMenuChapters &&
-      "h-0 -translate-y-[3rem]",
+      "h-0 -translate-y-12",
   )}
   data-tauri-drag-region={!$isFullscreen}
 >
   <div class="h-full flex items-center select-none">
     <img
-      src="/icon.png"
+      src="/square-icon.png"
       alt="logo"
-      class="h-6"
+      class="h-6 rounded-md"
       data-tauri-drag-region={!$isFullscreen}
     />
     <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>
@@ -228,7 +228,7 @@
     <Menubar.Root class="z-20">
       <Menubar.Menu>
         <Menubar.Trigger>Folders</Menubar.Trigger>
-        <Menubar.Content class="z-[51]">
+        <Menubar.Content class="z-51">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={async () => {
@@ -246,7 +246,7 @@
             }}
           >
             <Label>Downloads</Label>
-            <Icon class="!size-5" icon="mingcute:folder-download-fill" />
+            <Icon class="size-5!" icon="mingcute:folder-download-fill" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
@@ -260,14 +260,14 @@
             }}
           >
             <Label>Panels</Label>
-            <Icon class="!size-5" icon="ic:round-photo-library" />
+            <Icon class="size-5!" icon="ic:round-photo-library" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openPath(appPath)}
           >
             <Label>Appdata</Label>
-            <Icon class="!size-5" icon="material-symbols:settings-rounded" />
+            <Icon class="size-5!" icon="material-symbols:settings-rounded" />
           </Menubar.Item>
         </Menubar.Content>
       </Menubar.Menu>
@@ -277,14 +277,14 @@
             page.route.id?.startsWith("/(root)/reader") && "hidden md:block",
           )}>About</Menubar.Trigger
         >
-        <Menubar.Content class="z-[51]">
+        <Menubar.Content class="z-51">
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openPatchNotes.set(true)}
           >
             <Label>Patch notes</Label>
             <Icon
-              class="!size-6 -my-0.5"
+              class="size-6! -my-0.5"
               icon="material-symbols-light:stylus-note-rounded"
             />
           </Menubar.Item>
@@ -294,21 +294,21 @@
             onclick={() => openFeedback.set(true)}
           >
             <Label>Give feedback</Label>
-            <Icon class="!size-5" icon="mdi:github" />
+            <Icon class="size-5!" icon="mdi:github" />
           </Menubar.Item> -->
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openUrl("https://github.com/ReiLoko4")}
           >
             <Label>Github</Label>
-            <Icon class="!size-5" icon="mdi:github" />
+            <Icon class="size-5!" icon="mdi:github" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
             onclick={() => openUrl("https://discord.gg/EVqHFtP2r8")}
           >
             <Label>Discord</Label>
-            <Icon class="!size-5" icon="ic:round-discord" />
+            <Icon class="size-5!" icon="ic:round-discord" />
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
@@ -316,7 +316,7 @@
               openUrl("https://www.linkedin.com/in/thiagovianavargas/")}
           >
             <Label>Linkedin</Label>
-            <Icon class="!size-5" icon="streamline:linkedin-solid" />
+            <Icon class="size-5!" icon="streamline:linkedin-solid" />
           </Menubar.Item>
           <Menubar.Separator />
           <Menubar.Item class="pointer-events-none">
@@ -328,7 +328,7 @@
               </span>
               <br />
               <span class="inline-flex items-center gap-1">
-                <Icon class="!size-3" icon="simple-icons:shadcnui" /> Shadcnui for
+                <Icon class="size-3!" icon="simple-icons:shadcnui" /> Shadcnui for
                 Svelte
               </span>
               <br />
@@ -365,7 +365,7 @@
         {#if page.route.id?.startsWith("/(root)/reader")}
           <Label
             class={cn(
-              "select-none text-nowrap !text-primary/70 z-[3] max-w-0 overflow-x-hidden truncate transition-all duration-500",
+              "select-none text-nowrap text-primary/70! z-3 max-w-0 overflow-x-hidden truncate transition-all duration-500",
               !(showSearch || showPopSearch || query.length > 0) &&
                 "max-w-[40vw]",
             )}
@@ -384,7 +384,7 @@
               (!page.route.id?.startsWith("/(root)/reader") ||
                 showSearch ||
                 query.length > 0) &&
-                "max-w-[38rem] px-2",
+                "max-w-152 px-2",
             )}
             onclick={() => {
               showSearch = true;
@@ -415,7 +415,7 @@
               )}
             >
               <Icon
-                class="!size-5 text-primary pointer-events-auto"
+                class="size-5! text-primary pointer-events-auto"
                 icon={isSearching
                   ? "eos-icons:bubble-loading"
                   : query.length > 0
@@ -437,7 +437,7 @@
                   (!page.route.id?.startsWith("/(root)/reader") ||
                     showSearch ||
                     query.length > 0) &&
-                    "max-w-[33rem] px-2",
+                    "max-w-132 px-2",
                 )}
                 id="central-search"
                 bind:value={query}
@@ -449,8 +449,8 @@
           </Popover.Trigger>
           <Popover.Content
             class={cn(
-              "max-w-[35.5rem] w-[42.5vw] h-[14rem] p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
-              // libraryResults.length > 0 && "min-h-[8rem]",
+              "max-w-142 w-[42.5vw] h-56 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
+              // libraryResults.length > 0 && "min-h-32",
             )}
             trapFocus={false}
           >
@@ -477,7 +477,7 @@
                 }}
               >
                 <Label
-                  class="flex items-center gap-2 cursor-pointer !text-primary/80"
+                  class="flex items-center gap-2 cursor-pointer text-primary/80!"
                   >Library <Badge class="h-5 flex justify-center px-1"
                     >{libraryResults.length}</Badge
                   >
@@ -492,12 +492,12 @@
               </Button>
               <VList
                 class={cn(
-                  "max-h-[8.75rem] mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
-                  libraryResults.length === 1 && "max-h-[1.75rem]",
-                  libraryResults.length === 2 && "max-h-[3.5rem]",
-                  libraryResults.length === 3 && "max-h-[5.25rem]",
-                  libraryResults.length === 4 && "max-h-[7rem]",
-                  collapsibles["library"] && "!hidden",
+                  "max-h-35 mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 overflow-y-scroll!",
+                  libraryResults.length === 1 && "max-h-7",
+                  libraryResults.length === 2 && "max-h-14",
+                  libraryResults.length === 3 && "max-h-21",
+                  libraryResults.length === 4 && "max-h-28",
+                  collapsibles["library"] && "hidden!",
                 )}
                 data={libraryResults}
                 getKey={(_, i) => i}
@@ -585,7 +585,7 @@
                     }}
                   >
                     <Label
-                      class="flex items-center gap-2 cursor-pointer !text-primary/80"
+                      class="flex items-center gap-2 cursor-pointer text-primary/80!"
                       >{source}
                       <Badge class="h-5 flex justify-center px-1"
                         >{searchResults[source].length}</Badge
@@ -601,11 +601,11 @@
                   </Button>
                   <VList
                     class={cn(
-                      "max-h-[7rem] transition-transform scrollbar [&::-webkit-scrollbar]:w-2 !overflow-y-scroll",
-                      searchResults[source].length === 1 && "max-h-[1.75rem]",
-                      searchResults[source].length === 2 && "max-h-[3.5rem]",
-                      searchResults[source].length === 3 && "max-h-[5.25rem]",
-                      collapsibles[source] && "!hidden",
+                      "max-h-28 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 overflow-y-scroll!",
+                      searchResults[source].length === 1 && "max-h-7",
+                      searchResults[source].length === 2 && "max-h-14",
+                      searchResults[source].length === 3 && "max-h-21",
+                      collapsibles[source] && "hidden!",
                     )}
                     data={searchResults[source]}
                     getKey={(_, i) => i}
@@ -650,7 +650,7 @@
               {/each}
             {/if}
             <!-- </div> -->
-            <!-- <ScrollArea class="flex flex-col max-h-[10rem] select-none"> -->
+            <!-- <ScrollArea class="flex flex-col max-h-40 select-none"> -->
             <!--   {#if libraryResults.length > 0} -->
             <!--     <Button -->
             <!--       class="w-full h-6 flex justify-between items-center p-2 focus:outline-none" -->
@@ -664,7 +664,7 @@
             <!--       }} -->
             <!--     > -->
             <!--       <Label -->
-            <!--         class="flex items-center gap-2 cursor-pointer !text-primary/80" -->
+            <!--         class="flex items-center gap-2 cursor-pointer text-primary/80!" -->
             <!--         >Library <Badge class="flex justify-center px-2 " -->
             <!--           >{libraryResults.length}</Badge -->
             <!--         > -->
@@ -701,7 +701,7 @@
     <!--         divFavs.scrollTo({ left: scrollLeft + 50, behavior: "smooth" }); -->
     <!--       } -->
     <!--     }} -->
-    <!--     class="flex !max-w-36 md:!max-w-52 lg:!max-w-96 2xl:!max-w-[30rem] 2xl:!ml-16 transition-all duration-400 overflow-x-scroll overflow-y-hidden bg-background/30 rounded-xl border border-secondary [&::-webkit-scrollbar]:size-0 [&::-webkit-scrollbar-thumb]:bg-transparent" -->
+    <!--     class="flex max-w-36! md:max-w-52! lg:max-w-96! 2xl:max-w-120! 2xl:ml-16! transition-all duration-400 overflow-x-scroll overflow-y-hidden bg-background/30 rounded-xl border border-secondary [&::-webkit-scrollbar]:size-0 [&::-webkit-scrollbar-thumb]:bg-transparent" -->
     <!--   > -->
     <!--     {#each favoritesWithChapters as fav} -->
     <!--       {#if fav.self.id.toString() !== page.params?.favoriteId} -->
@@ -733,7 +733,7 @@
       variant="ghost"
       onclick={() => window.minimize()}
     >
-      <Icon class="!size-6" icon="ic:round-minus" />
+      <Icon class="size-6!" icon="ic:round-minus" />
     </Button>
     <Button
       class="size-9 z-20 rounded-lg pointer-events-auto"
@@ -751,7 +751,7 @@
       }}
     >
       <Icon
-        class="!size-6"
+        class="size-6!"
         icon={$isFullscreen
           ? "ic:round-fullscreen-exit"
           : $isMaximized
@@ -764,7 +764,7 @@
       variant="ghost"
       onclick={() => window.close()}
     >
-      <Icon class="!size-6" icon="material-symbols:close-rounded" />
+      <Icon class="size-6!" icon="material-symbols:close-rounded" />
     </Button>
   </div>
 </div>

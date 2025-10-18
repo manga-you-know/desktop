@@ -396,7 +396,7 @@
 {#snippet chapterControls()}
   <div
     class={cn(
-      "flex w-[40vw] max-w-[38rem] items-center justify-between gap-2",
+      "flex w-[40vw] max-w-152 items-center justify-between gap-2",
       isMobile && "flex-col",
     )}
   >
@@ -405,7 +405,7 @@
     >
       <Button
         class={cn(
-          "!size-6 px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
+          "size-6! px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
           searchTerm !== "" && "pointer-events-auto",
         )}
         variant="ghost"
@@ -431,7 +431,7 @@
         <div
           class="relative flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-2xl z-10"
         >
-          <div class="z-[1] absolute w-full h-9">
+          <div class="z-1 absolute w-full h-9">
             <div
               class={cn(
                 "size-9 bg-white mx-1 rounded-xl transition-all duration-300 translate-x-0",
@@ -441,25 +441,25 @@
           </div>
           <Button
             class={cn(
-              "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
-              chaptersMode === "web" && "!text-black",
+              "z-2 rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+              chaptersMode === "web" && "text-black!",
             )}
             size="sm"
             onclick={() => (chaptersMode = "web")}
             variant="secondary"
           >
-            <Icon class="!size-5" icon="tabler:world" />
+            <Icon class="size-5!" icon="tabler:world" />
           </Button>
           <Button
             class={cn(
-              "z-[2] rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
-              chaptersMode === "local" && "!text-black",
+              "z-2 rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+              chaptersMode === "local" && "text-black!",
             )}
             size="sm"
             onclick={() => (chaptersMode = "local")}
             variant="secondary"
           >
-            <Icon class="!size-5" icon="tabler:file-download" />
+            <Icon class="size-5!" icon="tabler:file-download" />
           </Button>
         </div>
       </Tooltip>
@@ -473,7 +473,7 @@
       {/if}
     </div>
   </div>
-  <div class="flex w-[40vw] max-w-[38rem] items-center justify-between gap-2">
+  <div class="flex w-[40vw] max-w-152 items-center justify-between gap-2">
     <Select
       class="w-full"
       classRoot="flex w-full"
@@ -499,7 +499,7 @@
           }}
         >
           <Icon
-            class="!size-6"
+            class="size-6!"
             icon={$isChaptersUniqueNumber
               ? "line-md:text-box"
               : "line-md:text-box-multiple"}
@@ -516,7 +516,7 @@
       >
         <Icon
           class={cn(
-            "!size-6 duration-300 transition-all",
+            "size-6! duration-300 transition-all",
             $isChaptersDescending ? "rotate-0" : "rotate-180",
           )}
           icon="typcn:arrow-sorted-down"
@@ -524,7 +524,7 @@
       </Button>
     </div>
   </div>
-  <div class="flex w-[40vw] max-w-[38rem] justify-between gap-1 items-center">
+  <div class="flex w-[40vw] max-w-152 justify-between gap-1 items-center">
     <div
       class="w-full flex rounded-xl max-w-[calc(40vw-6rem)] sm:max-w-full bg-secondary items-center"
     >
@@ -665,7 +665,7 @@
               >
                 <Icon
                   icon={nextChapter ? "ic:round-keyboard-arrow-right" : ""}
-                  class="!size-7"
+                  class="size-7!"
                 />
               </Button>
             </Tooltip>
@@ -699,31 +699,31 @@
 >
   <Dialog.Content
     class={cn(
-      "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
-      "h-[100vh] max-h-[67rem] max-w-[65rem] py-4 px-6 duration-400",
+      "data-[state=open]:zoom-in-100! data-[state=closed]:zoom-out-100! data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
+      "h-screen max-h-268 max-w-260 py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
         ? $sidebarSide === "left"
-          ? "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] ml-[3.2rem] !mr-[2rem]"
-          : "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] mr-[6rem] !ml-[0rem]"
+          ? "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] ml-[3.2rem] mr-8!"
+          : "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] mr-24 ml-[0rem]!"
         : $sidebarSide === "left"
-          ? "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] ml-[1rem] !mr-[2rem]"
-          : "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] mr-[4rem] !ml-[0rem]",
+          ? "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] ml-4 mr-8!"
+          : "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] mr-16 ml-[0rem]!",
       $customTitlebar && "h-[calc(100vh-3.5rem)] mt-[1.2rem]",
       isMobile && "flex flex-col items-center h-[90vh]",
     )}
     closeButton={false}
-    overlayClass="bg-black/50 !transition-colors duration-400"
+    overlayClass="bg-black/50 transition-colors! duration-400"
   >
     <!-- <Dialog.Header> -->
     <!--   <Dialog.Title -->
-    <!--     class="group !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text" -->
+    <!--     class="group bg-transparent! w-full flex justify-center items-center dark:text-white select-none hover:cursor-text" -->
     <!--     onclick={() => { -->
     <!--       copyText(favorite.name, "title"); -->
     <!--     }} -->
     <!--   > -->
     <!--     {limitStr(favorite.name, 40)} -->
     <!--     <Icon -->
-    <!--       class="!size-0 ml-2  group-hover:!size-4 transition-all duration-300" -->
+    <!--       class="size-0! ml-2  group-hover:size-4! transition-all duration-300" -->
     <!--       icon="ic:baseline-content-copy" -->
     <!--     /> -->
     <!--   </Dialog.Title> -->
@@ -757,7 +757,7 @@
           )}
         >
           <div
-            class="w-full max-w-80 h-full max-h-[30rem] ssmh:max-w-52 sssmh:max-w-32 flex justify-center items-center overflow-hidden transition-all"
+            class="w-full max-w-80 h-full max-h-120 ssmh:max-w-52 sssmh:max-w-32 flex justify-center items-center overflow-hidden transition-all"
           >
             <Image
               draggable={false}
@@ -829,14 +829,14 @@
                 >
                   <Icon
                     class={cn(
-                      "absolute !size-5 transition-all duration-500",
+                      "absolute size-5! transition-all duration-500",
                       isUltraFavorite && "opacity-0 rotate-180 scale-0",
                     )}
                     icon="heroicons:star"
                   />
                   <Icon
                     class={cn(
-                      "absolute !size-5 transition-all duration-500",
+                      "absolute size-5! transition-all duration-500",
                       !isUltraFavorite && "opacity-0 -rotate-180 scale-0",
                     )}
                     icon="heroicons:star-solid"
@@ -863,15 +863,15 @@
           </div>
         </div>
         <div class={cn(isMobile ? "flex justify-start w-1/2" : "w-3/5")}>
-          <div class="w-[40vw] max-w-[30rem] flex flex-col gap-3">
+          <div class="w-[40vw] max-w-120 flex flex-col gap-3">
             <Label
-              class="group text-3xl !bg-transparent w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
+              class="group text-3xl bg-transparent! w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
               onclick={() => {
                 copyText(favorite.name, "title");
               }}
             >
               <Icon
-                class="!size-0 mr-2 group-hover:!size-5 transition-all duration-300"
+                class="size-0! mr-2 group-hover:size-5! transition-all duration-300"
                 icon="ic:baseline-content-copy"
               />
               {limitStr(favorite.name, 60)}
@@ -881,24 +881,24 @@
             {/if}
             <div
               class={cn(
-                "bg-secondary rounded-xl relative overflow-hidden max-w-[38rem] max-h-[42rem]",
-                isMobile ? "!h-[75vh] w-[15rem]" : "!h-[50vh] w-[40vw]",
+                "bg-secondary rounded-xl relative overflow-hidden max-w-152 max-h-168",
+                isMobile ? "h-[75vh]! w-60" : "h-[50vh]! w-[40vw]",
               )}
             >
               <div
                 class={cn(
-                  "flex justify-center items-center absolute transition-all duration-300 ease-in-out max-w-[38rem]",
+                  "flex justify-center items-center absolute transition-all duration-300 ease-in-out max-w-152",
                   chaptersMode === "web"
                     ? "translate-x-0"
                     : "-translate-x-full",
-                  isMobile ? "!h-[75vh] w-[15rem]" : "!h-[50vh] w-[40vw]",
+                  isMobile ? "h-[75vh]! w-60" : "h-[50vh]! w-[40vw]",
                 )}
               >
                 {#if isFetching}
                   <div
                     class={cn(
                       "h-full flex flex-col justify-start items-start",
-                      isMobile ? "w-[15rem] " : "w-[40vw] p-0.5",
+                      isMobile ? "w-60 " : "w-[40vw] p-0.5",
                     )}
                   >
                     <div
@@ -908,7 +908,7 @@
                       )}
                     >
                       <div
-                        class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div class="w-full gap-0.5 flex flex-col">
                         <div
@@ -926,7 +926,7 @@
                       )}
                     >
                       <div
-                        class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div class="w-full gap-0.5 flex flex-col">
                         <div
@@ -944,7 +944,7 @@
                       )}
                     >
                       <div
-                        class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div class="w-full gap-0.5 flex flex-col">
                         <div
@@ -962,7 +962,7 @@
                       )}
                     >
                       <div
-                        class="!w-9 !h-7 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
                       ></div>
                       <div class="w-full gap-0.5 flex flex-col">
                         <div
@@ -975,7 +975,7 @@
                     </div>
                   </div>
                   <Icon
-                    class="!w-16 !h-16 fixed text-gray-600 dark:text-white"
+                    class="w-16! h-16! fixed text-gray-600 dark:text-white"
                     icon="line-md:loading-loop"
                   />
                 {:else if displayedChapters.length === 0}
@@ -1073,11 +1073,11 @@
               </div>
               <div
                 class={cn(
-                  "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out max-w-[38rem]",
+                  "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out max-w-152",
                   chaptersMode === "local"
                     ? "translate-x-0"
                     : "translate-x-full",
-                  isMobile ? "!h-[75vh] w-[15rem]" : "!h-[50vh] w-[40vw]",
+                  isMobile ? "h-[75vh]! w-60" : "h-[50vh]! w-[40vw]",
                 )}
               >
                 {#if displayedLocalChapters.length === 0}

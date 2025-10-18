@@ -13,7 +13,7 @@
 
 <div class="inline-flex items-center justify-start gap-2">
   <Icon
-    class="!size-5 cursor-pointer"
+    class="size-5! cursor-pointer"
     onclick={() => {
       isDark = false;
       $theme = "light";
@@ -31,7 +31,7 @@
     }}
   />
   <Icon
-    class="!size-5 cursor-pointer"
+    class="size-5! cursor-pointer"
     onclick={() => {
       isDark = true;
       $theme = "dark";

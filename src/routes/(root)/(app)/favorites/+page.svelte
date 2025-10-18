@@ -1,7 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { FavoriteCard } from "@/components";
-  import { Button, Label, Switch, Badge, Pagination } from "@/lib/components";
+  import {
+    Button,
+    Label,
+    Switch,
+    Badge,
+    Pagination,
+    ScrollingValue,
+  } from "@/lib/components";
   import {
     showOnlyNew,
     ultraFavorites,
@@ -18,7 +25,6 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import type { Favorite } from "@/types";
-  import { ScrollingValue } from "svelte-ux";
 
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);
@@ -68,30 +74,31 @@
   >
     <div
       class={cn(
-        "backdrop-blur-md flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "backdrop-blur-md flex max-w-[80svw]! -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14",
       )}
     >
       <div class="flex items-center gap-2">
         <div class="flex gap-2">
           <Badge
-            class="flex justify-center font-bold !w-12 w-22 gap-0.5"
+            class="flex justify-center font-bold w-12! w-22 gap-0.5"
             variant="outline"
           >
-            <ScrollingValue axis="y" value={countFound} />
+            <ScrollingValue class="-mt-4" value={countFound} />
           </Badge>
           <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
             {#if favoritesWithChapter.length > 0}
               +
             {/if}
-            <ScrollingValue axis="y" value={favoritesWithChapter.length} /> Favorites
+            <ScrollingValue class="-mt-4" value={favoritesWithChapter.length} />
+            Favorites
           </Badge>
           <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
             {#if favoritesWithChapter.length > 0}
               +
             {/if}
             <ScrollingValue
-              axis="y"
+              class="-mt-4"
               value={Object.values($favoritesLoaded).reduce(
                 (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
                 0,
@@ -108,7 +115,7 @@
           }}
         >
           <Switch
-            class="rounded-[11px] dark:data-[state=unchecked]:!bg-secondary/70 dark:group-hover/show:data-[state=unchecked]:!bg-secondary/90 group-hover/show:data-[state=checked]:!bg-primary/70  pointer-events-none"
+            class="rounded-[11px] dark:data-[state=unchecked]:bg-secondary/70! dark:group-hover/show:data-[state=unchecked]:bg-secondary/90! group-hover/show:data-[state=checked]:bg-primary/70!  pointer-events-none"
             classThumb="rounded-xl"
             id="show-only-new"
             bind:checked={$showOnlyNew}
@@ -149,8 +156,7 @@
             There's no favorite. You can click on the star in the chapters <br
             />
             modal to achieve that. Or you can find something at
-            <span
-              class="absolute cursor-pointer hover:underline mt-5 ml-[21rem]"
+            <span class="absolute cursor-pointer hover:underline mt-5 ml-84"
               >Search</span
             >
           {:else}

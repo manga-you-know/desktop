@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Sheet from "$lib/components/ui/sheet/index.js";
-  import { cn } from "$lib/utils.js";
-  import type { WithElementRef } from "bits-ui";
+  import { cn, type WithElementRef } from "$lib/utils.js";
   import type { HTMLAttributes } from "svelte/elements";
   import { SIDEBAR_WIDTH_MOBILE } from "./constants.js";
   import { useSidebar } from "./context.svelte.js";
@@ -27,7 +26,7 @@
 {#if collapsible === "none"}
   <div
     class={cn(
-      "text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col",
+      "text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
       variant === "inset" ? "bg-transparent" : "bg-sidebar/60",
       className,
     )}
@@ -45,7 +44,7 @@
     <Sheet.Content
       data-sidebar="sidebar"
       data-mobile="true"
-      class="bg-sidebar/60 text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
+      class="bg-sidebar/60 text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
       {side}
     >
@@ -59,7 +58,7 @@
   <div
     bind:this={ref}
     class={cn(
-      "text-sidebar-foreground group peer hidden ssm:block !bg-transparent hover:!bg-transparent focus:!bg-transparent",
+      "text-sidebar-foreground group peer hidden ssm:block bg-transparent! hover:bg-transparent! focus:bg-transparent!",
       side === "right" && "flex flex-row-reverse",
     )}
     data-state={sidebar.state}
@@ -73,27 +72,27 @@
     <div
       data-slot="sidebar-gap"
       class={cn(
-        "relative w-[--sidebar-width] transition-[width] duration-200 ease-linear",
+        "relative w-(--sidebar-width) transition-[width] duration-200 ease-linear",
         $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         "group-data-[collapsible=offcanvas]:w-0",
-        // "group-data-[side=right]:!rotate-180",
-        side === "right" && "!translate-x-10",
+        // "group-data-[side=right]:rotate-180!",
+        side === "right" && "translate-x-10!",
         variant === "floating" || variant === "inset"
-          ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-          : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
+          ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+          : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
       )}
     ></div>
     <div
       class={cn(
-        "fixed inset-y-0 z-10 hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear ssm:flex",
+        "fixed inset-y-0 z-10 hidden w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear ssm:flex",
         $customTitlebar ? "min-h-[calc(100vh-2.5rem)]" : "h-svh",
         side === "left"
           ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
           : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
         // Adjust the padding for floating and inset variants.
         variant === "floating" || variant === "inset"
-          ? "p-2 bg-transparent group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+10px)]"
-          : "bg-sidebar/60 group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          ? "p-2 bg-transparent group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+10px)]"
+          : "bg-sidebar/60 group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
         className,
       )}
       {...restProps}

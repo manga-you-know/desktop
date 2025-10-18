@@ -25,7 +25,7 @@
     {alignOffset}
     {side}
     class={cn(
-      "bg-secondary/50 backdrop-blur-sm border border-accent text-popover-foreground z-50 min-w-[12rem] rounded-xl p-1 shadow-md focus:outline-none",
+      "bg-secondary/50 backdrop-blur-sm border border-accent text-popover-foreground z-50 min-w-48 rounded-xl p-1 shadow-md focus:outline-none",
       $theme === "dark" && "dark",
       className
     )}

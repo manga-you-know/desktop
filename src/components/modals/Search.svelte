@@ -120,8 +120,8 @@
   <AlertDialog.Content
     overlayClass="bg-black/40"
     class={cn(
-      "overflow-hidden p-0 gap-0 !bg-background/65 border-0.5",
-      isMobile ? "h-[36rem] w-[26rem]" : "h-[16.2rem] w-[30.5rem]",
+      "overflow-hidden p-0 gap-0 bg-background/65! border-0.5",
+      isMobile ? "h-144 w-104" : "h-[16.2rem] w-122",
     )}
   >
     <div
@@ -130,7 +130,7 @@
         isResultOpen ? "-translate-x-full" : "translate-x-0'",
       )}
     >
-      <AlertDialog.Header class="bg-accent border-secondary border-1">
+      <AlertDialog.Header class="bg-accent border-secondary border">
         <div class="flex w-full items-center ml-3 my-1">
           <div class="size-5 mr-2">
             <Icon
@@ -140,7 +140,7 @@
                   ? "lucide:x"
                   : "mingcute:search-2-fill"}
               class={cn(
-                "!size-[1.2rem]",
+                "size-[1.2rem]!",
                 $searchTerm.length > 0 && !isSearching && "cursor-pointer",
               )}
               color="gray"
@@ -153,7 +153,7 @@
             />
           </div>
           <Input
-            class={cn("text-sm font-medium", isMobile && "w-[7.5rem]")}
+            class={cn("text-sm font-medium", isMobile && "w-30")}
             id="search-input"
             variant="link"
             autofocus
@@ -169,7 +169,7 @@
       <div
         class={cn(
           "flex flex-col bg-secondary/50 py-1 pl-1 gap-1 rounded-b-3xl relative",
-          isMobile ? "w-[26rem] h-[33rem]" : "w-[30.5rem] h-52",
+          isMobile ? "w-104 h-132" : "w-122 h-52",
         )}
       >
         {#if results.length !== 0}
@@ -181,14 +181,14 @@
           >
             <div class="relative">
               <Label
-                class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-br-xl text-xs !text-gray-400"
+                class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-br-xl text-xs text-gray-400!"
               >
                 {resultsFavorited.length} saveds
               </Label>
             </div>
-            <div class="w-[30rem] max-h-20 relative">
+            <div class="w-120 max-h-20 relative">
               <ScrollArea
-                class="flex flex-col gap-[2px] w-[30rem] max-h-20 !scrollbar transition-all duration-300"
+                class="flex flex-col gap-[2px] w-120 max-h-20 scrollbar! transition-all duration-300"
               >
                 {#each resultsFavorited as result}
                   <div class="inline-flex w-[98%]">
@@ -212,7 +212,7 @@
                       onclick={async () => saveResult(result)}
                     >
                       <Icon
-                        class="!size-4"
+                        class="size-4!"
                         icon={isFavorite(result)
                           ? "tabler:bookmark-filled"
                           : "tabler:bookmark"}
@@ -231,13 +231,13 @@
           </div>
           <div class="relative">
             <Label
-              class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-xl text-xs !text-gray-400"
+              class="absolute p-0.5 -left-0.5 -top-0.5 px-1 bg-accent/60 z-20 pointer-events-none backdrop-blur-sm rounded-xl text-xs text-gray-400!"
             >
               {results.slice(0, 20).filter((r) => !isFavorite(r)).length}
               non saveds
             </Label>
           </div>
-          <ScrollArea class="w-[30rem] rounded-b-xl !scrollbar">
+          <ScrollArea class="w-120 rounded-b-xl scrollbar!">
             {#each results.slice(0, 20).filter((r) => !isFavorite(r)) as result}
               <div class="inline-flex w-[98%]">
                 <Button
@@ -260,7 +260,7 @@
                   variant="ghost"
                 >
                   <Icon
-                    class="!size-4"
+                    class="size-4!"
                     icon={isFavorite(result)
                       ? "tabler:bookmark-filled"
                       : "tabler:bookmark"}
@@ -342,7 +342,7 @@
                   : ""}
               </div>
               <Icon
-                class="!size-5"
+                class="size-5!"
                 icon={favoriteOpen
                   ? isFavorite(favoriteOpen)
                     ? "tabler:bookmark-filled"
@@ -361,7 +361,7 @@
               }}
             >
               <Icon
-                class="!size-5"
+                class="size-5!"
                 icon={favoriteOpen?.type === "anime"
                   ? "lucide:tv-minimal-play"
                   : "lucide:book-open-text"}

@@ -61,7 +61,7 @@
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
-  import { system24 } from "@/states";
+  import { retroTheme } from "@/states";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -197,7 +197,7 @@
   {:else}
     <div
       class={cn(
-        "fixed z-[999] pointer-events-none w-screen h-screen transition-colors duration-300",
+        "fixed z-999 pointer-events-none w-screen h-screen transition-colors duration-300",
         $useFilter &&
           (!$filterReader || page.route.id?.startsWith("/(root)/reader")) &&
           $filter,
@@ -205,15 +205,17 @@
     ></div>
     <div
       class={cn(
-        "flex flex-col overflow-hidden transition-colors duration-300",
+        "flex flex-col overflow-hidden transition-colors duration-300 group/theme",
         !$windowEffects && "bg-background",
         page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
       )}
+      data-retro={retroTheme.active ? "active" : "disabled"}
     >
+    <!-- group-data-[retro=active]/theme:bg-red-500 --> 
       <div
         class={cn(
           "w-screen h-screen filter-effects",
-          $blackWhiteMode && "!grayscale",
+          $blackWhiteMode && "grayscale!",
         )}
         style="--contrast: {$contrast}; --brightness: {$brightness}; --saturation: {$saturation}; --sepia: {$sepia};"
       >
@@ -232,8 +234,8 @@
   {/if}
 </div>
 <svelte:head>
-  {@html system24.active
-    ? "<style>* { border-radius: 0 !important; }</style>"
+  {@html retroTheme.active
+    ? "<style>* { border-radius: 0 !important; backdrop-filter: none !important; }</style>"
     : ""}
 </svelte:head>
 

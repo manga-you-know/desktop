@@ -1,12 +1,12 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "MangaYouKnow",
   "version": "0.9.33",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5174",
-    "beforeDevCommand": "bun dev",
+    "beforeDevCommand": "bun run dev",
     "beforeBuildCommand": "bun run build",
     "removeUnusedCommands": true
   },

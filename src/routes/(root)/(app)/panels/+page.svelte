@@ -3,13 +3,12 @@
   import { onMount } from "svelte";
   import { panels } from "@/store";
   import { copyImageFromPath, refreshPanels } from "@/functions";
-  import { Pagination, Badge, Input } from "@/lib/components";
+  import { Pagination, Badge, Input, ScrollingValue } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { delay } from "@/utils";
   import type { Favorite, Panel } from "@/types";
   import { FavoriteDB } from "@/repositories";
-  import { ScrollingValue } from "svelte-ux";
 
   let page = $state(1);
   let perPage = 14;
@@ -111,18 +110,18 @@
     bind:this={panelDiv}
   >
     <div
-      class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+      class="bg-secondary/60 backdrop-blur-sm flex max-w-[80svw]! rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
     >
       <Badge
         class="h-10 w-12 flex justify-center items-center"
         variant="outline"
       >
-        <ScrollingValue axis="y" value={count} />
+        <ScrollingValue class="-mt-4" value={count} />
       </Badge>
       <div class="inline-flex relative items-center">
         <Icon
           class={cn(
-            "!size-5 ml-3 !text-primary absolute z-10",
+            "size-5! ml-3 text-primary! absolute z-10",
             searchTerm !== "" && "cursor-pointer",
           )}
           icon={searchTerm === "" ? "uil:search" : "lucide:x"}
@@ -145,7 +144,7 @@
       </div>
       <Select
         class="max-w-52"
-        classPopup="w-[11rem]"
+        classPopup="w-44"
         bind:selected={selectedTitle}
         items={panelsTitle}
         label="Title"

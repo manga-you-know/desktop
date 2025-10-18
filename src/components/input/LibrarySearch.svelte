@@ -76,14 +76,14 @@
   tabindex={-1}
 >
   <Icon
-    class="!size-5 -mr-[10px] -mx-[4px]"
+    class="size-5! -mr-[10px] -mx-[4px]"
     icon={$libraryQuery === "" ? "uil:search" : "lucide:x"}
   />
   <div
     class={cn(
       "relative transition-all duration-500 ease-in-out ",
       showInput
-        ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem] opacity-100 focus:ring-0"
+        ? "max-w-16 sm:max-w-24 lg:max-w-48 opacity-100 focus:ring-0"
         : "max-w-[0px] opacity-0 overflow-hidden",
     )}
   >
@@ -91,7 +91,7 @@
       class={cn(
         "transition-all duration-500 ease-in-out border-none outline-none ring-none",
         showInput
-          ? "max-w-[4rem] sm:max-w-[6rem] lg:max-w-[12rem]"
+          ? "max-w-16 sm:max-w-24 lg:max-w-48"
           : "max-w-[0px]",
       )}
       bind:value={$libraryQuery}

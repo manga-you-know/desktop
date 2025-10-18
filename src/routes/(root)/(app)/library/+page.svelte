@@ -1,6 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Pagination, Button, Badge, Input } from "@/lib/components";
+  import {
+    Pagination,
+    Button,
+    Badge,
+    Input,
+    ScrollingValue,
+  } from "@/lib/components";
   import {
     LibraryCard,
     LibraryOrder,
@@ -23,7 +29,6 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   import { get, has, set } from "tauri-plugin-cache-api";
-  import { ScrollingValue } from "svelte-ux";
   import { delay } from "@/utils";
 
   let libraryDiv: HTMLDivElement = $state(null!);
@@ -92,7 +97,7 @@
   >
     <div
       class={cn(
-        "backdrop-blur-md flex !max-w-[80svw] -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+        "backdrop-blur-md flex max-w-[80svw]! -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
         IS_MOBILE ? "h-28 flex-wrap" : "h-14",
       )}
     >
@@ -100,18 +105,18 @@
         class="h-10 w-12 flex justify-center items-center"
         variant="outline"
       >
-        <ScrollingValue axis="y" value={count} />
+        <ScrollingValue class="-mt-4" value={count} />
       </Badge>
       <LibrarySearch bind:page bind:favdiv={libraryDiv} />
       <LibraryOrder />
       <LibraryTag
-        class={showedFilter === 0 ? "!inline-flex" : "hidden md:inline-flex"}
+        class={showedFilter === 0 ? "inline-flex!" : "hidden md:inline-flex"}
       />
       <LibrarySource
-        class={showedFilter === 1 ? "!inline-flex" : "hidden md:inline-flex"}
+        class={showedFilter === 1 ? "inline-flex!" : "hidden md:inline-flex"}
       />
       <Button
-        class="md:hidden flex items-start !w-9"
+        class="md:hidden flex items-start w-9!"
         variant="secondary"
         onclick={() => {
           if (showedFilter === 1) showedFilter = 0;
@@ -152,7 +157,7 @@
     {#if $libraryFavorites.length > perPage}
       <div class="w-full h-10"></div>
       <div
-        class="bg-secondary/30 backdrop-blur-md flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
+        class="bg-secondary/30 group-data-[retro=active]/theme:bg-secondary/95 backdrop-blur-md flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
       >
         <Pagination.Root
           {count}

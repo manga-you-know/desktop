@@ -33,7 +33,7 @@
       </AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer
-      class={cn("flex-row", IS_MOBILE ? "w-full !justify-center" : "")}
+      class={cn("flex-row", IS_MOBILE ? "w-full justify-center!" : "")}
     >
       <Button
         class={IS_MOBILE ? "w-full" : ""}
