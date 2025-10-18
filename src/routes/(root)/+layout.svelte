@@ -62,6 +62,7 @@
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
   import { retroTheme } from "@/states";
+  import { type } from "@tauri-apps/plugin-os";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -205,11 +206,11 @@
     ></div>
     <div
       class={cn(
-        "flex flex-col overflow-hidden transition-colors duration-300 group/theme",
+        "flex flex-col overflow-hidden transition-colors duration-300 group/webkit",
         !$windowEffects && "bg-background",
         page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
       )}
-      data-retro={retroTheme.active ? "active" : "disabled"}
+      data-webkit={!["linux", "macos"].includes(type())}
     >
     <!-- group-data-[retro=active]/theme:bg-red-500 --> 
       <div
@@ -235,7 +236,7 @@
 </div>
 <svelte:head>
   {@html retroTheme.active
-    ? "<style>* { border-radius: 0 !important; backdrop-filter: none !important; }</style>"
+    ? "<style>* { border-radius: 0 !important; }</style>"
     : ""}
 </svelte:head>
 

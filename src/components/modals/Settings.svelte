@@ -78,6 +78,7 @@
   import { emit, listen } from "@tauri-apps/api/event";
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
+  import { retroTheme } from "@/states";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -869,7 +870,12 @@
                   Black & White
                 </Label>
               </div>
-
+              <div class="flex gap-2 items-center">
+                <Switch id="retro-mode" bind:checked={retroTheme.active} />
+                <Label class="cursor-pointer" for="retro-mode">
+                  TUI theme (square borders)
+                </Label>
+              </div>
               <Label>Sidebar</Label>
               <div
                 class="flex relative w-44 text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
