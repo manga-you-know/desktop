@@ -1,13 +1,12 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import * as cheerio from "cheerio";
-import type { MangaDl } from "@/interfaces";
-import type { Favorite, Chapter, Language } from "@/types";
+import type { ComicSource, SearchResult, Favorite, Chapter, Language, } from "@/types";
 import { LANGUAGE_LABELS } from "@/constants";
 
-export class MangaFireDl implements MangaDl {
-  baseUrl = "https://mangafire.to";
-  isMultiLanguage = true;
-  headers = {
+export const MangaFire: ComicSource = {
+  baseUrl: "https://mangafire.to",
+  isMultiLanguage: true,
+  headers: {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
     Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -23,18 +22,19 @@ export class MangaFireDl implements MangaDl {
     "Sec-Fetch-User": "?1",
     Priority: "u=0, i",
     TE: "trailers",
-  };
+  },
 
-  getMangaById(id: string): Promise<Favorite> {
+  getMangaById(_: string): Promise<Favorite> {
     throw new Error("Method not implemented.");
-  }
+  },
 
   async getMangaByUrl(url: string): Promise<Favorite> {
-    const response = await fetch(url, { headers: this.headers });
+    // const response = await fetch(url, { headers: this.headers });
     throw new Error(`Failed to found manga in url: ${url}`);
-  }
+  },
 
-  async search(query: string): Promise<Favorite[]> {
+
+  async search(query: string): Promise<SearchResult[]> {
     const response = await fetch(
       `${this.baseUrl}/ajax/manga/search?keyword=${query}`
     );
@@ -47,8 +47,7 @@ export class MangaFireDl implements MangaDl {
       return [];
     }
     const $ = cheerio.load(responseJson.result.html);
-    const mangas: Favorite[] = [];
-    $("a").each((index, a) => {
+    return $("a").map((index, a) => {
       if (index !== responseJson.result.count) {
         const name = $(a).find("h6").text();
         const img = $(a).find("img");
@@ -57,28 +56,27 @@ export class MangaFireDl implements MangaDl {
         const folderName = splitedLink
           .slice(0, splitedLink.length - 1)
           .join(".");
-        mangas.push({
-          id: 0,
+        return {
           name: name,
-          folder_name: folderName,
+          folderName: folderName,
           cover: img.attr("src")?.replace("@100", "") ?? "/myk.png",
           source: "MangaFire",
-          source_id: link,
+          sourceID: link,
           link: `${this.baseUrl}/manga/${link}`,
-        });
+          type: "manga" as const
+        }
       }
-    });
-    return mangas;
-  }
+    }).toArray();
+  },
 
-  async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
+  async getSavedLanguages(savedID: string): Promise<Language[]> {
     const response = await fetch(
-      `${this.baseUrl}/manga/${encodeURI(favoriteId)}`,
+      `${this.baseUrl}/manga/${encodeURI(savedID)}`,
       {}
     );
     if (response.status !== 200) {
       throw new Error(
-        `Failed to get favorite languages ${favoriteId} ${response.status}`
+        `Failed to get saved languages ${savedID} ${response.status}`
       );
     }
     const text = await response.text();
@@ -96,7 +94,7 @@ export class MangaFireDl implements MangaDl {
         });
       });
     return languages;
-  }
+  },
 
   async getChapters(
     mangaId: string,
@@ -122,7 +120,7 @@ export class MangaFireDl implements MangaDl {
       });
     });
     return chapters;
-  }
+  },
 
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(
@@ -139,4 +137,5 @@ export class MangaFireDl implements MangaDl {
       image[0].replaceAll("\\", "").replace("mfcdn1", "mfcdn2")
     );
   }
+
 }
