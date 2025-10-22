@@ -15,10 +15,8 @@ import {
   TCBScansDl,
   MangaPillDl,
   TaosectDl,
-  MangaFireDl,
   WeebCentralDl,
   MangaLivreDl,
-  MangaSwatDl,
   MangaParkDl,
   AtsumaruDl,
   // ComicDl
@@ -64,11 +62,9 @@ export class DownloadManager {
       Taosect: new TaosectDl(),
       MangaDex: new MangaDexDl(),
       MangaPill: new MangaPillDl(),
-      MangaFire: new MangaFireDl(),
       MangaReaderTo: new MangaReaderToDl(),
       WeebCentral: new WeebCentralDl(),
       MangaLivre: new MangaLivreDl(),
-      MangaSwat: new MangaSwatDl(),
       MangaPark: new MangaParkDl(),
       Atsumaru: new AtsumaruDl(),
     };

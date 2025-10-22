@@ -8,4 +8,4 @@ export { WeebCentralDl } from "./weebcentral";
 export { MangaLivreDl } from "./mangalivre";
 // export { MangaSwatDl } from "./mangaswat";
 export { MangaParkDl } from "./mangapark"
-export { Atsumaru } from "./atsumaru"
+export { Atsumaru, AtsumaruDl } from "./atsumaru"

@@ -49,6 +49,19 @@ export const downloader = {
     }
   },
 
+  isMultiLanguage(source: string) {
+    return this.getSource(source).isMultiLanguage
+  },
+
+
+  clearChaptersCache() {
+    console.log("fake clean")
+  },
+
+  getBaseUrl(source: string) {
+    return this.getSource(source).baseUrl
+  },
+
   async getResultByID(source: string, savedID: string): Promise<Favorite> {
     const key = `${source}-result-${savedID}`
     const cached = await get<Favorite>(key)
@@ -58,7 +71,7 @@ export const downloader = {
     return result
   },
 
-  async search(source: string, query: string): Promise<SearchResult[]> {
+  async search(query: string, source: string, _ = false): Promise<SearchResult[]> {
     const key = `${source}-search-${query}`
     const cached = await get<SearchResult[]>(key)
     if (cached) return cached
@@ -67,22 +80,51 @@ export const downloader = {
     return result
   },
 
-  async getChapters(source: string, savedID: string): Promise<Chapter[]> {
-    const key = `${source}-chapters-${savedID}`
+  async getChapters(saved: Favorite): Promise<Chapter[]> {
+    console.log("Hey")
+    const key = `${saved.source}-chapters-${saved.source_id}`
     const cached = await get<Chapter[]>(key)
-    if (cached) return cached
-    const chapters = await this.getSource(source).getChapters(savedID)
-    set(key, chapters)
+    console.log("CACHEDD")
+    if (cached?.length) return cached
+    const chapters = await this.getSource(saved.source).getChapters(saved.source_id)
+    if (chapters.length > 0) {
+      set(key, chapters, { ttl: 60 })
+    }
     return chapters
   },
 
-  async getChapterImages(source: string, chapterID: string): Promise<string[]> {
-    const key = `${source}-images-${chapterID}`
+  async getChapterImages(chapter: Chapter): Promise<string[]> {
+    const key = `${chapter.source}-images-${chapter.chapter_id}`
     const cached = await get<string[]>(key)
     if (cached) return cached
-    const images = await this.getSource(source).getChapterImages(chapterID)
-    set(key, images)
+    const images = await this.getSource(chapter.source).getChapterImages(chapter.chapter_id)
+    set(key, images, { ttl: 30 })
     return images
+  },
+
+  isValidBase64Image(base64: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = base64;
+    });
+  },
+
+  async getBase64Image(url: string, referer: string): Promise<string> {
+    const img =
+      "data:image/png;base64," +
+      (await retry(() =>
+        invoke("get_base64_image", { url: url, referer: referer })
+      ));
+    if (await this.isValidBase64Image(img)) return img;
+    throw Error("Invalid base64 image.");
+  },
+
+  async getBase64Images(images: string[], referer: string): Promise<string[]> {
+    return await Promise.all(
+      images.map((image) => retry(() => this.getBase64Image(image, referer)))
+    );
   }
 
 }
