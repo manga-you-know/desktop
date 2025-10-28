@@ -34,16 +34,17 @@ import { invoke } from "@tauri-apps/api/core";
 import { downloadPath } from "@/store";
 import { join } from "@tauri-apps/api/path";
 
-export const sources: Record<string, ComicSource> = {
+
+export const comicSources: Record<string, ComicSource> = {
   Atsumaru: Atsumaru,
   MangaFire: MangaFire,
+
 }
 
 export const downloader = {
-
   getSource(source: string) {
-    if (Object.hasOwn(sources, source)) {
-      return sources[source]
+    if (Object.hasOwn(comicSources, source)) {
+      return comicSources[source]
     } else {
       throw new Error(`Source ${source} not found`)
     }
@@ -52,7 +53,6 @@ export const downloader = {
   isMultiLanguage(source: string) {
     return this.getSource(source).isMultiLanguage
   },
-
 
   clearChaptersCache() {
     console.log("fake clean")
@@ -81,14 +81,12 @@ export const downloader = {
   },
 
   async getChapters(saved: Favorite): Promise<Chapter[]> {
-    console.log("Hey")
-    const key = `${saved.source}-chapters-${saved.source_id}`
+    const key = `${saved.source}-chapters-${saved.sourceID}`
     const cached = await get<Chapter[]>(key)
-    console.log("CACHEDD")
     if (cached?.length) return cached
-    const chapters = await this.getSource(saved.source).getChapters(saved.source_id)
+    const chapters = await this.getSource(saved.source).getChapters(saved.sourceID)
     if (chapters.length > 0) {
-      set(key, chapters, { ttl: 60 })
+      set(key, chapters, { ttl: 600 })
     }
     return chapters
   },
@@ -98,7 +96,9 @@ export const downloader = {
     const cached = await get<string[]>(key)
     if (cached) return cached
     const images = await this.getSource(chapter.source).getChapterImages(chapter.chapter_id)
-    set(key, images, { ttl: 30 })
+    if (images.length > 0) {
+      set(key, images, { ttl: 5000 })
+    }
     return images
   },
 

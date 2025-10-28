@@ -1,11 +1,11 @@
-
-import type { Favorite, Chapter, Language, SearchResult } from "@/types";
+import type { Favorite, Chapter, Language, SavedType, SearchResult } from "@/types";
 
 /**
  * Comic source type, may it be western or oriental
  */
 export type ComicSource = {
   baseUrl: string;
+  type: SavedType,
   headers?: {},
   isMultiLanguage: boolean;
   search(query: string): Promise<SearchResult[]>;

@@ -1,7 +1,3 @@
-export type Mark = {
-  id: number;
-  name: string;
-  user_id: number;
-  color?: string;
-  icon?: string;
-};
+import { marks } from "@/db"
+
+export type Mark = typeof marks.$inferSelect

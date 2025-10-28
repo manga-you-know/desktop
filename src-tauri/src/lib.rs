@@ -2,14 +2,6 @@
 use tauri::Manager;
 use utils::hashmap::{get_data, set_data};
 use utils::request::{get_aniplay_chapters, get_aniplay_episode, get_base64_image};
-// use webview2_com::{
-//     Microsoft::Web::WebView2::Win32::{
-//         ICoreWebView2WebResourceRequest, COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL,
-//     },
-//     WebResourceRequestedEventHandler,
-// };
-// use windows::core::HSTRING;
-// use windows::Win32::System::Com::MachineGlobalObjectTableRegistrationToken;
 
 mod utils;
 

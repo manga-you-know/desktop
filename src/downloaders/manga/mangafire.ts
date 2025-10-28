@@ -5,6 +5,7 @@ import { LANGUAGE_LABELS } from "@/constants";
 
 export const MangaFire: ComicSource = {
   baseUrl: "https://mangafire.to",
+  type: "manga",
   isMultiLanguage: true,
   headers: {
     "User-Agent":

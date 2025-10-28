@@ -62,11 +62,11 @@ export class DownloadManager {
       Taosect: new TaosectDl(),
       MangaDex: new MangaDexDl(),
       MangaPill: new MangaPillDl(),
-      MangaReaderTo: new MangaReaderToDl(),
-      WeebCentral: new WeebCentralDl(),
-      MangaLivre: new MangaLivreDl(),
       MangaPark: new MangaParkDl(),
       Atsumaru: new AtsumaruDl(),
+      MangaLivre: new MangaLivreDl(),
+      WeebCentral: new WeebCentralDl(),
+      MangaReaderTo: new MangaReaderToDl(),
     };
     this.comicSources = {
       BatcaveBiz: new BatcaveBizDl(),

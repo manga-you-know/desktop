@@ -2,7 +2,7 @@ import Database from "@tauri-apps/plugin-sql";
 import { DATABASE_NAME, defaultUser } from "@/constants";
 import { libraryQuery, libraryOrder, librarySource, libraryTag } from "@/store";
 import { MarkDB, UserDB } from "@/repositories";
-import type { Favorite, Mark } from "@/types";
+import type { Favorite, Mark, SearchResult } from "@/types";
 import { get } from "svelte/store";
 import {
   loadFavoriteChapters,
@@ -11,8 +11,8 @@ import {
   removeFavorite,
 } from "@/functions";
 import { getBool } from "@/utils";
-import { db, favorites, } from "@/db";
-import { eq } from "drizzle-orm";
+import { db, favorites, markFavorites, } from "@/db";
+import { and, eq, inArray } from "drizzle-orm";
 
 let dbOld: Database = null!;
 
@@ -20,83 +20,65 @@ async function loadDb() {
   dbOld = await Database.load(`sqlite:${DATABASE_NAME}`);
 }
 
-export async function createFavorite(favorite: Favorite): Promise<Favorite> {
-  if (!dbOld) await loadDb();
-  const user = await UserDB.getDefaultUser();
-  await dbOld.execute(
-    "INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [
-      user.id,
-      favorite.name,
-      favorite.folder_name,
-      favorite.cover,
-      favorite.link,
-      favorite.source,
-      favorite.source_id,
-      favorite.type ?? "manga",
-      favorite.extra_name,
-      favorite.title_color,
-      favorite.card_color,
-      favorite.grade,
-      favorite.author,
-      favorite.description,
-      favorite.status ?? "",
-      favorite.mal_id ?? "",
-      favorite.anilist_id ?? "",
-    ]
-  );
-  const results = await dbOld.select<Favorite[]>("SELECT * FROM favorite WHERE source = ? AND source_id = ? LIMIT 1", [favorite.source, favorite.source_id])
-  if (results) {
-    return results[0]
+export async function createFavorite(result: SearchResult): Promise<Favorite> {
+  await db.insert(favorites).values(result)
+  const saved = await db.select().from(favorites)
+    .where(and(
+      eq(favorites.source, result.source),
+      eq(favorites.sourceID, result.sourceID)
+    )).limit(1)
+  if (saved) {
+    return saved[0]
   } else {
     throw Error("Error adding favorite")
   }
 
 }
 
-export async function createFavoritesFromJson(
-  favorites: Favorite[]
-): Promise<void> {
-  if (!dbOld) await loadDb();
-  try {
-    const placeholders = favorites
-      .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-      .join(", ");
-    await dbOld.execute(
-      `INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES ${placeholders}`,
-      favorites.flatMap((favorite) => [
-        defaultUser.id,
-        favorite.name,
-        favorite.folder_name,
-        favorite.cover,
-        favorite.link,
-        favorite.source,
-        favorite.source_id,
-        favorite.type,
-        favorite.extra_name,
-        favorite.title_color,
-        favorite.card_color,
-        favorite.grade,
-        favorite.author,
-        favorite.description,
-      ])
-    );
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error in createFavoritesFromJson");
-  } finally {
-    // db.close()
-  }
-}
+// export async function createFavoritesFromJson(
+//   favorites: Favorite[]
+// ): Promise<void> {
+//   if (!dbOld) await loadDb();
+//   try {
+//     const placeholders = favorites
+//       .map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+//       .join(", ");
+//     await dbOld.execute(
+//       `INSERT INTO favorite (user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description) VALUES ${placeholders}`,
+//       favorites.flatMap((favorite) => [
+//         defaultUser.id,
+//         favorite.name,
+//         favorite.folder_name,
+//         favorite.cover,
+//         favorite.link,
+//         favorite.source,
+//         favorite.source_id,
+//         favorite.type,
+//         favorite.extra_name,
+//         favorite.title_color,
+//         favorite.card_color,
+//         favorite.grade,
+//         favorite.author,
+//         favorite.description,
+//       ])
+//     );
+//   } catch (error) {
+//     console.log(error);
+//     throw new Error("Error in createFavoritesFromJson");
+//   } finally {
+//     // db.close()
+//   }
+// }
 
 export async function getFavorite(
-  id: number | string | string[]
+  id: number
 ): Promise<Favorite> {
-  if (!dbOld) await loadDb();
-  const favorite: Favorite[] = await dbOld.select(
+  await dbOld.select(
     "SELECT * FROM favorite WHERE id = ? LIMIT 1",
     [id]
   );
+  const favorite: Favorite[] = await db.select()
+    .from(favorites).where(eq(favorites.id, id)).limit(1)
   if (favorite) {
     return favorite[0];
   }
@@ -104,14 +86,19 @@ export async function getFavorite(
 }
 
 export async function getFavoriteBySource(
-  sourceId: string,
+  sourceID: string,
   source: string
 ): Promise<Favorite> {
-  if (!dbOld) await loadDb();
-  const favorite: Favorite[] = await dbOld.select(
-    "SELECT * FROM favorite WHERE source_id = ? AND source = ? LIMIT 1",
-    [sourceId, source]
-  );
+  // const favorite: Favorite[] = await dbOld.select(
+  //   "SELECT * FROM favorite WHERE source_id = ? AND source = ? LIMIT 1",
+  //   [sourceId, source]
+  // );
+  const favorite = await db.select()
+    .from(favorites).where(and(
+      eq(favorites.source, source),
+      eq(favorites.sourceID, sourceID
+      )
+    ))
   if (favorite) {
     return favorite[0];
   }
@@ -119,36 +106,40 @@ export async function getFavoriteBySource(
 }
 
 export async function getLibraryFavorites(): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
-  let query = "SELECT * FROM favorite WHERE user_id = ?";
-  const params: (string | number | boolean)[] = [defaultUser.id ?? 0];
-  const favoriteQuery = get(libraryQuery);
+  // let query = "SELECT * FROM favorite WHERE user_id = ?";
+  // const params: (string | number | boolean)[] = [defaultUser.id ?? 0];
+  // const favoriteQuery = get(libraryQuery);
+  //
+  // if (favoriteQuery !== "") {
+  //   query +=
+  //     " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
+  //   params.push(favoriteQuery, favoriteQuery);
+  // }
+  //
+  // const libraryMark = get(libraryTag);
+  //
+  // if (libraryMark !== undefined && libraryMark.id !== -1) {
+  //   query +=
+  //     " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
+  //   params.push(libraryMark.id);
+  // }
+  // if (get(librarySource) !== "") {
+  //   query += " AND source = ?";
+  //   params.push(get(librarySource));
+  // }
+  //
+  // query += ` ORDER BY ${get(libraryOrder)} ASC`;
 
-  if (favoriteQuery !== "") {
-    query +=
-      " AND (INSTR(LOWER(NAME), LOWER(?)) > 0 OR INSTR(LOWER(EXTRA_NAME), LOWER(?)) > 0)";
-    params.push(favoriteQuery, favoriteQuery);
-  }
-
-  const libraryMark = get(libraryTag);
-
-  if (libraryMark !== undefined && libraryMark.id !== -1) {
-    query +=
-      " AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)";
-    params.push(libraryMark.id);
-  }
-  if (get(librarySource) !== "") {
-    query += " AND source = ?";
-    params.push(get(librarySource));
-  }
-
-  query += ` ORDER BY ${get(libraryOrder)} ASC`;
+  // let query = db.query.favorites.findMany({
+  //
+  // })
 
   try {
-    const favorites: Favorite[] = await dbOld.select(query, params);
-    if (libraryMark?.id === -1)
-      return favorites.filter((f) => f.isUltraFavorite);
-    return favorites;
+    // const favorites: Favorite[] = await dbOld.select(query, params);
+    // if (libraryMark?.id === -1)
+    //   return favorites.filter((f) => f.isUltraFavorite);
+    // return favorites;
+    return db.select().from(favorites)
   } catch (error) {
     console.log(error);
     return [];
@@ -158,23 +149,17 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
 }
 
 export async function getRawFavorites(): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
-  const favorites: Favorite[] = await dbOld.select(
-    "SELECT * FROM favorite WHERE user_id = ?",
-    [defaultUser.id]
-  );
-  return favorites;
+  // const favorites: Favorite[] = await dbOld.select(
+  //   "SELECT * FROM favorite WHERE user_id = ?",
+  //   [defaultUser.id]
+  // );
+  // return favorites;
+  return await db.select().from(favorites)
 }
 
 export async function getUltraFavorites(): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
   try {
-    // const favorites: Favorite[] = await db.query.favorites.findMany({
-    //   where: (favorites, { eq }) => eq(favorites.isUltraFavorite, true)
-    // });
-    const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
-    console.log(favs)
-    return favs
+    return await db.select().from(favorites).where(eq(favorites.isUltraFavorite, true))
   } catch (error) {
     console.log(error);
     return [];
@@ -184,16 +169,24 @@ export async function getUltraFavorites(): Promise<Favorite[]> {
 }
 
 export async function getFavoritesByMark(
-  userID: number | undefined,
+  userID: number,
   mark: Mark
 ): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
   try {
-    const favorites: Favorite[] = await dbOld.select(
-      "SELECT * FROM favorite WHERE user_id = ? AND id IN (SELECT favorite_id FROM mark_favorites WHERE mark_id = ?)",
-      [userID, mark.id]
-    );
-    return favorites;
+    const subquery = await db
+      .select({ savedID: markFavorites.savedID })
+      .from(markFavorites)
+      .where(eq(markFavorites.markID, mark.id));
+    const favs: Favorite[] = await db
+      .select()
+      .from(favorites)
+      .where(
+        and(
+          eq(favorites.userID, userID),
+          inArray(favorites.id, subquery.map(s => s.savedID))
+        )
+      );
+    return favs;
   } catch (error) {
     console.log(error);
     return [];
@@ -206,13 +199,13 @@ export async function getFavoritesByTypes(
   userID: number | undefined,
   types: string[]
 ): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
   try {
-    const favorites: Favorite[] = await dbOld.select(
-      "SELECT * FROM favorite WHERE user_id = ? AND type in (?)",
-      [userID, types]
-    );
-    return favorites;
+    // const favorites: Favorite[] = await dbOld.select(
+    //   "SELECT * FROM favorite WHERE user_id = ? AND type in (?)",
+    //   [userID, types]
+    // );
+    // return favorites;
+    return []
   } catch (error) {
     console.log(error);
     return [];
@@ -226,7 +219,6 @@ export async function getFavoritesBySource(
   source: string,
   query = ""
 ): Promise<Favorite[]> {
-  if (!dbOld) await loadDb();
   try {
     const favorites: Favorite[] =
       query === ""
@@ -270,29 +262,11 @@ export async function getFavoriteSources(): Promise<string[]> {
   }
 }
 
-export async function updateFavorite(favorite: Favorite): Promise<void> {
-  if (!dbOld) await loadDb();
+export async function updateFavorite(saved: Favorite): Promise<void> {
   try {
-    await dbOld.execute(
-      "UPDATE favorite SET name = ?, folder_name = ?, cover = ?, link = ?, source = ?, source_id = ?, type = ?, extra_name = ?, title_color = ?, card_color = ?, grade = ?, author = ?, description = ?, is_ultra_favorite = ? WHERE id = ?",
-      [
-        favorite.name,
-        favorite.folder_name,
-        favorite.cover,
-        favorite.link,
-        favorite.source,
-        favorite.source_id,
-        favorite.type,
-        favorite.extra_name,
-        favorite.title_color,
-        favorite.card_color,
-        favorite.grade,
-        favorite.author,
-        favorite.description,
-        favorite.is_ultra_favorite,
-        favorite.id,
-      ]
-    );
+    await db.update(favorites)
+      .set(saved)
+      .where(eq(favorites.id, saved.id)).limit(1)
   } catch (error) {
     console.log(error);
   } finally {
@@ -300,33 +274,24 @@ export async function updateFavorite(favorite: Favorite): Promise<void> {
   }
 }
 
-export async function isUltraFavorite(favoriteId: number) {
-  const result: { is_ultra_favorite: string }[] = await dbOld.select(
-    "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
-    [favoriteId]
-  );
-  return getBool(result[0].is_ultra_favorite);
+export async function isUltraFavorite(favoriteID: number) {
+  return (await db.select().from(favorites).where(eq(favorites.id, favoriteID)).limit(1))[1].isUltraFavorite ?? false
 }
 
 export async function toggleUltraFavorite(
   favorite: Favorite,
   refresh: boolean = true
 ): Promise<boolean> {
-  if (!dbOld) await loadDb();
   try {
-
     await db.update(favorites).set({ isUltraFavorite: true }).where(eq(favorites.id, favorite.id))
-    const result: { is_ultra_favorite: string }[] = await dbOld.select(
-      "SELECT is_ultra_favorite FROM favorite WHERE id = ?",
-      [favorite.id]
-    );
+    const result: { isUltraFavorite: boolean | null }[] = await db.select({ isUltraFavorite: favorites.isUltraFavorite }).from(favorites).where(eq(favorites.id, favorite.id)).limit(1);
     if (refresh) {
       refreshFavorites();
       refreshLibrary();
-      if (result[0].is_ultra_favorite === "true")
+      if (result[0].isUltraFavorite)
         loadFavoriteChapters(favorite);
     }
-    return result[0].is_ultra_favorite === "true";
+    return result[0]?.isUltraFavorite ?? false;
   } catch (error) {
     console.log(error);
     return false;
@@ -336,7 +301,6 @@ export async function toggleUltraFavorite(
 }
 
 export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
-  if (!dbOld) await loadDb();
   try {
     const placeholders = favorites.map(() => "?").join(", ");
     await dbOld.execute(
@@ -355,7 +319,6 @@ export async function deleteFavorite(favorite: Favorite): Promise<{
   markFavorites: { favorite_id: number; mark_id: number }[];
   readed: { favorite_id: number; chapter_id: string }[];
 }> {
-  if (!dbOld) await loadDb();
   try {
     const markFavorites = await dbOld.select<
       { favorite_id: number; mark_id: number }[]

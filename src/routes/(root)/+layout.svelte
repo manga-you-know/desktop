@@ -61,7 +61,7 @@
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
-  import { retroTheme } from "@/states";
+  import { retroMode } from "@/states";
   import { type } from "@tauri-apps/plugin-os";
 
   let { children } = $props();
@@ -235,7 +235,7 @@
   {/if}
 </div>
 <svelte:head>
-  {@html retroTheme.active
+  {@html retroMode.active
     ? "<style>* { border-radius: 0 !important; }</style>"
     : ""}
 </svelte:head>

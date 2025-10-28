@@ -219,7 +219,7 @@
     <img
       src="/square-icon.png"
       alt="logo"
-      class="h-6 rounded-md"
+      class="h-6 rounded-sm"
       data-tauri-drag-region={!$isFullscreen}
     />
     <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>

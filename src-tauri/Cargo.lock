@@ -35,9 +35,6 @@ dependencies = [
  "tauri-plugin-store",
  "tauri-plugin-updater",
  "tauri-plugin-window-state",
- "webview2-com 0.37.0",
- "webview2-com-sys 0.37.0",
- "windows 0.61.3",
 ]
 
 [[package]]
@@ -5717,7 +5714,7 @@ dependencies = [
  "url",
  "urlpattern",
  "webkit2gtk",
- "webview2-com 0.38.0",
+ "webview2-com",
  "window-vibrancy",
  "windows 0.61.3",
 ]
@@ -6214,7 +6211,7 @@ dependencies = [
  "thiserror 2.0.17",
  "url",
  "webkit2gtk",
- "webview2-com 0.38.0",
+ "webview2-com",
  "windows 0.61.3",
 ]
 
@@ -6240,7 +6237,7 @@ dependencies = [
  "tauri-utils",
  "url",
  "webkit2gtk",
- "webview2-com 0.38.0",
+ "webview2-com",
  "windows 0.61.3",
  "wry",
 ]
@@ -7209,26 +7206,12 @@ dependencies = [
 
 [[package]]
 name = "webview2-com"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b542b5cfbd9618c46c2784e4d41ba218c336ac70d44c55e47b251033e7d85601"
-dependencies = [
- "webview2-com-macros",
- "webview2-com-sys 0.37.0",
- "windows 0.61.3",
- "windows-core 0.61.2",
- "windows-implement 0.60.1",
- "windows-interface",
-]
-
-[[package]]
-name = "webview2-com"
 version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4ba622a989277ef3886dd5afb3e280e3dd6d974b766118950a08f8f678ad6a4"
 dependencies = [
  "webview2-com-macros",
- "webview2-com-sys 0.38.0",
+ "webview2-com-sys",
  "windows 0.61.3",
  "windows-core 0.61.2",
  "windows-implement 0.60.1",
@@ -7244,17 +7227,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.106",
-]
-
-[[package]]
-name = "webview2-com-sys"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ae2d11c4a686e4409659d7891791254cf9286d3cfe0eef54df1523533d22295"
-dependencies = [
- "thiserror 2.0.17",
- "windows 0.61.3",
- "windows-core 0.61.2",
 ]
 
 [[package]]
@@ -7913,7 +7885,7 @@ dependencies = [
  "url",
  "webkit2gtk",
  "webkit2gtk-sys",
- "webview2-com 0.38.0",
+ "webview2-com",
  "windows 0.61.3",
  "windows-core 0.61.2",
  "windows-version",

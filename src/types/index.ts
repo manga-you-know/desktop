@@ -12,7 +12,7 @@ export type { ComicSource } from "./comicSource.ts"
 export type { Suggestion } from "./suggestion";
 export type { UpdateInfo } from "./updateInfo";
 export type { Downloading } from "./downloading";
-export type { SearchResult } from "./SearchResult"
+export type { SearchResult } from "./searchResult"
 export type { MarkFavorites } from "./markFavorite";
 export type { FavoriteLoaded } from "./favoriteLoaded";
 export type { NotificationPayload } from "./notificationPayload";

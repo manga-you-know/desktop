@@ -1,3 +1,6 @@
+import { load } from "@tauri-apps/plugin-store"
+
+
 export const themeMode = new class {
   #value: "light" | "dark" = $state("dark")
   get value() {
@@ -11,16 +14,11 @@ export const themeMode = new class {
   }
 }
 
-export const retroTheme = new class {
-  #active = $state(false)
-  get active() {
-    return this.#active
-  }
-  set active(v) {
-    this.#active = v
-  }
-  toggle() {
-    this.#active = !this.#active
+export const retroMode = new class {
+  active = $state(false)
+  async save(v: boolean) {
+    const store = await load("settings.json")
+    store.set("retro_mode", v)
   }
 }
 

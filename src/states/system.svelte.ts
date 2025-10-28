@@ -1,17 +1,17 @@
 
 import { DownloadManager } from "@/managers";
 import { ANIMESOURCES, COMICSOURCES, IS_MOBILE, MANGASOURCES } from "@/constants";
-import {
-  type Mark,
-  type Panel,
-  type Readed,
-  type Chapter,
-  type Favorite,
-  type Language,
-  type UpdateInfo,
-  type Downloading,
-  type FavoriteLoaded,
-  type ReadCache,
+import type {
+  Mark,
+  Panel,
+  Readed,
+  Favorite,
+  Chapter,
+  Language,
+  ReadCache,
+  UpdateInfo,
+  Downloading,
+  FavoriteLoaded,
 } from "@/types";
 // import { favorites } from "@/db";
 
@@ -26,6 +26,27 @@ export const openReadModal = new class { active = $state(false) }
 export const openReaderMenu = new class { active = $state(false) }
 export const openPatchNotes = new class { active = $state(false) }
 export const openReaderDrawer = new class { active = $state(false) }
+
+export const texts = new class {
+  language: "en" | "pt-br" = $state("en")
+
+  finalTexts: Record<string, { title: string, welcome: string }> = {
+    en: {
+      title: "faggs",
+      welcome: "Hello my friend called ? !!!"
+    },
+    "pt-br": {
+      title: "viados",
+      welcome: "Fala viadoooo ? !!!"
+    }
+  }
+
+  text = $derived(this.finalTexts[this.language])
+  title = $derived(this.text.title)
+}
+
+
+
 
 export const rawSaveds = new class {
   value: Favorite[] = $state([])

@@ -5,6 +5,7 @@ import type { MangaDl } from "@/interfaces";
 
 export const Atsumaru: ComicSource = {
   baseUrl: "https://atsu.moe",
+  type: "manga",
   isMultiLanguage: false,
 
   getMangaByUrl(_: string): Promise<Favorite> {
