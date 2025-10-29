@@ -4,12 +4,12 @@
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { onMount } from "svelte";
 
-  const window = getCurrentWindow();
+  // const window = getCurrentWindow();
   onMount(() => {
-    if (window.label === "main") {
-      goto($lastPage);
-    } else {
-      goto("/notificator");
-    }
+    // if (window.label === "main") {
+    goto($lastPage);
+    // } else {
+    //   goto("/notificator");
+    // }
   });
 </script>

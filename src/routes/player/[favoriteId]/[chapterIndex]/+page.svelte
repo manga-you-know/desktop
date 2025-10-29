@@ -1,8 +1,8 @@
 <script lang="ts">
-  import "vidstack/icons";
-  import "vidstack/player";
-  import "vidstack/player/ui";
-  import "vidstack/player/layouts";
+  // import "vidstack/icons";
+  // import "vidstack/player";
+  // import "vidstack/player/ui";
+  // import "vidstack/player/layouts";
   import { fetch } from "@tauri-apps/plugin-http";
   import {
     defineCustomElements,

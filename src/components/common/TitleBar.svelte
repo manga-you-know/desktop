@@ -208,7 +208,7 @@
 <div
   class={cn(
     "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 z-80! h-10 translate-y-0 pointer-events-auto transition-all duration-300",
-    page.route.id?.startsWith("/(root)/reader") &&
+    page.route.id?.startsWith("/reader") &&
       $isFullscreen &&
       !$openMenuChapters &&
       "h-0 -translate-y-12",
@@ -273,9 +273,8 @@
       </Menubar.Menu>
       <Menubar.Menu>
         <Menubar.Trigger
-          class={cn(
-            page.route.id?.startsWith("/(root)/reader") && "hidden md:block",
-          )}>About</Menubar.Trigger
+          class={cn(page.route.id?.startsWith("/reader") && "hidden md:block")}
+          >About</Menubar.Trigger
         >
         <Menubar.Content class="z-51">
           <Menubar.Item
@@ -362,7 +361,7 @@
           if (query.length === 0) showPopSearch = false;
         }}
       >
-        {#if page.route.id?.startsWith("/(root)/reader")}
+        {#if page.route.id?.startsWith("/reader")}
           <Label
             class={cn(
               "select-none text-nowrap text-primary/70! z-3 max-w-0 overflow-x-hidden truncate transition-all duration-500",
@@ -381,7 +380,7 @@
           <Popover.Trigger
             class={cn(
               "outline-none focus:outline-none max-w-12 transition-all duration-500",
-              (!page.route.id?.startsWith("/(root)/reader") ||
+              (!page.route.id?.startsWith("/reader") ||
                 showSearch ||
                 query.length > 0) &&
                 "max-w-152 px-2",
@@ -408,7 +407,7 @@
             <div
               class={cn(
                 "flex items-center px-2 rounded-xl border border-secondary bg-background/30 hover:bg-secondary overflow-x-hidden",
-                // (!page.route.id?.startsWith("/(root)/reader") ||
+                // (!page.route.id?.startsWith("/reader") ||
                 //   showSearch ||
                 //   query.length > 0) &&
                 //   "ml-32 md:ml-12 lg:ml-0",
@@ -434,7 +433,7 @@
               <Input
                 class={cn(
                   "w-[20vw] sm:w-[30vw] md:w-[32vw] lg:w-[40vw] h-8 pointer-events-auto max-w-[0] px-0 outline-none border-none transition-all duration-300",
-                  (!page.route.id?.startsWith("/(root)/reader") ||
+                  (!page.route.id?.startsWith("/reader") ||
                     showSearch ||
                     query.length > 0) &&
                     "max-w-132 px-2",
@@ -690,7 +689,7 @@
       </button>
       <div class="w-[calc(2.25rem*3+0.25rem)]"></div>
     </div>
-    <!-- {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/(root)/reader")} -->
+    <!-- {#if favoritesWithChapters.length > 0 && page.route.id?.startsWith("/reader")} -->
     <!--   <div -->
     <!--     bind:this={divFavs} -->
     <!--     onwheel={(e) => { -->

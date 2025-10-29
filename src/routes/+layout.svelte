@@ -63,6 +63,8 @@
   import { exit } from "@tauri-apps/plugin-process";
   import { retroMode } from "@/states";
   import { type } from "@tauri-apps/plugin-os";
+    import { Ssgoi, type SsgoiConfig } from "@ssgoi/svelte";
+    import { fade, scroll } from "@ssgoi/svelte/view-transitions";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -133,6 +135,119 @@
     isMaximized.set(await window.isMaximized());
     isFullscreen.set(await window.isFullscreen());
   }
+// const routeOrder = ['/home', '/favorites', '/library', '/panels'];
+//    const createMiddleware = (routes: [string]) => {
+//     return (from: string, to: string) => {
+//       const fromIndex = routes.indexOf(from);
+//       const toIndex = routes.indexOf(to);
+//
+//       if (fromIndex < toIndex) {
+//         return { from: "/nav/prev", to: "/nav/next" };
+//       } else {
+//         return { from: "/nav/next", to: "/nav/prev" };
+//       }
+//     };
+//   };
+  const configTransitions: SsgoiConfig = {
+    transitions: [
+      {
+        from: '/home',
+        to: '/favorites',
+        transition: scroll({ 
+          direction: 'up',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/home',
+        to: '/library',
+        transition: scroll({ 
+          direction: 'up',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/home',
+        to: '/panels',
+        transition: scroll({ 
+          direction: 'up',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/favorites',
+        to: '/home',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/favorites',
+        to: '/library',
+        transition: scroll({ 
+          direction: 'up',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/favorites',
+        to: '/panels',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/library',
+        to: '/home',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/library',
+        to: '/favorites',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/library',
+        to: '/panels',
+        transition: scroll({ 
+          direction: 'up',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/panels',
+        to: '/home',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/panels',
+        to: '/favorites',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+      {
+        from: '/panels',
+        to: '/library',
+        transition: scroll({ 
+          direction: 'down',
+          spring: { stiffness: 300, damping: 30 }
+        })
+      },
+    ]
+  }
 
   onMount(async () => {
     loadDatabase();
@@ -165,7 +280,7 @@
   });
 
   $effect(() => {
-    if (!page.route?.id?.startsWith("/(root)/reader"))
+    if (!page.route?.id?.startsWith("/reader"))
       window.setProgressBar({
         status: ProgressBarStatus.None,
       });
@@ -174,9 +289,11 @@
 
 <svelte:window onkeydown={handleKeydown} />
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
+
+<Ssgoi config={configTransitions}>
 <div
   class={cn(
-    "text-black dark:text-white border-background",
+    "relative text-black dark:text-white border-background",
     $theme === "dark" && "dark",
   )}
 >
@@ -200,7 +317,7 @@
       class={cn(
         "fixed z-999 pointer-events-none w-screen h-screen transition-colors duration-300",
         $useFilter &&
-          (!$filterReader || page.route.id?.startsWith("/(root)/reader")) &&
+          (!$filterReader || page.route.id?.startsWith("/reader")) &&
           $filter,
       )}
     ></div>
@@ -208,7 +325,7 @@
       class={cn(
         "flex flex-col overflow-hidden transition-colors duration-300 group/webkit",
         !$windowEffects && "bg-background",
-        page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
+        page.route.id?.startsWith("/reader") && "dark:bg-black",
       )}
       data-webkit={!["linux", "macos"].includes(type())}
     >
@@ -234,6 +351,8 @@
     </div>
   {/if}
 </div>
+</Ssgoi>
+
 <svelte:head>
   {@html retroMode.active
     ? "<style>* { border-radius: 0 !important; }</style>"

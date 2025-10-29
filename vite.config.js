@@ -21,7 +21,8 @@ export default defineConfig({
       ignored: ['**/src-tauri/**'],
     },
   },
-  // envPrefix: ["VITE_", "TAURI_"],
+
+  envPrefix: ["VITE_", "TAURI_"],
   build: {
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
     target:

@@ -17,7 +17,7 @@ import { favorites } from "@/db";
 import { downloader } from "@/services/downloader";
 
 // export const downloadManager = writable<DownloadManager>(new DownloadManager());
-export const downloadManager = writable(downloader)
+export const downloadManager = writable(new DownloadManager())
 export const favoritesLoaded = writable<Record<string, FavoriteLoaded>>({});
 export const undoTasks = writable<
   { do: (() => void) | (() => Promise<void>); message: string }[]
