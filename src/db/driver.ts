@@ -1,4 +1,3 @@
-
 import { drizzle } from "drizzle-orm/sqlite-proxy";
 import { DATABASE_NAME } from "@/constants";
 import Database from "@tauri-apps/plugin-sql";
@@ -54,7 +53,7 @@ export const db = drizzle<typeof schema>(
     return { rows: results };
   },
   // Pass the schema to the drizzle instance
-  { schema: schema, logger: true }
+  { schema: schema, logger: true, casing: "snake_case" },
 );
 
 /**

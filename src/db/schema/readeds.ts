@@ -3,11 +3,11 @@ import { favorites } from "./favorites";
 
 
 export const readeds = sqliteTable("readed", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  chapterId: text("chapter_id").notNull(),
-  source: text("source").notNull(),
-  language: text("language").default("default"),
-  favoriteId: integer("favorite_id").notNull().references(() => favorites.id)
+  id: integer().primaryKey({ autoIncrement: true }),
+  chapterId: text().notNull(),
+  source: text().notNull(),
+  language: text().default("default"),
+  favoriteId: integer().notNull().references(() => favorites.id)
 },
   (t) => [
     unique().on(t.chapterId, t.source, t.language, t.favoriteId),

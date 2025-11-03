@@ -90,9 +90,7 @@
     <Input
       class={cn(
         "transition-all duration-500 ease-in-out border-none outline-none ring-none",
-        showInput
-          ? "max-w-16 sm:max-w-24 lg:max-w-48"
-          : "max-w-[0px]",
+        showInput ? "max-w-16 sm:max-w-24 lg:max-w-48" : "max-w-[0px]",
       )}
       bind:value={$libraryQuery}
       variant="link"
