@@ -293,7 +293,7 @@
 <Ssgoi config={configTransitions}>
 <div
   class={cn(
-    "relative text-black dark:text-white border-background",
+    "relative text-primary border-background",
     $theme === "dark" && "dark",
   )}
 >

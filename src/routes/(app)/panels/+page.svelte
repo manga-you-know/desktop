@@ -172,7 +172,7 @@
   </div>
   <div class="h-full mr-4 overflow-hidden flex flex-col">
     <div
-      class="scrollbar w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
+      class=" w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5 scrollbar scrollbar-thumb-sky-700"
       bind:this={panelDiv}
     >
       <div class="w-full h-14 ssmh:h-0"></div>
@@ -213,7 +213,7 @@
                 {#each pages as page (page.key)}
                   {#if page.type === "ellipsis"}
                     <Pagination.Item tabindex={-1}>
-                      <Pagination.Ellipsis class="dark:text-white" />
+                      <Pagination.Ellipsis class="text-primary" />
                     </Pagination.Item>
                   {:else}
                     <Pagination.Item>

@@ -28,7 +28,6 @@ const config: Config = {
         sssmh: {
           raw: "(max-height: 500px)",
         },
-
       },
       transitionDuration: {
         "200": "200ms",

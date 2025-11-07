@@ -1,8 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@config "../tailwind.config.ts";
+/* @plugin "tailwind-scrollbar"; */
 
+@config "../tailwind.config.ts";
 
 /* @import '@layerstack/tailwind/core.css'; */
 /* @import '@layerstack/tailwind/utils.css'; */
@@ -23,7 +24,8 @@
 
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
-/* */ */
+/* */
+*/
 /* @layer base { */
 /*   *, */
 /*   ::after, */
@@ -185,9 +187,11 @@
   * {
     @apply border-sidebar;
   }
+
   li {
-    list-style:none; 
+    list-style: none;
   }
+
   body {
     @apply text-foreground;
   }

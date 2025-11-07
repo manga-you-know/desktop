@@ -13,11 +13,9 @@
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",
           outline:
-            "border border-secondary bg-background/30 hover:bg-secondary dark:text-slate-200",
-          secondary:
-            "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:text-slate-200",
-          ghost:
-            "hover:bg-secondary hover:text-secondary-foreground/80 dark:text-slate-200",
+            "border border-secondary bg-background/30 hover:bg-secondary text-primary",
+          secondary: "bg-secondary text-primary hover:bg-secondary/80",
+          ghost: "hover:bg-secondary text-primary",
           link: "text-primary underline-offset-4 hover:underline",
           elevated:
             "bg-background shadow-md -translate-y-[3px] shadow-accent transition-all duration-200 border border-border/50 bg-accent text-accent-foreground text-slate-200",

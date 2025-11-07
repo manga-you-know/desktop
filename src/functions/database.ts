@@ -57,14 +57,14 @@ export async function migrateDatabase() {
 
   try {
     const databaseInfo: { name: string }[] = await dbOld.select(
-      "PRAGMA table_info(favorite);"
+      "PRAGMA table_info(favorite);",
     );
     const columns = databaseInfo.map((column) => column.name);
     for (const migration of DATABASE_MIGRATION) {
       if (columns.includes(migration.name)) continue;
       await dbOld.execute(
         `ALTER TABLE favorite ADD COLUMN ${migration.name} ${migration.type} DEFAULT "?";`,
-        [migration.default]
+        [migration.default],
       );
     }
   } catch (error) {
@@ -77,7 +77,7 @@ export async function migrateDatabase() {
 export function isReaded(chapter: Chapter, readeds: Readed[]) {
   return readeds.find(
     (r) =>
-      r.chapter_id === chapter.chapter_id && r?.language == chapter?.language
+      r.chapter_id === chapter.chapter_id && r?.language == chapter?.language,
   );
 }
 
@@ -89,7 +89,7 @@ export async function isFavorite(favorite: Favorite): Promise<boolean> {
   const rawFavs = await FavoriteDB.getRawFavorites();
   return rawFavs.some(
     (fav) =>
-      fav.sourceId === favorite.sourceId || fav.source === favorite.source
+      fav.sourceId === favorite.sourceId || fav.source === favorite.source,
   );
 }
 
@@ -98,7 +98,7 @@ export async function addReadedBelow(
   chapters: Chapter[],
   favorite: Favorite,
   readeds?: Readed[],
-  dontDelete?: boolean
+  dontDelete?: boolean,
 ) {
   const localReadeds =
     readeds === undefined
@@ -126,7 +126,7 @@ export async function addReadedBelow(
 export async function deleteReadedAbove(
   readed: Readed,
   chapters: Chapter[],
-  readeds: Readed[]
+  readeds: Readed[],
 ) {
   const toDelete: Readed[] = [];
   let isForDelete = false;
@@ -153,7 +153,7 @@ function createReadedMap(readeds: Readed[]): Map<string, Readed> {
 
 export async function refreshRawFavorites() {
   const favs = await FavoriteDB.getRawFavorites();
-  rawFavorites.set(favs)
+  rawFavorites.set(favs);
 }
 
 export async function refreshLibrary() {
@@ -163,15 +163,15 @@ export async function refreshLibrary() {
 
 export async function refreshFavorites() {
   // const favs = await FavoriteDB.getUltraFavorites();
-  const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
-  console.log(favs)
-  ultraFavorites.set(favs);
-  const uload = get(favoritesLoaded);
-  for (let id of Object.keys(uload)) {
-    if (!favs.map((f) => f.id.toString()).includes(id)) {
-      removeFavorite(id);
-    }
-  }
+  // const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
+  // console.log(favs)
+  // ultraFavorites.set(favs);
+  // const uload = get(favoritesLoaded);
+  // for (let id of Object.keys(uload)) {
+  //   if (!favs.map((f) => f.id.toString()).includes(id)) {
+  //     removeFavorite(id);
+  //   }
+  // }
 }
 
 export async function refreshReadeds(favorite: Favorite) {
@@ -199,8 +199,14 @@ export async function refreshPanels() {
     const path = await join(docDir, "favorite-panels", panel.name);
     const splitted: string[] = (path.includes("\\")
       ? path.split("\\").at(-1)?.split("~")
-      : path.split("/").at(-1)?.split("~")) ?? [""]
-    localPanels.push({ path, shouldCopy: false, id: Number(splitted[0]), name: splitted[1]?.replaceAll("-", " "), chapter: splitted[2] });
+      : path.split("/").at(-1)?.split("~")) ?? [""];
+    localPanels.push({
+      path,
+      shouldCopy: false,
+      id: Number(splitted[0]),
+      name: splitted[1]?.replaceAll("-", " "),
+      chapter: splitted[2],
+    });
   }
   if (localPanels.length > 0) {
     panels.set(localPanels);
@@ -208,14 +214,14 @@ export async function refreshPanels() {
 }
 
 export async function removePanel(path: string) {
-  await remove(path)
-  let panelsNow = get(panels)
+  await remove(path);
+  let panelsNow = get(panels);
   for (let i = 0; i < panelsNow.length; i++) {
     if (panelsNow[i].path === path) {
       panelsNow.splice(i, 1);
       break;
     }
   }
-  panels.set(panelsNow)
-  toast.info("Panel removed with success")
+  panels.set(panelsNow);
+  toast.info("Panel removed with success");
 }
