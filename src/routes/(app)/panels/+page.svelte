@@ -107,73 +107,75 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <SsgoiTransition id="/panels">
-  <div class="h-full mr-4 overflow-hidden flex flex-col items-center">
+  <div class="flex justify-center relative p-2">
     <div
-      class="scrollbar w-full h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
-      bind:this={panelDiv}
+      class="bg-secondary/60 backdrop-blur-sm flex max-w-[80svw]! rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
     >
-      <div
-        class="bg-secondary/60 backdrop-blur-sm flex max-w-[80svw]! rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+      <Badge
+        class="h-10 w-12 flex justify-center items-center"
+        variant="outline"
       >
-        <Badge
-          class="h-10 w-12 flex justify-center items-center"
-          variant="outline"
-        >
-          <ScrollingValue class="-mt-4" value={count} />
-        </Badge>
-        <div class="inline-flex relative items-center">
-          <Icon
-            class={cn(
-              "size-5! ml-3 text-primary! absolute z-10",
-              searchTerm !== "" && "cursor-pointer",
-            )}
-            icon={searchTerm === "" ? "uil:search" : "lucide:x"}
-            onclick={() => {
-              searchTerm = "";
-              search();
-            }}
-          />
-          <Input
-            bind:value={searchTerm}
-            class="w-52 pl-9"
-            labelClass="ml-6"
-            variant="outline"
-            placeholder="Search name | chapter..."
-            floatingLabel
-            autocomplete="off"
-            tabindex={-1}
-            oninput={search}
-          />
-        </div>
-        <Select
-          class="max-w-52"
-          classPopup="w-44"
-          bind:selected={selectedTitle}
-          items={panelsTitle}
-          label="Title"
-          search
-          itemsLabel={panelsTitleLabel}
-          wheelControls
-          onselect={async () => {
-            selectedChapter = "";
+        <ScrollingValue class="-mt-4" value={count} />
+      </Badge>
+      <div class="inline-flex relative items-center">
+        <Icon
+          class={cn(
+            "size-5! ml-3 text-primary! absolute z-10",
+            searchTerm !== "" && "cursor-pointer",
+          )}
+          icon={searchTerm === "" ? "uil:search" : "lucide:x"}
+          onclick={() => {
+            searchTerm = "";
             search();
-            await delay(5);
-            if (panelsChapter.length === 1) selectedChapter = panelsChapter[0];
           }}
         />
-        <Select
-          class="w-28"
-          classPopup="w-24"
-          bind:selected={selectedChapter}
-          items={panelsChapter}
-          label="Chapter"
-          search
-          wheelControls
-          closeButton={panelsChapter.length > 1}
-          onselect={search}
+        <Input
+          bind:value={searchTerm}
+          class="w-52 pl-9"
+          labelClass="ml-6"
+          variant="outline"
+          placeholder="Search name | chapter..."
+          floatingLabel
+          autocomplete="off"
+          tabindex={-1}
+          oninput={search}
         />
       </div>
-      <div class="w-full h-32 ssmh:h-0"></div>
+      <Select
+        class="max-w-52"
+        classPopup="w-44"
+        bind:selected={selectedTitle}
+        items={panelsTitle}
+        label="Title"
+        search
+        itemsLabel={panelsTitleLabel}
+        wheelControls
+        onselect={async () => {
+          selectedChapter = "";
+          search();
+          await delay(5);
+          if (panelsChapter.length === 1) selectedChapter = panelsChapter[0];
+        }}
+      />
+      <Select
+        class="w-28"
+        classPopup="w-24"
+        bind:selected={selectedChapter}
+        items={panelsChapter}
+        label="Chapter"
+        search
+        wheelControls
+        closeButton={panelsChapter.length > 1}
+        onselect={search}
+      />
+    </div>
+  </div>
+  <div class="h-full mr-4 overflow-hidden flex flex-col">
+    <div
+      class="scrollbar w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
+      bind:this={panelDiv}
+    >
+      <div class="w-full h-14 ssmh:h-0"></div>
       {#each displayedPanels as panel}
         <FavoritePanel
           path={panel.path}

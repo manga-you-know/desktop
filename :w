@@ -66,7 +66,7 @@
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <div
           class={cn(
-            "flex justify-center w-full pb-5 overflow-hidden",
+            "flex w-full pb-5 overflow-hidden",
             $customTitlebar ? "h-[calc(100vh-2.5rem)]!" : "h-[99vh]!",
           )}
         >
