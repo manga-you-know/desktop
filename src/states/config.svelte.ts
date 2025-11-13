@@ -1,26 +1,25 @@
-import { load } from "@tauri-apps/plugin-store"
+import { load } from "@tauri-apps/plugin-store";
 
-
-export const themeMode = new class {
-  #value: "light" | "dark" = $state("dark")
+export const themeMode = new (class {
+  #value: "light" | "dark" = $state("dark");
   get value() {
-    return this.#value
+    return this.#value;
   }
   set value(t) {
-    this.#value = t
+    this.#value = t;
   }
   toggle() {
-    this.#value = this.#value === "dark" ? "light" : "dark"
+    this.#value = this.#value === "dark" ? "light" : "dark";
   }
-}
+})();
 
-export const retroMode = new class {
-  active = $state(false)
+export const retroMode = new (class {
+  active = $state(false);
   async save(v: boolean) {
-    const store = await load("settings.json")
-    store.set("retro_mode", v)
+    const store = await load("settings.json");
+    store.set("retro_mode", v);
   }
-}
+})();
 
 // export const showOnlyNew = writable<boolean>(false);
 // export const closeTray = writable<boolean>(false);

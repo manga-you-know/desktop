@@ -28,15 +28,20 @@ export const db = drizzle<typeof schema>(
     let rows: any = [];
     let results = [];
 
+    const sqlSnake = sql.replace(
+      /[A-Z]/g,
+      (letter) => `_${letter.toLowerCase()}`,
+    );
+
     // If the query is a SELECT, use the select method
-    if (isSelectQuery(sql)) {
-      rows = await sqlite.select(sql, params).catch((e) => {
+    if (isSelectQuery(sqlSnake)) {
+      rows = await sqlite.select(sqlSnake, params).catch((e) => {
         console.error("SQL Error:", e);
         return [];
       });
     } else {
       // Otherwise, use the execute method
-      rows = await sqlite.execute(sql, params).catch((e) => {
+      rows = await sqlite.execute(sqlSnake, params).catch((e) => {
         console.error("SQL Error:", e);
         return [];
       });

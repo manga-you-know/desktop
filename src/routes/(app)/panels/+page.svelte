@@ -172,7 +172,7 @@
   </div>
   <div class="h-full mr-4 overflow-hidden flex flex-col">
     <div
-      class=" w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5 scrollbar scrollbar-thumb-sky-700"
+      class=" w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5 scrollbar"
       bind:this={panelDiv}
     >
       <div class="w-full h-14 ssmh:h-0"></div>

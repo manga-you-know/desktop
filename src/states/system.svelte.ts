@@ -1,6 +1,10 @@
-
 import { DownloadManager } from "@/managers";
-import { ANIMESOURCES, COMICSOURCES, IS_MOBILE, MANGASOURCES } from "@/constants";
+import {
+  ANIMESOURCES,
+  COMICSOURCES,
+  IS_MOBILE,
+  MANGASOURCES,
+} from "@/constants";
 import type {
   Mark,
   Panel,
@@ -15,75 +19,94 @@ import type {
 } from "@/types";
 // import { favorites } from "@/db";
 
-export const openAdd = new class { active = $state(false) }
-export const openTag = new class { active = $state(false) }
-export const openInfo = new class { active = $state(false) }
-export const openUpdate = new class { active = $state(false) }
-export const openSearch = new class { active = $state(false) }
-export const openSettings = new class { active = $state(false) }
-export const openFeedback = new class { active = $state(false) }
-export const openReadModal = new class { active = $state(false) }
-export const openReaderMenu = new class { active = $state(false) }
-export const openPatchNotes = new class { active = $state(false) }
-export const openReaderDrawer = new class { active = $state(false) }
+export const openAdd = new (class {
+  active = $state(false);
+})();
+export const openTag = new (class {
+  active = $state(false);
+})();
+export const openInfo = new (class {
+  active = $state(false);
+})();
+export const openUpdate = new (class {
+  active = $state(false);
+})();
+export const openSearch = new (class {
+  active = $state(false);
+})();
+export const openSettings = new (class {
+  active = $state(false);
+})();
+export const openFeedback = new (class {
+  active = $state(false);
+})();
+export const openReadModal = new (class {
+  active = $state(false);
+})();
+export const openReaderMenu = new (class {
+  active = $state(false);
+})();
+export const openPatchNotes = new (class {
+  active = $state(false);
+})();
+export const openReaderDrawer = new (class {
+  active = $state(false);
+})();
 
-export const texts = new class {
-  language: "en" | "pt-br" = $state("en")
+export const texts = new (class {
+  language: "en" | "pt-br" = $state("en");
 
-  finalTexts: Record<string, { title: string, welcome: string }> = {
+  finalTexts: Record<string, { title: string; welcome: string }> = {
     en: {
       title: "faggs",
-      welcome: "Hello my friend called ? !!!"
+      welcome: "Hello my friend called ? !!!",
     },
     "pt-br": {
       title: "viados",
-      welcome: "Fala viadoooo ? !!!"
-    }
-  }
+      welcome: "Fala viadoooo ? !!!",
+    },
+  };
 
-  text = $derived(this.finalTexts[this.language])
-  title = $derived(this.text.title)
-}
+  text = $derived(this.finalTexts[this.language]);
+  title = $derived(this.text.title);
+})();
 
-
-
-
-export const rawSaveds = new class {
-  value: Favorite[] = $state([])
+export const rawSaveds = new (class {
+  value: Favorite[] = $state([]);
   refresh() {
-    this.value = [] // refresh logic
+    this.value = []; // refresh logic
   }
-}
-export const librarySaveds = new class {
-  value: Favorite[] = $state([])
+})();
+export const librarySaveds = new (class {
+  value: Favorite[] = $state([]);
   refresh() {
-    this.value = []
+    this.value = [];
   }
-}
-export const favoriteSaveds = new class {
-  value: Favorite[] = $state([])
+})();
+export const favoriteSaveds = new (class {
+  value: Favorite[] = $state([]);
   refresh() {
-    this.value = []
+    this.value = [];
   }
-}
-export const readeds = new class {
-  value: Readed[] = $state([])
+})();
+export const readeds = new (class {
+  value: Readed[] = $state([]);
   refresh() {
-    this.value = []
+    this.value = [];
   }
-}
-export const tags = new class {
-  value: Mark[] = $state([])
+})();
+export const tags = new (class {
+  value: Mark[] = $state([]);
   refresh() {
-    this.value = []
+    this.value = [];
   }
-}
-export const panels = new class {
-  value: Panel[] = $state([])
+})();
+export const panels = new (class {
+  value: Panel[] = $state([]);
   async refresh() {
-    this.value = []
+    this.value = [];
   }
-}
+})();
 
 // export const selectedScan = writable<string>("");
 // export const libraryTag = writable<Mark | undefined>(undefined);
