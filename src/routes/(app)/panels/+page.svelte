@@ -3,13 +3,14 @@
   import { onMount } from "svelte";
   import { panels } from "@/store";
   import { copyImageFromPath, refreshPanels } from "@/functions";
-  import { Pagination, Badge, Input, ScrollingValue } from "@/lib/components";
+  import { Pagination, Badge, Input } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { delay } from "@/utils";
   import type { Favorite, Panel } from "@/types";
   import { FavoriteDB } from "@/repositories";
   import { SsgoiTransition } from "@ssgoi/svelte";
+  import { ScrollingValue } from "svelte-ux";
 
   let page = $state(1);
   let perPage = 14;
@@ -107,20 +108,20 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <SsgoiTransition id="/panels">
-  <div class="flex justify-center relative p-2">
+  <div class="relative flex justify-center p-2">
     <div
-      class="bg-secondary/60 backdrop-blur-sm flex max-w-[80svw]! rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+      class="bg-secondary/60 absolute z-20 flex max-w-[80svw]! items-center justify-center gap-2 rounded-3xl p-2 backdrop-blur-sm"
     >
       <Badge
-        class="h-10 w-12 flex justify-center items-center"
+        class="flex h-10 w-12 items-center justify-center"
         variant="outline"
       >
-        <ScrollingValue class="-mt-4" value={count} />
+        <ScrollingValue axis="y" value={count} />
       </Badge>
-      <div class="inline-flex relative items-center">
+      <div class="relative inline-flex items-center">
         <Icon
           class={cn(
-            "size-5! ml-3 text-primary! absolute z-10",
+            "text-primary! absolute z-10 ml-3 size-5!",
             searchTerm !== "" && "cursor-pointer",
           )}
           icon={searchTerm === "" ? "uil:search" : "lucide:x"}
@@ -170,12 +171,12 @@
       />
     </div>
   </div>
-  <div class="h-full mr-4 overflow-hidden flex flex-col">
+  <div class="flex h-full flex-col overflow-hidden">
     <div
-      class=" w-full h-full flex flex-wrap justify-center items-start gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5 scrollbar"
+      class="scrollbar flex h-full w-full flex-wrap items-start justify-center gap-5 overflow-x-hidden overflow-y-scroll scroll-smooth p-1"
       bind:this={panelDiv}
     >
-      <div class="w-full h-14 ssmh:h-0"></div>
+      <div class="ssmh:h-0 h-14 w-full"></div>
       {#each displayedPanels as panel}
         <FavoritePanel
           path={panel.path}
@@ -191,9 +192,9 @@
         </Badge>
       {/if}
       {#if panelsWithQuery.length > perPage}
-        <div class="w-full h-10"></div>
+        <div class="h-10 w-full"></div>
         <div
-          class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] z-20 absolute bottom-6 smh:mt-3 p-2 transition-all"
+          class="bg-secondary/60 smh:mt-3 absolute bottom-6 z-20 -mt-[15px] flex rounded-3xl p-2 backdrop-blur-sm transition-all"
         >
           <Pagination.Root
             {count}

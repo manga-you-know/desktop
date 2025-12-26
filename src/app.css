@@ -9,8 +9,8 @@
 /* @import '@layerstack/tailwind/utils.css'; */
 /* @import '@layerstack/tailwind/themes/basic.css'; */
 
-@source '../../node_modules/svelte-ux/dist';
-@source '../../node_modules/layerchart/dist';
+@source './../node_modules/svelte-ux/dist';
+@source './../node_modules/layerchart/dist';
 
 /* :root { */
 /*   --color-primary: var(--color-emerald-600); */
@@ -39,29 +39,57 @@
 /*     ); */
 /*   } */
 /* } */
+@theme {
+  /* Scrollbar colors */
+  --color-scroll-thumb: hsla(0, 0%, 13%, 1);
+  --color-scroll-track: transparent;
+}
 
-@utility scrollbar {
-  &::-webkit-scrollbar {
-    width: 12px;
+@layer base {
+  * {
+    scrollbar-width: thin;
   }
 
-  &::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    @apply bg-secondary/40 px-5;
-    height: 20px;
+  /* Scrollbar colors */
+  scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
+
+  ::-webkit-scrollbar {
+    border-radius: 1rem;
+    background: var(--color-scroll-track);
   }
 
-  &::-webkit-scrollbar-thumb {
-    @apply bg-secondary;
-    pointer-events: auto;
-    padding: 8px;
-    border-radius: 6px;
+  ::-webkit-scrollbar-thumb {
+    border-radius: 1rem;
+    background: var(--color-scroll-thumb);
   }
 
-  &::-webkit-scrollbar-thumb:hover {
-    @apply bg-secondary/80;
+  ::-webkit-scrollbar-track {
+    border-radius: 1rem;
+    background: var(--color-scroll-track);
   }
 }
+/* @utility scrollbar { */
+/*   &::-webkit-scrollbar { */
+/*     width: 12px; */
+/*   } */
+/**/
+/*   &::-webkit-scrollbar-track { */
+/*     border-radius: 100vh; */
+/*     @apply bg-secondary/40 px-5; */
+/*     height: 20px; */
+/*   } */
+/**/
+/*   &::-webkit-scrollbar-thumb { */
+/*     @apply bg-secondary; */
+/*     pointer-events: auto; */
+/*     padding: 8px; */
+/*     border-radius: 6px; */
+/*   } */
+/**/
+/*   &::-webkit-scrollbar-thumb:hover { */
+/*     @apply bg-secondary/80; */
+/*   } */
+/* } */
 
 @utility scrollbar-chapters {
   &::-webkit-scrollbar {
@@ -156,6 +184,11 @@
   html {
     height: 100%;
     overflow: hidden;
+  }
+
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #fffff0 transparent;
   }
 
   .no-blurry {

@@ -12,7 +12,7 @@
 </script>
 
 <ScrollingValue
-  class={cn("-mt-5", value === 9 && "-translate-x-1.5", className)}
+  class={cn(value === 9 && "-translate-x-1.5", className)}
   {value}
   {axis}
 />

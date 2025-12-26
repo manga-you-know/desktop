@@ -43,6 +43,13 @@
     "active": true,
     "targets": "all",
     "createUpdaterArtifacts": true,
+    "externalBin": [
+      "binaries/suwayomi"
+    ],
+    "resources": {
+      "./resources/": "./",
+      "../static/": "static/"
+    },
     "windows": {
       "allowDowngrades": true,
       "certificateThumbprint": null,
@@ -70,10 +77,7 @@
       "icons/icon.icns",
       "icons/icon.ico",
       "icons/icon.png"
-    ],
-    "resources": {
-      "../static/*": "static/"
-    }
+    ]
   },
   "plugins": {
     "updater": {

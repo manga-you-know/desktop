@@ -35,6 +35,27 @@
     "core:app:default",
     "core:path:default",
     "shell:default",
+    "core:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/suwayomi",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "binaries/suwayomi",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
     "http:allow-fetch",
     "http:allow-fetch-cancel",
     "http:allow-fetch-read-body",

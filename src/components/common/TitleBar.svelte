@@ -304,7 +304,7 @@
           </Menubar.Item>
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={() => openUrl("https://discord.gg/EVqHFtP2r8")}
+            onclick={() => openUrl("https://discord.gg/bGrqtHsGgs")}
           >
             <Label>Discord</Label>
             <Icon class="size-5!" icon="ic:round-discord" />

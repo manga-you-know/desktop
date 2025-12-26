@@ -25,7 +25,7 @@
   <ContextMenu.Trigger class={cn("hover:z-10", contextOpen && "z-10")}>
     <Tilt
       class={cn(
-        "hover:scale-[1.2] no-blurry transition duration-500 perspective-[200px]",
+        "no-blurry transition duration-500 perspective-[1500px] hover:scale-[1.2]",
         contextOpen && "scale-[1.2]!",
       )}
     >
@@ -36,7 +36,7 @@
         onmouseleave={() => (shouldCopy = false)}
       >
         <Image
-          class="max-w-100! h-72 rounded-sm object-contain"
+          class="h-72 max-w-100! rounded-sm object-contain"
           src={path}
           alt="favorite panel"
         />
@@ -45,7 +45,7 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content class="-mt-10">
     <Label
-      class="bg-secondary/50 rounded-lg flex mb-0.5 p-[0.3rem] justify-start w-full select-none"
+      class="bg-secondary/50 mb-0.5 flex w-full justify-start rounded-lg p-[0.3rem] select-none"
       >Copy</Label
     >
     <ContextMenu.Item
@@ -87,7 +87,7 @@
     </ContextMenu.Item>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="flex justify-between hover:bg-destructive! relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-linear-to-l from-white/40 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
+      class="hover:bg-destructive! relative z-0 flex justify-between overflow-hidden from-white/40 transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-linear-to-l after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
       onclick={() => {
         deleteOpen = true;
       }}

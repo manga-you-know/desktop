@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { animate } from "animejs";
   import { Button, Badge, Label } from "@/lib/components";
   import Icon from "@iconify/svelte";
   import {
@@ -32,7 +33,7 @@
   let { favorite }: Props = $props();
   let isOpen = $state(false);
   let isEdit = $state(false);
-  let isDelete = $state(false);
+  let isBack = $state(false);
   let isContext = $state(false);
   let isPicking = $state(false);
   let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
@@ -55,6 +56,36 @@
       $coversLoaded[favorite.cover] === favorite.cover;
     }
   });
+
+  let animating = false;
+
+  const turnDelete = () => {
+    animating = true;
+    animate(`#library-${favorite.id}`, {
+      rotateY: "180",
+      duration: 1000,
+    }).then(() => {
+      animating = false;
+      if (isBack) {
+        turnBack();
+      } else {
+        isBack = true;
+      }
+    });
+  };
+
+  const turnBack = async () => {
+    if (isBack && !animating) {
+      animate(`#library-${favorite.id}`, {
+        rotateY: "0",
+        duration: 1000,
+        delay: 500,
+      });
+      isBack = false;
+    } else {
+      isBack = true;
+    }
+  };
 </script>
 
 {#if favorite.type === "anime"}
@@ -63,7 +94,7 @@
   <ReadFavorite {favorite} bind:open={isOpen} />
 {/if}
 <EditFavorite {favorite} bind:open={isEdit} />
-<AskDelete {favorite} bind:open={isDelete} />
+<!-- <AskDelete {favorite} bind:open={isDelete} /> -->
 <PickTags {favorite} bind:open={isPicking} bind:markeds />
 <FavoriteContext
   {favorite}
@@ -73,82 +104,92 @@
   bind:openRead={isOpen}
   bind:openTags={isPicking}
   bind:openEdit={isEdit}
-  bind:openDelete={isDelete}
+  bind:openDelete={isBack}
+  onmouseleave={turnBack}
 >
   <button
     id="library-{favorite.id}"
-    class={cn(
-      "group relative rounded-2xl h-[264px] max-h-[264px] w-[158px] max-w-[158px] flex flex-col p-1 items-center transition-all duration-300 ease-in-out border border-transparent outline-none bg-gray-400 hover:bg-gray-300 dark:bg-secondary/30 dark:hover:bg-secondary/50 hover:cursor-pointer hover:shadow-lg transform  over:border-white hover:border focus:shadow-lg no-blurry",
-      !IS_MOBILE && "hover:scale-[1.08]",
-      isContext && "scale-[1.15]!",
-    )}
+    class="relative h-[264px] max-h-[264px] w-[158px] max-w-[158px] transform-3d"
     onclick={() => (isOpen = true)}
   >
-    <div class="flex items-center justify-center h-[224px] mt-[30px]">
-      {#key $coversLoaded[favorite.cover]}
-        <Image
-          class="w-[146px] min-w-[146px] max-w-[146px] max-h-[224px] object-contain rounded-xl"
-          src={$coversLoaded[favorite.cover] ?? favorite.cover}
-          alt={favorite.name}
-          id={favorite.id?.toString() || ""}
-        />
-      {/key}
-    </div>
-    <div class="w-full h-full fixed flex flex-col justify-between items-center">
-      <Badge
-        class="w-[150px] max-w-[148px] flex justify-center rounded-xl"
-        variant="secondary"
-      >
-        <Label class="text-sm truncate">
-          {favorite.name}
-        </Label>
-      </Badge>
+    <div
+      class="bg-secondary/70 absolute h-[264px] max-h-[264px] w-[158px] max-w-[158px] rotate-y-180 rounded-2xl backface-hidden"
+    ></div>
+    <div
+      class={cn(
+        "group dark:bg-secondary/30 dark:hover:bg-secondary/50 over:border-white no-blurry relative flex h-[264px] max-h-[264px] w-[158px] max-w-[158px] transform flex-col items-center rounded-2xl border border-transparent bg-gray-400 p-1 transition-all duration-300 ease-in-out outline-none backface-hidden hover:cursor-pointer  hover:border hover:bg-gray-300 hover:shadow-lg focus:shadow-lg",
+        !IS_MOBILE && "hover:scale-[1.08]",
+        isContext && "scale-[1.15]!",
+      )}
+    >
+      <div class="mt-[30px] flex h-[224px] items-center justify-center">
+        {#key $coversLoaded[favorite.cover]}
+          <Image
+            class="max-h-[224px] w-[146px] max-w-[146px] min-w-[146px] rounded-xl object-contain backface-visible"
+            src={$coversLoaded[favorite.cover] ?? favorite.cover}
+            alt={favorite.name}
+            id={favorite.id?.toString() || ""}
+          />
+        {/key}
+      </div>
       <div
-        class={cn(
-          "w-full h-8 flex justify-center mb-2 p-1 transform  transition-all duration-300 ease-in-out ",
-          !IS_MOBILE &&
-            "opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0",
-        )}
+        class="fixed flex h-full w-full flex-col items-center justify-between"
       >
-        <div class="inline-flex rounded-md shadow-sm" role="group">
-          <Button
-            class="rounded-r-none rounded-l-2xl"
-            variant="secondary"
-            size="sm"
-            tabindex={-1}
-            onclick={(e: Event) => {
-              e.stopPropagation();
-              isDelete = true;
-            }}
-          >
-            <Icon icon="lucide:trash" class="w-4 h-4" />
-          </Button>
-
-          <Button
-            class="rounded-none -mx-px!"
-            variant="secondary"
-            size="sm"
-            tabindex={-1}
-            onclick={(e: Event) => {
-              e.stopPropagation();
-              isEdit = true;
-            }}
-          >
-            <Icon icon="lucide:square-pen" class="w-4 h-4" />
-          </Button>
-          <Button
-            class="rounded-l-none rounded-r-2xl"
-            variant="secondary"
-            size="sm"
-            tabindex={-1}
-            onclick={async (e: Event) => {
-              e.stopPropagation();
-              markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
-              isPicking = true;
-            }}
-          >
-            <Icon icon="lucide:bookmark" class="w-4 h-4" />
-          </Button>
+        <Badge
+          class="flex w-[150px] max-w-[148px] justify-center rounded-xl"
+          variant="secondary"
+        >
+          <Label class="truncate text-sm">
+            {favorite.name}
+          </Label>
+        </Badge>
+        <div
+          class={cn(
+            "mb-2 flex h-8 w-full transform justify-center p-1  transition-all duration-300 ease-in-out ",
+            !IS_MOBILE &&
+              "translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
+          )}
+        >
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            <Button
+              class="rounded-l-2xl rounded-r-none"
+              variant="secondary"
+              size="sm"
+              tabindex={-1}
+              onclick={(e: Event) => {
+                e.stopPropagation();
+                isBack = true;
+                turnDelete();
+              }}
+            >
+              <Icon icon="lucide:trash" class="h-4 w-4" />
+            </Button>
+            <Button
+              class="-mx-px! rounded-none"
+              variant="secondary"
+              size="sm"
+              tabindex={-1}
+              onclick={(e: Event) => {
+                e.stopPropagation();
+                isEdit = true;
+              }}
+            >
+              <Icon icon="lucide:square-pen" class="h-4 w-4" />
+            </Button>
+            <Button
+              class="rounded-l-none rounded-r-2xl"
+              variant="secondary"
+              size="sm"
+              tabindex={-1}
+              onclick={async (e: Event) => {
+                e.stopPropagation();
+                markeds = await MarkFavoriteDB.getMarkFavorites(favorite);
+                isPicking = true;
+              }}
+            >
+              <Icon icon="lucide:bookmark" class="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

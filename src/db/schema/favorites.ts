@@ -30,7 +30,9 @@ export const favorites = sqliteTable(
     anilistID: text("anilist_id").default(""),
     malID: text("mal_id").default(""),
     author: text("author").default("Unknow"),
-    isUltraFavorite: integer({ mode: "boolean" }).default(false),
+    isUltraFavorite: integer("is_ultra_favorite", { mode: "boolean" }).default(
+      false,
+    ),
     description: text("description").default(""),
   },
   (t) => [

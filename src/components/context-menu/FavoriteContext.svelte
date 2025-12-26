@@ -13,6 +13,7 @@
     isUltraFavorite: boolean;
     markeds: MarkFavorites[];
     open: boolean;
+    onmouseleave: VoidFunction;
     openRead: boolean;
     openTags: boolean;
     openEdit: boolean;
@@ -25,6 +26,7 @@
     isUltraFavorite = $bindable(getBool(favorite.is_ultra_favorite)),
     markeds = $bindable([]),
     open = $bindable(false),
+    onmouseleave,
     openRead = $bindable(false),
     openTags = $bindable(false),
     openEdit = $bindable(false),
@@ -39,7 +41,7 @@
     isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
   }}
 >
-  <ContextMenu.Trigger>
+  <ContextMenu.Trigger {onmouseleave}>
     {@render children?.()}
   </ContextMenu.Trigger>
   <ContextMenu.Content>
@@ -55,7 +57,7 @@
     >
       <Label>{isUltraFavorite ? "Remove" : "Favorite"}</Label>
       <Icon
-        class="size-5! -mr-[2px]"
+        class="-mr-[2px] size-5!"
         icon={isUltraFavorite ? "heroicons:star-solid" : "heroicons:star"}
       />
     </ContextMenu.Item>
@@ -68,7 +70,7 @@
     >
       <Label>Open</Label>
       <Icon
-        class="w-4! h-5!"
+        class="h-5! w-4!"
         icon={favorite.type === "anime"
           ? "lucide:tv-minimal-play"
           : "lucide:book-open-text"}
@@ -83,7 +85,7 @@
       }}
     >
       <Label>Tags</Label>
-      <Icon class="size-5! -mr-[2px]" icon="lucide:bookmark" />
+      <Icon class="-mr-[2px] size-5!" icon="lucide:bookmark" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"
@@ -93,7 +95,7 @@
       }}
     >
       <Label>Edit</Label>
-      <Icon class="w-4! h-5!" icon="lucide:square-pen" />
+      <Icon class="h-5! w-4!" icon="lucide:square-pen" />
     </ContextMenu.Item>
     <ContextMenu.Item
       class="flex justify-between"
@@ -103,7 +105,7 @@
       }}
     >
       <Label>Browser</Label>
-      <Icon class="w-4! h-5!" icon="lucide:square-arrow-out-up-right" />
+      <Icon class="h-5! w-4!" icon="lucide:square-arrow-out-up-right" />
     </ContextMenu.Item>
     <ContextMenu.Sub>
       <ContextMenu.SubTrigger class="flex justify-between">
@@ -111,7 +113,7 @@
       </ContextMenu.SubTrigger>
       <ContextMenu.SubContent>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           onmousedown={() => {
             copyText(favorite.name, "title");
           }}
@@ -123,7 +125,7 @@
           <Icon class="size-4!" icon="tabler:text-size" />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           disabled={favorite.author === "" || favorite.author === null}
           onmousedown={() => {
             copyText(favorite.author ?? "", "author");
@@ -134,12 +136,12 @@
         >
           <Label>Author</Label>
           <Icon
-            class="size-5! -m-0.5"
+            class="-m-0.5 size-5!"
             icon="material-symbols:person-2-outline"
           />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           disabled={favorite.description === "" ||
             favorite.description === null}
           onmousedown={() => {
@@ -153,7 +155,7 @@
           <Icon class="size-4!" icon="solar:document-text-outline" />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           onmousedown={() => {
             copyText(favorite.source, "Source name");
           }}
@@ -165,7 +167,7 @@
           <Icon class="size-4!" icon="fluent:text-case-title-16-filled" />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           onmousedown={() => {
             copyText(favorite.source_id, "Source ID");
           }}
@@ -177,7 +179,7 @@
           <Icon class="size-4!" icon="lucide:key-round" />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           onmousedown={() => {
             copyText(favorite.cover, "cover");
           }}
@@ -191,7 +193,7 @@
           <Icon class="size-4!" icon="tabler:photo" />
         </ContextMenu.Item>
         <ContextMenu.Item
-          class="flex justify-between hover:bg-accent"
+          class="hover:bg-accent flex justify-between"
           onmousedown={() => {
             copyText(favorite.link, "URL");
           }}
@@ -206,7 +208,7 @@
     </ContextMenu.Sub>
     <ContextMenu.Separator />
     <ContextMenu.Item
-      class="flex justify-between hover:bg-destructive! relative z-0 overflow-hidden transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-linear-to-l from-white/40 after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
+      class="hover:bg-destructive! relative z-0 flex justify-between overflow-hidden from-white/40 transition-all duration-500 after:absolute after:inset-0 after:-z-10 after:translate-x-[-150%] after:translate-y-[150%] after:scale-[2.5] after:rounded-[100%] after:bg-linear-to-l after:transition-transform after:duration-1000  hover:after:translate-x-[0%] hover:after:translate-y-[0%]"
       onclick={(e: Event) => {
         e.stopPropagation();
         openDelete = true;

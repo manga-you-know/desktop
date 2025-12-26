@@ -6,13 +6,13 @@
     Label,
     Popover,
     ScrollArea,
-    ScrollingValue,
   } from "@/lib/components";
   import { ChevronsUpDown } from "lucide-svelte";
   import { cn } from "$lib/utils";
   import { addReadedBelow, refreshReadeds } from "@/functions";
   import { globalChapters } from "@/store";
   import { VList } from "virtua/svelte";
+  import { ScrollingValue } from "svelte-ux";
 
   interface Props {
     class?: string;
@@ -36,16 +36,16 @@
   <Popover.Trigger>
     {#snippet child({ props })}
       <Button
-        class={cn("rounded-xl justify-between", className)}
+        class={cn("justify-between rounded-xl", className)}
         {...props}
         variant="outline"
         role="combobox"
         aria-expanded={open}
       >
-        <div class="w-full flex justify-center items-center">
-          <ScrollingValue value={readedLenght} />
+        <div class="flex w-full items-center justify-center">
+          <ScrollingValue axis="y" value={readedLenght} />
           /
-          <ScrollingValue value={chapters.length} />
+          <ScrollingValue axis="y" value={chapters.length} />
         </div>
       </Button>
     {/snippet}
@@ -56,7 +56,7 @@
       <Command.Empty>Nothing found.</Command.Empty>
       <Command.Group>
         <VList
-          class="min-h-36 scrollbar-chapters"
+          class="scrollbar-chapters min-h-36"
           data={chapters}
           getKey={(_, i) => i}
           overscan={20}
@@ -65,9 +65,9 @@
           {#snippet children(chapter, _)}
             <Command.Item
               class={cn(
-                "flex rounded-xl justify-center hover:bg-secondary/50!",
+                "hover:bg-secondary/50! flex justify-center rounded-xl",
                 readeds.find((r) => r.chapter_id === chapter.chapter_id) &&
-                  "border border-primary",
+                  "border-primary border",
               )}
               value={chapter.number}
               onSelect={async () => {

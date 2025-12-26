@@ -1,14 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { FavoriteCard } from "@/components";
-  import {
-    Button,
-    Label,
-    Switch,
-    Badge,
-    Pagination,
-    ScrollingValue,
-  } from "@/lib/components";
+  import { Button, Label, Switch, Badge, Pagination } from "@/lib/components";
   import {
     showOnlyNew,
     ultraFavorites,
@@ -26,6 +19,7 @@
   import { IS_MOBILE } from "@/constants";
   import type { Favorite } from "@/types";
   import { SsgoiTransition } from "@ssgoi/svelte";
+  import { ScrollingValue } from "svelte-ux";
 
   let favoriteDiv: HTMLDivElement = $state(null!);
   let favdivWidth: number = $state(0);
@@ -68,42 +62,39 @@
 </script>
 
 <SsgoiTransition id="/favorites">
-  <div class="h-full flex flex-col mr-4 overflow-hidden">
+  <div class="mr-4 flex h-full flex-col overflow-hidden">
     <div
-      class="scrollbar w-full h-full justify-center flex flex-wrap content-start gap-3 scroll-smooth overflow-y-scroll overflow-x-hidden pb-5"
+      class="scrollbar flex h-full w-full flex-wrap content-start justify-center gap-3 overflow-x-hidden overflow-y-scroll scroll-smooth pb-5"
       bind:this={favoriteDiv}
       bind:clientWidth={favdivWidth}
     >
       <div
         class={cn(
-          "backdrop-blur-md flex max-w-[80svw]! -mb-[15px] rounded-3xl mt-1 p-3 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+          "smh:absolute z-20 mt-1 -mb-[15px] flex max-w-[80svw]! items-center justify-center gap-1 rounded-3xl p-3 backdrop-blur-md md:gap-2",
           IS_MOBILE ? "h-28 flex-wrap" : "h-14",
         )}
       >
         <div class="flex items-center gap-2">
           <div class="flex gap-2">
             <Badge
-              class="flex justify-center font-bold w-12! w-22 gap-0.5"
+              class="flex w-12! w-22 justify-center gap-0.5 font-bold"
               variant="outline"
             >
-              <ScrollingValue class="-mt-4" value={countFound} />
+              <ScrollingValue axis="y" value={countFound} />
             </Badge>
-            <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
+            <Badge class="h-10 w-22 gap-1 font-bold" variant="outline">
               {#if favoritesWithChapter.length > 0}
                 +
               {/if}
-              <ScrollingValue
-                class="-mt-4"
-                value={favoritesWithChapter.length}
-              />
+              <ScrollingValue axix="y" value={favoritesWithChapter.length} />
               Favorites
             </Badge>
-            <Badge class="font-bold h-10 w-22 gap-1" variant="outline">
+            <Badge class="h-10 w-22 gap-1 font-bold" variant="outline">
               {#if favoritesWithChapter.length > 0}
                 +
               {/if}
               <ScrollingValue
-                class="-mt-4"
+                axis="y"
                 value={Object.values($favoritesLoaded).reduce(
                   (total, fv) => total + (fv.isLoaded ? fv.toReadCount : 0),
                   0,
@@ -113,20 +104,20 @@
           </div>
 
           <Button
-            class="flex h-10 group/show hover:bg-background/40 px-2"
+            class="group/show hover:bg-background/40 flex h-10 px-2"
             variant="outline"
             onclick={() => {
               showOnlyNew.set(!$showOnlyNew);
             }}
           >
             <Switch
-              class="rounded-[11px] dark:data-[state=unchecked]:bg-secondary/70! dark:group-hover/show:data-[state=unchecked]:bg-secondary/90! group-hover/show:data-[state=checked]:bg-primary/70!  pointer-events-none"
+              class="dark:data-[state=unchecked]:bg-secondary/70! dark:group-hover/show:data-[state=unchecked]:bg-secondary/90! group-hover/show:data-[state=checked]:bg-primary/70! pointer-events-none  rounded-[11px]"
               classThumb="rounded-xl"
               id="show-only-new"
               bind:checked={$showOnlyNew}
             />
             <Label
-              class="mr-1 dark:text-white cursor-pointer"
+              class="mr-1 cursor-pointer dark:text-white"
               for="show-only-new"
             >
               To read
@@ -141,17 +132,17 @@
               icon={$isRefreshing
                 ? "line-md:loading-loop"
                 : "mingcute:refresh-3-fill"}
-              class="w-5 h-5"
+              class="h-5 w-5"
             />
             {$isRefreshing ? "Loading..." : "Refresh"}
           </Button>
         </div>
       </div>
-      <div class="w-full h-12 smh:h-14"></div>
+      <div class="smh:h-14 h-12 w-full"></div>
       {#if displayedFavorites.length === 0}
-        <div class="flex w-full justify-center mt-10">
+        <div class="mt-10 flex w-full justify-center">
           <Badge
-            class="flex flex-col justify-center items-center text-sm h-12"
+            class="flex h-12 flex-col items-center justify-center text-sm"
             variant={!$showOnlyNew || $ultraFavorites.length === 0
               ? "destructive"
               : "info"}
@@ -161,7 +152,7 @@
               There's no favorite. You can click on the star in the chapters <br
               />
               modal to achieve that. Or you can find something at
-              <span class="absolute cursor-pointer hover:underline mt-5 ml-84"
+              <span class="absolute mt-5 ml-84 cursor-pointer hover:underline"
                 >Search</span
               >
             {:else}
@@ -174,12 +165,12 @@
         <FavoriteCard {favorite} />
       {/each}
       {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n (n)}
-        <div class="w-[158px] h-[234px] p-1"></div>
+        <div class="h-[234px] w-[158px] p-1"></div>
       {/each}
       {#if !$showOnlyNew ? $ultraFavorites.length > perPage : favoritesWithChapter.length > perPage}
-        <div class="w-full h-10"></div>
+        <div class="h-10 w-full"></div>
         <div
-          class="bg-secondary/30 backdrop-blur-md flex rounded-3xl absolute bottom-6 mt-10 py-2 px-2"
+          class="bg-secondary/30 absolute bottom-6 mt-10 flex rounded-3xl px-2 py-2 backdrop-blur-md"
         >
           <Pagination.Root
             {perPage}

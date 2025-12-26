@@ -65,6 +65,8 @@
   import { type } from "@tauri-apps/plugin-os";
     import { Ssgoi, type SsgoiConfig } from "@ssgoi/svelte";
     import { fade, scroll } from "@ssgoi/svelte/view-transitions";
+    import { Child, Command } from "@tauri-apps/plugin-shell";
+    import { delay } from "@/utils";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -118,14 +120,6 @@
     }
   }
 
-  window.onCloseRequested((e) => {
-    if (get(closeTray)) {
-      e.preventDefault();
-      window.hide();
-    } else {
-      exit();
-    }
-  });
 
   async function loadDatabase() {
     await initDatabase();
@@ -248,8 +242,21 @@
       },
     ]
   }
+  const command = Command.sidecar("binaries/suwayomi")
+  
+  let child: Child;
 
-  onMount(async () => {
+  const loadSidecar = async () => {
+    child = await command.spawn()
+  }
+
+  const close = async () => {
+    await child.kill()
+    exit()
+  }
+
+  $effect.pre(() => {
+    loadSidecar()
     loadDatabase();
     logNewUser();
     showPatchNotes();
@@ -264,6 +271,7 @@
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
+
   });
   function screenJob() {
     loadScreenState();
@@ -273,6 +281,15 @@
   window.onFocusChanged((v) => {
     if (v.payload) {
       updateBadge();
+    }
+  });
+  
+  window.onCloseRequested((e) => {
+    if (get(closeTray)) {
+      e.preventDefault();
+      window.hide();
+    } else {
+      close()
     }
   });
   onDestroy(() => {

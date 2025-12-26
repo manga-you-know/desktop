@@ -1,12 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import {
-    Pagination,
-    Button,
-    Badge,
-    Input,
-    ScrollingValue,
-  } from "@/lib/components";
+  import { Pagination, Button, Badge, Input } from "@/lib/components";
   import {
     LibraryCard,
     LibraryOrder,
@@ -31,6 +25,7 @@
   import { get, has, set } from "tauri-plugin-cache-api";
   import { delay } from "@/utils";
   import { SsgoiTransition } from "@ssgoi/svelte";
+  import { ScrollingValue } from "svelte-ux";
 
   let libraryDiv: HTMLDivElement = $state(null!);
   let libdivWidth: number = $state(0);
@@ -91,23 +86,23 @@
 </script>
 
 <SsgoiTransition id="/library">
-  <div class="h-full mr-4 overflow-hidden flex flex-col items-center">
+  <div class="mr-4 flex h-full flex-col items-center overflow-hidden">
     <div
       bind:this={libraryDiv}
       bind:clientWidth={libdivWidth}
-      class="scrollbar w-full h-full flex flex-wrap content-start justify-center gap-3 scroll-smooth overflow-x-hidden overflow-y-scroll! pb-5"
+      class="scrollbar flex h-full w-full flex-wrap content-start justify-center gap-3 overflow-x-hidden overflow-y-scroll! scroll-smooth pb-5"
     >
       <div
         class={cn(
-          "backdrop-blur-md flex max-w-[80svw]! -mb-[15px] rounded-3xl mt-1 p-2 gap-1 md:gap-2 justify-center items-center smh:absolute z-20",
+          "smh:absolute z-20 mt-1 -mb-[15px] flex max-w-[80svw]! items-center justify-center gap-1 rounded-3xl p-2 backdrop-blur-md md:gap-2",
           IS_MOBILE ? "h-28 flex-wrap" : "h-14",
         )}
       >
         <Badge
-          class="h-10 w-12 flex justify-center items-center"
+          class="flex h-10 w-12 items-center justify-center"
           variant="outline"
         >
-          <ScrollingValue class="-mt-4" value={count} />
+          <ScrollingValue axis="y" value={count} />
         </Badge>
         <LibrarySearch bind:page bind:favdiv={libraryDiv} />
         <LibraryOrder />
@@ -118,7 +113,7 @@
           class={showedFilter === 1 ? "inline-flex!" : "hidden md:inline-flex"}
         />
         <Button
-          class="md:hidden flex items-start w-9!"
+          class="flex w-9! items-start md:hidden"
           variant="secondary"
           onclick={() => {
             if (showedFilter === 1) showedFilter = 0;
@@ -127,12 +122,12 @@
           >...
         </Button>
       </div>
-      <div class="w-full h-0 smh:h-14"></div>
+      <div class="smh:h-14 h-0 w-full"></div>
       <!-- {#key displayedLibrary} -->
       {#if displayedLibrary.length === 0}
-        <div class="w-full flex justify-center mt-4">
+        <div class="mt-4 flex w-full justify-center">
           <Badge
-            class="text-sm h-20 transition-colors duration-300"
+            class="h-20 text-sm transition-colors duration-300"
             variant="info"
             onclick={() => {
               searchTerm.set($libraryQuery);
@@ -156,12 +151,12 @@
       {/each}
       <!-- {/key} -->
       {#each Array.from({ length: extraSpaceCards() }, (_, i) => i)}
-        <div class="w-[158px] h-[271px] p-1"></div>
+        <div class="h-[271px] w-[158px] p-1"></div>
       {/each}
       {#if $libraryFavorites.length > perPage}
-        <div class="w-full h-10"></div>
+        <div class="h-10 w-full"></div>
         <div
-          class="bg-secondary/30 group-data-[retro=active]/theme:bg-secondary/95 backdrop-blur-md flex rounded-3xl -mt-[15px] absolute bottom-6 smh:mt-3 p-2 transition-all"
+          class="bg-secondary/30 group-data-[retro=active]/theme:bg-secondary/95 smh:mt-3 absolute bottom-6 -mt-[15px] flex rounded-3xl p-2 backdrop-blur-md transition-all"
         >
           <Pagination.Root
             {count}

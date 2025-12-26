@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toast } from "svelte-sonner";
-  import { Button, Badge, Label, ScrollingValue } from "@/lib/components";
+  import { Button, Badge, Label,} from "@/lib/components";
   import {
     ReadFavorite,
     EditFavorite,
@@ -34,6 +34,7 @@
   import type { MarkFavorites } from "@/types";
   import Icon from "@iconify/svelte";
   import { IS_MOBILE } from "@/constants";
+    import { ScrollingValue } from "svelte-ux";
 
   const { favorite }: { favorite: Favorite } = $props();
   let isOpen = $state(false);
@@ -214,7 +215,7 @@
           {:else if favoriteLoad.toReadCount >= 0}
             <Label class="flex items-center" tabindex={-1}>
               +<ScrollingValue
-                class="-mt-3"
+                axis="y"
                 value={favoriteLoad.toReadCount ?? 0}
               />
             </Label>
