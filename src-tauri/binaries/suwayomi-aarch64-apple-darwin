@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./resources/jre/bin/java -jar resources/suwayomi.jar

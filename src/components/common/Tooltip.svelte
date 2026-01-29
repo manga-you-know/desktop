@@ -1,6 +1,6 @@
 <script lang="ts">
   import { cn } from "@/lib/utils";
-  import { theme } from "@/store";
+  import { themeMode } from "@/states";
   import { Tooltip } from "svelte-ux";
 
   interface Props {
@@ -26,7 +26,7 @@
   classes={{
     title: cn(
       "rounded-xl border border-secondary bg-sidebar text-primary",
-      $theme === "dark" && "dark",
+      themeMode.value,
       className,
     ),
   }}

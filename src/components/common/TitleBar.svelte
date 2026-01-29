@@ -213,6 +213,7 @@
       !$openMenuChapters &&
       "h-0 -translate-y-12",
   )}
+  style="view-transition-name: titlebar"
   data-tauri-drag-region={!$isFullscreen}
 >
   <div class="h-full flex items-center select-none">

@@ -102,7 +102,7 @@ export const preferableLanguage = writable<Language>({
   label: "English",
 });
 export const autoEnterFullscreen = writable<boolean>(true);
-export const lastPage = writable<string>("/home");
+export const lastPage = writable<string>("/search");
 export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);

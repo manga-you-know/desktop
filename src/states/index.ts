@@ -1,1 +1,1 @@
-export * from "./config.svelte"
+export * from "./stored.svelte";

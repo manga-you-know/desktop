@@ -388,7 +388,14 @@
       onOpened();
     } else {
       $selectedScan = "";
-      onClose?.();
+      if (!document.startViewTransition){
+        onClose?.();
+      } else {
+        document.startViewTransition(() => {
+        }).finished.then(() => {
+          onClose?.();
+        })
+      }
     }
   });
 </script>
@@ -694,7 +701,7 @@
       refreshFavorites();
       refreshLibrary();
       stopDiscordPresence();
-    }
+    } 
   }}
 >
   <Dialog.Content
@@ -740,7 +747,7 @@
           variant="outline"
           onclick={() => (open = false)}
         >
-          Back
+          Close 
           <Icon class="rotate-180" icon="ion:caret-back" />
         </Button>
       </div>
@@ -760,10 +767,11 @@
             class="w-full max-w-80 h-full max-h-120 ssmh:max-w-52 sssmh:max-w-32 flex justify-center items-center overflow-hidden transition-all"
           >
             <Image
-              draggable={false}
+              class="w-full h-full object-contain select-none"
+              style="view-transition-name: {open ? "saved-cover" : null}"
               src={favorite.cover}
               alt={favorite.name}
-              class="w-full h-full object-contain select-none"
+              draggable={false}
             />
           </div>
           <div

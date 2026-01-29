@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { goto, preloadData } from "$app/navigation";
   import { page } from "$app/state";
   import { Badge } from "svelte-ux";
   import { Tooltip } from "@/components";
@@ -38,14 +38,9 @@
   import { ReadedDB } from "@/repositories";
   import { get } from "svelte/store";
   import { onMount } from "svelte";
+  import { themeMode } from "@/states";
 
   const items = [
-    {
-      name: "Home",
-      path: "/home",
-      iconActive: "heroicons:home-20-solid",
-      icon: "heroicons:home",
-    },
     {
       name: "Favorites",
       path: "/favorites",
@@ -59,17 +54,17 @@
       icon: "material-symbols:book-ribbon-outline-rounded",
     },
     {
+      name: "Search",
+      path: "/search",
+      iconActive: "mingcute:search-3-fill",
+      icon: "mingcute:search-3-line",
+    },
+    {
       name: "Panels",
       path: "/panels",
       iconActive: "ion:images",
       icon: "ion:images-outline",
     },
-    // {
-    //   name: "Search",
-    //   path: "/search",
-    //   iconActive: "mingcute:search-fill",
-    //   icon: "mingcute:search-line",
-    // },
     // {
     //   name: "Settings",
     //   path: "/settings",
@@ -125,7 +120,8 @@
 </script>
 
 <Sidebar.Root
-  class={cn("px-0 pb-0 border-0", $customTitlebar && "pt-7")}
+  class={cn("border-0 px-0 pb-0", $customTitlebar && "pt-7")}
+  style="view-transition-name: sidebar"
   {variant}
   side={$sidebarSide}
   collapsible="icon"
@@ -134,13 +130,13 @@
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
-        <Sidebar.Menu class="flex flex-col gap-2 relative">
+        <Sidebar.Menu class="relative flex flex-col gap-2">
           <Sidebar.MenuButton
             class={cn(
-              "absolute transition-translate duration-300",
-              page.url.pathname === "/home" && "translate-y-0",
-              page.url.pathname === "/favorites" && "translate-y-14",
-              page.url.pathname === "/library" && "translate-y-28",
+              "transition-translate absolute duration-300",
+              page.url.pathname === "/favorites" && "translate-y-0",
+              page.url.pathname === "/library" && "translate-y-14",
+              page.url.pathname === "/search" && "translate-y-28",
               page.url.pathname === "/panels" && "translate-y-42",
             )}
             variant="secondary"
@@ -149,9 +145,9 @@
             <Sidebar.MenuItem class="min-w-16!">
               <Sidebar.MenuButton
                 class={cn(
-                  "bg-transparent transition-all parent",
+                  "parent bg-transparent transition-all",
                   page.url.pathname === item.path &&
-                    "hover:ring-2 hover:ring-primary/90 hover:ring-offset-2",
+                    "hover:ring-primary/90 hover:ring-2 hover:ring-offset-2",
                 )}
                 variant={page.url.pathname === item.path
                   ? "secondary"
@@ -160,12 +156,13 @@
                   e.currentTarget.blur();
                   goto(item.path);
                 }}
+                onmouseenter={() => preloadData(item.path)}
                 tabindex={-1}
               >
                 {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
                   <Icon
                     class={cn(
-                      "size-7! -ml-[10px] transition-transform duration-500",
+                      "-ml-[10px] size-7! transition-transform duration-500",
                       item.path === "/favorites" &&
                         page.url.pathname === item.path &&
                         "rotate-[calc(145deg*2)]",
@@ -177,7 +174,7 @@
                 {:else}
                   <Badge
                     class={cn(
-                      "fixed ml-2.5 -mt-8",
+                      "fixed -mt-8 ml-2.5",
                       page.url.pathname === item.path
                         ? "bg-sidebar text-primary"
                         : "bg-primary text-sidebar",
@@ -187,7 +184,7 @@
                   >
                     <Icon
                       class={cn(
-                        "size-7! -ml-[10px] transition-transform duration-400",
+                        "-ml-[10px] size-7! transition-transform duration-400",
                         page.url.pathname === item.path &&
                           "rotate-[calc(145deg*2)]",
                       )}
@@ -212,42 +209,42 @@
   </Sidebar.Header>
   <Separator class="bg-secondary w-[95%]" />
   <Sidebar.Content
-    class="-ml-[2px] group-data-[collapsible=icon]:overflow-y-auto scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
+    class="scrollbar -ml-[2px] group-data-[collapsible=icon]:overflow-y-auto [&::-webkit-scrollbar]:w-2 group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5"
   >
     <Sidebar.Group>
       <Sidebar.GroupContent>
         <Sidebar.Menu class="flex flex-col gap-2">
-          <Sidebar.MenuItem>
-            <Sidebar.MenuButton
-              variant={$openSearch ? "secondary" : "default"}
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(true);
-                openTag.set(false);
-                openDownloads.set(false);
-                openSettings.set(false);
-                openAdd.set(false);
-                openInfo.set(false);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              <Icon
-                icon={$openSearch
-                  ? "mingcute:search-3-fill"
-                  : "mingcute:search-3-line"}
-                class="size-7! -ml-[10px]"
-              />
-              <Label
-                class={cn(
-                  "cursor-pointer transition-all",
-                  $openSearch && "text-sidebar!",
-                )}
-              >
-                Search
-              </Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
+          <!-- <Sidebar.MenuItem> -->
+          <!--   <Sidebar.MenuButton -->
+          <!--     variant={$openSearch ? "secondary" : "default"} -->
+          <!--     onclick={(e) => { -->
+          <!--       e.currentTarget.blur(); -->
+          <!--       openSearch.set(true); -->
+          <!--       openTag.set(false); -->
+          <!--       openDownloads.set(false); -->
+          <!--       openSettings.set(false); -->
+          <!--       openAdd.set(false); -->
+          <!--       openInfo.set(false); -->
+          <!--       if (IS_MOBILE) sidebar.toggle(); -->
+          <!--     }} -->
+          <!--     tabindex={-1} -->
+          <!--   > -->
+          <!--     <Icon -->
+          <!--       icon={$openSearch -->
+          <!--         ? "mingcute:search-3-fill" -->
+          <!--         : "mingcute:search-3-line"} -->
+          <!--       class="size-7! -ml-[10px]" -->
+          <!--     /> -->
+          <!--     <Label -->
+          <!--       class={cn( -->
+          <!--         "cursor-pointer transition-all", -->
+          <!--         $openSearch && "text-sidebar!", -->
+          <!--       )} -->
+          <!--     > -->
+          <!--       Search -->
+          <!--     </Label> -->
+          <!--   </Sidebar.MenuButton> -->
+          <!-- </Sidebar.MenuItem> -->
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
               variant={$openTag ? "secondary" : "default"}
@@ -264,7 +261,7 @@
               tabindex={-1}
             >
               <Icon
-                class="size-7! -ml-[10px]"
+                class="-ml-[10px] size-7!"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
               <Label
@@ -291,7 +288,7 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="size-7! -ml-[2px] "
+                class="-ml-[2px] size-7! "
               />
               <Label
                 class={cn(
@@ -308,24 +305,24 @@
       <Sidebar.GroupContent class="flex flex-col gap-2">
         {#if $chaptersCache.length > 0 && $keepReading}
           <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-primary"
+            class="bg-background/30 border-primary rounded-xl border"
           >
             <Sidebar.MenuItem
               class={cn(
-                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
-                favoritesWithChapters.length === 0 && "max-h-88 smh:max-h-96",
+                "smh:max-h-40 max-h-56 overflow-x-hidden overflow-y-auto rounded-xl transition-all [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent",
+                favoritesWithChapters.length === 0 && "smh:max-h-96 max-h-88",
               )}
             >
               <ScrollArea class="gap-0">
                 {#each $chaptersCache as cache}
                   <Tooltip
-                    class="h-7 font-bold items-center flex -ml-1 "
+                    class="-ml-1 flex h-7 items-center font-bold "
                     text={`${cache?.currentPage}/${cache?.totalPage} ~ ${cache?.chapter?.number} # ${cache?.favorite.name}`}
                     placement="right"
                     delay={200}
                   >
                     <Sidebar.MenuButton
-                      class="rounded-md group-data-[collapsible=icon]:h-4! h-4! hover:bg-transparent hover:underline relative group/cache"
+                      class="group/cache relative h-4! rounded-md group-data-[collapsible=icon]:h-4! hover:bg-transparent hover:underline"
                       onclick={async () => {
                         if (cache.chapters.length === 0) {
                           toast.loading("Loading chapters...", {
@@ -379,7 +376,7 @@
                       }}
                     >
                       <Label
-                        class="w-2 mr-3 flex justify-center cursor-pointer"
+                        class="mr-3 flex w-2 cursor-pointer justify-center"
                       >
                         {cache.chapter?.number ?? ""}
                       </Label>
@@ -387,7 +384,7 @@
                         {cache.favorite.name}
                       </Label>
                       <Button
-                        class="absolute size-0 m-0 p-0 group-hover/cache:size-5 top-0 -left-2 group-hover/cache:-left-1 group-hover/cache:p-2 rounded-full transition-all duration-300"
+                        class="absolute top-0 -left-2 m-0 size-0 rounded-full p-0 transition-all duration-300 group-hover/cache:-left-1 group-hover/cache:size-5 group-hover/cache:p-2"
                         variant="outline"
                         onclick={async (e) => {
                           e.stopPropagation();
@@ -410,25 +407,25 @@
 
         {#if favoritesWithChapters.length > 0}
           <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-background"
+            class="bg-background/30 border-background rounded-xl border"
           >
             <Sidebar.MenuItem
               class={cn(
-                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
+                "smh:max-h-40 max-h-56 overflow-x-hidden overflow-y-auto rounded-xl transition-all [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent",
                 ($chaptersCache.length === 0 || !$keepReading) &&
-                  "max-h-88 smh:max-h-96",
+                  "smh:max-h-96 max-h-88",
               )}
             >
               <ScrollArea class="gap-0">
                 {#each favoritesWithChapters as fav}
                   <Tooltip
-                    class="h-7 font-bold items-center flex -ml-1 "
+                    class="-ml-1 flex h-7 items-center font-bold "
                     text={fav.self.name}
                     placement="right"
                     delay={200}
                   >
                     <Sidebar.MenuButton
-                      class="group-data-[collapsible=icon]:h-4! h-4! hover:bg-transparent hover:underline"
+                      class="h-4! group-data-[collapsible=icon]:h-4! hover:bg-transparent hover:underline"
                       onclick={() => {
                         globalChapters.set(fav.chapters);
                         goto(
@@ -439,7 +436,7 @@
                       }}
                     >
                       <Label
-                        class="w-2 mr-3 flex justify-center cursor-pointer"
+                        class="mr-3 flex w-2 cursor-pointer justify-center"
                       >
                         {fav?.nextChapter?.number ?? ""}
                       </Label>
@@ -505,7 +502,7 @@
           >
             <Icon
               class={cn(
-                " size-7! -ml-[14px] group-data-[collapsible=icon]:-ml-[10px] transition-all duration-500",
+                " -ml-[14px] size-7! transition-all duration-500 group-data-[collapsible=icon]:-ml-[10px]",
                 $openSettings && "rotate-180",
               )}
               icon={$openSettings
@@ -524,29 +521,28 @@
         </Sidebar.MenuItem>
         <Sidebar.MenuItem class="group-data-[collapsible=icon]:ssmh:hidden">
           <Sidebar.MenuButton
-            class="size-10 relative"
+            class="relative size-10"
             onclick={(e) => {
               e.currentTarget.blur();
-              $theme = $theme === "dark" ? "light" : "dark";
-              saveSettings();
+              themeMode.toggle();
             }}
             tabindex={-1}
           >
             <Icon
               class={cn(
-                "absolute size-7! left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
-                $theme === "dark"
+                "absolute left-1.5 size-7! transition-all duration-500 group-data-[collapsible=icon]:left-2.5",
+                themeMode.value === "dark"
                   ? "opacity-100"
-                  : "opacity-0 scale-0 rotate-180",
+                  : "scale-0 rotate-180 opacity-0",
               )}
               icon="material-symbols:sunny-outline-rounded"
             />
             <Icon
               class={cn(
-                "absolute size-7! left-1.5 group-data-[collapsible=icon]:left-2.5 transition-all duration-500",
-                $theme === "light"
+                "absolute left-1.5 size-7! transition-all duration-500 group-data-[collapsible=icon]:left-2.5",
+                themeMode.value === "light"
                   ? "opacity-100"
-                  : "opacity-0 scale-0 -rotate-180",
+                  : "scale-0 -rotate-180 opacity-0",
               )}
               icon="material-symbols:dark-mode-outline"
             />
@@ -557,25 +553,25 @@
     </Sidebar.GroupContent>
   </Sidebar.Group>
   <Sidebar.Footer
-    class="flex items-center overflow-hidden ml-1 mt-0 ssmh:-mt-3"
+    class="ssmh:-mt-3 mt-0 ml-1 flex items-center overflow-hidden"
   >
     <!-- <Avatar  src="/icon.png" fallbackText="MYK" /> -->
     <Sidebar.MenuItem>
       <Sidebar.MenuButton
         onclick={rotateImage}
         onwheel={rotateImage}
-        class="hover:bg-transparent transition-all"
+        class="transition-all hover:bg-transparent"
       >
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <img
           bind:this={imgElement}
-          class="rounded-md size-9! min-w-9 group-data-[collapsible=icon]:-ml-4 ml-0"
+          class="ml-0 size-9! min-w-9 rounded-md group-data-[collapsible=icon]:-ml-4"
           draggable={false}
           src="/square-icon.png"
           alt="icon"
         />
-        <Label class="text-nowrap cursor-pointer">漫画君知る</Label>
+        <Label class="cursor-pointer text-nowrap">漫画君知る</Label>
       </Sidebar.MenuButton>
     </Sidebar.MenuItem>
   </Sidebar.Footer>

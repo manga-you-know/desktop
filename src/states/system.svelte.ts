@@ -53,23 +53,6 @@ export const openReaderDrawer = new (class {
   active = $state(false);
 })();
 
-export const texts = new (class {
-  language: "en" | "pt-br" = $state("en");
-
-  finalTexts: Record<string, { title: string; welcome: string }> = {
-    en: {
-      title: "faggs",
-      welcome: "Hello my friend called ? !!!",
-    },
-    "pt-br": {
-      title: "viados",
-      welcome: "Fala viadoooo ? !!!",
-    },
-  };
-
-  text = $derived(this.finalTexts[this.language]);
-  title = $derived(this.text.title);
-})();
 
 export const rawSaveds = new (class {
   value: Favorite[] = $state([]);

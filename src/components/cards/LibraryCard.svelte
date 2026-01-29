@@ -18,10 +18,12 @@
   import type { MarkFavorites } from "@/types";
   import { IS_MOBILE } from "@/constants";
   import { onMount } from "svelte";
-  import { onNavigate } from "$app/navigation";
-  import {} from "@/components/animations";
+  import { goto, onNavigate, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
   import { getBool } from "@/utils";
+  import { db, favorites } from "@/db";
+  import { eq } from "drizzle-orm";
+  import { deleteFavorite } from "@/repositories/favorite";
 
   interface Props {
     favorite: Favorite;
@@ -36,6 +38,7 @@
   let isBack = $state(false);
   let isContext = $state(false);
   let isPicking = $state(false);
+  let animatingView = $state(false);
   let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
   let readeds: Readed[] = $state([]);
   let chapters: Chapter[] = $state([]);
@@ -93,6 +96,7 @@
 {:else}
   <ReadFavorite {favorite} bind:open={isOpen} />
 {/if}
+
 <EditFavorite {favorite} bind:open={isEdit} />
 <!-- <AskDelete {favorite} bind:open={isDelete} /> -->
 <PickTags {favorite} bind:open={isPicking} bind:markeds />
@@ -110,7 +114,16 @@
   <button
     id="library-{favorite.id}"
     class="relative h-[264px] max-h-[264px] w-[158px] max-w-[158px] transform-3d"
-    onclick={() => (isOpen = true)}
+    onclick={async () => {
+      if (!document.startViewTransition) isOpen = true;
+      animatingView = true;
+      const transition = document.startViewTransition(() => {
+        isOpen = true;
+      });
+      await transition.finished;
+      animatingView = false;
+      console.log("yes");
+    }}
   >
     <div
       class="bg-secondary/70 absolute h-[264px] max-h-[264px] w-[158px] max-w-[158px] rotate-y-180 rounded-2xl backface-hidden"
@@ -123,14 +136,15 @@
       )}
     >
       <div class="mt-[30px] flex h-[224px] items-center justify-center">
-        {#key $coversLoaded[favorite.cover]}
-          <Image
-            class="max-h-[224px] w-[146px] max-w-[146px] min-w-[146px] rounded-xl object-contain backface-visible"
-            src={$coversLoaded[favorite.cover] ?? favorite.cover}
-            alt={favorite.name}
-            id={favorite.id?.toString() || ""}
-          />
-        {/key}
+        <Image
+          class="max-h-[224px] w-[146px] max-w-[146px] min-w-[146px] rounded-xl object-contain backface-visible"
+          style="view-transition-name: {!isOpen && animatingView
+            ? 'saved-cover'
+            : null}"
+          src={$coversLoaded[favorite.cover] ?? favorite.cover}
+          alt={favorite.name}
+          id={favorite.id?.toString() || ""}
+        />
       </div>
       <div
         class="fixed flex h-full w-full flex-col items-center justify-between"
@@ -156,10 +170,14 @@
               variant="secondary"
               size="sm"
               tabindex={-1}
-              onclick={(e: Event) => {
+              onclick={(e) => {
                 e.stopPropagation();
-                isBack = true;
-                turnDelete();
+                if (e.shiftKey) {
+                  deleteFavorite(favorite);
+                } else {
+                  isBack = true;
+                  turnDelete();
+                }
               }}
             >
               <Icon icon="lucide:trash" class="h-4 w-4" />

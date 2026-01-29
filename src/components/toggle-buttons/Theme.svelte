@@ -1,43 +1,29 @@
 <script lang="ts">
-  import { saveSettings } from "@/functions";
-  import { Button, Label, Switch } from "@/lib/components";
-  import { theme } from "@/store";
+  import { Switch } from "@/lib/components";
+  import { themeMode } from "@/states";
   import Icon from "@iconify/svelte";
-  import { onMount } from "svelte";
-
-  let isDark = $state(true);
-  onMount(() => {
-    isDark = $theme === "dark";
-  });
 </script>
 
 <div class="inline-flex items-center justify-start gap-2">
   <Icon
     class="size-5! cursor-pointer"
     onclick={() => {
-      isDark = false;
-      $theme = "light";
-      saveSettings();
+      themeMode.value = "light";
     }}
-    icon={!isDark
+    icon={themeMode.value === "light"
       ? "material-symbols:sunny-rounded"
       : "material-symbols:sunny-outline-rounded"}
   />
   <Switch
-    bind:checked={isDark}
-    onCheckedChange={async (value) => {
-      $theme = value ? "dark" : "light";
-      await saveSettings();
-    }}
+    checked={themeMode.value === "dark"}
+    onCheckedChange={themeMode.toggle}
   />
   <Icon
     class="size-5! cursor-pointer"
     onclick={() => {
-      isDark = true;
-      $theme = "dark";
-      saveSettings();
+      themeMode.value = "dark";
     }}
-    icon={isDark
+    icon={themeMode.value === "dark"
       ? "material-symbols:dark-mode"
       : "material-symbols:dark-mode-outline"}
   />

@@ -9,8 +9,8 @@
 /* @import '@layerstack/tailwind/utils.css'; */
 /* @import '@layerstack/tailwind/themes/basic.css'; */
 
-@source './../node_modules/svelte-ux/dist';
-@source './../node_modules/layerchart/dist';
+@source "./../node_modules/svelte-ux/dist";
+@source "./../node_modules/layerchart/dist";
 
 /* :root { */
 /*   --color-primary: var(--color-emerald-600); */
@@ -38,7 +38,21 @@
 /*       transparent */
 /*     ); */
 /*   } */
-/* } */
+
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+::view-transition-old(saved-cover),
+::view-transition-new(saved-cover) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @theme {
   /* Scrollbar colors */
   --color-scroll-thumb: hsla(0, 0%, 13%, 1);
