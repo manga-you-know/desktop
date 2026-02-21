@@ -27,8 +27,8 @@ export const favorites = sqliteTable(
     titleColor: text("title_color").default(""),
     cardColor: text("card_color").default(""),
     grade: real("grade").default(0.0),
-    anilistID: text("anilist_id").default(""),
-    malID: text("mal_id").default(""),
+    anilistId: text("anilist_id").default(""),
+    malId: text("mal_id").default(""),
     author: text("author").default("Unknow"),
     isUltraFavorite: integer("is_ultra_favorite", { mode: "boolean" }).default(
       false,

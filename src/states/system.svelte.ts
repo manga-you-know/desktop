@@ -19,9 +19,22 @@ import type {
 } from "@/types";
 // import { favorites } from "@/db";
 
-export const openAdd = new (class {
-  active = $state(false);
-})();
+class OpenBool {
+  #active = $state(false);
+  onchange: (value: boolean) => void;
+  constructor(onchange = (_value: boolean) => { }) {
+    this.onchange = onchange;
+  }
+  get active() {
+    return this.#active;
+  }
+  set active(v) {
+    this.#active = v;
+    this.onchange(v);
+  }
+}
+
+export const openAdd = new OpenBool();
 export const openTag = new (class {
   active = $state(false);
 })();
@@ -52,7 +65,6 @@ export const openPatchNotes = new (class {
 export const openReaderDrawer = new (class {
   active = $state(false);
 })();
-
 
 export const rawSaveds = new (class {
   value: Favorite[] = $state([]);

@@ -24,12 +24,12 @@
   let name = $state(favorite.name);
   let link = $state(favorite.link);
   let cover = $state(favorite.cover);
-  let malId = $state(favorite.mal_id);
+  let malId = $state(favorite.malId);
   let author = $state(favorite.author);
-  let anilistId = $state(favorite.anilist_id);
-  let folderName = $state(favorite.folder_name);
+  let anilistId = $state(favorite.anilistId);
+  let folderName = $state(favorite.folderName);
   let description = $state(favorite.description);
-  let isUltraFavorite = $state(getBool(favorite.is_ultra_favorite));
+  let isUltraFavorite = $state(getBool(favorite.isUltraFavorite));
 
   let isRefreshing = $state(false);
   let isRefreshed = $state(false);
@@ -56,25 +56,25 @@
   async function refreshInfo() {
     isRefreshing = true;
     const favLoad = await $downloadManager.getMangaById(
-      favorite.source_id,
+      favorite.sourceId,
       favorite.source,
     );
     name = favLoad.name;
     link = favLoad.link;
     cover = favLoad.cover;
-    malId = favLoad.mal_id ?? malId;
+    malId = favLoad.malId ?? malId;
     author = favLoad.author ?? author;
-    folderName = favLoad.folder_name;
+    folderName = favLoad.folderName;
     description = favLoad.description ?? description;
-    anilistId = favLoad.anilist_id ?? anilistId;
+    anilistId = favLoad.anilistId ?? anilistId;
     favorite.name = name;
     favorite.link = link;
     favorite.cover = cover;
-    favorite.mal_id = malId;
+    favorite.malId = malId;
     favorite.author = author;
-    favorite.anilist_id = anilistId;
+    favorite.anilistId = anilistId;
     favorite.description = description;
-    favorite.extra_name = favLoad.extra_name;
+    favorite.extraName = favLoad.extraName;
     favorite.author = favLoad.author;
     isRefreshing = false;
     isRefreshed = true;
@@ -84,10 +84,10 @@
     favorite.name = name;
     favorite.link = link;
     favorite.cover = cover;
-    favorite.mal_id = malId;
+    favorite.malId = malId;
     favorite.author = author;
-    favorite.anilist_id = anilistId;
-    favorite.folder_name = folderName;
+    favorite.anilistId = anilistId;
+    favorite.folderName = folderName;
     favorite.description = description;
     await FavoriteDB.updateFavorite(favorite);
     await Promise.all([refreshLibrary(), refreshFavorites()]);
@@ -99,12 +99,12 @@
     name = favorite.name;
     link = favorite.link;
     cover = favorite.cover;
-    malId = favorite.mal_id;
+    malId = favorite.malId;
     author = favorite.author;
-    anilistId = favorite.anilist_id;
-    folderName = favorite.folder_name;
+    anilistId = favorite.anilistId;
+    folderName = favorite.folderName;
     description = favorite.description;
-    isUltraFavorite = favorite.is_ultra_favorite;
+    isUltraFavorite = favorite.isUltraFavorite ?? false;
     if (open) {
       setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
     } else {
@@ -163,10 +163,10 @@
         </div>
       </div>
     </Dialog.Header>
-    <div class="w-full flex justify-between gap-2">
+    <div class="flex w-full justify-between gap-2">
       <Textarea
         id="description-{favorite.id}"
-        class="resize-none h-24 scrollbar"
+        class="scrollbar h-24 resize-none"
         placeholder="Description"
         floatingLabel
         variant="secondary"
@@ -224,11 +224,11 @@
         bind:value={author}
       />
       <Button
-        class="w-28 h-10 ml-[0.6rem] flex justify-between relative"
+        class="relative ml-[0.6rem] flex h-10 w-28 justify-between"
         variant="outline"
         onclick={async () => {
           isUltraFavorite = !isUltraFavorite;
-          favorite.is_ultra_favorite = isUltraFavorite;
+          favorite.isUltraFavorite = isUltraFavorite;
           await FavoriteDB.toggleUltraFavorite(favorite, false);
         }}
       >
@@ -236,14 +236,14 @@
         <Icon
           class={cn(
             "absolute right-3 size-5! transition-all duration-500",
-            isUltraFavorite && "opacity-0 scale-0 rotate-180",
+            isUltraFavorite && "scale-0 rotate-180 opacity-0",
           )}
           icon="heroicons:star"
         />
         <Icon
           class={cn(
             "absolute right-3 size-5! transition-all duration-500",
-            !isUltraFavorite && "opacity-0 scale-0 -rotate-180",
+            !isUltraFavorite && "scale-0 -rotate-180 opacity-0",
           )}
           icon="heroicons:star-solid"
         />
@@ -271,12 +271,12 @@
               name !== favorite.name ||
               link !== favorite.link ||
               cover !== favorite.cover ||
-              malId !== favorite.mal_id ||
+              malId !== favorite.malId ||
               author !== favorite.author ||
-              anilistId !== favorite.anilist_id ||
-              folderName !== favorite.folder_name ||
+              anilistId !== favorite.anilistId ||
+              folderName !== favorite.folderName ||
               description !== favorite.description ||
-              isUltraFavorite !== favorite.is_ultra_favorite ||
+              isUltraFavorite !== favorite.isUltraFavorite ||
               isRefreshed
             )}
           onclick={save}

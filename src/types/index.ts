@@ -16,3 +16,5 @@ export type { SearchResult } from "./searchResult"
 export type { MarkFavorites } from "./markFavorite";
 export type { FavoriteLoaded } from "./favoriteLoaded";
 export type { NotificationPayload } from "./notificationPayload";
+
+export type Languages = "English"

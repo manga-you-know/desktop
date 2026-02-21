@@ -76,9 +76,9 @@
 <button
   class={cn(
     divClass,
-    "relative focus-visible:ring-0 ring-0",
+    "relative ring-0 focus-visible:ring-0",
     disabled ? "cursor-default" : "cursor-text!",
-    variant === "link" && value !== "" && "underline decoration-primary",
+    variant === "link" && value !== "" && "decoration-primary underline",
     variant === "outline" && "bg-transparent",
   )}
   onclick={() => {
@@ -98,8 +98,8 @@
       inputVariants({
         variant: !required || value.length > 0 ? variant : "destructive",
         borderFocus,
-        className,
       }),
+      className,
     )}
     bind:value
     {...restProps}
@@ -118,8 +118,8 @@
       class={cn(
         labelClass,
         disabled ? "cursor-not-allowed" : "cursor-text",
-        value === "" && "translate-y-0! top-[25%]! scale-100!",
-        "text-sm font-medium absolute select-none text-gray-800 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-left px-2 peer-focus:px-2 peer-focus:text-gray-900 peer-focus:dark:text-gray-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1",
+        value === "" && "top-[25%]! translate-y-0! scale-100!",
+        "absolute start-1 top-2 z-10 origin-left -translate-y-4 scale-75 transform px-2 text-sm font-medium text-gray-800 duration-300 select-none peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-gray-900 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-gray-400",
       )}
       >{placeholder}
     </label>
