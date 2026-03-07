@@ -7,7 +7,7 @@ mod utils;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     #[allow(unused_mut)]
-    let mut builder = tauri::Builder::default()
+    let mut builder = tauri::Builder::<tauri::Cef>::new()
         .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
@@ -19,7 +19,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_cache::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
@@ -28,10 +27,10 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build());
     #[cfg(mobile)]
     {
-        builder = builder.setup(|app| {
-            app.handle().plugin(tauri_plugin_app_events::init())?;
-            Ok(())
-        });
+        // builder = builder.setup(|app| {
+        //     app.handle().plugin(tauri_plugin_app_events::init())?;
+        //     Ok(())
+        // });
     }
     #[cfg(desktop)]
     {

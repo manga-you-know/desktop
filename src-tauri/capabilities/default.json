@@ -2,9 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": [
-    "*"
-  ],
+  "windows": ["*"],
   "permissions": [
     "core:app:allow-set-app-theme",
     "core:event:default",
@@ -94,7 +92,6 @@
     },
     "opener:allow-default-urls",
     "opener:allow-reveal-item-in-dir",
-    "cache:default",
     "sql:default",
     "sql:allow-close",
     "sql:allow-execute",
