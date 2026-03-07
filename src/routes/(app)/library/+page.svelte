@@ -22,7 +22,7 @@
   import type { Favorite } from "@/types";
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
-  import { get, has, set } from "tauri-plugin-cache-api";
+  // import { get, has, set } from "tauri-plugin-cache-api";
   import { delay } from "@/utils";
   import { ScrollingValue } from "svelte-ux";
 

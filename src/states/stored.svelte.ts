@@ -3,130 +3,216 @@ import { type } from "@tauri-apps/plugin-os";
 import { load, Store } from "@tauri-apps/plugin-store";
 import type { Languages } from "@/types";
 
-let settingsStore: Store | null = null
-let defaultData: Record<string, any> = null!
-let loadingPromise: Promise<Record<string, any>> | null = null
+let settingsStore: Store | null = null;
+let defaultData: Record<string, any> = null!;
+let loadingPromise: Promise<Record<string, any>> | null = null;
 const window = getCurrentWindow();
 
 const getBefore = async (key: string, defaultValue: any) => {
-  if (settingsStore === null)
-    settingsStore = await load("settings.json")
+  if (settingsStore === null) settingsStore = await load("settings.json");
   if (defaultData === null) {
     if (loadingPromise === null) {
-      loadingPromise = settingsStore.entries().then(entries => {
-        defaultData = Object.fromEntries(entries)
-        return defaultData
-      })
+      loadingPromise = settingsStore.entries().then((entries) => {
+        defaultData = Object.fromEntries(entries);
+        return defaultData;
+      });
     }
-    await loadingPromise
+    await loadingPromise;
   }
-  return defaultData[key] ?? defaultValue
-}
+  return defaultData[key] ?? defaultValue;
+};
 
 const writeValue = async (key: string, value: any) => {
-  if (settingsStore === null)
-    settingsStore = await load("settings.json")
-  await settingsStore.set(key, value)
-}
+  if (settingsStore === null) settingsStore = await load("settings.json");
+  await settingsStore.set(key, value);
+};
 
 class StoredState<T> {
   #value: T;
   #key: string;
   #defaultValue: T;
   #options: T[];
-  #onChange: (_: T) => void
+  #onChange: (_: T) => void;
 
-  constructor(key: string, defaultValue: T, options: T[] = [], onChange = (_: T) => { }) {
-    this.#value = $state(defaultValue)
-    this.#key = key
-    this.#defaultValue = defaultValue
-    this.#options = options
-    this.#onChange = onChange
-    getBefore(this.#key, defaultValue)
-      .then((value: T) => { this.#value = value })
+  constructor(
+    key: string,
+    defaultValue: T,
+    options: T[] = [],
+    onChange = (_: T) => {},
+  ) {
+    this.#value = $state(defaultValue);
+    this.#key = key;
+    this.#defaultValue = defaultValue;
+    this.#options = options;
+    this.#onChange = onChange;
+    getBefore(this.#key, defaultValue).then((value: T) => {
+      this.#value = value;
+    });
   }
 
   get value() {
-    return this.#value
+    return this.#value;
   }
 
   set value(v) {
-    this.#value = v
-    writeValue(this.#key, this.#value)
-    this.#onChange(this.#value)
+    this.#value = v;
+    writeValue(this.#key, this.#value);
+    this.#onChange(this.#value);
   }
 
   resetValue = () => {
-    this.#value = this.#defaultValue
-    writeValue(this.#key, this.#defaultValue)
-    this.#onChange(this.#value)
-  }
+    this.#value = this.#defaultValue;
+    writeValue(this.#key, this.#defaultValue);
+    this.#onChange(this.#value);
+  };
 
   toggle = () => {
     if (this.#options.length === 2) {
-      this.#value = this.#value === this.#options[0] ? this.#options[1] : this.#options[0];
-      writeValue(this.#key, this.#value)
-      this.#onChange(this.#value)
-    } else throw new Error("More or less than 2 options were passed")
-  }
+      this.#value =
+        this.#value === this.#options[0] ? this.#options[1] : this.#options[0];
+      writeValue(this.#key, this.#value);
+      this.#onChange(this.#value);
+    } else throw new Error("More or less than 2 options were passed");
+  };
 
   cycle = () => {
     if (this.#options.length > 1) {
       const currentIndex = this.#options.indexOf(this.#value);
       const next = (currentIndex + 1) % this.#options.length;
       this.#value = this.#options[next];
-      writeValue(this.#key, this.#value)
-      this.#onChange(this.#value)
-    } else throw new Error("Less than 2 options were passed")
-  }
+      writeValue(this.#key, this.#value);
+      this.#onChange(this.#value);
+    } else throw new Error("Less than 2 options were passed");
+  };
 }
 
-
-//  Cache 
-export const showOnlyWithChapter = new StoredState<boolean>("show_only_with_chapter", false, [true, false])
-export const libraryAscending = new StoredState<boolean>("library_ascending", false, [true, false])
-export const chaptersAscending = new StoredState<boolean>("chapters_ascending", false, [true, false])
-export const orderLibraryBy = new StoredState<string>("order_library_by", "id", ["id", "date"])
-export const openReadMenu = new StoredState<boolean>("open_read_menu", true, [true, false])
+//  Cache
+export const showOnlyWithChapter = new StoredState<boolean>(
+  "show_only_with_chapter",
+  false,
+  [true, false],
+);
+export const libraryAscending = new StoredState<boolean>(
+  "library_ascending",
+  false,
+  [true, false],
+);
+export const chaptersAscending = new StoredState<boolean>(
+  "chapters_ascending",
+  false,
+  [true, false],
+);
+export const orderLibraryBy = new StoredState<string>(
+  "order_library_by",
+  "id",
+  ["id", "date"],
+);
+export const openReadMenu = new StoredState<boolean>("open_read_menu", true, [
+  true,
+  false,
+]);
 
 // export const chaptersCache = writable<(ReadCache & { chapters: Chapter[]; images: string[] })[]>([]);
 
-// Appearance 
-export const themeMode = new StoredState<"dark" | "light">("theme_mode", "dark", ["light", "dark"])
-export const retroMode = new StoredState<boolean>("retro_mode", false, [true, false])
-export const sidebarOnRight = new StoredState<boolean>("sidebar_right", false, [true, false])
-export const sidebarStyle = new StoredState<"collapsed" | "expanded" | "expand-on-hover">("sidebar_style", "collapsed")
-export const customTitlebar = new StoredState<boolean>("custom_titlebar", type() !== "macos", [true, false], (v) => {
-  window.isDecorated().then(isDecorated => {
-    if (isDecorated && !v) {
-      window.setDecorations(false)
-    }
-    if (!isDecorated && v) {
-      window.setDecorations(true)
-    }
-  })
-})
+// Appearance
+export const themeMode = new StoredState<"dark" | "light">(
+  "theme_mode",
+  "dark",
+  ["light", "dark"],
+);
+export const retroMode = new StoredState<boolean>("retro_mode", false, [
+  true,
+  false,
+]);
+export const sidebarOnRight = new StoredState<boolean>("sidebar_right", false, [
+  true,
+  false,
+]);
+export const sidebarStyle = new StoredState<
+  "collapsed" | "expanded" | "expand-on-hover"
+>("sidebar_style", "collapsed");
+export const customTitlebar = new StoredState<boolean>(
+  "custom_titlebar",
+  type() !== "macos",
+  [true, false],
+  (v) => {
+    window.isDecorated().then((isDecorated) => {
+      if (isDecorated && !v) {
+        window.setDecorations(false);
+      }
+      if (!isDecorated && v) {
+        window.setDecorations(true);
+      }
+    });
+  },
+);
 
 // Behavior
-export const closeToTray = new StoredState<boolean>("close_tray", false, [true, false])
-export const openFavoriteChapter = new StoredState<boolean>("open_favorite_chapter", false, [true, false])
-export const notifyChaptersUpdate = new StoredState<boolean>("notify_chapter_updates", true, [true, false])
-export const taskbarCountFavorites = new StoredState<boolean>("taskbar_count_favorites", true, [true, false])
-
+export const closeToTray = new StoredState<boolean>("close_tray", false, [
+  true,
+  false,
+]);
+export const openFavoriteChapter = new StoredState<boolean>(
+  "open_favorite_chapter",
+  false,
+  [true, false],
+);
+export const notifyChaptersUpdate = new StoredState<boolean>(
+  "notify_chapter_updates",
+  true,
+  [true, false],
+);
+export const taskbarCountFavorites = new StoredState<boolean>(
+  "taskbar_count_favorites",
+  true,
+  [true, false],
+);
 
 // System
-export const appLanguage = new StoredState<Languages>("app_language", "English")
-export const downloadPath = new StoredState<string>("download_path", "Mangas/")
+export const appLanguage = new StoredState<Languages>(
+  "app_language",
+  "English",
+);
+export const downloadPath = new StoredState<string>("download_path", "Mangas/");
 
 // Reader
-export const markAsRead = new StoredState<"manual" | "start" | "end">("mark_as_read", "start")
-export const cacheReading = new StoredState<boolean>("cache_reading", true, [true, false])
-export const autoEnterFullscreen = new StoredState<boolean>("auto_enter_fullscreen", true, [true, false])
-export const readerClock = new StoredState<boolean>("reader_clock", false, [true, false])
-export const showCurrentChapter = new StoredState<boolean>("show_current_chapter", false, [true, false])
-export const chapterPagesCounter = new StoredState<boolean>("chapter_pages_counter", true, [true, false])
-export const chapterPercentageNumber = new StoredState<boolean>("chapter_percentage_number", false, [true, false])
-export const chapterPercentageGraph = new StoredState<boolean>("chapter_percentage_graph", false, [true, false])
+export const markAsRead = new StoredState<"manual" | "start" | "end">(
+  "mark_as_read",
+  "start",
+);
+export const cacheReading = new StoredState<boolean>("cache_reading", true, [
+  true,
+  false,
+]);
+export const autoEnterFullscreen = new StoredState<boolean>(
+  "auto_enter_fullscreen",
+  true,
+  [true, false],
+);
+export const readerClock = new StoredState<boolean>("reader_clock", false, [
+  true,
+  false,
+]);
+export const showCurrentChapter = new StoredState<boolean>(
+  "show_current_chapter",
+  false,
+  [true, false],
+);
+export const chapterPagesCounter = new StoredState<boolean>(
+  "chapter_pages_counter",
+  true,
+  [true, false],
+);
+export const chapterPercentageNumber = new StoredState<boolean>(
+  "chapter_percentage_number",
+  false,
+  [true, false],
+);
+export const chapterPercentageGraph = new StoredState<boolean>(
+  "chapter_percentage_graph",
+  false,
+  [true, false],
+);
 
 // export const isChaptersUniqueNumber = writable<boolean>(false);
 // export const libraryFavorites = writable<Favorite[]>([]);
@@ -179,4 +265,3 @@ export const chapterPercentageGraph = new StoredState<boolean>("chapter_percenta
 //   blur_effects: { store: blurEffects, default: true },
 // } as const;
 //
-

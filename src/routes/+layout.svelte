@@ -119,25 +119,30 @@
     }
   }
 
-
   async function loadDatabase() {
     await initDatabase();
     await migrateDatabase();
   }
+
   async function loadScreenState() {
     isMaximized.set(await window.isMaximized());
     isFullscreen.set(await window.isFullscreen());
   }
+
   const command = Command.sidecar("binaries/suwayomi")
   
   let child: Child;
 
   const loadSidecar = async () => {
-    child = await command.spawn()
+    command.spawn()
   }
 
+  command.on("error", (err) => {
+    console.log("smth happened man: ", err)
+  })
+
   const close = async () => {
-    await child.kill()
+    //await child.kill()
     exit()
   }
 
