@@ -11,8 +11,6 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
-            get_aniplay_chapters,
-            get_aniplay_episode,
             get_base64_image
         ])
         .plugin(tauri_plugin_os::init())
