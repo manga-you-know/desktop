@@ -7,6 +7,8 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
+# MangaYouKnow 
+
 <div align="center" style="flex: auto;">
 	<img style="height: 100%; object-fit: contain; border-radius: 6px"  alt="image" src="https://github.com/user-attachments/assets/bf92ba50-b6cd-4a36-a594-29a5ea63ee12" />
 	<div align="center" style="display: flex; overflow: hidden">
@@ -23,12 +25,6 @@
     /> -->
 </div>
 
-
-
-
-# MangaYouKnow desktop
-
-MangaYouKnow is a open-source manga reader under the MIT license. 
 
 ## Download and use
 
