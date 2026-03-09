@@ -36,10 +36,10 @@ Available platforms:
 | OS                                                                                                                                           | Currently status                                                                                    | Working?                                      |
 | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------- |
 | <b style="width: 100%; display: flex; justify-content: center">Windows</b> | The app is developed here, so its supposed to run really smooth with every functionality            | ✅Yes                                          |
-| <b style="width: 100%; display: flex; justify-content: center">macOS</b>   | You'll have luck if you can run it, since i can't afford a license, this doesn't works              | ☑️Not good                                      |
-| <b style="width: 100%; display: flex; justify-content: center">Linux</b>   | Already tested but needs some fixing in UI, since Linux seems to hate blur effects. IDK about Arch  | ☑️ Mostly                                     |
-| <b style="width: 100%; display: flex; justify-content: center">Android</b> | I need more time and RAM on my device to make it useful                                             | <p style="white-space:nowrap" >⛔Partially</p> |
-| <b style="width: 100%; display: flex; justify-content: center">iOS</b>     | Doesn't seem possible yet, at least until I figure out how to sign without a Apple dev paid account | ❌No.                                          |
+| <b style="width: 100%; display: flex; justify-content: center">macOS</b>   | Critical bugs when running it related by users, due to not having an Apple developer license         | ❌ Not recommended|
+| <b style="width: 100%; display: flex; justify-content: center">Linux</b>   | Not that much bugs. But its performance is terrible due to how its rendered on Linux, specially on Arch. Even worse on Nvidia GPU's (my case). A fix is being worked on tho.  | ☑️ Mostly fine.                                     |
+| <b style="width: 100%; display: flex; justify-content: center">Android</b> | Its far from the main goal of the project. I'd recommend you to use other apps, specially forks from Mihon.  For the soon future, mobile is gonna be dropped until I feel its worth to develop for it again                   | <p style="white-space:nowrap" >⛔Partially.</p> |
+| <b style="width: 100%; display: flex; justify-content: center">iOS</b>     | Unless I'd have 99$ to spend on it | ❌No.                                          |
  
 
 ## About 
