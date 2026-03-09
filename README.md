@@ -8,10 +8,23 @@
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
 <div align="center" style="flex: auto;">
-  <img
+	<img style="height: 100%; object-fit: contain; border-radius: 6px"  alt="image" src="https://github.com/user-attachments/assets/bf92ba50-b6cd-4a36-a594-29a5ea63ee12" />
+	<div align="center" style="display: flex; overflow: hidden">
+		<img style="width: 49%; object-fit: contain; border-radius: 6px" src="https://github.com/user-attachments/assets/26cce656-d698-4f7f-b8ce-b852f23a6648" />
+		<img style="width: 49%; object-fit: contain; border-radius: 6px"  alt="image" src="https://github.com/user-attachments/assets/4f6d6be6-0c17-4e21-937a-189844b29e9b" />
+	</div>
+		<div align="center" style="display: flex; overflow: hidden">
+			<img style="width: 49%; object-fit: contain; border-radius: 6px" alt="image" src="https://github.com/user-attachments/assets/4f373a98-c5ad-47d0-93cf-47061b7a68a7" />
+			<img style="width: 49%; object-fit: contain; border-radius: 6px" alt="image" alt="image" src="https://github.com/user-attachments/assets/4c793e1a-b4b5-4871-a0da-2e401fb5ff9b" />
+		</div>
+
+  <!-- <img
     src="/docs/assets/demo-2.gif"
-    style="height: 100%; object-fit: contain; border-radius: 6px" />
+    /> -->
 </div>
+
+
+
 
 # MangaYouKnow desktop
 
