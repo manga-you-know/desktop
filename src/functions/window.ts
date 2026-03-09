@@ -26,11 +26,7 @@ import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { toast } from "svelte-sonner";
 import { type } from "@tauri-apps/plugin-os";
-import {
-  writeImageBase64,
-  writeImageBinary,
-  writeText,
-} from "tauri-plugin-clipboard-api";
+import { writeImage, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { titleCase } from "@/utils";
 import { FavoriteDB } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
@@ -116,7 +112,7 @@ export async function copyImageFromPath(path: string) {
 }
 
 export async function copyImageBase64(imageBase64: string) {
-  await writeImageBase64(imageBase64.replace(/^data:image\/\w+;base64,/, ""));
+  await writeImage(imageBase64.replace(/^data:image\/\w+;base64,/, ""));
   toast.success("Image copied!");
 }
 

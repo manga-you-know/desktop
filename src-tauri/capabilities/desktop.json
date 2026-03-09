@@ -24,8 +24,6 @@
     "core:window:allow-set-badge-label",
     "core:window:allow-set-ignore-cursor-events",
     "core:window:allow-set-effects",
-    "clipboard:write-all",
-    "clipboard:read-all",
     "global-shortcut:default",
     "autostart:default",
     "global-shortcut:allow-is-registered",
@@ -55,7 +53,6 @@
       ]
     },
     "cli:default",
-    "updater:default",
     "positioner:default"
   ]
 }

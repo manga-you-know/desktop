@@ -3,7 +3,7 @@
   import type { WithElementRef } from "bits-ui";
   import { type VariantProps, tv } from "tailwind-variants";
   import { cn } from "$lib/utils.js";
-  import { readText } from "tauri-plugin-clipboard-api";
+  import { readText } from "@tauri-apps/plugin-clipboard-manager";
 
   export const inputVariants = tv({
     base: "flex h-10 text-sm font-medium rounded-2xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",

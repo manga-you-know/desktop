@@ -29,13 +29,25 @@ tauri-plugin-fs = "2"
 tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-process = "2"
-tauri-plugin-shell = "2.2.1"
+tauri-plugin-shell = "2"
 tauri-plugin-os = "2"
 lazy_static = "1.5.0"
 once_cell = "1.20.2"
 tauri-plugin-opener = "2"
-tauri-plugin-updater = "2.10.0"
+tauri-plugin-autostart = "2"
+tauri-plugin-prevent-default = "4"
+tauri-plugin-cli = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-positioner = "2"
+tauri-plugin-clipboard-manager = "2"
 
+# [target."cfg(any(target_os = \"android\", target_os = \"ios\"))".dependencies]
+# tauri-plugin-app-events = "0.2"
+
+[target."cfg(any(target_os = \"windows\"))".dependencies]
+tauri-plugin-updater = "2"
 
 [dependencies.serde]
 version = "1.0"
@@ -59,25 +71,7 @@ version = "2"
 features = []
 
 [dependencies.tauri-plugin-http]
-version = "=2.5.3"
+version = "2"
 features = ["unsafe-headers"]
 
-# [target."cfg(any(target_os = \"android\", target_os = \"ios\"))".dependencies]
-# tauri-plugin-app-events = "0.2"
 
-# [target."cfg(any(target_os = \"windows\"))".dependencies]
-# windows = "0.61.3"
-# webview2-com = "0.37.0"
-# webview2-com-sys = "0.37.0"
-
-[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
-tauri-plugin-autostart = "2"
-tauri-plugin-prevent-default = "4"
-tauri-plugin-cli = "2"
-tauri-plugin-clipboard = "2.1.11"
-tauri-plugin-global-shortcut = "2"
-tauri-plugin-single-instance = "2"
-tauri-plugin-window-state = "2"
-# tauri-plugin-drpc = "0.1.6"
-tauri-plugin-updater = "2"
-tauri-plugin-positioner = "2"

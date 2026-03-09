@@ -22,6 +22,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_sql::Builder::new().build())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build());
     #[cfg(mobile)]
     {
@@ -43,11 +44,9 @@ pub fn run() {
             })
             // .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
-            .plugin(tauri_plugin_clipboard::init())
             .plugin(tauri_plugin_positioner::init())
             .plugin(tauri_plugin_prevent_default::debug())
             .plugin(tauri_plugin_window_state::Builder::default().build())
-            .plugin(tauri_plugin_updater::Builder::new().build())
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
                 let win = app.get_webview_window("main").unwrap();
                 win.show().unwrap();
@@ -58,6 +57,10 @@ pub fn run() {
                 Some(vec!["--flag1", "--flag2"]),
             ))
             .plugin(tauri_plugin_global_shortcut::Builder::new().build());
+        #[cfg(target_os = "windows")]
+        {
+            builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
+        }
     }
     builder.run(tauri::generate_context!()).unwrap()
 }
