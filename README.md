@@ -12,7 +12,7 @@ MangaYouKnow is the cleanest manga reader there is, while keeping it modern. Wit
 You are also able to: 
 - Download for local reading
 - Saving pages as favorite when reading
-- Organazing your library with tags
+- Organize your library with tags
 
 ## Screenshots
 <div align="center" style="flex: auto;">
