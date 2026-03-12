@@ -7,7 +7,8 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z31J7YP7) 
 
-# MangaYouKnow 
+# MangaYouKnow
+MangaYouKnow is the cleanest manga reader there is, while keeping it modern. With it, you can read through a bunch of sources and keep your favorite mangas/manhwas updateds.
 
 <div align="center" style="flex: auto;">
 	<img style="height: 100%; object-fit: contain; border-radius: 6px"  alt="image" src="https://github.com/user-attachments/assets/bf92ba50-b6cd-4a36-a594-29a5ea63ee12" />
