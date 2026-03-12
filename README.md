@@ -9,7 +9,12 @@
 
 # MangaYouKnow
 MangaYouKnow is the cleanest manga reader there is, while keeping it modern. With it, you can read through a bunch of sources and keep your favorite mangas/manhwas updateds.
+You are also able to: 
+- Download for local reading
+- Saving pages as favorite when reading
+- Organazing your library with tags
 
+## Screenshots
 <div align="center" style="flex: auto;">
 	<img style="height: 100%; object-fit: contain; border-radius: 6px"  alt="image" src="https://github.com/user-attachments/assets/bf92ba50-b6cd-4a36-a594-29a5ea63ee12" />
 	<div align="center" style="display: flex; overflow: hidden">
