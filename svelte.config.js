@@ -8,7 +8,7 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({
-      fallback: "index.html"
+      fallback: "index.html",
     }),
     alias: {
       "@/*": "./path/to/lib/*",
@@ -17,11 +17,10 @@ const config = {
     prerender: {
       entries: [
         "/",
-        "/home",
         "/favorites",
         "/library",
+        "/search",
         "/panels",
-        "/notificator",
         "/reader/0/0",
         "/player/0/0",
       ],

@@ -34,14 +34,14 @@ pub fn run() {
     #[cfg(desktop)]
     {
         builder = builder
-            .setup(|app| {
-                let window = app.get_webview_window("main").unwrap();
-                let args: Vec<String> = std::env::args().collect();
-                if args.contains(&"--flag1".to_string()) {
-                    window.hide().unwrap();
-                }
-                Ok(())
-            })
+            // .setup(|app| {
+            //     let window = app.get_webview_window("main").unwrap();
+            //     let args: Vec<String> = std::env::args().collect();
+            //     if args.contains(&"--flag1".to_string()) {
+            //         window.hide().unwrap();
+            //     }
+            //     Ok(())
+            // })
             // .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
             .plugin(tauri_plugin_positioner::init())

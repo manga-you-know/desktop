@@ -69,19 +69,19 @@
 
   let { children } = $props();
   const window = getCurrentWindow();
-  const interval = setInterval(
-    async () => {
-      try {
-        loadFavoritesChapters();
-        if (!IS_MOBILE && $autoSearchUpdates && !$updateInfo.updateAvailable) {
-          checkForAppUpdates();
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    1000 * 60 * 10,
-  );
+  // const interval = setInterval(
+  //   async () => {
+  //     try {
+  //       loadFavoritesChapters();
+  //       if (!IS_MOBILE && $autoSearchUpdates && !$updateInfo.updateAvailable) {
+  //         checkForAppUpdates();
+  //       }
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   },
+  //   1000 * 60 * 10,
+  // );
 
   const isInput = () => {
     return document.activeElement?.tagName === "INPUT";
@@ -151,7 +151,7 @@
     loadDatabase();
     logNewUser();
     showPatchNotes();
-    createTray();
+    // createTray();
     loadSettings();
     loadAppIcons();
     refreshLibrary();
@@ -194,9 +194,9 @@
       close()
     }
   });
-  onDestroy(() => {
-    clearInterval(interval);
-  });
+  // onDestroy(() => {
+  //   clearInterval(interval);
+  // });
 
   $effect(() => {
     if (!page.route?.id?.startsWith("/reader"))
@@ -245,7 +245,6 @@
         !$windowEffects && "bg-background",
         page.route.id?.startsWith("/reader") && "dark:bg-black",
       )}
-      data-webkit={!["linux", "macos"].includes(type())}
     >
     <!-- group-data-[retro=active]/theme:bg-red-500 --> 
       <div

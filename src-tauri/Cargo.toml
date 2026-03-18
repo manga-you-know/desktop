@@ -2,7 +2,7 @@
 name = "MangaYouKnow"
 version = "0.9.33"
 description = "A manga app!"
-authors = ["ReiLoko4"]
+authors = ["thiagovianav"]
 license = "MIT"
 repository = "https://github.com/manga-you-know/desktop"
 edition = "2021"
@@ -12,6 +12,10 @@ rust-version = "1.87.0"
 name = "app_lib"
 crate-type = ["staticlib", "cdylib", "lib"]
 
+[features]
+default = ["cef"]
+cef = ["tauri/cef"]
+
 [profile.release]
 opt-level = 3 
 jlto = true 
@@ -20,58 +24,67 @@ codegen-units = 1
 
 [build-dependencies.tauri-build]
 version = "2"
+git = "https://github.com/tauri-apps/tauri"
+branch = "feat/cef"
 features = []
-
-[dependencies]
-serde_json = "1.0"
-base64 = "0.22"
-tauri-plugin-fs = "2"
-tauri-plugin-store = "2"
-tauri-plugin-dialog = "2"
-tauri-plugin-process = "2"
-tauri-plugin-shell = "2"
-tauri-plugin-os = "2"
-lazy_static = "1.5.0"
-once_cell = "1.20.2"
-tauri-plugin-opener = "2"
-tauri-plugin-autostart = "2"
-tauri-plugin-prevent-default = "4"
-tauri-plugin-cli = "2"
-tauri-plugin-global-shortcut = "2"
-tauri-plugin-single-instance = "2"
-tauri-plugin-window-state = "2"
-tauri-plugin-positioner = "2"
-tauri-plugin-clipboard-manager = "2"
-
-# [target."cfg(any(target_os = \"android\", target_os = \"ios\"))".dependencies]
-# tauri-plugin-app-events = "0.2"
-
-[target."cfg(any(target_os = \"windows\"))".dependencies]
-tauri-plugin-updater = "2"
-
-[dependencies.serde]
-version = "1.0"
-features = ["derive"]
 
 [dependencies.tauri]
 version = "2"
 features = ["cef", "macos-private-api", "protocol-asset", "tray-icon", "image-png", "image-ico"]
 default-features = false
 
-[patch.crates-io.tauri]
-git = "https://github.com/tauri-apps/tauri"
-branch = "feat/cef"
+[patch.crates-io]
+tauri = { git = "https://github.com/tauri-apps/tauri", branch = "feat/cef" }
+tauri-plugin = { git = "https://github.com/tauri-apps/tauri", branch = "feat/cef" }
+
+
+[dependencies]
+serde_json = "1.0"
+base64 = "0.22"
+tauri-plugin-fs = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-dialog = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-process = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-shell = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-os = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+lazy_static = "1.5.0"
+once_cell = "1.20.2"
+tauri-plugin-opener = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-prevent-default = "4"
+tauri-plugin-cli = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-global-shortcut = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-positioner = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+tauri-plugin-clipboard-manager = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+
+# [target."cfg(any(target_os = \"android\", target_os = \"ios\"))".dependencies]
+# tauri-plugin-app-events = "0.2"
+
+[target."cfg(target_os = \"windows\")".dependencies]
+tauri-plugin-updater = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "feat/cef" }
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
 
 [dependencies.tauri-plugin-sql]
 version = "2"
+git = "https://github.com/tauri-apps/plugins-workspace"
+branch = "feat/cef"
 features = ["sqlite"]
 
 [dependencies.tauri-plugin-notification]
 version = "2"
+git = "https://github.com/tauri-apps/plugins-workspace"
+branch = "feat/cef"
 features = []
 
 [dependencies.tauri-plugin-http]
 version = "2"
+git = "https://github.com/tauri-apps/plugins-workspace"
+branch = "feat/cef"
 features = ["unsafe-headers"]
 
 
