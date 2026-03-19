@@ -37,6 +37,7 @@ You are also able to:
 You can find the newest version for all platforms [here](https://github.com/manga-you-know/desktop/releases/latest/).
 
 
+
 Available platforms:
 
 | OS                                                                                                                                           | Currently status                                                                                    | Working?                                      |
@@ -46,7 +47,17 @@ Available platforms:
 | <b style="width: 100%; display: flex; justify-content: center">Linux</b>   | Not that much bugs. But its performance is terrible due to how its rendered on Linux, specially on Arch. Even worse on Nvidia GPU's (my case). A fix is being worked on tho.  | ☑️ Mostly fine.                                     |
 | <b style="width: 100%; display: flex; justify-content: center">Android</b> | Its far from the main goal of the project. I'd recommend you to use other apps, specially forks from Mihon.  For the soon future, mobile is gonna be dropped until I feel its worth to develop for it again                   | <p style="white-space:nowrap" >⛔Partially.</p> |
 | <b style="width: 100%; display: flex; justify-content: center">iOS</b>     | Unless I'd have 99$ to spend on it | ❌No.                                          |
- 
+
+ ### Arch
+The package at [AUR](https://aur.archlinux.org/packages/manga-you-know-desktop-bin) is not mainteined by me, but AFAIK it is automated so no problems.
+
+
+Just install it as you should
+
+```bash
+yay -S manga-you-know-desktop-bin
+```
+
 
 ## About 
 
