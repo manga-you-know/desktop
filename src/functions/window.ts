@@ -26,15 +26,15 @@ import { get } from "svelte/store";
 import { goto } from "$app/navigation";
 import { toast } from "svelte-sonner";
 import { type } from "@tauri-apps/plugin-os";
-import {
-  writeImageBase64,
-  writeImageBinary,
-  writeText,
-} from "tauri-plugin-clipboard-api";
+import { writeImage, writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { titleCase } from "@/utils";
 import { FavoriteDB } from "@/repositories";
 import { loadIcons } from "@iconify/svelte";
-import { DISCORD_WEBHOOK_URL, DISCORD_FEEDBACK_WEBHOOK, ICONS_TO_LOAD } from "@/constants";
+import {
+  DISCORD_WEBHOOK_URL,
+  DISCORD_FEEDBACK_WEBHOOK,
+  ICONS_TO_LOAD,
+} from "@/constants";
 import { exit, relaunch } from "@tauri-apps/plugin-process";
 import { invoke } from "@tauri-apps/api/core";
 import { join, resourceDir } from "@tauri-apps/api/path";
@@ -42,7 +42,7 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 const currentWindow = getCurrentWindow();
 const system = type();
-let settingsStore: Store
+let settingsStore: Store;
 let isMaximized = false;
 
 export async function getEnv(key: string): Promise<string> {
@@ -50,7 +50,7 @@ export async function getEnv(key: string): Promise<string> {
 }
 
 export async function loadStore() {
-  if (!settingsStore) settingsStore = await load("settings.json")
+  if (!settingsStore) settingsStore = await load("settings.json");
 }
 
 export async function addBlurWindow() {
@@ -67,11 +67,11 @@ export async function destroyEverything() {
 
 export async function setTitle(title: string) {
   if (title === "") {
-    currentWindow.setTitle("MangaYouKnow")
-    extraTitle.set("")
+    currentWindow.setTitle("MangaYouKnow");
+    extraTitle.set("");
   } else {
-    currentWindow.setTitle(title)
-    extraTitle.set(title)
+    currentWindow.setTitle(title);
+    extraTitle.set(title);
   }
 }
 
@@ -112,18 +112,26 @@ export async function copyImageFromPath(path: string) {
 }
 
 export async function copyImageBase64(imageBase64: string) {
-  await writeImageBase64(imageBase64.replace(/^data:image\/\w+;base64,/, ""));
+  await writeImage(
+    atob(
+      imageBase64.replace(/^data:image\/\w+;base64,/, "").replace(/\s/g, ""),
+    ),
+  );
   toast.success("Image copied!");
 }
 
 export async function setCountIcon(value: number) {
-  if (system === "ios" || system === "android") return
+  if (system === "ios" || system === "android") return;
   if (system === "windows") {
     let imageEnd = "extra";
     if (value < 10) {
       imageEnd = value.toString();
     }
-    const iconPath = await join(await resourceDir(), "static", `number_overlay_${imageEnd}.png`);
+    const iconPath = await join(
+      await resourceDir(),
+      "static",
+      `number_overlay_${imageEnd}.png`,
+    );
     currentWindow.setOverlayIcon(iconPath);
   } else {
     currentWindow.setBadgeCount(value);
@@ -134,9 +142,9 @@ export async function setCountIcon(value: number) {
 }
 
 export async function removeCountIcon() {
-  if (system === "ios" || system === "android") return
+  if (system === "ios" || system === "android") return;
   if (system === "windows") {
-    currentWindow.setOverlayIcon()
+    currentWindow.setOverlayIcon();
   } else {
     currentWindow.setBadgeCount();
   }
@@ -159,24 +167,23 @@ export function loadAppIcons() {
 }
 
 export async function verifyCustomNotificator() {
-  const notificator = await Window.getByLabel("notificator")
+  const notificator = await Window.getByLabel("notificator");
   if (get(customNotificator)) {
     if (!notificator) {
-      new WebviewWindow("notificator",
-        {
-          "url": "index.html",
-          "width": 450,
-          "height": 100,
-          "title": "Notificator",
-          "transparent": true,
-          "skipTaskbar": true,
-          "alwaysOnTop": true,
-          "visibleOnAllWorkspaces": true,
-          "decorations": false,
-          "shadow": false,
-          "closable": false,
-          "resizable": false
-        })
+      new WebviewWindow("notificator", {
+        url: "index.html",
+        width: 450,
+        height: 100,
+        title: "Notificator",
+        transparent: true,
+        skipTaskbar: true,
+        alwaysOnTop: true,
+        visibleOnAllWorkspaces: true,
+        decorations: false,
+        shadow: false,
+        closable: false,
+        resizable: false,
+      });
     }
   } else {
     notificator?.destroy();
@@ -218,7 +225,7 @@ export async function sendLogDiscord() {
 }
 
 export async function logNewUser() {
-  await loadStore()
+  await loadStore();
   const hasLogged = await settingsStore.get<boolean>("has_logged_7");
   if (!hasLogged) {
     sendLogDiscord();
@@ -227,11 +234,11 @@ export async function logNewUser() {
 }
 
 export async function showPatchNotes() {
-  await loadStore()
-  const appVersion = await getVersion()
+  await loadStore();
+  const appVersion = await getVersion();
   const sawPatchNotes = await settingsStore.get<boolean>(`v${appVersion}`);
   if (!sawPatchNotes) {
-    openPatchNotes.set(true)
+    openPatchNotes.set(true);
     await settingsStore.set(`v${appVersion}`, true);
   }
 }
@@ -266,121 +273,120 @@ export async function stopDiscordPresence() {
 }
 
 export async function createTray() {
-  const store = await load("settings.json");
-  if (!((await store.get("start_in_tray")) ?? false)) {
-    currentWindow.show();
-    currentWindow.setFocus();
-  }
-  const exists = await TrayIcon.getById("myk-tray");
-  if (exists !== null) {
-    return;
-  }
-  const menu = await Menu.new({
-    items: [
-      {
-        id: "open",
-        text: "Open",
-        action: async () => {
-          await currentWindow.show();
-          await currentWindow.unminimize();
-          await currentWindow.setFocus();
-        },
-      },
-      {
-        id: "hide",
-        text: "Hide",
-        action: async () => {
-          await currentWindow.hide();
-        },
-      }, {
-        id: "count",
-        text: "All readed!",
-        action: async () => {
-          goto("/favorites")
-          await currentWindow.show();
-          await currentWindow.unminimize()
-          await currentWindow.setFocus();
-        }
-      },
-      {
-        id: "quit",
-        text: "Quit",
-        action: destroyEverything
-      },
-    ],
-  });
-  const options = {
-    id: "myk-tray",
-    icon: (await defaultWindowIcon()) ?? "/icon.png",
-    tooltip: "All readed!",
-    menu: menu,
-    menuOnLeftClick: false,
-    action: async (e: TrayIconEvent) => {
-      if (e.type === "DoubleClick") {
-        await currentWindow.show();
-        await currentWindow.unminimize()
-        await currentWindow.setFocus();
-      }
-    },
-  };
-  await TrayIcon.new(options);
+  // const store = await load("settings.json");
+  // if (!((await store.get("start_in_tray")) ?? false)) {
+  //   currentWindow.show();
+  //   currentWindow.setFocus();
+  // }
+  // const exists = await TrayIcon.getById("myk-tray");
+  // if (exists !== null) {
+  //   return;
+  // }
+  // const menu = await Menu.new({
+  //   items: [
+  //     {
+  //       id: "open",
+  //       text: "Open",
+  //       action: async () => {
+  //         await currentWindow.show();
+  //         await currentWindow.unminimize();
+  //         await currentWindow.setFocus();
+  //       },
+  //     },
+  //     {
+  //       id: "hide",
+  //       text: "Hide",
+  //       action: async () => {
+  //         await currentWindow.hide();
+  //       },
+  //     }, {
+  //       id: "count",
+  //       text: "All readed!",
+  //       action: async () => {
+  //         goto("/favorites")
+  //         await currentWindow.show();
+  //         await currentWindow.unminimize()
+  //         await currentWindow.setFocus();
+  //       }
+  //     },
+  //     {
+  //       id: "quit",
+  //       text: "Quit",
+  //       action: destroyEverything
+  //     },
+  //   ],
+  // });
+  // const options = {
+  //   id: "myk-tray",
+  //   icon: (await defaultWindowIcon()) ?? "/icon.png",
+  //   tooltip: "All readed!",
+  //   menu: menu,
+  //   menuOnLeftClick: false,
+  //   action: async (e: TrayIconEvent) => {
+  //     if (e.type === "DoubleClick") {
+  //       await currentWindow.show();
+  //       await currentWindow.unminimize()
+  //       await currentWindow.setFocus();
+  //     }
+  //   },
+  // };
+  // await TrayIcon.new(options);
 }
 
 export async function setCountTray(value: number) {
-  const label = value > 0 ? `+${value} Favorites to read` : "All readed!";
-  const tray = await TrayIcon.getById("myk-tray");
-  let imageEnd = "extra";
-  let iconPath = ""
-  if (value < 10) {
-    imageEnd = value.toString();
-  }
-  if (value !== 0) {
-    iconPath = await join(await resourceDir(), "static", `icon_tray_count_${imageEnd}.png`);
-  } else {
-    iconPath = await join(await resourceDir(), "static", "icon.png")
-  }
-
-
-  if (tray === null) return;
-  const menu = await Menu.new({
-    items: [
-      {
-        id: "open",
-        text: "Open",
-        action: async () => {
-          await currentWindow.show();
-          await currentWindow.unminimize();
-          await currentWindow.setFocus();
-        },
-      },
-      {
-        id: "hide",
-        text: "Hide",
-        action: async () => {
-          await currentWindow.hide();
-        },
-      },
-      {
-        id: "count",
-        text: value > 0 ? `+${value} to read` : "All readed!",
-        action: async () => {
-          goto("/favorites")
-          await currentWindow.show();
-          await currentWindow.unminimize();
-          await currentWindow.setFocus();
-        }
-      },
-      {
-        id: "quit",
-        text: "Quit",
-        action: destroyEverything
-      },
-    ],
-  });
-  if (get(showCountIconTray)) {
-    await tray.setIcon(iconPath);
-  }
-  await tray.setMenu(menu)
-  await tray.setTooltip(value > 0 ? `+${value} Favorites to read` : "All readed!")
+  // const label = value > 0 ? `+${value} Favorites to read` : "All readed!";
+  // const tray = await TrayIcon.getById("myk-tray");
+  // let imageEnd = "extra";
+  // let iconPath = ""
+  // if (value < 10) {
+  //   imageEnd = value.toString();
+  // }
+  // if (value !== 0) {
+  //   iconPath = await join(await resourceDir(), "static", `icon_tray_count_${imageEnd}.png`);
+  // } else {
+  //   iconPath = await join(await resourceDir(), "static", "icon.png")
+  // }
+  //
+  //
+  // if (tray === null) return;
+  // const menu = await Menu.new({
+  //   items: [
+  //     {
+  //       id: "open",
+  //       text: "Open",
+  //       action: async () => {
+  //         await currentWindow.show();
+  //         await currentWindow.unminimize();
+  //         await currentWindow.setFocus();
+  //       },
+  //     },
+  //     {
+  //       id: "hide",
+  //       text: "Hide",
+  //       action: async () => {
+  //         await currentWindow.hide();
+  //       },
+  //     },
+  //     {
+  //       id: "count",
+  //       text: value > 0 ? `+${value} to read` : "All readed!",
+  //       action: async () => {
+  //         goto("/favorites")
+  //         await currentWindow.show();
+  //         await currentWindow.unminimize();
+  //         await currentWindow.setFocus();
+  //       }
+  //     },
+  //     {
+  //       id: "quit",
+  //       text: "Quit",
+  //       action: destroyEverything
+  //     },
+  //   ],
+  // });
+  // if (get(showCountIconTray)) {
+  //   await tray.setIcon(iconPath);
+  // }
+  // await tray.setMenu(menu)
+  // await tray.setTooltip(value > 0 ? `+${value} Favorites to read` : "All readed!")
 }
-

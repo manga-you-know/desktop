@@ -2,14 +2,8 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop",
   "description": "persmissions just for Desktop",
-  "windows": [
-    "*"
-  ],
-  "platforms": [
-    "macOS",
-    "windows",
-    "linux"
-  ],
+  "windows": ["*"],
+  "platforms": ["macOS", "windows", "linux"],
   "permissions": [
     "core:window:default",
     "core:window:allow-start-dragging",
@@ -30,8 +24,6 @@
     "core:window:allow-set-badge-label",
     "core:window:allow-set-ignore-cursor-events",
     "core:window:allow-set-effects",
-    "clipboard:write-all",
-    "clipboard:read-all",
     "global-shortcut:default",
     "autostart:default",
     "global-shortcut:allow-is-registered",
@@ -54,14 +46,13 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "powershell",
-          "cmd": "powershell.exe",
+          "name": "suwa",
+          "cmd": "./binaries/suwa",
           "args": true
         }
       ]
     },
     "cli:default",
-    "updater:default",
     "positioner:default"
   ]
 }

@@ -1,12 +1,12 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "MangaYouKnow",
   "version": "0.9.33",
   "identifier": "com.mangayouknow.dev",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5174",
-    "beforeDevCommand": "bun dev",
+    "beforeDevCommand": "bun run dev",
     "beforeBuildCommand": "bun run build",
     "removeUnusedCommands": true
   },
@@ -20,7 +20,7 @@
         "minHeight": 400,
         "minWidth": 640,
         "center": true,
-        "visible": false,
+        "visible": true,
         "transparent": true,
         "decorations": false,
         "backgroundColor": "#09090b",
@@ -32,9 +32,7 @@
       "csp": "http://asset.localhost",
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "**/*"
-        ]
+        "scope": ["**/*"]
       }
     },
     "macOSPrivateApi": true
@@ -42,7 +40,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "createUpdaterArtifacts": true,
+    "resources": {
+      "../static/": "static/"
+    },
     "windows": {
       "allowDowngrades": true,
       "certificateThumbprint": null,
@@ -70,19 +70,9 @@
       "icons/icon.icns",
       "icons/icon.ico",
       "icons/icon.png"
-    ],
-    "resources": {
-      "../static/*": "static/"
-    }
+    ]
   },
   "plugins": {
-    "updater": {
-      "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEwMkVBODg2RjBGNDEzQjEKUldTeEUvVHdocWd1b1BaV0FhWnN5WEJOVGVPVCtyRklQNmw2SVpYRFF2SDIzMTJjd0lBSnk3QlUK",
-      "endpoints": [
-        "https://github.com/manga-you-know/desktop/releases/latest/download/latest.json"
-      ]
-    },
     "cli": {
       "args": [
         {

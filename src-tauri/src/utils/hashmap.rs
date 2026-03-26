@@ -37,6 +37,6 @@ pub fn get_data(key: String) -> Result<Data, String> {
         map.remove(&key);
         Ok(result)
     } else {
-        Err(format!("Chave '{}' não encontrada", key))
+        Err(format!("key '{}' not found.", key))
     }
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { swipe, type SwipeCustomEvent } from "svelte-gestures";
+  // import { swipe, type SwipeCustomEvent } from "svelte-gestures";
   import { toast } from "svelte-sonner";
   import { draggable } from "@neodrag/svelte";
   import { FavoriteDB, ReadedDB } from "@/repositories";
@@ -652,6 +652,7 @@
         prevPage();
       }
       if (key === "c" && ctrl) {
+        console.log(images[currentlyCount - 1]);
         copyImageBase64(images[currentlyCount - 1]);
       }
       if (key === "s" && ctrl) {
@@ -679,11 +680,9 @@
       if (key === "<" && !isTheFirstChapter) {
         handleGoChapter("prev");
       }
-
       if (key === "v") {
         toggleView();
       }
-
       if (key === "f") {
         toggleFullscreen();
       }
@@ -700,14 +699,14 @@
     }
   }
 
-  function handleSwipe(e: SwipeCustomEvent) {
-    if (e.detail.direction === "right") {
-      prevPage();
-    }
-    if (e.detail.direction === "left") {
-      nextPage();
-    }
-  }
+  // function handleSwipe(e: SwipeCustomEvent) {
+  //   if (e.detail.direction === "right") {
+  //     prevPage();
+  //   }
+  //   if (e.detail.direction === "left") {
+  //     nextPage();
+  //   }
+  // }
 
   function handleMouse(
     e: MouseEvent & {
@@ -1149,12 +1148,11 @@
     <button
       class="fixed inset-0 flex cursor-default"
       style="z-index: 40;"
-      use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })}
-      onfocus={(e) => {
-        e.currentTarget.blur();
-      }}
+      // use:swipe={() => ({ timeframe: 300, minSwipeDistance: 30 })} onfocus={(e) => {
+      //  e.currentTarget.blur();
+      //}}
       tabindex={-1}
-      onswipe={handleSwipe}
+      //onswipe={handleSwipe}
       onclick={(e) => {
         nextPage();
         e.currentTarget.blur();

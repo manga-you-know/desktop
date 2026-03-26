@@ -48,6 +48,9 @@ vite.config.ts.timestamp-*
 
 
 # Custom
+# suwayomi.jar and jre needs to be donwloaded
+src-tauri/resources
+
 allow_list.txt
 get_allow.py
 get_valids.py

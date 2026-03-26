@@ -22,7 +22,6 @@
   import type { Favorite } from "@/types";
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
-  import { get, has, set } from "tauri-plugin-cache-api";
   import { ScrollingValue } from "svelte-ux";
 
   let libraryDiv: HTMLDivElement = $state(null!);
@@ -65,6 +64,7 @@
     const x = perPage / 3;
     const n = displayedLibrary.length;
     if (n <= x) return x - n;
+
     if (n <= 2 * x) return 2 * x - n;
     if (n <= 3 * x) return 3 * x - n;
     return 0;
