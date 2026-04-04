@@ -12,15 +12,15 @@ export const favorites = sqliteTable(
   "favorite",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    userId: integer()
+    userId: integer("user_id")
       .default(1)
       .references(() => users.id),
     name: text("name").notNull(),
-    folderName: text().notNull(),
+    folderName: text("folder_name").notNull(),
     link: text("link").notNull(),
     cover: text("cover").notNull(),
     source: text("source").notNull(),
-    sourceId: text().notNull(),
+    sourceId: text("source_id").notNull(),
     type: text("type").default("manga"),
     status: text("status").default("on hold"),
     extraName: text("extra_name").default(""),

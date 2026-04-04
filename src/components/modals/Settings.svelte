@@ -79,6 +79,7 @@
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
   import { retroMode } from "@/states";
+  import { suwaManager } from "@/lib/helpers";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -150,16 +151,16 @@
 
 <AlertDialog.Root bind:open={$openSettings}>
   <AlertDialog.Content
-    class="flex flex-col items-center pb-0 pt-2 px-2 overflow-hidden"
+    class="flex flex-col items-center overflow-hidden px-2 pt-2 pb-0"
   >
     <!-- <AlertDialog.Header class="font-bold">Settings</AlertDialog.Header> -->
     <div
-      class="flex relative w-[24.4rem] text-sm items-center justify-center p-1 gap-1 bg-background rounded-xl z-10"
+      class="bg-background relative z-10 flex w-[24.4rem] items-center justify-center gap-1 rounded-xl p-1 text-sm"
     >
-      <div class="z-1 absolute w-full h-6">
+      <div class="absolute z-1 h-6 w-full">
         <div
           class={cn(
-            "h-6 bg-primary mx-2 rounded-lg transition-all duration-500 w-18 translate-x-0",
+            "bg-primary mx-2 h-6 w-18 translate-x-0 rounded-lg transition-all duration-500",
             currentTab === "search" && "w-16 translate-x-[4.7rem]",
             currentTab === "appearance" && "w-24 translate-x-[8.9rem]",
             currentTab === "reader" && "w-16 translate-x-[15.1rem]",
@@ -169,7 +170,7 @@
       </div>
       <Button
         class={cn(
-          "z-2 h-6 w-18 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          "hover:bg-secondary/30! text-primary! z-2 h-6 w-18 rounded-lg bg-transparent duration-500",
           currentTab === "behavior" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
@@ -182,7 +183,7 @@
       </Button>
       <Button
         class={cn(
-          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          "hover:bg-secondary/30! text-primary! z-2 h-6 w-16 rounded-lg bg-transparent duration-500",
           currentTab === "search" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
@@ -195,7 +196,7 @@
       </Button>
       <Button
         class={cn(
-          "z-2 h-6 w-24 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          "hover:bg-secondary/30! text-primary! z-2 h-6 w-24 rounded-lg bg-transparent duration-500",
           currentTab === "appearance" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
@@ -208,7 +209,7 @@
       </Button>
       <Button
         class={cn(
-          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          "hover:bg-secondary/30! text-primary! z-2 h-6 w-16 rounded-lg bg-transparent duration-500",
           currentTab === "reader" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
@@ -221,7 +222,7 @@
       </Button>
       <Button
         class={cn(
-          "z-2 h-6 w-16 rounded-lg duration-500 bg-transparent hover:bg-secondary/30! text-primary!",
+          "hover:bg-secondary/30! text-primary! z-2 h-6 w-16 rounded-lg bg-transparent duration-500",
           currentTab === "player" && "text-background! hover:bg-primary/20",
         )}
         size="sm"
@@ -234,7 +235,7 @@
       </Button>
     </div>
 
-    <div class="relative overflow-hidden max-h-[75vh] w-full mb-2">
+    <div class="relative mb-2 max-h-[75vh] w-full overflow-hidden">
       <div
         class="flex transition-transform duration-500 ease-in-out"
         style="width: 500%; transform: translateX({currentTab === 'behavior'
@@ -250,18 +251,22 @@
                   : '0%'})"
       >
         <ScrollArea
-          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="mb-2 max-h-[75vh] w-1/5 scroll-smooth rounded-3xl pr-3 transition-all duration-500 select-none"
         >
           <div
-            class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
+            class="border-secondary relative my-4 rounded-3xl border-b-4 text-center"
           >
             <span
-              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-6 dark:text-gray-300 font-bold select-none"
+              class="dark:bg-background absolute -top-3 left-1/2 -translate-x-1/2 transform rounded-lg bg-white px-6 font-bold select-none dark:text-gray-300"
             >
               Behavior
             </span>
           </div>
-          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+          <div class="my-8 w-full bg-red-500">
+            <h1>TESTSSSS</h1>
+            <Button onclick={suwaManager.setRepos}>Add repo</Button>
+          </div>
+          <Card.Root class="bg-secondary/60 rounded-3xl border-0">
             <Card.Content class="flex flex-col gap-4">
               <Label class="text-md">
                 Current version: <span class="text-xl font-bold">
@@ -287,7 +292,7 @@
                     icon={isSearchingUpdates
                       ? "line-md:loading-twotone-loop"
                       : "lucide:search"}
-                    class="w-5 h-5"
+                    class="h-5 w-5"
                   />
                   Search for updates
                 </Button>
@@ -296,7 +301,7 @@
                   <Switch
                     id="auto-update"
                     bind:checked={$autoSearchUpdates}
-                    class="shrink-0 mr-2"
+                    class="mr-2 shrink-0"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="auto-update">
@@ -324,7 +329,7 @@
               </Label>
             </div> -->
 
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <Switch
                     id="auto-start"
                     bind:checked={autoStart}
@@ -337,9 +342,9 @@
                     Start app with system
                   </Label>
                 </div>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <Separator
-                    class="border-y-12 border-x-2"
+                    class="border-x-2 border-y-12"
                     orientation="vertical"
                   />
                   <Checkbox
@@ -354,7 +359,7 @@
                     Start in background
                   </Label>
                 </div>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <Switch
                     id="minimize"
                     bind:checked={$closeTray}
@@ -368,7 +373,7 @@
                   <Switch
                     id="show-count-icon"
                     bind:checked={$showCountIcon}
-                    class="shrink-0 mr-2"
+                    class="mr-2 shrink-0"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="show-count-icon">
@@ -388,7 +393,7 @@
                   <Switch
                     id="open-favorite-chapter"
                     bind:checked={$openFavoriteChapter}
-                    class="shrink-0 mr-2"
+                    class="mr-2 shrink-0"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="open-favorite-chapter">
@@ -418,7 +423,7 @@
                   </Button>
                 </div>
                 <Label>Notifications</Label>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <Switch
                     id="notify-update"
                     disabled={!$autoSearchUpdates}
@@ -433,14 +438,14 @@
                   <Switch
                     id="notify-favorites"
                     bind:checked={$notifyFavorites}
-                    class="shrink-0 mr-2"
+                    class="mr-2 shrink-0"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="notify-favorites">
                     Desktop notification for new chapters from favorites
                   </Label>
                 </div>
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                   <Switch
                     id="custom-notificator"
                     disabled={!$notifyUpdate && !$notifyFavorites}
@@ -453,7 +458,7 @@
                   </Label>
                 </div>
                 <Button
-                  class="w-44 flex gap-3"
+                  class="flex w-44 gap-3"
                   variant={receivedNotification ? "outline" : "default"}
                   effect={receivedNotification
                     ? "ringHoverSecondary"
@@ -511,18 +516,18 @@
           {#if !IS_MOBILE}{/if}
         </ScrollArea>
         <ScrollArea
-          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="mb-2 max-h-[75vh] w-1/5 scroll-smooth rounded-3xl pr-3 transition-all duration-500 select-none"
         >
           <div
-            class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
+            class="border-secondary relative my-4 rounded-3xl border-b-4 text-center"
           >
             <span
-              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+              class="dark:bg-background absolute -top-3 left-1/2 -translate-x-1/2 transform rounded-lg bg-white px-4 font-bold select-none dark:text-gray-300"
             >
               Search
             </span>
           </div>
-          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+          <Card.Root class="bg-secondary/60 rounded-3xl border-0">
             <Card.Content class="flex flex-col gap-4">
               <Label
                 >Sources <span class="text-gray-500">
@@ -561,7 +566,7 @@
                 {#each MANGASOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-12 border-x-2"
+                      class="border-x-2 border-y-12"
                       orientation="vertical"
                     />
 
@@ -618,7 +623,7 @@
                 {#each COMICSOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-12 border-x-2"
+                      class="border-x-2 border-y-12"
                       orientation="vertical"
                     />
 
@@ -675,7 +680,7 @@
                 {#each ANIMESOURCES as source (source.name)}
                   <div class="flex items-center gap-2">
                     <Separator
-                      class="border-y-12 border-x-2"
+                      class="border-x-2 border-y-12"
                       orientation="vertical"
                     />
                     <Checkbox
@@ -704,22 +709,22 @@
           </Card.Root>
         </ScrollArea>
         <ScrollArea
-          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="mb-2 max-h-[75vh] w-1/5 scroll-smooth rounded-3xl pr-3 transition-all duration-500 select-none"
         >
           <div
-            class="border-b-4 my-4 border-secondary text-center relative rounded-3xl"
+            class="border-secondary relative my-4 rounded-3xl border-b-4 text-center"
           >
             <span
-              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-6 dark:text-gray-300 font-bold select-none"
+              class="dark:bg-background absolute -top-3 left-1/2 -translate-x-1/2 transform rounded-lg bg-white px-6 font-bold select-none dark:text-gray-300"
             >
               Appearance
             </span>
           </div>
-          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+          <Card.Root class="bg-secondary/60 rounded-3xl border-0">
             <Card.Content class="flex flex-col gap-4">
               <Label>Style</Label>
 
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Slider
                   class="max-w-36"
                   type="single"
@@ -731,7 +736,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap w-28!"
+                  class="w-28! cursor-pointer text-nowrap"
                   onclick={() => {
                     brightness.set(1);
                     saveSettings();
@@ -743,7 +748,7 @@
                   </span>
                 </Label>
               </div>
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Slider
                   class="max-w-36"
                   type="single"
@@ -755,7 +760,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap w-28!"
+                  class="w-28! cursor-pointer text-nowrap"
                   onclick={() => {
                     contrast.set(1);
                     saveSettings();
@@ -767,7 +772,7 @@
                   </span>
                 </Label>
               </div>
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Slider
                   class="max-w-36"
                   type="single"
@@ -778,7 +783,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap w-28!"
+                  class="w-28! cursor-pointer text-nowrap"
                   onclick={() => {
                     saturation.set(1);
                     saveSettings();
@@ -790,7 +795,7 @@
                   </span>
                 </Label>
               </div>
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Slider
                   class="max-w-36"
                   type="single"
@@ -801,7 +806,7 @@
                   disabled={$blackWhiteMode}
                 />
                 <Label
-                  class="cursor-pointer text-nowrap w-28!"
+                  class="w-28! cursor-pointer text-nowrap"
                   onclick={() => {
                     sepia.set(0);
                     saveSettings();
@@ -817,7 +822,7 @@
                 <Checkbox
                   id="window-effects"
                   bind:checked={$windowEffects}
-                  class="shrink-0 mr-2"
+                  class="mr-2 shrink-0"
                   onCheckedChange={saveSettings}
                 />
                 <Label class="cursor-pointer" for="window-effects">
@@ -836,7 +841,7 @@
                 closeButton={false}
               />
 
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Switch
                   id="use-filter"
                   bind:checked={$useFilter}
@@ -845,9 +850,9 @@
                 <Label class="cursor-pointer" for="use-filter">Use filter</Label
                 >
               </div>
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Separator
-                  class="border-y-12 border-x-2"
+                  class="border-x-2 border-y-12"
                   orientation="vertical"
                 />
                 <Switch
@@ -860,7 +865,7 @@
                   Only in reader
                 </Label>
               </div>
-              <div class="flex gap-2 items-center">
+              <div class="flex items-center gap-2">
                 <Switch
                   id="black-white"
                   bind:checked={$blackWhiteMode}
@@ -870,31 +875,27 @@
                   Black & White
                 </Label>
               </div>
-              <div class="flex gap-2 items-center">
-                <Switch
-                  id="retro-mode"
-                  bind:checked={retroMode.active}
-                  onCheckedChange={retroMode.save}
-                />
+              <div class="flex items-center gap-2">
+                <Switch id="retro-mode" bind:checked={retroMode.value} />
                 <Label class="cursor-pointer" for="retro-mode">
                   Retro style, without rounded corners
                 </Label>
               </div>
               <Label>Sidebar</Label>
               <div
-                class="flex relative w-44 text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+                class="bg-background relative z-10 mr-2 flex w-44 items-center justify-center gap-2 rounded-2xl p-2 text-sm"
               >
-                <div class="z-1 absolute w-full h-9">
+                <div class="absolute z-1 h-9 w-full">
                   <div
                     class={cn(
-                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-[4.8rem] translate-x-0",
+                      "bg-primary mx-2 h-9 w-[4.8rem] translate-x-0 rounded-xl transition-all duration-300",
                       $sidebarSide === "right" && "translate-x-[5.2rem]",
                     )}
                   ></div>
                 </div>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 bg-transparent duration-300",
                     $sidebarSide === "left" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -910,7 +911,7 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent ",
+                    "z-2 h-9 w-24 bg-transparent duration-300 ",
                     $sidebarSide === "right" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -927,12 +928,12 @@
               </div>
 
               <div
-                class="flex relative w-84 text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+                class="bg-background relative z-10 mr-2 flex w-84 items-center justify-center gap-2 rounded-2xl p-2 text-sm"
               >
-                <div class="z-1 absolute w-full h-9">
+                <div class="absolute z-1 h-9 w-full">
                   <div
                     class={cn(
-                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-22 translate-x-0",
+                      "bg-primary mx-2 h-9 w-22 translate-x-0 rounded-xl transition-all duration-300",
                       $sidebarBehavior === "collapse" &&
                         "w-22 translate-x-[5.8rem]",
                       $sidebarBehavior === "on-hover" &&
@@ -942,7 +943,7 @@
                 </div>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 bg-transparent duration-300",
                     $sidebarBehavior === "expand" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -958,7 +959,7 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent ",
+                    "z-2 h-9 w-24 bg-transparent duration-300 ",
                     $sidebarBehavior === "collapse" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -974,7 +975,7 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-2 h-9 duration-300 bg-transparent",
+                    "z-2 h-9 bg-transparent duration-300",
                     $sidebarBehavior === "on-hover" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -994,11 +995,11 @@
                   <Label>Theme</Label>
                   <Theme />
                 </div>
-                <div class="flex flex-col gap-2 justify-center">
+                <div class="flex flex-col justify-center gap-2">
                   <Label class="cursor-pointer" for="custom-titlebar">
                     Titlebar
                   </Label>
-                  <div class="flex gap-2 items-center">
+                  <div class="flex items-center gap-2">
                     <Label
                       class="cursor-pointer"
                       onclick={() => {
@@ -1026,23 +1027,23 @@
           </Card.Root>
         </ScrollArea>
         <ScrollArea
-          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="mb-2 max-h-[75vh] w-1/5 scroll-smooth rounded-3xl pr-3 transition-all duration-500 select-none"
         >
           <div
-            class="border-b-4 border-secondary my-5 text-center relative rounded-3xl"
+            class="border-secondary relative my-5 rounded-3xl border-b-4 text-center"
           >
             <span
-              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+              class="dark:bg-background absolute -top-3 left-1/2 -translate-x-1/2 transform rounded-lg bg-white px-4 font-bold select-none dark:text-gray-300"
             >
               Reader
             </span>
           </div>
 
-          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+          <Card.Root class="bg-secondary/60 rounded-3xl border-0">
             <Card.Content class="flex flex-col gap-4">
               <Label>Badges inside reader</Label>
               <div
-                class="w-full inline-flex gap-2 items-center pointer-events-auto"
+                class="pointer-events-auto inline-flex w-full items-center gap-2"
               >
                 <Switch
                   id="chapter-count"
@@ -1054,7 +1055,7 @@
                 >
               </div>
               <div
-                class="w-full inline-flex gap-2 items-center pointer-events-auto"
+                class="pointer-events-auto inline-flex w-full items-center gap-2"
               >
                 <Switch
                   id="chapter-percentage"
@@ -1069,7 +1070,7 @@
                 </Label>
               </div>
               <div
-                class="w-full inline-flex gap-2 items-center pointer-events-auto"
+                class="pointer-events-auto inline-flex w-full items-center gap-2"
               >
                 <Switch
                   id="show-current-chapter"
@@ -1084,7 +1085,7 @@
                 </Label>
               </div>
               <div
-                class="w-full inline-flex gap-2 items-center pointer-events-auto"
+                class="pointer-events-auto inline-flex w-full items-center gap-2"
               >
                 <Switch
                   id="reader-clock"
@@ -1098,12 +1099,12 @@
 
               <Label>Mark as read</Label>
               <div
-                class="flex relative w-[20rem] text-sm items-center justify-center mr-2 p-2 gap-2 bg-background rounded-2xl z-10"
+                class="bg-background relative z-10 mr-2 flex w-[20rem] items-center justify-center gap-2 rounded-2xl p-2 text-sm"
               >
-                <div class="z-1 absolute w-full h-9">
+                <div class="absolute z-1 h-9 w-full">
                   <div
                     class={cn(
-                      "h-9 bg-primary mx-2 rounded-xl transition-all duration-300 w-24 translate-x-0",
+                      "bg-primary mx-2 h-9 w-24 translate-x-0 rounded-xl transition-all duration-300",
                       $markReaded === "end" && "translate-x-26",
                       $markReaded === "manual" && "translate-x-52",
                     )}
@@ -1111,7 +1112,7 @@
                 </div>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 bg-transparent duration-300",
                     $markReaded === "start" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -1127,7 +1128,7 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 bg-transparent duration-300",
                     $markReaded === "end" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -1143,7 +1144,7 @@
                 </Button>
                 <Button
                   class={cn(
-                    "z-2 h-9 w-24 duration-300 bg-transparent",
+                    "z-2 h-9 w-24 bg-transparent duration-300",
                     $markReaded === "manual" &&
                       "text-secondary! hover:bg-background/20",
                   )}
@@ -1187,7 +1188,7 @@
                   <Checkbox
                     id="auto-fullscreen"
                     bind:checked={$autoEnterFullscreen}
-                    class="shrink-0 mr-2"
+                    class="mr-2 shrink-0"
                     onCheckedChange={saveSettings}
                   />
                   <Label class="cursor-pointer" for="auto-fullscreen"
@@ -1199,24 +1200,24 @@
           </Card.Root>
         </ScrollArea>
         <ScrollArea
-          class="w-1/5 max-h-[75vh] rounded-3xl select-none mb-2 pr-3 scroll-smooth transition-all duration-500"
+          class="mb-2 max-h-[75vh] w-1/5 scroll-smooth rounded-3xl pr-3 transition-all duration-500 select-none"
         >
           <div
-            class="border-b-4 border-secondary my-4 text-center relative rounded-3xl"
+            class="border-secondary relative my-4 rounded-3xl border-b-4 text-center"
           >
             <span
-              class="absolute -top-3 left-1/2 transform -translate-x-1/2 rounded-lg bg-white dark:bg-background px-4 dark:text-gray-300 font-bold select-none"
+              class="dark:bg-background absolute -top-3 left-1/2 -translate-x-1/2 transform rounded-lg bg-white px-4 font-bold select-none dark:text-gray-300"
             >
               Player
             </span>
           </div>
-          <Card.Root class="bg-secondary/60 border-0 rounded-3xl">
+          <Card.Root class="bg-secondary/60 rounded-3xl border-0">
             <Card.Content class="flex flex-col gap-4">
               <div class="flex items-center">
                 <Checkbox
                   id="use-mpv"
                   bind:checked={$useMpv}
-                  class="shrink-0 mr-2"
+                  class="mr-2 shrink-0"
                   onCheckedChange={saveSettings}
                 />
                 <Label class="cursor-pointer" for="use-mpv">

@@ -11,7 +11,7 @@ import {
   removeFavorite,
 } from "@/functions";
 import { getBool } from "@/utils";
-import { db, favorites, markFavorites } from "@/db";
+import { db, favorites, markFavorites } from "@/lib/db";
 import { and, eq, inArray } from "drizzle-orm";
 
 let dbOld: Database = null!;

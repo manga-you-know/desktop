@@ -1,3 +1,3 @@
-import { favorites } from "@/db";
+import { favorites } from "@/lib/db";
 
-export type Favorite = typeof favorites.$inferSelect 
+export type Favorite = typeof favorites.$inferSelect;

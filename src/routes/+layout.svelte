@@ -66,6 +66,7 @@
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
   import { onNavigate } from "$app/navigation";
+  import { startSuwayomi } from "@/lib/core";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -129,25 +130,14 @@
     isFullscreen.set(await window.isFullscreen());
   }
 
-  const command = Command.sidecar("binaries/suwayomi")
-  
-  let child: Child;
-
-  const loadSidecar = async () => {
-    command.spawn()
-  }
-
-  command.on("error", (err) => {
-    console.log("smth happened man: ", err)
-  })
-
   const close = async () => {
     //await child.kill()
     exit()
   }
 
   $effect.pre(() => {
-    loadSidecar()
+    // loadSidecar()
+    startSuwayomi()
     loadDatabase();
     logNewUser();
     showPatchNotes();

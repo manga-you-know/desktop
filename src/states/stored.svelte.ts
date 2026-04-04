@@ -38,7 +38,7 @@ class StoredState<T> {
     key: string,
     defaultValue: T,
     options: T[] = [],
-    onChange = (_: T) => {},
+    onChange = (_: T) => { },
   ) {
     this.#value = $state(defaultValue);
     this.#key = key;
@@ -174,6 +174,11 @@ export const appLanguage = new StoredState<Languages>(
   "English",
 );
 export const downloadPath = new StoredState<string>("download_path", "Mangas/");
+
+export const suwayomiUrl = new StoredState<string>(
+  "suwayomi_url",
+  "http://127.0.0.1:4567",
+);
 
 // Reader
 export const markAsRead = new StoredState<"manual" | "start" | "end">(

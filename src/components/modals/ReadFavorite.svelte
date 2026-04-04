@@ -388,14 +388,15 @@
       onOpened();
     } else {
       $selectedScan = "";
-      if (!document.startViewTransition){
-        onClose?.();
-      } else {
-        document.startViewTransition(() => {
-        }).finished.then(() => {
-          onClose?.();
-        })
-      }
+      //if (!document.startViewTransition) {
+      onClose?.();
+      //} else {
+      //document
+      // .startViewTransition(() => {})
+      // .finished.then(() => {
+      // onClose?.();
+      // });
+      //}
     }
   });
 </script>
@@ -408,11 +409,11 @@
     )}
   >
     <div
-      class="w-full flex items-center px-2 rounded-2xl border border-secondary bg-background/30 hover:bg-secondary"
+      class="border-secondary bg-background/30 hover:bg-secondary flex w-full items-center rounded-2xl border px-2"
     >
       <Button
         class={cn(
-          "size-6! px-0 -top-0.5 right-0 transition-all duration-400 pointer-events-none",
+          "pointer-events-none -top-0.5 right-0 size-6! px-0 transition-all duration-400",
           searchTerm !== "" && "pointer-events-auto",
         )}
         variant="ghost"
@@ -433,22 +434,22 @@
       />
     </div>
 
-    <div class="flex gap-0.5 sm:gap-2 items-center">
+    <div class="flex items-center gap-0.5 sm:gap-2">
       <Tooltip text="Web / downloaded chapters">
         <div
-          class="relative flex items-center justify-center mr-1 p-1 gap-1 bg-secondary rounded-2xl z-10"
+          class="bg-secondary relative z-10 mr-1 flex items-center justify-center gap-1 rounded-2xl p-1"
         >
-          <div class="z-1 absolute w-full h-9">
+          <div class="absolute z-1 h-9 w-full">
             <div
               class={cn(
-                "size-9 bg-white mx-1 rounded-xl transition-all duration-300 translate-x-0",
+                "mx-1 size-9 translate-x-0 rounded-xl bg-white transition-all duration-300",
                 chaptersMode === "local" && "translate-x-10",
               )}
             ></div>
           </div>
           <Button
             class={cn(
-              "z-2 rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+              "hover:bg-secondary/30 z-2 h-9 w-9 rounded-xl bg-transparent transition-colors duration-300",
               chaptersMode === "web" && "text-black!",
             )}
             size="sm"
@@ -459,7 +460,7 @@
           </Button>
           <Button
             class={cn(
-              "z-2 rounded-xl bg-transparent w-9 h-9 transition-colors duration-300 hover:bg-secondary/30",
+              "hover:bg-secondary/30 z-2 h-9 w-9 rounded-xl bg-transparent transition-colors duration-300",
               chaptersMode === "local" && "text-black!",
             )}
             size="sm"
@@ -523,7 +524,7 @@
       >
         <Icon
           class={cn(
-            "size-6! duration-300 transition-all",
+            "size-6! transition-all duration-300",
             $isChaptersDescending ? "rotate-0" : "rotate-180",
           )}
           icon="typcn:arrow-sorted-down"
@@ -531,13 +532,13 @@
       </Button>
     </div>
   </div>
-  <div class="flex w-[40vw] max-w-152 justify-between gap-1 items-center">
+  <div class="flex w-[40vw] max-w-152 items-center justify-between gap-1">
     <div
-      class="w-full flex rounded-xl max-w-[calc(40vw-6rem)] sm:max-w-full bg-secondary items-center"
+      class="bg-secondary flex w-full max-w-[calc(40vw-6rem)] items-center rounded-xl sm:max-w-full"
     >
       <Button
         class={cn(
-          "chapter-button w-full flex justify-between items-center rounded-xl group transition-all duration-500 hover:bg-gray-200 hover:opacity-100 dark:hover:bg-background/70",
+          "chapter-button group dark:hover:bg-background/70 flex w-full items-center justify-between rounded-xl transition-all duration-500 hover:bg-gray-200 hover:opacity-100",
           nextChapter === undefined && "cursor-default",
         )}
         variant="secondary"
@@ -563,9 +564,9 @@
           }
         }}
       >
-        <div class="flex items-center gap-2 w-full">
-          <div class="flex items-center justify-between w-full gap-2">
-            <div class="flex justify-start items-center gap-2">
+        <div class="flex w-full items-center gap-2">
+          <div class="flex w-full items-center justify-between gap-2">
+            <div class="flex items-center justify-start gap-2">
               <Tooltip
                 text={nextChapter !== undefined
                   ? isDownloading(nextChapter)
@@ -627,19 +628,19 @@
                           ? "lucide:folder-check"
                           : "lucide:download"
                       : ""}
-                    class="w-5 h-5"
+                    class="h-5 w-5"
                   />
                 </Button>
               </Tooltip>
               <span
-                class="group-hover:underline group-hover:underline-offset-4 truncate w-9 text-start"
+                class="w-9 truncate text-start group-hover:underline group-hover:underline-offset-4"
               >
                 {nextChapter !== undefined ? nextChapter.number : ""}
               </span>
             </div>
             <Tooltip text={nextChapter?.title}>
               <span
-                class="group-hover:underline group-hover:underline-offset-4 truncate w-[60%] text-start"
+                class="w-[60%] truncate text-start group-hover:underline group-hover:underline-offset-4"
               >
                 {nextChapter !== undefined
                   ? nextChapter.title
@@ -701,22 +702,22 @@
       refreshFavorites();
       refreshLibrary();
       stopDiscordPresence();
-    } 
+    }
   }}
 >
   <Dialog.Content
     class={cn(
-      "data-[state=open]:zoom-in-100! data-[state=closed]:zoom-out-100! data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
-      "h-screen max-h-268 max-w-260 py-4 px-6 duration-400",
+      "data-[state=open]:zoom-in-100! data-[state=closed]:zoom-out-100! data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=close]:duration-500 data-[state=open]:duration-500",
+      "h-screen max-h-268 max-w-260 px-6 py-4 duration-400",
       $sidebarBehavior === "expand"
         ? $sidebarSide === "left"
-          ? "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] ml-[3.2rem] mr-8!"
-          : "w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)] mr-24 ml-[0rem]!"
+          ? "mr-8! ml-[3.2rem] w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)]"
+          : "mr-24 ml-[0rem]! w-[calc(100vw-11rem)] lg:w-[calc(80vw-11rem)]"
         : $sidebarSide === "left"
-          ? "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] ml-4 mr-8!"
-          : "w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)] mr-16 ml-[0rem]!",
-      $customTitlebar && "h-[calc(100vh-3.5rem)] mt-[1.2rem]",
-      isMobile && "flex flex-col items-center h-[90vh]",
+          ? "mr-8! ml-4 w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)]"
+          : "mr-16 ml-[0rem]! w-[calc(100vw-6rem)] lg:w-[calc(80vw-6rem)]",
+      $customTitlebar && "mt-[1.2rem] h-[calc(100vh-3.5rem)]",
+      isMobile && "flex h-[90vh] flex-col items-center",
     )}
     closeButton={false}
     overlayClass="bg-black/50 transition-colors! duration-400"
@@ -738,37 +739,37 @@
     <!--     >Change your favorites attributes and save it.</Dialog.Description -->
     <!--   > -->
     <!-- </Dialog.Header> -->
-    <div class="w-full h-full relative">
+    <div class="relative h-full w-full">
       <div
-        class="absolute flex w-full h-full justify-end pointer-events-none px-8 sm:px-4 md:px-0"
+        class="pointer-events-none absolute flex h-full w-full justify-end px-8 sm:px-4 md:px-0"
       >
         <Button
           class="bg-background/60 border-0.5 pointer-events-auto"
           variant="outline"
           onclick={() => (open = false)}
         >
-          Close 
+          Close
           <Icon class="rotate-180" icon="ion:caret-back" />
         </Button>
       </div>
       <div
         class={cn(
-          "flex w-full h-full items-center",
+          "flex h-full w-full items-center",
           isMobile ? "flex-row-reverse justify-start gap-2" : "justify-center",
         )}
       >
         <div
           class={cn(
-            "flex flex-col h-full items-end gap-2 w-2/5",
+            "flex h-full w-2/5 flex-col items-end gap-2",
             isMobile ? "w-full justify-center " : "justify-center pr-10",
           )}
         >
           <div
-            class="w-full max-w-80 h-full max-h-120 ssmh:max-w-52 sssmh:max-w-32 flex justify-center items-center overflow-hidden transition-all"
+            class="ssmh:max-w-52 sssmh:max-w-32 flex h-full max-h-120 w-full max-w-80 items-center justify-center overflow-hidden transition-all"
           >
             <Image
-              class="w-full h-full object-contain select-none"
-              style="view-transition-name: {open ? "saved-cover" : null}"
+              class="h-full w-full object-contain select-none"
+              style="view-transition-name: {open ? 'saved-cover' : null}"
               src={favorite.cover}
               alt={favorite.name}
               draggable={false}
@@ -776,13 +777,13 @@
           </div>
           <div
             class={cn(
-              "flex flex-col w-full max-w-80 items-center gap-2",
-              isMobile && "justify-end p-2 h-full",
+              "flex w-full max-w-80 flex-col items-center gap-2",
+              isMobile && "h-full justify-end p-2",
             )}
           >
-            <div class="w-full relative">
+            <div class="relative w-full">
               <Language
-                class="min-w-full max-w-full w-full mt-1"
+                class="mt-1 w-full max-w-full min-w-full"
                 bind:selectedLanguage={localSelectedLanguage}
                 {languageOptions}
                 onChange={async () => {
@@ -802,7 +803,7 @@
                 disabled={!isMulti || isFetching || languageOptions.length < 2}
               />
               <div
-                class="absolute top-0 size-5 text-sm font-semibold bg-primary/70 text-background flex justify-center items-center rounded-full"
+                class="bg-primary/70 text-background absolute top-0 flex size-5 items-center justify-center rounded-full text-sm font-semibold"
               >
                 {languageOptions.length}
               </div>
@@ -817,12 +818,12 @@
                 {favorite.source ?? "Open"}
               </span>
             </Button>
-            <div class="flex gap-2 w-full">
+            <div class="flex w-full gap-2">
               <Tooltip
                 text={isUltraFavorite ? "Remove favorite" : "Add to favorites"}
               >
                 <Button
-                  class="flex gap-2 w-12 relative"
+                  class="relative flex w-12 gap-2"
                   variant="outline"
                   onclick={async (e: Event) => {
                     e.stopPropagation();
@@ -838,14 +839,14 @@
                   <Icon
                     class={cn(
                       "absolute size-5! transition-all duration-500",
-                      isUltraFavorite && "opacity-0 rotate-180 scale-0",
+                      isUltraFavorite && "scale-0 rotate-180 opacity-0",
                     )}
                     icon="heroicons:star"
                   />
                   <Icon
                     class={cn(
                       "absolute size-5! transition-all duration-500",
-                      !isUltraFavorite && "opacity-0 -rotate-180 scale-0",
+                      !isUltraFavorite && "scale-0 -rotate-180 opacity-0",
                     )}
                     icon="heroicons:star-solid"
                   />
@@ -870,16 +871,16 @@
             {/if}
           </div>
         </div>
-        <div class={cn(isMobile ? "flex justify-start w-1/2" : "w-3/5")}>
-          <div class="w-[40vw] max-w-120 flex flex-col gap-3">
+        <div class={cn(isMobile ? "flex w-1/2 justify-start" : "w-3/5")}>
+          <div class="flex w-[40vw] max-w-120 flex-col gap-3">
             <Label
-              class="group text-3xl bg-transparent! w-full flex justify-center items-center dark:text-white select-none hover:cursor-text"
+              class="group flex w-full items-center justify-center bg-transparent! text-3xl select-none hover:cursor-text dark:text-white"
               onclick={() => {
                 copyText(favorite.name, "title");
               }}
             >
               <Icon
-                class="size-0! mr-2 group-hover:size-5! transition-all duration-300"
+                class="mr-2 size-0! transition-all duration-300 group-hover:size-5!"
                 icon="ic:baseline-content-copy"
               />
               {limitStr(favorite.name, 60)}
@@ -889,13 +890,13 @@
             {/if}
             <div
               class={cn(
-                "bg-secondary rounded-xl relative overflow-hidden max-w-152 max-h-168",
+                "bg-secondary relative max-h-168 max-w-152 overflow-hidden rounded-xl",
                 isMobile ? "h-[75vh]! w-60" : "h-[50vh]! w-[40vw]",
               )}
             >
               <div
                 class={cn(
-                  "flex justify-center items-center absolute transition-all duration-300 ease-in-out max-w-152",
+                  "absolute flex max-w-152 items-center justify-center transition-all duration-300 ease-in-out",
                   chaptersMode === "web"
                     ? "translate-x-0"
                     : "-translate-x-full",
@@ -905,90 +906,90 @@
                 {#if isFetching}
                   <div
                     class={cn(
-                      "h-full flex flex-col justify-start items-start",
+                      "flex h-full flex-col items-start justify-start",
                       isMobile ? "w-60 " : "w-[40vw] p-0.5",
                     )}
                   >
                     <div
                       class={cn(
-                        "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                        "dark:bg-background flex h-9 animate-pulse items-center gap-1 rounded-xl bg-gray-300 p-2",
                         isMobile ? "w-[350px]" : "w-full",
                       )}
                     >
                       <div
-                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="dark:bg-secondary h-7! w-9! animate-pulse rounded-xl bg-gray-100"
                       ></div>
-                      <div class="w-full gap-0.5 flex flex-col">
+                      <div class="flex w-full flex-col gap-0.5">
                         <div
-                          class="w-[80%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-2 w-[80%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                         <div
-                          class="w-[60%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-1 w-[60%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                       </div>
                     </div>
                     <div
                       class={cn(
-                        "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                        "dark:bg-background flex h-9 animate-pulse items-center gap-1 rounded-xl bg-gray-300 p-2",
                         isMobile ? "w-[350px]" : "w-full",
                       )}
                     >
                       <div
-                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="dark:bg-secondary h-7! w-9! animate-pulse rounded-xl bg-gray-100"
                       ></div>
-                      <div class="w-full gap-0.5 flex flex-col">
+                      <div class="flex w-full flex-col gap-0.5">
                         <div
-                          class="w-[65%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-2 w-[65%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                         <div
-                          class="w-[75%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-1 w-[75%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                       </div>
                     </div>
                     <div
                       class={cn(
-                        "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                        "dark:bg-background flex h-9 animate-pulse items-center gap-1 rounded-xl bg-gray-300 p-2",
                         isMobile ? "w-[350px]" : "w-full",
                       )}
                     >
                       <div
-                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="dark:bg-secondary h-7! w-9! animate-pulse rounded-xl bg-gray-100"
                       ></div>
-                      <div class="w-full gap-0.5 flex flex-col">
+                      <div class="flex w-full flex-col gap-0.5">
                         <div
-                          class="w-[70%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-2 w-[70%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                         <div
-                          class="w-[50%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-1 w-[50%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                       </div>
                     </div>
                     <div
                       class={cn(
-                        "flex items-center gap-1 p-2 h-9 rounded-xl bg-gray-300 dark:bg-background animate-pulse",
+                        "dark:bg-background flex h-9 animate-pulse items-center gap-1 rounded-xl bg-gray-300 p-2",
                         isMobile ? "w-[350px]" : "w-full",
                       )}
                     >
                       <div
-                        class="w-9! h-7! animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                        class="dark:bg-secondary h-7! w-9! animate-pulse rounded-xl bg-gray-100"
                       ></div>
-                      <div class="w-full gap-0.5 flex flex-col">
+                      <div class="flex w-full flex-col gap-0.5">
                         <div
-                          class="w-[55%] h-2 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-2 w-[55%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                         <div
-                          class="w-[70%] h-1 animate-pulse rounded-xl bg-gray-100 dark:bg-secondary"
+                          class="dark:bg-secondary h-1 w-[70%] animate-pulse rounded-xl bg-gray-100"
                         ></div>
                       </div>
                     </div>
                   </div>
                   <Icon
-                    class="w-16! h-16! fixed text-gray-600 dark:text-white"
+                    class="fixed h-16! w-16! text-gray-600 dark:text-white"
                     icon="line-md:loading-loop"
                   />
                 {:else if displayedChapters.length === 0}
                   <Badge
-                    class="w-32 h-16  m-5  flex justify-center text-center"
+                    class="m-5 flex  h-16  w-32 justify-center text-center"
                     variant="destructive"
                   >
                     {searchTerm === ""
@@ -1081,7 +1082,7 @@
               </div>
               <div
                 class={cn(
-                  "flex justify-center  absolute left-0 top-0 transition-all duration-300 ease-in-out max-w-152",
+                  "absolute top-0  left-0 flex max-w-152 justify-center transition-all duration-300 ease-in-out",
                   chaptersMode === "local"
                     ? "translate-x-0"
                     : "translate-x-full",
@@ -1090,7 +1091,7 @@
               >
                 {#if displayedLocalChapters.length === 0}
                   <Badge
-                    class="w-32 h-16  m-5  flex justify-center text-center"
+                    class="m-5 flex  h-16  w-32 justify-center text-center"
                     variant="destructive"
                   >
                     {searchTerm === ""

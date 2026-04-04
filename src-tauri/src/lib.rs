@@ -7,7 +7,7 @@ mod utils;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     #[allow(unused_mut)]
-    let mut builder = tauri::Builder::<tauri::Cef>::new()
+    let mut builder = tauri::Builder::<tauri::Wry>::new()
         .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
@@ -56,11 +56,8 @@ pub fn run() {
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 Some(vec!["--flag1", "--flag2"]),
             ))
-            .plugin(tauri_plugin_global_shortcut::Builder::new().build());
-        #[cfg(target_os = "windows")]
-        {
-            builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
-        }
+            .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+            .plugin(tauri_plugin_updater::Builder::new().build());
     }
     builder.run(tauri::generate_context!()).unwrap()
 }

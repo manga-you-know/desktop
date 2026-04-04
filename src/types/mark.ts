@@ -1,3 +1,3 @@
-import { marks } from "@/db"
+import { marks } from "@/lib/db";
 
-export type Mark = typeof marks.$inferSelect
+export type Mark = typeof marks.$inferSelect;

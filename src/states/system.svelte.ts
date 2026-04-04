@@ -17,7 +17,7 @@ import type {
   Downloading,
   FavoriteLoaded,
 } from "@/types";
-// import { favorites } from "@/db";
+// import { favorites } from "@/lib/db";
 
 class OpenBool {
   #active = $state(false);
@@ -103,6 +103,12 @@ export const panels = new (class {
   }
 })();
 
+class Suwayomi {
+  extensionRepos: string[] = $state([]);
+}
+
+export const suwayomi = new Suwayomi();
+
 // export const selectedScan = writable<string>("");
 // export const libraryTag = writable<Mark | undefined>(undefined);
 // export const libraryOrder = writable<string>("id");
@@ -115,6 +121,7 @@ export const panels = new (class {
 // export const undoTasks = writable<
 //   { do: (() => void) | (() => Promise<void>); message: string }[]
 // >([]);
+//
 // export const downloadings = writable<Downloading[]>([]);
 // export const coversLoaded = writable<Record<string, string>>({});
 // export const updateInfo = writable<UpdateInfo>({

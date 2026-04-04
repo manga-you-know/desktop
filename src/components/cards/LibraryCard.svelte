@@ -21,7 +21,7 @@
   import { goto, onNavigate, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
   import { getBool } from "@/utils";
-  import { db, favorites } from "@/db";
+  import { db, favorites } from "@/lib/db";
   import { eq } from "drizzle-orm";
   import { deleteFavorite } from "@/repositories/favorite";
 
@@ -115,14 +115,13 @@
     id="library-{favorite.id}"
     class="relative h-[264px] max-h-[264px] w-[158px] max-w-[158px] transform-3d"
     onclick={async () => {
-      if (!document.startViewTransition) isOpen = true;
-      animatingView = true;
-      const transition = document.startViewTransition(() => {
-        isOpen = true;
-      });
-      await transition.finished;
-      animatingView = false;
-      console.log("yes");
+      //if (!document.startViewTransition) isOpen = true;
+      //animatingView = true;
+      //const transition = document.startViewTransition(() => {
+      isOpen = true;
+      //});
+      //await transition.finished;
+      //animatingView = false;
     }}
   >
     <div

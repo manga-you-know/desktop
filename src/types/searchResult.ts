@@ -1,8 +1,7 @@
-import type { favorites } from "@/db";
+import type { favorites } from "@/lib/db";
 import type { SavedType } from "./savedType";
 
-export type SearchResult = typeof favorites.$inferInsert
-
+export type SearchResult = typeof favorites.$inferInsert;
 
 // export type SearchResult = {
 //   name: string;

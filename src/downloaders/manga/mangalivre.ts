@@ -33,7 +33,7 @@ export class MangaLivreDl implements MangaDl {
   async search(query: string): Promise<Favorite[]> {
     const response = await fetch(
       `${this.baseUrl}/?s=${query}&post_type=wp-manga`,
-      { headers: this.headers }
+      { headers: this.headers },
     );
     if (response.status !== 200) {
       throw new Error("Failed searching manga with query: " + query);
@@ -78,7 +78,7 @@ export class MangaLivreDl implements MangaDl {
       {
         method: "POST",
         headers: this.headers,
-      }
+      },
     );
     if (response.status !== 200) {
       throw new Error("Failed getting manga with id: " + favoriteID);

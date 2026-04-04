@@ -28,7 +28,7 @@ import { documentDir, join } from "@tauri-apps/api/path";
 import { removeFavorite } from "@/functions";
 import { get } from "svelte/store";
 import { toast } from "svelte-sonner";
-import { db, favorites } from "@/db";
+import { db, favorites } from "@/lib/db";
 import { eq } from "drizzle-orm";
 
 let dbOld: Database = null!;
