@@ -19,7 +19,7 @@ import type {
 } from "@/types";
 // import { favorites } from "@/lib/db";
 
-class OpenBool {
+class OpenState {
   #active = $state(false);
   onchange: (value: boolean) => void;
   constructor(onchange = (_value: boolean) => { }) {
@@ -34,7 +34,8 @@ class OpenBool {
   }
 }
 
-export const openAdd = new OpenBool();
+export const openAdd = new OpenState();
+export const openSettings = new OpenState();
 export const openTag = new (class {
   active = $state(false);
 })();
@@ -45,9 +46,6 @@ export const openUpdate = new (class {
   active = $state(false);
 })();
 export const openSearch = new (class {
-  active = $state(false);
-})();
-export const openSettings = new (class {
   active = $state(false);
 })();
 export const openFeedback = new (class {

@@ -66,7 +66,7 @@
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
   import { onNavigate } from "$app/navigation";
-  import { startSuwayomi } from "@/lib/core";
+    import { suwaManager } from "@/lib/helpers";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -137,11 +137,11 @@
 
   $effect.pre(() => {
     // loadSidecar()
-    startSuwayomi()
+    suwaManager.startSuwayomi()
     loadDatabase();
     logNewUser();
     showPatchNotes();
-    // createTray();
+    createTray();
     loadSettings();
     loadAppIcons();
     refreshLibrary();

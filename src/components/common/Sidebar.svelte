@@ -13,7 +13,6 @@
   } from "@/lib/components";
   import {
     openSearch,
-    openSettings,
     openAdd,
     openTag,
     openDownloads,
@@ -38,7 +37,7 @@
   import { ReadedDB } from "@/repositories";
   import { get } from "svelte/store";
   import { onMount } from "svelte";
-  import { themeMode } from "@/states";
+  import { openSettings, themeMode } from "@/states";
 
   const items = [
     {
@@ -254,7 +253,7 @@
                 openTag.set(true);
                 openInfo.set(false);
                 openAdd.set(false);
-                openSettings.set(false);
+                // openSettings.set(false);
                 openDownloads.set(false);
                 if (IS_MOBILE) sidebar.toggle();
               }}
@@ -278,7 +277,7 @@
                 e.currentTarget.blur();
                 openSearch.set(false);
                 openTag.set(false);
-                openSettings.set(false);
+                // openSettings.set(false);
                 openAdd.set(true);
                 openInfo.set(false);
                 openDownloads.set(false);
@@ -467,7 +466,7 @@
               e.currentTarget.blur();
               openSearch.set(false);
               openTag.set(false);
-              openSettings.set(false);
+              // openSettings.set(false);
               openAdd.set(false);
               openInfo.set(true);
               openDownloads.set(false);
@@ -487,12 +486,12 @@
         <Sidebar.MenuItem>
           <Sidebar.MenuButton
             class="size-10"
-            variant={$openSettings ? "secondary" : "default"}
+            variant={openSettings.active ? "secondary" : "default"}
             onclick={(e) => {
               e.currentTarget.blur();
               openSearch.set(false);
               openTag.set(false);
-              openSettings.set(true);
+              openSettings.active = true;
               openAdd.set(false);
               openInfo.set(false);
               openDownloads.set(false);
@@ -503,16 +502,16 @@
             <Icon
               class={cn(
                 " -ml-[14px] size-7! transition-all duration-500 group-data-[collapsible=icon]:-ml-[10px]",
-                $openSettings && "rotate-180",
+                openSettings.active && "rotate-180",
               )}
-              icon={$openSettings
+              icon={openSettings.active
                 ? "heroicons:cog-6-tooth-solid"
                 : "heroicons:cog-6-tooth"}
             />
             <Label
               class={cn(
                 "cursor-pointer transition-all",
-                $openSettings && "text-sidebar!",
+                openSettings.active && "text-sidebar!",
               )}
             >
               Settings

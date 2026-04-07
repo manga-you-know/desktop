@@ -2,6 +2,7 @@
   import { Menubar as MenubarPrimitive } from "bits-ui";
   import { cn } from "$lib/utils.js";
   import { theme } from "@/store";
+  import { themeMode } from "@/states";
 
   let {
     ref = $bindable(null),
@@ -25,9 +26,9 @@
     {alignOffset}
     {side}
     class={cn(
-      "bg-secondary/50 backdrop-blur-sm border border-accent text-popover-foreground z-50 min-w-48 rounded-xl p-1 shadow-md focus:outline-none",
-      $theme === "dark" && "dark",
-      className
+      "bg-secondary/50 border-accent text-popover-foreground z-50 min-w-48 rounded-xl border p-1 shadow-md backdrop-blur-sm focus:outline-none",
+      themeMode.value === "dark" && "dark",
+      className,
     )}
     {...restProps}
   />

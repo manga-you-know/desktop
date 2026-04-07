@@ -16,6 +16,7 @@
     sepia,
     theme,
   } from "@/store";
+  import { themeMode } from "@/states";
 
   let {
     ref = $bindable(null),
@@ -59,7 +60,7 @@
     class={cn(
       "filter-effects",
       "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-50 data-[state=open]:zoom-in-50 data-[state=closed]:slide-out-to-left-1/2 data-[state=open]:slide-in-from-left-1/2 bg-secondary/40 dark:bg-accent/50 border-0.5 border-accent fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-3xl border p-6 shadow-lg ring-0 backdrop-blur-sm duration-300 outline-none focus-visible:ring-0 focus-visible:outline-none",
-      $theme === "dark" && "dark",
+      themeMode.value === "dark" && "dark",
       $blackWhiteMode && "grayscale",
       className,
     )}

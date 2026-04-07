@@ -207,7 +207,7 @@
 {/if}
 <div
   class={cn(
-    "bg-sidebar/60 backdrop-blur-sm flex items-center justify-between relative w-full pl-2 z-80! h-10 translate-y-0 pointer-events-auto transition-all duration-300",
+    "bg-sidebar/60 pointer-events-auto relative z-80! flex h-10 w-full translate-y-0 items-center justify-between pl-2 backdrop-blur-sm transition-all duration-300",
     page.route.id?.startsWith("/reader") &&
       $isFullscreen &&
       !$openMenuChapters &&
@@ -216,14 +216,14 @@
   style="view-transition-name: titlebar"
   data-tauri-drag-region={!$isFullscreen}
 >
-  <div class="h-full flex items-center select-none">
+  <div class="flex h-full items-center select-none">
     <img
       src="/square-icon.png"
       alt="logo"
       class="h-6 rounded-sm"
       data-tauri-drag-region={!$isFullscreen}
     />
-    <Label class="p-3 z-20" data-tauri-drag-region={!$isFullscreen}>
+    <Label class="z-20 p-3" data-tauri-drag-region={!$isFullscreen}>
       MangaYouKnow
     </Label>
     <Menubar.Root class="z-20">
@@ -284,7 +284,7 @@
           >
             <Label>Patch notes</Label>
             <Icon
-              class="size-6! -my-0.5"
+              class="-my-0.5 size-6!"
               icon="material-symbols-light:stylus-note-rounded"
             />
           </Menubar.Item>
@@ -298,7 +298,7 @@
           </Menubar.Item> -->
           <Menubar.Item
             class="pointer-events-auto"
-            onclick={() => openUrl("https://github.com/ReiLoko4")}
+            onclick={() => openUrl("https://github.com/thiagovianav")}
           >
             <Label>Github</Label>
             <Icon class="size-5!" icon="mdi:github" />
@@ -341,7 +341,7 @@
     </Menubar.Root>
     <Label
       class={cn(
-        "ml-8 dark!text-gray-400 hidden underline select-none text-nowrap",
+        "dark!text-gray-400 ml-8 hidden text-nowrap underline select-none",
         downloadingCount > 0 && "block",
       )}
       data-tauri-drag-region={!$isFullscreen}
@@ -349,14 +349,14 @@
     </Label>
   </div>
   <div
-    class="w-full flex justify-center z-10 items-center"
+    class="z-10 flex w-full items-center justify-center"
     data-tauri-drag-region={!$isFullscreen}
   >
     <div
-      class="absolute w-full h-full flex justify-center items-center pointer-events-none"
+      class="pointer-events-none absolute flex h-full w-full items-center justify-center"
     >
       <button
-        class="flex w-screen justify-center items-center transition-all pointer-events-none duration-500 gap-2 md:gap-3 xl:gap-10 ml-32 md:ml-12 lg:ml-0"
+        class="pointer-events-none ml-32 flex w-screen items-center justify-center gap-2 transition-all duration-500 md:ml-12 md:gap-3 lg:ml-0 xl:gap-10"
         onfocusout={() => {
           showSearch = false;
           if (query.length === 0) showPopSearch = false;
@@ -365,7 +365,7 @@
         {#if page.route.id?.startsWith("/reader")}
           <Label
             class={cn(
-              "select-none text-nowrap text-primary/70! z-3 max-w-0 overflow-x-hidden truncate transition-all duration-500",
+              "text-primary/70! z-3 max-w-0 truncate overflow-x-hidden text-nowrap transition-all duration-500 select-none",
               !(showSearch || showPopSearch || query.length > 0) &&
                 "max-w-[40vw]",
             )}
@@ -380,7 +380,7 @@
         >
           <Popover.Trigger
             class={cn(
-              "outline-none focus:outline-none max-w-12 transition-all duration-500",
+              "max-w-12 transition-all duration-500 outline-none focus:outline-none",
               (!page.route.id?.startsWith("/reader") ||
                 showSearch ||
                 query.length > 0) &&
@@ -407,7 +407,7 @@
           >
             <div
               class={cn(
-                "flex items-center px-2 rounded-xl border border-secondary bg-background/30 hover:bg-secondary overflow-x-hidden",
+                "border-secondary bg-background/30 hover:bg-secondary flex items-center overflow-x-hidden rounded-xl border px-2",
                 // (!page.route.id?.startsWith("/reader") ||
                 //   showSearch ||
                 //   query.length > 0) &&
@@ -415,7 +415,7 @@
               )}
             >
               <Icon
-                class="size-5! text-primary pointer-events-auto"
+                class="text-primary pointer-events-auto size-5!"
                 icon={isSearching
                   ? "eos-icons:bubble-loading"
                   : query.length > 0
@@ -433,7 +433,7 @@
               />
               <Input
                 class={cn(
-                  "w-[20vw] sm:w-[30vw] md:w-[32vw] lg:w-[40vw] h-8 pointer-events-auto max-w-[0] px-0 outline-none border-none transition-all duration-300",
+                  "pointer-events-auto h-8 w-[20vw] max-w-[0] border-none px-0 transition-all duration-300 outline-none sm:w-[30vw] md:w-[32vw] lg:w-[40vw]",
                   (!page.route.id?.startsWith("/reader") ||
                     showSearch ||
                     query.length > 0) &&
@@ -449,14 +449,14 @@
           </Popover.Trigger>
           <Popover.Content
             class={cn(
-              "max-w-142 w-[42.5vw] h-56 p-1 rounded-xl transition-all duration-300 backdrop-blur-sm transition-all overflow-x-hidden overflow-y-scroll scrollbar",
+              "scrollbar h-56 w-[42.5vw] max-w-142 overflow-x-hidden overflow-y-scroll rounded-xl p-1 backdrop-blur-sm transition-all transition-all duration-300",
               // libraryResults.length > 0 && "min-h-32",
             )}
             trapFocus={false}
           >
             <!--   <div class="flex flex-col overflow-x-hidden scrollbar"> -->
             {#if libraryResults.length === 0 && foundSources.length === 0}
-              <Badge class="flex items-center w-full h-6 rounded-lg"
+              <Badge class="flex h-6 w-full items-center rounded-lg"
                 >{query === ""
                   ? "Type anything..."
                   : isSearching
@@ -466,7 +466,7 @@
             {/if}
             {#if libraryResults.length > 0}
               <Button
-                class="w-full h-6 flex justify-between items-center rounded-lg p-2 focus:outline-none"
+                class="flex h-6 w-full items-center justify-between rounded-lg p-2 focus:outline-none"
                 variant="ghost"
                 onclick={() => {
                   if (collapsibles["library"] !== undefined) {
@@ -477,8 +477,8 @@
                 }}
               >
                 <Label
-                  class="flex items-center gap-2 cursor-pointer text-primary/80!"
-                  >Library <Badge class="h-5 flex justify-center px-1"
+                  class="text-primary/80! flex cursor-pointer items-center gap-2"
+                  >Library <Badge class="flex h-5 justify-center px-1"
                     >{libraryResults.length}</Badge
                   >
                 </Label>
@@ -492,7 +492,7 @@
               </Button>
               <VList
                 class={cn(
-                  "max-h-35 mr-2 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 overflow-y-scroll!",
+                  "scrollbar mr-2 max-h-35 overflow-y-scroll! transition-transform [&::-webkit-scrollbar]:w-2",
                   libraryResults.length === 1 && "max-h-7",
                   libraryResults.length === 2 && "max-h-14",
                   libraryResults.length === 3 && "max-h-21",
@@ -505,10 +505,10 @@
               >
                 {#snippet children(result, _)}
                   <div
-                    class="w-full h-7 inline-flex transition-all duration-300 overflow-hidden"
+                    class="inline-flex h-7 w-full overflow-hidden transition-all duration-300"
                   >
                     <Button
-                      class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
+                      class="flex h-7 w-full justify-between truncate rounded-l-xl rounded-r-none"
                       variant="ghost"
                       onclick={() => {
                         const toOpen = isFavorite(result);
@@ -525,7 +525,7 @@
                         : "Add favorite"}
                     >
                       <Button
-                        class="size-7 rounded-none relative"
+                        class="relative size-7 rounded-none"
                         variant="ghost"
                         onclick={async () => {
                           result.is_ultra_favorite = !getBool(
@@ -540,7 +540,7 @@
                           class={cn(
                             "absolute left-2 transition-all duration-400",
                             getBool(result.is_ultra_favorite) &&
-                              "opacity-0 scale-0 rotate-180",
+                              "scale-0 rotate-180 opacity-0",
                           )}
                           icon="heroicons:star"
                         />
@@ -548,7 +548,7 @@
                           class={cn(
                             "absolute left-2 transition-all duration-400",
                             !getBool(result.is_ultra_favorite) &&
-                              "opacity-0 scale-0 -rotate-180",
+                              "scale-0 -rotate-180 opacity-0",
                           )}
                           icon="heroicons:star-solid"
                         />
@@ -574,7 +574,7 @@
               {#each foundSources as source (source)}
                 {#if $activatedSources.includes(source)}
                   <Button
-                    class="w-full h-6 flex justify-between items-center rounded-lg p-2 focus:outline-none"
+                    class="flex h-6 w-full items-center justify-between rounded-lg p-2 focus:outline-none"
                     variant="ghost"
                     onclick={() => {
                       if (collapsibles[source] !== undefined) {
@@ -585,9 +585,9 @@
                     }}
                   >
                     <Label
-                      class="flex items-center gap-2 cursor-pointer text-primary/80!"
+                      class="text-primary/80! flex cursor-pointer items-center gap-2"
                       >{source}
-                      <Badge class="h-5 flex justify-center px-1"
+                      <Badge class="flex h-5 justify-center px-1"
                         >{searchResults[source].length}</Badge
                       >
                     </Label>
@@ -601,7 +601,7 @@
                   </Button>
                   <VList
                     class={cn(
-                      "max-h-28 transition-transform scrollbar [&::-webkit-scrollbar]:w-2 overflow-y-scroll!",
+                      "scrollbar max-h-28 overflow-y-scroll! transition-transform [&::-webkit-scrollbar]:w-2",
                       searchResults[source].length === 1 && "max-h-7",
                       searchResults[source].length === 2 && "max-h-14",
                       searchResults[source].length === 3 && "max-h-21",
@@ -613,10 +613,10 @@
                   >
                     {#snippet children(result, _)}
                       <div
-                        class="w-full h-7 inline-flex transition-all duration-300 overflow-hidden"
+                        class="inline-flex h-7 w-full overflow-hidden transition-all duration-300"
                       >
                         <Button
-                          class="h-7 w-full flex truncate justify-between rounded-l-xl rounded-r-none"
+                          class="flex h-7 w-full justify-between truncate rounded-l-xl rounded-r-none"
                           variant="ghost"
                           onclick={() => {
                             const toOpen = isFavorite(result);
@@ -633,7 +633,7 @@
                             : "Save to library"}
                         >
                           <Button
-                            class="w-10 h-7 rounded-l-none rounded-r-xl"
+                            class="h-7 w-10 rounded-l-none rounded-r-xl"
                             variant="ghost"
                             onclick={() => saveResult(result)}
                             ><Icon
@@ -727,16 +727,16 @@
     <!--   </div> -->
     <!-- {/if} -->
   </div>
-  <div class="inline-flex justify-center items-center gap-0.5 mt-0.5 pr-1">
+  <div class="mt-0.5 inline-flex items-center justify-center gap-0.5 pr-1">
     <Button
-      class="size-9 z-20 rounded-lg pointer-events-auto"
+      class="pointer-events-auto z-20 size-9 rounded-lg"
       variant="ghost"
       onclick={() => window.minimize()}
     >
       <Icon class="size-6!" icon="ic:round-minus" />
     </Button>
     <Button
-      class="size-9 z-20 rounded-lg pointer-events-auto"
+      class="pointer-events-auto z-20 size-9 rounded-lg"
       variant="ghost"
       onclick={async () => {
         if ($isFullscreen) {
@@ -760,7 +760,7 @@
       />
     </Button>
     <Button
-      class="size-9 z-20 rounded-lg pointer-events-auto hover:bg-red-900 transition-colors duration-300"
+      class="pointer-events-auto z-20 size-9 rounded-lg transition-colors duration-300 hover:bg-red-900"
       variant="ghost"
       onclick={() => window.close()}
     >

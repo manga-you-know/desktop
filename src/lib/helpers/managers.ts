@@ -1,14 +1,44 @@
 import { fetch } from "@/lib/helpers";
 import { suwayomiUrl } from "@/states";
 import { suwayomi } from "@/states";
+import { Command } from "@tauri-apps/plugin-shell";
+
+const command = Command.sidecar("binaries/suwayomi");
+command.on("error", (err) => {
+  console.log("Error in Suwayomi: ", err);
+});
 
 export const suwaManager = {
-  setRepos: async () => {
-    suwayomi.extensionRepos = [
-      "https://github.com/t/r",
-      "https://github.com/reilokos/r",
-    ];
-    console.log(`${suwayomi.extensionRepos}`);
+  async startSuwayomi() {
+    this.isConnected().then((spawned) => {
+      if (!spawned) {
+        command.spawn();
+      }
+    });
+  },
+  async isConnected(): Promise<boolean> {
+    return fetch(suwayomiUrl.value)
+      .then((r) => r.ok)
+      .catch(() => false);
+  },
+  async getRepos() {
+    fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      bodyC: {
+        query: `
+          query {
+            settings {
+              extensionRepos
+            }
+          }
+        `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      suwayomi.extensionRepos = rJson.data.settings.extensionRepos;
+    });
+  },
+  async setRepos() {
     fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
       bodyC: {
@@ -25,10 +55,6 @@ export const suwaManager = {
           }
         }`,
       },
-    })
-      .then(async (r) => {
-        console.log(await r.text());
-      })
-      .catch((e) => console.log(e));
+    }).then((r) => console.log(r.text()));
   },
 };

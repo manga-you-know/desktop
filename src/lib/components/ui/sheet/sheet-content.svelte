@@ -31,6 +31,7 @@
   import SheetOverlay from "./sheet-overlay.svelte";
   import { cn } from "$lib/utils.js";
   import { customTitlebar, theme } from "@/store";
+  import { themeMode } from "@/states";
 
   let {
     ref = $bindable(null),
@@ -52,7 +53,7 @@
 
 <SheetPrimitive.Portal {...portalProps}>
   <SheetOverlay
-    class={cn($customTitlebar && "h-[calc(100vh-2.5rem)] mt-10", overlayClass)}
+    class={cn($customTitlebar && "mt-10 h-[calc(100vh-2.5rem)]", overlayClass)}
   />
   <SheetPrimitive.Content
     onInteractOutside={(e) => {
@@ -67,8 +68,8 @@
     bind:ref
     class={cn(
       sheetVariants({ side }),
-      $theme === "dark" && "dark",
-      $customTitlebar && "h-[calc(100vh-2.5rem)] mt-10",
+      themeMode.value === "dark" && "dark",
+      $customTitlebar && "mt-10 h-[calc(100vh-2.5rem)]",
       className,
     )}
     {...restProps}
@@ -76,7 +77,7 @@
     {@render children?.()}
     {#if closeButton}
       <SheetPrimitive.Close
-        class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none"
+        class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none"
       >
         <X class="size-4" />
         <span class="sr-only">Close</span>
