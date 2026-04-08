@@ -42,6 +42,7 @@ export { default as AskDelete } from "./modals/AskDelete.svelte";
 export { default as EditTags } from "./modals/EditTags.svelte";
 export { default as PickTags } from "./modals/PickTags.svelte";
 export { default as Settings } from "./modals/Settings.svelte";
+export { default as AddRepo } from "./modals/AddRepo.svelte";
 export { default as AskSure } from "./modals/AskSure.svelte";
 export { default as Search } from "./modals/Search.svelte";
 export { default as Update } from "./modals/Update.svelte";

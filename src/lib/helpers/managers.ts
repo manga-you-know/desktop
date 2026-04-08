@@ -38,8 +38,8 @@ export const suwaManager = {
       suwayomi.extensionRepos = rJson.data.settings.extensionRepos;
     });
   },
-  async setRepos() {
-    fetch(suwayomiUrl.value + "/api/graphql", {
+  async setRepos(): Promise<boolean> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
       bodyC: {
         query: `
@@ -55,6 +55,11 @@ export const suwaManager = {
           }
         }`,
       },
-    }).then((r) => console.log(r.text()));
+    })
+      .then(async (r) => {
+        const rJson = await r.json();
+        return !Object.hasOwn(rJson, "errors");
+      })
+      .catch(() => false);
   },
 };

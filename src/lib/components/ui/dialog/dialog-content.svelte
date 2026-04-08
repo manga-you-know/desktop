@@ -70,7 +70,7 @@
     {@render children?.()}
     {#if closeButton}
       <DialogPrimitive.Close
-        class="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none dark:text-white"
+        class="ring-offset-background focus:ring-ring absolute top-4 right-4 cursor-pointer rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none dark:text-white"
         tabindex={-1}
       >
         <X class="size-5" />

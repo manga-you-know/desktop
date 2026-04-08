@@ -65,7 +65,7 @@
   } from "@/store";
   import { onMount } from "svelte";
   import type { Attachment } from "svelte/attachments";
-  import { Language, Theme, Select } from "@/components";
+  import { Language, Theme, Select, AddRepo } from "@/components";
   import {
     ANIMESOURCES,
     COMICSOURCES,
@@ -156,8 +156,8 @@
     items: { value: any; label: string; description?: string }[];
   }[] = [
     { id: "general", label: "General", items: [] },
-    { id: "extensions", label: "Extensions", items: [] },
     { id: "appearance", label: "Appearance", items: [] },
+    { id: "extensions", label: "Extensions", items: [] },
     { id: "reader", label: "Reader", items: [] },
     { id: "advanced", label: "Advanced", items: [] },
   ];
@@ -219,6 +219,7 @@
 
   let isSuwaConnected = $state(false);
   let repoToDelete = $state("");
+  let openAddRepo = $state(false);
 
   onMount(async () => {
     isSuwaConnected = await suwaManager.isConnected();
@@ -231,6 +232,7 @@
 
 <AlertDialog.Root bind:open={openSettings.active}>
   <AlertDialog.Content class="flex flex-col items-center px-2 pt-2 pb-0">
+    <AddRepo bind:open={openAddRepo} />
     <div class="absolute -left-20">
       <div class="mr-2 flex flex-col gap-[0.5px]">
         <Button class="rounded-t-xl rounded-b-none" variant="info"
@@ -270,81 +272,6 @@
         </Card.Root>
         <Card.Root
           class="bg-secondary/60 rounded-3xl border-0"
-          id="extensions"
-          {@attach observe}
-        >
-          <Card.Content class="flex flex-col items-center gap-4 pb-40">
-            <Label class="text-2xl">Extensions</Label>
-            <div class="flex w-full flex-col gap-2">
-              <Label>Repositories</Label>
-              <Card.Root
-                class="bg-background/60 h-40 w-full rounded-2xl border-0"
-              >
-                <Card.Content
-                  class="flex flex-col items-center gap-4 overflow-y-scroll p-3"
-                >
-                  {#each suwayomi.extensionRepos as repo}
-                    <div class="flex w-full gap-1">
-                      <Input
-                        divClass="w-full"
-                        class="w-full rounded-r-none"
-                        variant="outline"
-                        value={repo}
-                      />
-                      <Button
-                        class="rounded-l-none pr-2 transition-all"
-                        variant="destructive"
-                        onclick={() => {
-                          if (repoToDelete === repo) {
-                            suwayomi.extensionRepos =
-                              suwayomi.extensionRepos.filter(
-                                (rp) => rp !== repo,
-                              );
-                            suwaManager.setRepos();
-                          } else {
-                            repoToDelete = repo;
-                          }
-                        }}
-                        onmouseout={() => {
-                          delay(700).then(() => {
-                            if ((repoToDelete = repo)) {
-                              repoToDelete = "";
-                            }
-                          });
-                        }}
-                      >
-                        <Icon icon="lucide:trash" />
-                        <!-- <Label class="transition-all duration-500" -->
-                        <!--   >{repoToDelete === repo ? "Are you sure?" : ""}</Label -->
-                        <!-- > -->
-                        <span
-                          class="overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out"
-                          style="max-width: {repoToDelete === repo
-                            ? '120px'
-                            : '-0px'}"
-                        >
-                          Are you sure?
-                        </span>
-                      </Button>
-                    </div>
-                  {:else}
-                    <span class="text-lg"
-                      >You don't seem to have any repositories...
-                    </span>
-                    <span class="text-3xl">(￢_￢;)</span>
-                  {/each}
-                  <div class="flex w-full justify-end">
-                    <Button class="h-10 rounded-xl" effect="ringHover">
-                      <Icon icon="lucide:plus" /> Add
-                    </Button>
-                  </div>
-                </Card.Content>
-              </Card.Root>
-            </div>
-          </Card.Content>
-        </Card.Root>
-        <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
           id="appearance"
           {@attach observe}
         >
@@ -362,6 +289,90 @@
               <span class="text-sm text-gray-400"
                 >| This makes everything go square brrrr (looks strangely nice)</span
               >
+            </div>
+          </Card.Content>
+        </Card.Root>
+        <Card.Root
+          class="bg-secondary/60 rounded-3xl border-0"
+          id="extensions"
+          {@attach observe}
+        >
+          <Card.Content class="flex flex-col items-center gap-4 pb-40">
+            <Label class="text-2xl">Extensions</Label>
+            <div class="flex w-full flex-col gap-2">
+              <Label>Repositories</Label>
+              <Card.Root
+                class="bg-background/60 h-60 w-full rounded-2xl border-0"
+              >
+                <Card.Content
+                  class="flex h-full flex-col items-center justify-between gap-4 p-3"
+                >
+                  <div
+                    class="flex h-full w-full flex-col items-center gap-1 overflow-y-scroll"
+                  >
+                    {#each suwayomi.extensionRepos as repo}
+                      <div class="flex w-full gap-1">
+                        <Input
+                          divClass="w-full"
+                          class="w-full rounded-r-none"
+                          variant="outline"
+                          readonly
+                          value={repo}
+                        />
+                        <Button
+                          class="rounded-l-none pr-2 transition-all"
+                          variant="destructive"
+                          onclick={() => {
+                            if (repoToDelete === repo) {
+                              suwayomi.extensionRepos =
+                                suwayomi.extensionRepos.filter(
+                                  (rp) => rp !== repo,
+                                );
+                              suwaManager.setRepos();
+                            } else {
+                              repoToDelete = repo;
+                            }
+                          }}
+                          onmouseout={() => {
+                            delay(700).then(() => {
+                              if ((repoToDelete = repo)) {
+                                repoToDelete = "";
+                              }
+                            });
+                          }}
+                        >
+                          <Icon icon="lucide:trash" />
+                          <!-- <Label class="transition-all duration-500" -->
+                          <!--   >{repoToDelete === repo ? "Are you sure?" : ""}</Label -->
+                          <!-- > -->
+                          <span
+                            class="overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out"
+                            style="max-width: {repoToDelete === repo
+                              ? '120px'
+                              : '-0px'}"
+                          >
+                            Are you sure?
+                          </span>
+                        </Button>
+                      </div>
+                    {:else}
+                      <span class="text-lg"
+                        >You don't seem to have any repositories...
+                      </span>
+                      <span class="text-3xl">(￢_￢;)</span>
+                    {/each}
+                  </div>
+                  <div class="flex w-full justify-end">
+                    <Button
+                      class="h-10 rounded-xl"
+                      effect="ringHover"
+                      onclick={() => (openAddRepo = true)}
+                    >
+                      <Icon icon="lucide:plus" /> Add
+                    </Button>
+                  </div>
+                </Card.Content>
+              </Card.Root>
             </div>
           </Card.Content>
         </Card.Root>
