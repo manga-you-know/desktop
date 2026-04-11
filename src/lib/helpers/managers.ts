@@ -22,7 +22,7 @@ export const suwaManager = {
       .catch(() => false);
   },
   async getRepos() {
-    fetch(suwayomiUrl.value + "/api/graphql", {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
       bodyC: {
         query: `
@@ -57,9 +57,44 @@ export const suwaManager = {
       },
     })
       .then(async (r) => {
+        this.getRepos();
+        this.getExtensionsAvailable();
         const rJson = await r.json();
         return !Object.hasOwn(rJson, "errors");
       })
       .catch(() => false);
+  },
+  async getExtensionsAvailable() {
+    fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      bodyC: {
+        query: `
+          fragment EXTENSION_LIST_FIELDS on ExtensionType {
+            pkgName
+            name
+            lang
+            versionCode
+            versionName
+            iconUrl
+            repo
+            isNsfw
+            isInstalled
+            isObsolete
+            hasUpdate
+          }
+
+          mutation GET_EXTENSIONS_FETCH($input: FetchExtensionsInput = {}) {
+            fetchExtensions(input: $input) {
+              extensions {
+                ...EXTENSION_LIST_FIELDS
+              }
+            }
+          }
+        `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      suwayomi.extensionsAvailable = rJson.data.fetchExtensions.extensions;
+    });
   },
 };

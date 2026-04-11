@@ -47,7 +47,7 @@
           }
         }}
       >
-        <Icon icon="lucide:copy" />
+        <Icon icon="lucide:clipboard-list" />
       </Button>
       <Button
         class="h-10 rounded-l-none rounded-r-xl"

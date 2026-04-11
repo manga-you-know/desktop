@@ -86,10 +86,6 @@
   let version = $state("");
   let autoStart = $state(false);
   let startInTray = $state(false);
-  let receivedNotification = $state(false);
-  let currentTab = $state<
-    "behavior" | "search" | "appearance" | "reader" | "player"
-  >("behavior");
   let store: Store | null = null;
 
   // onMount(async () => {
@@ -164,11 +160,11 @@
 
   let scrollDiv: HTMLDivElement = $state(null!);
   let activeSection = $state(sections[0].id);
-  let observer: IntersectionObserver;
 
   openSettings.onchange = (v) => {
     if (v) {
       suwaManager.getRepos();
+      suwaManager.getExtensionsAvailable();
     }
     delay(10).then(() => {
       const observer = new IntersectionObserver(
@@ -192,38 +188,12 @@
     });
   };
 
-  const observe: Attachment = (node) => {
-    // console.log(node);
-    // if (!observer) {
-    //   const divUse = document.getElementById("divobserve");
-    //   observer = new IntersectionObserver(
-    //     (entries) => {
-    //       for (const entry of entries) {
-    //         if (entry.isIntersecting) {
-    //           activeSection = entry.target.id;
-    //         }
-    //       }
-    //     },
-    //     {
-    //       root: scrollDiv,
-    //       rootMargin: "-50% 0px -50% 0px",
-    //       threshold: 0.1,
-    //     },
-    //   );
-    // }
-    // console.log(observer);
-    //
-    // observer.observe(node);
-    // return () => observer.unobserve(node);
-  };
-
-  let isSuwaConnected = $state(false);
   let repoToDelete = $state("");
   let openAddRepo = $state(false);
 
-  onMount(async () => {
-    isSuwaConnected = await suwaManager.isConnected();
-  });
+  // onMount(async () => {
+  //   isSuwaConnected = await suwaManager.isConnected();
+  // });
 
   function scrollTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -234,7 +204,7 @@
   <AlertDialog.Content class="flex flex-col items-center px-2 pt-2 pb-0">
     <AddRepo bind:open={openAddRepo} />
     <div class="absolute -left-20">
-      <div class="mr-2 flex flex-col gap-[0.5px]">
+      <div class="mr-2 flex flex-col gap-[0.apx]">
         <Button class="rounded-t-xl rounded-b-none" variant="info"
           >Search</Button
         >
@@ -262,18 +232,17 @@
         <!--   </Card.Root> -->
         <!-- {/each} -->
         <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
+          class="bg-secondary/60 min-h-100 rounded-3xl border-0"
           id="general"
-          {@attach observe}
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">General</Label>
+            <Label>{suwayomi.isConnected ? "Connected" : "Disconnected"}</Label>
           </Card.Content>
         </Card.Root>
         <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
+          class="bg-secondary/60 min-h-100 rounded-3xl border-0"
           id="appearance"
-          {@attach observe}
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Appearance</Label>
@@ -293,9 +262,8 @@
           </Card.Content>
         </Card.Root>
         <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
+          class="bg-secondary/60 min-h-100 rounded-3xl border-0"
           id="extensions"
-          {@attach observe}
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Extensions</Label>
@@ -328,14 +296,16 @@
                                 suwayomi.extensionRepos.filter(
                                   (rp) => rp !== repo,
                                 );
-                              suwaManager.setRepos();
+                              suwaManager
+                                .setRepos()
+                                .then(() => (repoToDelete = ""));
                             } else {
                               repoToDelete = repo;
                             }
                           }}
                           onmouseout={() => {
                             delay(700).then(() => {
-                              if ((repoToDelete = repo)) {
+                              if (repoToDelete === repo) {
                                 repoToDelete = "";
                               }
                             });
@@ -362,7 +332,10 @@
                       <span class="text-3xl">(￢_￢;)</span>
                     {/each}
                   </div>
-                  <div class="flex w-full justify-end">
+                  <div class="flex w-full items-center justify-between">
+                    <Label class="text-lg"
+                      >{suwayomi.extensionsAvailable.length} extensions available</Label
+                    >
                     <Button
                       class="h-10 rounded-xl"
                       effect="ringHover"
@@ -377,18 +350,16 @@
           </Card.Content>
         </Card.Root>
         <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
+          class="bg-secondary/60 min-h-100 rounded-3xl border-0"
           id="reader"
-          {@attach observe}
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Reader</Label>
           </Card.Content>
         </Card.Root>
         <Card.Root
-          class="bg-secondary/60 rounded-3xl border-0"
+          class="bg-secondary/60 min-h-100 rounded-3xl border-0"
           id="advanced"
-          {@attach observe}
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Advanced</Label>

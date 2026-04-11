@@ -17,6 +17,8 @@ import type {
   Downloading,
   FavoriteLoaded,
 } from "@/types";
+import { suwaManager } from "@/lib/helpers";
+import { delay } from "@/utils";
 // import { favorites } from "@/lib/db";
 
 class OpenState {
@@ -102,7 +104,20 @@ export const panels = new (class {
 })();
 
 class Suwayomi {
+  isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
+  extensionsAvailable: { name: string; pkgName: string }[] = $state([]);
+
+  constructor() {
+    this.#checkConnection();
+  }
+
+  async #checkConnection() {
+    while (true) {
+      this.isConnected = await suwaManager.isConnected();
+      await delay(5000);
+    }
+  }
 }
 
 export const suwayomi = new Suwayomi();
