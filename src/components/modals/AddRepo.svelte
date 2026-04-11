@@ -24,7 +24,7 @@
     <Dialog.Header>
       <Dialog.Title>Add extension repository</Dialog.Title>
       <Dialog.Description>
-        Having problems finding a repo? Just google Mihon extensions :)
+        Having problems finding a repo? Just search Mihon extensions :)
       </Dialog.Description>
     </Dialog.Header>
     <div class="flex gap-1">
@@ -59,7 +59,7 @@
           const added = await suwaManager.setRepos();
           if (added) {
             status = "success";
-            delay(600).then(() => {
+            delay(300).then(() => {
               open = false;
               status = "idle";
               input = "";

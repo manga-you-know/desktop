@@ -188,7 +188,7 @@
     });
   };
 
-  let repoToDelete = $state("");
+  let repoToDelete = $state({ url: "", isClosing: false });
   let openAddRepo = $state(false);
 
   // onMount(async () => {
@@ -291,22 +291,34 @@
                           class="rounded-l-none pr-2 transition-all"
                           variant="destructive"
                           onclick={() => {
-                            if (repoToDelete === repo) {
+                            if (repoToDelete.url === repo) {
                               suwayomi.extensionRepos =
                                 suwayomi.extensionRepos.filter(
                                   (rp) => rp !== repo,
                                 );
-                              suwaManager
-                                .setRepos()
-                                .then(() => (repoToDelete = ""));
+                              suwaManager.setRepos().then(() => {
+                                repoToDelete.url = "";
+                                repoToDelete.isClosing = false;
+                              });
                             } else {
-                              repoToDelete = repo;
+                              repoToDelete.url = repo;
+                              repoToDelete.isClosing = false;
+                            }
+                          }}
+                          onmouseenter={() => {
+                            if (repoToDelete.url === repo) {
+                              repoToDelete.isClosing = false;
                             }
                           }}
                           onmouseout={() => {
-                            delay(700).then(() => {
-                              if (repoToDelete === repo) {
-                                repoToDelete = "";
+                            repoToDelete.isClosing = true;
+                            delay(800).then(() => {
+                              if (
+                                repoToDelete.url === repo &&
+                                repoToDelete.isClosing
+                              ) {
+                                repoToDelete.url = "";
+                                repoToDelete.isClosing = false;
                               }
                             });
                           }}
@@ -317,7 +329,7 @@
                           <!-- > -->
                           <span
                             class="overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out"
-                            style="max-width: {repoToDelete === repo
+                            style="max-width: {repoToDelete.url === repo
                               ? '120px'
                               : '-0px'}"
                           >

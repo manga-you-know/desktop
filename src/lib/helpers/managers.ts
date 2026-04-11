@@ -1,20 +1,30 @@
 import { fetch } from "@/lib/helpers";
 import { suwayomiUrl } from "@/states";
 import { suwayomi } from "@/states";
-import { Command } from "@tauri-apps/plugin-shell";
+import { Child, Command } from "@tauri-apps/plugin-shell";
 
 const command = Command.sidecar("binaries/suwayomi");
+let child: Child = null!;
 command.on("error", (err) => {
   console.log("Error in Suwayomi: ", err);
 });
 
 export const suwaManager = {
   async startSuwayomi() {
-    this.isConnected().then((spawned) => {
+    this.isConnected().then(async (spawned) => {
       if (!spawned) {
-        command.spawn();
+        child = await command.spawn();
       }
     });
+  },
+  async stopSuwayomi(): Promise<boolean> {
+    if (child) {
+      return child
+        .kill()
+        .then(() => true)
+        .catch(() => false);
+    }
+    return false;
   },
   async isConnected(): Promise<boolean> {
     return fetch(suwayomiUrl.value)
@@ -57,10 +67,16 @@ export const suwaManager = {
       },
     })
       .then(async (r) => {
-        this.getRepos();
-        this.getExtensionsAvailable();
         const rJson = await r.json();
-        return !Object.hasOwn(rJson, "errors");
+        console.log(rJson);
+        if (!Object.hasOwn(rJson, "errors")) {
+          suwayomi.extensionRepos =
+            rJson.data.setSettings.settings.extensionRepos;
+          this.getExtensionsAvailable();
+          return true;
+        } else {
+          return false;
+        }
       })
       .catch(() => false);
   },

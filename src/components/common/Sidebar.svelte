@@ -43,26 +43,22 @@
     {
       name: "Favorites",
       path: "/favorites",
-      iconActive: "heroicons:star-solid",
-      icon: "heroicons:star",
+      icon: "lucide:star",
     },
     {
       name: "Library",
       path: "/library",
-      iconActive: "material-symbols:book-ribbon-rounded",
-      icon: "material-symbols:book-ribbon-outline-rounded",
+      icon: "lucide:book-open-text",
     },
     {
       name: "Search",
       path: "/search",
-      iconActive: "mingcute:search-3-fill",
-      icon: "mingcute:search-3-line",
+      icon: "lucide:search",
     },
     {
       name: "Panels",
       path: "/panels",
-      iconActive: "ion:images",
-      icon: "ion:images-outline",
+      icon: "lucide:image",
     },
     // {
     //   name: "Settings",
@@ -125,7 +121,7 @@
   side={$sidebarSide}
   collapsible="icon"
 >
-  <Sidebar.Header class="px-0 group-data-[side=left]:-ml-[2px]">
+  <Sidebar.Header class="px-0 group-data-[side=left]:-ml-0.5">
     <Sidebar.Group>
       <!-- <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel> -->
       <Sidebar.GroupContent>
@@ -161,14 +157,12 @@
                 {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
                   <Icon
                     class={cn(
-                      "-ml-[10px] size-7! transition-transform duration-500",
+                      "mr-1 -ml-1.5 size-5! transition-transform duration-500",
                       item.path === "/favorites" &&
                         page.url.pathname === item.path &&
                         "rotate-[calc(145deg*2)]",
                     )}
-                    icon={page.url.pathname === item.path
-                      ? item.iconActive
-                      : item.icon}
+                    icon={item.icon}
                   />
                 {:else}
                   <Badge
@@ -183,13 +177,11 @@
                   >
                     <Icon
                       class={cn(
-                        "-ml-[10px] size-7! transition-transform duration-400",
+                        "-ml-2.5 size-7! transition-transform duration-400",
                         page.url.pathname === item.path &&
                           "rotate-[calc(145deg*2)]",
                       )}
-                      icon={page.url.pathname === item.path
-                        ? item.iconActive
-                        : item.icon}
+                      icon={item.icon}
                     />
                   </Badge>
                 {/if}
@@ -208,42 +200,11 @@
   </Sidebar.Header>
   <Separator class="bg-secondary w-[95%]" />
   <Sidebar.Content
-    class="scrollbar -ml-[2px] group-data-[collapsible=icon]:overflow-y-auto [&::-webkit-scrollbar]:w-2 group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5"
+    class="scrollbar -ml-0.5 group-data-[collapsible=icon]:overflow-y-auto [&::-webkit-scrollbar]:w-2 group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5"
   >
     <Sidebar.Group>
       <Sidebar.GroupContent>
         <Sidebar.Menu class="flex flex-col gap-2">
-          <!-- <Sidebar.MenuItem> -->
-          <!--   <Sidebar.MenuButton -->
-          <!--     variant={$openSearch ? "secondary" : "default"} -->
-          <!--     onclick={(e) => { -->
-          <!--       e.currentTarget.blur(); -->
-          <!--       openSearch.set(true); -->
-          <!--       openTag.set(false); -->
-          <!--       openDownloads.set(false); -->
-          <!--       openSettings.set(false); -->
-          <!--       openAdd.set(false); -->
-          <!--       openInfo.set(false); -->
-          <!--       if (IS_MOBILE) sidebar.toggle(); -->
-          <!--     }} -->
-          <!--     tabindex={-1} -->
-          <!--   > -->
-          <!--     <Icon -->
-          <!--       icon={$openSearch -->
-          <!--         ? "mingcute:search-3-fill" -->
-          <!--         : "mingcute:search-3-line"} -->
-          <!--       class="size-7! -ml-[10px]" -->
-          <!--     /> -->
-          <!--     <Label -->
-          <!--       class={cn( -->
-          <!--         "cursor-pointer transition-all", -->
-          <!--         $openSearch && "text-sidebar!", -->
-          <!--       )} -->
-          <!--     > -->
-          <!--       Search -->
-          <!--     </Label> -->
-          <!--   </Sidebar.MenuButton> -->
-          <!-- </Sidebar.MenuItem> -->
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
               variant={$openTag ? "secondary" : "default"}
@@ -259,10 +220,7 @@
               }}
               tabindex={-1}
             >
-              <Icon
-                class="-ml-[10px] size-7!"
-                icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
-              />
+              <Icon class="mr-1 -ml-1.5 size-5!" icon="lucide:tags" />
               <Label
                 class={cn(
                   "cursor-pointer transition-all",
@@ -287,7 +245,7 @@
             >
               <Icon
                 icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="-ml-[2px] size-7! "
+                class="-ml-0.5 size-7! "
               />
               <Label
                 class={cn(
@@ -501,12 +459,10 @@
           >
             <Icon
               class={cn(
-                " -ml-[14px] size-7! transition-all duration-500 group-data-[collapsible=icon]:-ml-[10px]",
+                "mr-1 -ml-2.5 size-5! transition-all duration-500 group-data-[collapsible=icon]:-ml-1.5",
                 openSettings.active && "rotate-180",
               )}
-              icon={openSettings.active
-                ? "heroicons:cog-6-tooth-solid"
-                : "heroicons:cog-6-tooth"}
+              icon="lucide:settings"
             />
             <Label
               class={cn(
@@ -529,21 +485,21 @@
           >
             <Icon
               class={cn(
-                "absolute left-1.5 size-7! transition-all duration-500 group-data-[collapsible=icon]:left-2.5",
+                "absolute left-2.5 size-5! transition-all duration-500 group-data-[collapsible=icon]:left-3.5",
                 themeMode.value === "dark"
                   ? "opacity-100"
                   : "scale-0 rotate-180 opacity-0",
               )}
-              icon="material-symbols:sunny-outline-rounded"
+              icon="lucide:sun"
             />
             <Icon
               class={cn(
-                "absolute left-1.5 size-7! transition-all duration-500 group-data-[collapsible=icon]:left-2.5",
+                "absolute left-2.5 size-5! transition-all duration-500 group-data-[collapsible=icon]:left-3.5",
                 themeMode.value === "light"
                   ? "opacity-100"
                   : "scale-0 -rotate-180 opacity-0",
               )}
-              icon="material-symbols:dark-mode-outline"
+              icon="lucide:moon"
             />
             <Label class="ml-8 cursor-pointer">Theme</Label>
           </Sidebar.MenuButton>

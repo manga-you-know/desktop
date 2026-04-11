@@ -103,10 +103,24 @@ export const panels = new (class {
   }
 })();
 
+type Extension = {
+  pkgName: string;
+  name: string;
+  lang: string;
+  versionCode: string;
+  versionName: string;
+  iconUrl: string;
+  repo: string;
+  isNsfw: boolean;
+  isInstalled: boolean;
+  isObsolete: boolean;
+  hasUpdate: boolean;
+};
+
 class Suwayomi {
   isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
-  extensionsAvailable: { name: string; pkgName: string }[] = $state([]);
+  extensionsAvailable: Extension[] = $state([]);
 
   constructor() {
     this.#checkConnection();
