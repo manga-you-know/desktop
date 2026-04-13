@@ -338,10 +338,12 @@
                         </Button>
                       </div>
                     {:else}
-                      <span class="text-lg"
-                        >You don't seem to have any repositories...
-                      </span>
-                      <span class="text-3xl">(￢_￢;)</span>
+                      <div class="flex flex-col items-center w-full gap-7">
+                        <span class="text-lg"
+                          >You don't seem to have any repositories...
+                        </span>
+                        <span class="text-4xl">(￢_￢;)</span>
+                      </div>
                     {/each}
                   </div>
                   <div class="flex w-full items-center justify-between">
