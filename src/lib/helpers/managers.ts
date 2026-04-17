@@ -28,7 +28,12 @@ export const suwaManager = {
   },
   async isConnected(): Promise<boolean> {
     return fetch(suwayomiUrl.value)
-      .then((r) => r.ok)
+      .then((r) => {
+        if (suwayomi.extensions.length === 0) {
+          this.getExtensions();
+        }
+        return r.ok;
+      })
       .catch(() => false);
   },
   async getRepos() {
@@ -72,7 +77,7 @@ export const suwaManager = {
         if (!Object.hasOwn(rJson, "errors")) {
           suwayomi.extensionRepos =
             rJson.data.setSettings.settings.extensionRepos;
-          this.getExtensionsAvailable();
+          this.getExtensions();
           return true;
         } else {
           return false;
@@ -80,7 +85,7 @@ export const suwaManager = {
       })
       .catch(() => false);
   },
-  async getExtensionsAvailable() {
+  async getExtensions() {
     fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
       bodyC: {
@@ -110,7 +115,7 @@ export const suwaManager = {
       },
     }).then(async (r) => {
       const rJson = await r.json();
-      suwayomi.extensionsAvailable = rJson.data.fetchExtensions.extensions;
+      suwayomi.extensions = rJson.data.fetchExtensions.extensions;
     });
   },
 };

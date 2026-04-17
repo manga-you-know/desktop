@@ -78,7 +78,7 @@
   import { emit, listen } from "@tauri-apps/api/event";
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
-  import { openSettings, retroMode, suwayomi } from "@/states";
+  import { openExtensions, openSettings, retroMode, suwayomi } from "@/states";
   import { suwaManager } from "@/lib/helpers";
   import { fly } from "svelte/transition";
 
@@ -164,9 +164,10 @@
   openSettings.onchange = (v) => {
     if (v) {
       suwaManager.getRepos();
-      suwaManager.getExtensionsAvailable();
+      suwaManager.getExtensions();
     }
     delay(10).then(() => {
+      scrollTo(activeSection, false);
       const observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
@@ -195,8 +196,10 @@
   //   isSuwaConnected = await suwaManager.isConnected();
   // });
 
-  function scrollTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  function scrollTo(id: string, smooth = true) {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: smooth ? "smooth" : "instant" });
   }
 </script>
 
@@ -337,18 +340,19 @@
                           </span>
                         </Button>
                       </div>
-                    {:else}
-                      <div class="flex flex-col items-center w-full gap-7">
+                    {/each}
+                    {#if suwayomi.extensionRepos.length === 0}
+                      <div class="flex w-full flex-col items-center gap-7">
                         <span class="text-lg"
                           >You don't seem to have any repositories...
                         </span>
                         <span class="text-4xl">(￢_￢;)</span>
                       </div>
-                    {/each}
+                    {/if}
                   </div>
                   <div class="flex w-full items-center justify-between">
                     <Label class="text-lg"
-                      >{suwayomi.extensionsAvailable.length} extensions available</Label
+                      >{suwayomi.extensions.length} extensions available</Label
                     >
                     <Button
                       class="h-10 rounded-xl"
@@ -360,6 +364,23 @@
                   </div>
                 </Card.Content>
               </Card.Root>
+              <Button
+                variant="outline"
+                onclick={() => {
+                  openExtensions.open();
+                  openSettings.close();
+                  openExtensions.onchange = (open) => {
+                    if (!open) {
+                      openSettings.open();
+                      scrollTo("extensions");
+                      openExtensions.onchange = () => {};
+                    }
+                  };
+                }}
+              >
+                <Icon icon="lucide:puzzle" />
+                Manage extensions
+              </Button>
             </div>
           </Card.Content>
         </Card.Root>

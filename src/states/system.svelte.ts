@@ -24,20 +24,34 @@ import { delay } from "@/utils";
 class OpenState {
   #active = $state(false);
   onchange: (value: boolean) => void;
-  constructor(onchange = (_value: boolean) => { }) {
+
+  constructor(onchange = (_open: boolean) => { }) {
     this.onchange = onchange;
   }
+
   get active() {
     return this.#active;
   }
-  set active(v) {
-    this.#active = v;
-    this.onchange(v);
+
+  set active(open) {
+    this.#active = open;
+    this.onchange(open);
   }
+
+  open = () => {
+    this.#active = true;
+    this.onchange(true);
+  };
+
+  close = () => {
+    this.#active = false;
+    this.onchange(false);
+  };
 }
 
 export const openAdd = new OpenState();
 export const openSettings = new OpenState();
+export const openExtensions = new OpenState();
 export const openTag = new (class {
   active = $state(false);
 })();
@@ -120,7 +134,10 @@ type Extension = {
 class Suwayomi {
   isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
-  extensionsAvailable: Extension[] = $state([]);
+  extensions: Extension[] = $state([]);
+  installedExtensions: Extension[] = $derived(
+    this.extensions.filter((e) => e.isInstalled),
+  );
 
   constructor() {
     this.#checkConnection();

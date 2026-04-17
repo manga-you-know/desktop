@@ -17,6 +17,28 @@
     success: "lucide:check",
     error: "lucide:plus",
   };
+
+  const setRepo = async () => {
+    if (suwayomi.extensionRepos.includes(input.trim())) {
+      return;
+    }
+    suwayomi.extensionRepos.push(input.trim());
+    status = "loading";
+    const added = await suwaManager.setRepos();
+    if (added) {
+      status = "success";
+      delay(300).then(() => {
+        open = false;
+        status = "idle";
+        input = "";
+      });
+    } else {
+      suwayomi.extensionRepos = suwayomi.extensionRepos.filter(
+        (repo) => repo != input,
+      );
+      status = "error";
+    }
+  };
 </script>
 
 <Dialog.Root bind:open>
@@ -44,6 +66,7 @@
           const text = await readText();
           if (text) {
             input = text;
+            setRepo();
           }
         }}
       >
@@ -52,25 +75,9 @@
       <Button
         class="h-10 rounded-l-none rounded-r-xl"
         effect="ringHover"
-        disabled={input.trim() === ""}
-        onclick={async () => {
-          suwayomi.extensionRepos.push(input);
-          status = "loading";
-          const added = await suwaManager.setRepos();
-          if (added) {
-            status = "success";
-            delay(300).then(() => {
-              open = false;
-              status = "idle";
-              input = "";
-            });
-          } else {
-            suwayomi.extensionRepos = suwayomi.extensionRepos.filter(
-              (repo) => repo != input,
-            );
-            status = "error";
-          }
-        }}
+        disabled={input.trim() === "" ||
+          suwayomi.extensionRepos.includes(input.trim())}
+        onclick={setRepo}
       >
         <Icon icon={statusIcon[status]} />
       </Button>

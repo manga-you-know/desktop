@@ -59,14 +59,17 @@
 </script>
 
 {#if !isMobile}
-  <div class="w-full flex select-none overflow-hidden relative">
-    <SidebarProv.Provider class="h-full" open={$sidebarBehavior === "expand"}>
+  <div class="relative flex w-full overflow-hidden select-none">
+    <SidebarProv.Provider
+      class={cn("h-full", page.url.pathname === "/random" && "m-0")}
+      open={$sidebarBehavior === "expand"}
+    >
       <Sidebar variant="inset" />
       <SidebarProv.Inset class={cn("p-2")}>
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <div
           class={cn(
-            "flex justify-center w-full pb-5 overflow-hidden",
+            "m-0 flex w-full justify-center overflow-hidden pb-5",
             $customTitlebar ? "h-[calc(100vh-2.5rem)]!" : "h-[99vh]!",
           )}
         >
@@ -79,10 +82,10 @@
   <SidebarProv.Provider class="h-full!" open={false} controlledOpen>
     <Sidebar variant="floating" />
     <div
-      class="dark:bg-background w-screen! h-screen! max-h-screen! flex flex-col justify-end select-none overflow-hidden!"
+      class="dark:bg-background flex h-screen! max-h-screen! w-screen! flex-col justify-end overflow-hidden! select-none"
     >
       {#key page.route.id}
-        <div class="h-[90vh]! max-h-[90vh]! max-w-screen! absolute pb-5 mb-20">
+        <div class="absolute mb-20 h-[90vh]! max-h-[90vh]! max-w-screen! pb-5">
           {@render children?.()}
         </div>
       {/key}

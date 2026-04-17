@@ -6,6 +6,7 @@
     AddCustom,
     Downloads,
     EditTags,
+    ManageExtensions,
     PatchNotes,
     Search,
     Settings,
@@ -212,12 +213,13 @@
     duration={2700}
   />
   <Search />
+  <Update />
   <Settings />
+  <EditTags />
   <AddCustom />
   <Downloads />
-  <Update />
-  <EditTags />
   <PatchNotes />
+  <ManageExtensions />
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

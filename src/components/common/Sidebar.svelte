@@ -60,6 +60,11 @@
       path: "/panels",
       icon: "lucide:image",
     },
+    {
+      name: "Random",
+      path: "/random",
+      icon: "lucide:book",
+    },
     // {
     //   name: "Settings",
     //   path: "/settings",
@@ -115,7 +120,11 @@
 </script>
 
 <Sidebar.Root
-  class={cn("border-0 px-0 pb-0", $customTitlebar && "pt-7")}
+  class={cn(
+    "border-0 px-0 pb-0",
+    $customTitlebar && "pt-7",
+    page.url.pathname === "/random" && "w-0!",
+  )}
   style="view-transition-name: sidebar"
   {variant}
   side={$sidebarSide}
