@@ -46,7 +46,7 @@
     <Dialog.Header>
       <Dialog.Title>Add extension repository</Dialog.Title>
       <Dialog.Description>
-        Having problems finding a repo? Just search Mihon extensions :)
+        Having problems finding a repo? Just search "Mihon extensions" :)
       </Dialog.Description>
     </Dialog.Header>
     <div class="flex gap-1">

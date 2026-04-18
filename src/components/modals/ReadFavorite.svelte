@@ -1003,7 +1003,6 @@
                       ? displayedChapters.toReversed()
                       : displayedChapters}
                     getKey={(_, i) => i}
-                    overscan={20}
                     tabindex={-1}
                   >
                     {#snippet children(chapter, _)}

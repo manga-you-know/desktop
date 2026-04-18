@@ -138,6 +138,9 @@ class Suwayomi {
   installedExtensions: Extension[] = $derived(
     this.extensions.filter((e) => e.isInstalled),
   );
+  nonInstalledExtensions: Extension[] = $derived(
+    this.extensions.filter((e) => !e.isInstalled),
+  );
 
   constructor() {
     this.#checkConnection();

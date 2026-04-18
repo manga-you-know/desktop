@@ -167,7 +167,6 @@
       suwaManager.getExtensions();
     }
     delay(10).then(() => {
-      scrollTo(activeSection, false);
       const observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
@@ -179,6 +178,7 @@
         { root: scrollDiv, rootMargin: "-50% 0px -50% 0px" },
       );
       if (v) {
+        scrollTo(activeSection, false);
         sections.forEach(({ id }) => {
           const el = document.getElementById(id);
           if (el) observer.observe(el);
@@ -208,9 +208,9 @@
     <AddRepo bind:open={openAddRepo} />
     <div class="absolute -left-20">
       <div class="mr-2 flex flex-col gap-[0.apx]">
-        <Button class="rounded-t-xl rounded-b-none" variant="info"
-          >Search</Button
-        >
+        <Button class="rounded-t-xl rounded-b-none" variant="info">
+          Search
+        </Button>
         {#each sections as section (section.id)}
           <Button
             class="rounded-none font-bold last:rounded-b-xl"
