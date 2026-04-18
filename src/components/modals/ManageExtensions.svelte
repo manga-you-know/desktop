@@ -100,8 +100,8 @@
         >
           {#snippet children(extension, _)}
             <Button
-              class="bg-background m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2"
-              variant="ghost"
+              class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+              variant="link"
             >
               <div class="flex items-center gap-2">
                 <Image
@@ -109,10 +109,12 @@
                   src={suwayomiUrl.value + extension.iconUrl}
                 />
                 <div class="gap-0.1 flex flex-col items-start justify-center">
-                  <Label class="cursor-pointer text-lg">
+                  <Label
+                    class="cursor-pointer text-lg group-hover/extension:underline!"
+                  >
                     {extension.name}
                   </Label>
-                  <div class="flex w-16 justify-between">
+                  <div class="* flex w-18 justify-between">
                     <span class="text-gray-500">
                       {extension.versionName}
                     </span>
@@ -122,9 +124,26 @@
                   </div>
                 </div>
               </div>
-              <Button class="h-8 rounded-lg font-bold">
-                {extension.isInstalled ? "Remove" : "Install"}
-              </Button>
+              <div class="flex items-center gap-2">
+                {#if extension.isInstalled}
+                  <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                    <Icon icon="lucide:settings" />
+                  </Button>
+                {/if}
+                <Button
+                  class="h-8 w-26 rounded-lg font-bold"
+                  variant={extension.isInstalled ? "outline" : "default"}
+                  onclick={async (e) => {
+                    e.stopPropagation();
+                    extension.isInstalled = await suwaManager.updateExtension(
+                      extension.pkgName,
+                      !extension.isInstalled,
+                    );
+                  }}
+                >
+                  {extension.isInstalled ? "Remove" : "Install"}
+                </Button>
+              </div>
             </Button>
             <!-- {/if} -->
           {/snippet}

@@ -118,4 +118,44 @@ export const suwaManager = {
       suwayomi.extensions = rJson.data.fetchExtensions.extensions;
     });
   },
+  async updateExtension(pkgName: string, install: boolean): Promise<boolean> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      bodyC: {
+        operationName: "UPDATE_EXTENSION",
+        variables: {
+          input: {
+            id: pkgName,
+            patch: install ? { install: true } : { uninstall: true },
+          },
+        },
+        query: `
+          fragment EXTENSION_LIST_FIELDS on ExtensionType {
+            pkgName
+            name
+            lang
+            versionCode
+            versionName
+            iconUrl
+            repo
+            isNsfw
+            isInstalled
+            isObsolete
+            hasUpdate
+          }
+
+          mutation UPDATE_EXTENSION($input: UpdateExtensionInput!) {
+            updateExtension(input: $input) {
+              extension {
+                ...EXTENSION_LIST_FIELDS
+              }
+            }
+          }
+        `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      return rJson.data.updateExtension.extension.isInstalled;
+    });
+  },
 };
