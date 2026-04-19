@@ -19,6 +19,11 @@ import type {
 } from "@/types";
 import { suwaManager } from "@/lib/helpers";
 import { delay } from "@/utils";
+import {
+  activeExtensionRepos,
+  blockedExtensions,
+  showExtensionsNsfw,
+} from "./stored.svelte";
 // import { favorites } from "@/lib/db";
 
 class OpenState {
@@ -129,17 +134,31 @@ type Extension = {
   isInstalled: boolean;
   isObsolete: boolean;
   hasUpdate: boolean;
+  isBlocked?: boolean;
 };
 
 class Suwayomi {
   isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
-  extensions: Extension[] = $state([]);
+  rawExtensions: Extension[] = $state([]);
+  extensions: Extension[] = $derived(
+    this.rawExtensions.filter(
+      (e) =>
+        !blockedExtensions.value[e.pkgName] &&
+        (showExtensionsNsfw.value ? true : !e.isNsfw) &&
+        activeExtensionRepos.value.includes(e.repo + "index.min.json"),
+    ),
+  );
   installedExtensions: Extension[] = $derived(
-    this.extensions.filter((e) => e.isInstalled),
+    this.rawExtensions.filter(
+      (e) => e.isInstalled && !blockedExtensions.value[e.pkgName],
+    ),
   );
   nonInstalledExtensions: Extension[] = $derived(
     this.extensions.filter((e) => !e.isInstalled),
+  );
+  blockedExtensions: Extension[] = $derived(
+    this.rawExtensions.filter((e) => blockedExtensions.value[e.pkgName]),
   );
 
   constructor() {

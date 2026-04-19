@@ -4,50 +4,71 @@ import { load, Store } from "@tauri-apps/plugin-store";
 import type { Languages } from "@/types";
 
 let settingsStore: Store | null = null;
+let blockedStore: Store | null = null;
 let defaultData: Record<string, any> = null!;
 let loadingPromise: Promise<Record<string, any>> | null = null;
 const window = getCurrentWindow();
 
-const getBefore = async (key: string, defaultValue: any) => {
-  if (settingsStore === null) settingsStore = await load("settings.json");
-  if (defaultData === null) {
+const getBefore = async (
+  key: string,
+  defaultValue: any,
+  store: Store | null,
+  storePath: string,
+) => {
+  if (store === null) store = await load(storePath);
+  if (defaultData === null && storePath === "settings.json") {
     if (loadingPromise === null) {
-      loadingPromise = settingsStore.entries().then((entries) => {
+      loadingPromise = store.entries().then((entries) => {
         defaultData = Object.fromEntries(entries);
         return defaultData;
       });
     }
     await loadingPromise;
+    return defaultData[key] ?? defaultValue;
+  } else {
+    return (await store.get(key)) ?? defaultValue;
   }
-  return defaultData[key] ?? defaultValue;
 };
 
-const writeValue = async (key: string, value: any) => {
-  if (settingsStore === null) settingsStore = await load("settings.json");
-  await settingsStore.set(key, value);
+const writeValue = async (
+  key: string,
+  value: any,
+  store: Store | null,
+  storePath: string,
+) => {
+  if (store === null) store = await load(storePath);
+  await store.set(key, value);
 };
 
 class StoredState<T> {
   #value: T;
   #key: string;
   #defaultValue: T;
-  #options: T[];
+  #alternatives: T[];
   #onChange: (_: T) => void;
+  #store: Store | null;
+  #storePath: string;
 
-  constructor(
-    key: string,
-    defaultValue: T,
-    options: T[] = [],
-    onChange = (_: T) => { },
-  ) {
-    this.#value = $state(defaultValue);
-    this.#key = key;
-    this.#defaultValue = defaultValue;
-    this.#options = options;
-    this.#onChange = onChange;
-    getBefore(this.#key, defaultValue).then((value: T) => {
-      this.#value = value;
-    });
+  constructor(config: {
+    key: string;
+    defaultValue: T;
+    alternatives?: T[];
+    onChange?: (_: T) => void;
+    store?: Store | null;
+    storePath?: string;
+  }) {
+    this.#value = $state(config.defaultValue);
+    this.#key = config.key;
+    this.#defaultValue = config.defaultValue;
+    this.#alternatives = config.alternatives ?? [];
+    this.#onChange = config.onChange ?? (() => { });
+    this.#store = config.store ?? settingsStore;
+    this.#storePath = config.storePath ?? "settings.json";
+    getBefore(this.#key, this.#defaultValue, this.#store, this.#storePath).then(
+      (value: T) => {
+        this.#value = value;
+      },
+    );
   }
 
   get value() {
@@ -56,86 +77,108 @@ class StoredState<T> {
 
   set value(v) {
     this.#value = v;
-    writeValue(this.#key, this.#value);
+    writeValue(this.#key, this.#value, this.#store, this.#storePath);
     this.#onChange(this.#value);
   }
 
   resetValue = () => {
     this.#value = this.#defaultValue;
-    writeValue(this.#key, this.#defaultValue);
+    writeValue(this.#key, this.#defaultValue, this.#store, this.#storePath);
     this.#onChange(this.#value);
   };
 
   toggle = () => {
-    if (this.#options.length === 2) {
+    if (this.#alternatives.length === 2) {
       this.#value =
-        this.#value === this.#options[0] ? this.#options[1] : this.#options[0];
-      writeValue(this.#key, this.#value);
+        this.#value === this.#alternatives[0]
+          ? this.#alternatives[1]
+          : this.#alternatives[0];
+      writeValue(this.#key, this.#value, this.#store, this.#storePath);
       this.#onChange(this.#value);
     } else throw new Error("More or less than 2 options were passed");
   };
 
   cycle = () => {
-    if (this.#options.length > 1) {
-      const currentIndex = this.#options.indexOf(this.#value);
-      const next = (currentIndex + 1) % this.#options.length;
-      this.#value = this.#options[next];
-      writeValue(this.#key, this.#value);
+    if (this.#alternatives.length > 1) {
+      const currentIndex = this.#alternatives.indexOf(this.#value);
+      const next = (currentIndex + 1) % this.#alternatives.length;
+      this.#value = this.#alternatives[next];
+      writeValue(this.#key, this.#value, this.#store, this.#storePath);
       this.#onChange(this.#value);
     } else throw new Error("Less than 2 options were passed");
   };
 }
 
-//  Cache
-export const showOnlyWithChapter = new StoredState<boolean>(
-  "show_only_with_chapter",
-  false,
-  [true, false],
-);
-export const libraryAscending = new StoredState<boolean>(
-  "library_ascending",
-  false,
-  [true, false],
-);
-export const chaptersAscending = new StoredState<boolean>(
-  "chapters_ascending",
-  false,
-  [true, false],
-);
-export const orderLibraryBy = new StoredState<string>(
-  "order_library_by",
-  "id",
-  ["id", "date"],
-);
-export const openReadMenu = new StoredState<boolean>("open_read_menu", true, [
-  true,
-  false,
-]);
+// Store
+export const blockedExtensions = new StoredState<Record<string, boolean>>({
+  key: "extensions",
+  defaultValue: {},
+  store: blockedStore,
+  storePath: "blocked.json",
+});
+
+// Preferences cache
+export const showExtensionsNsfw = new StoredState<boolean>({
+  key: "show_extensions_nsfw",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const activeExtensionRepos = new StoredState<string[]>({
+  key: "active_extension_repos",
+  defaultValue: [],
+});
+export const showOnlyWithChapter = new StoredState<boolean>({
+  key: "show_only_with_chapter",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const libraryAscending = new StoredState<boolean>({
+  key: "library_ascending",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const chaptersAscending = new StoredState<boolean>({
+  key: "chapters_ascending",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const orderLibraryBy = new StoredState<string>({
+  key: "order_library_by",
+  defaultValue: "id",
+  alternatives: ["id", "date"],
+});
+export const openReadMenu = new StoredState<boolean>({
+  key: "open_read_menu",
+  defaultValue: true,
+  alternatives: [true, false],
+});
 
 // export const chaptersCache = writable<(ReadCache & { chapters: Chapter[]; images: string[] })[]>([]);
 
 // Appearance
-export const themeMode = new StoredState<"dark" | "light">(
-  "theme_mode",
-  "dark",
-  ["light", "dark"],
-);
-export const retroMode = new StoredState<boolean>("retro_mode", false, [
-  true,
-  false,
-]);
-export const sidebarOnRight = new StoredState<boolean>("sidebar_right", false, [
-  true,
-  false,
-]);
+export const themeMode = new StoredState<"dark" | "light">({
+  key: "theme_mode",
+  defaultValue: "dark",
+  alternatives: ["light", "dark"],
+});
+export const retroMode = new StoredState<boolean>({
+  key: "retro_mode",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const sidebarOnRight = new StoredState<boolean>({
+  key: "sidebar_right",
+  defaultValue: false,
+  alternatives: [true, false],
+});
 export const sidebarStyle = new StoredState<
   "collapsed" | "expanded" | "expand-on-hover"
->("sidebar_style", "collapsed");
-export const customTitlebar = new StoredState<boolean>(
-  "custom_titlebar",
-  type() !== "macos",
-  [true, false],
-  (v) => {
+>({ key: "sidebar_style", defaultValue: "collapsed" });
+export const customTitlebar = new StoredState<boolean>({
+  key: "custom_titlebar",
+  defaultValue: type() !== "macos",
+  alternatives: [true, false],
+  onChange: (v) => {
     window.isDecorated().then((isDecorated) => {
       if (isDecorated && !v) {
         window.setDecorations(false);
@@ -145,79 +188,86 @@ export const customTitlebar = new StoredState<boolean>(
       }
     });
   },
-);
+});
 
 // Behavior
-export const closeToTray = new StoredState<boolean>("close_tray", false, [
-  true,
-  false,
-]);
-export const openFavoriteChapter = new StoredState<boolean>(
-  "open_favorite_chapter",
-  false,
-  [true, false],
-);
-export const notifyChaptersUpdate = new StoredState<boolean>(
-  "notify_chapter_updates",
-  true,
-  [true, false],
-);
-export const taskbarCountFavorites = new StoredState<boolean>(
-  "taskbar_count_favorites",
-  true,
-  [true, false],
-);
+export const closeToTray = new StoredState<boolean>({
+  key: "close_tray",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const openFavoriteChapter = new StoredState<boolean>({
+  key: "open_favorite_chapter",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const notifyChaptersUpdate = new StoredState<boolean>({
+  key: "notify_chapter_updates",
+  defaultValue: true,
+  alternatives: [true, false],
+});
+export const taskbarCountFavorites = new StoredState<boolean>({
+  key: "taskbar_count_favorites",
+  defaultValue: true,
+  alternatives: [true, false],
+});
 
 // System
-export const appLanguage = new StoredState<Languages>(
-  "app_language",
-  "English",
-);
-export const downloadPath = new StoredState<string>("download_path", "Mangas/");
+export const appLanguage = new StoredState<Languages>({
+  key: "app_language",
+  defaultValue: "English",
+});
+export const downloadPath = new StoredState<string>({
+  key: "download_path",
+  defaultValue: "Mangas/",
+});
 
-export const suwayomiUrl = new StoredState<string>(
-  "suwayomi_url",
-  "http://127.0.0.1:4567",
-);
+export const suwayomiUrl = new StoredState<string>({
+  key: "suwayomi_url",
+  defaultValue: "http://127.0.0.1:4567",
+});
 
 // Reader
-export const markAsRead = new StoredState<"manual" | "start" | "end">(
-  "mark_as_read",
-  "start",
-);
-export const cacheReading = new StoredState<boolean>("cache_reading", true, [
-  true,
-  false,
-]);
-export const autoEnterFullscreen = new StoredState<boolean>(
-  "auto_enter_fullscreen",
-  true,
-  [true, false],
-);
-export const readerClock = new StoredState<boolean>("reader_clock", false, [
-  true,
-  false,
-]);
-export const showCurrentChapter = new StoredState<boolean>(
-  "show_current_chapter",
-  false,
-  [true, false],
-);
-export const chapterPagesCounter = new StoredState<boolean>(
-  "chapter_pages_counter",
-  true,
-  [true, false],
-);
-export const chapterPercentageNumber = new StoredState<boolean>(
-  "chapter_percentage_number",
-  false,
-  [true, false],
-);
-export const chapterPercentageGraph = new StoredState<boolean>(
-  "chapter_percentage_graph",
-  false,
-  [true, false],
-);
+export const markAsRead = new StoredState<"manual" | "start" | "end">({
+  key: "mark_as_read",
+  defaultValue: "start",
+});
+export const cacheReading = new StoredState<boolean>({
+  key: "cache_reading",
+  defaultValue: true,
+  alternatives: [true, false],
+});
+export const autoEnterFullscreen = new StoredState<boolean>({
+  key: "auto_enter_fullscreen",
+  defaultValue: true,
+  alternatives: [true, false],
+});
+export const readerClock = new StoredState<boolean>({
+  key: "reader_clock",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+
+export const showCurrentChapter = new StoredState<boolean>({
+  key: "show_current_chapter",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const chapterPagesCounter = new StoredState<boolean>({
+  key: "chapter_pages_counter",
+  defaultValue: true,
+  alternatives: [true, false],
+});
+export const chapterPercentageNumber = new StoredState<boolean>({
+  key: "chapter_percentage_number",
+  defaultValue: false,
+  alternatives: [true, false],
+});
+export const chapterPercentageGraph = new StoredState<boolean>({
+  key: "chapter_percentage_graph",
+  defaultValue: false,
+  alternatives: [true, false],
+});
 
 // export const isChaptersUniqueNumber = writable<boolean>(false);
 // export const libraryFavorites = writable<Favorite[]>([]);

@@ -1,5 +1,5 @@
 import { fetch } from "@/lib/helpers";
-import { suwayomiUrl } from "@/states";
+import { activeExtensionRepos, suwayomiUrl } from "@/states";
 import { suwayomi } from "@/states";
 import { Child, Command } from "@tauri-apps/plugin-shell";
 
@@ -29,7 +29,7 @@ export const suwaManager = {
   async isConnected(): Promise<boolean> {
     return fetch(suwayomiUrl.value)
       .then((r) => {
-        if (suwayomi.extensions.length === 0) {
+        if (suwayomi.rawExtensions.length === 0) {
           this.getExtensions();
         }
         return r.ok;
@@ -51,6 +51,10 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.extensionRepos = rJson.data.settings.extensionRepos;
+      if (activeExtensionRepos.value.length === 0) {
+        activeExtensionRepos.value = suwayomi.extensionRepos;
+        console.log(activeExtensionRepos.value);
+      }
     });
   },
   async setRepos(): Promise<boolean> {
@@ -61,7 +65,7 @@ export const suwaManager = {
           mutation {
             setSettings(input: {
               settings: {
-                extensionRepos: [${suwayomi.extensionRepos.map((ex) => `"${ex}"`)}] 
+                extensionRepos: [${suwayomi.extensionRepos.map((rp) => `"${rp}"`)}] 
               }
             }) {
             settings {
@@ -73,11 +77,11 @@ export const suwaManager = {
     })
       .then(async (r) => {
         const rJson = await r.json();
-        console.log(rJson);
         if (!Object.hasOwn(rJson, "errors")) {
           suwayomi.extensionRepos =
             rJson.data.setSettings.settings.extensionRepos;
-          this.getExtensions();
+          activeExtensionRepos.value = suwayomi.extensionRepos;
+          // this.getExtensions();
           return true;
         } else {
           return false;
@@ -115,7 +119,7 @@ export const suwaManager = {
       },
     }).then(async (r) => {
       const rJson = await r.json();
-      suwayomi.extensions = rJson.data.fetchExtensions.extensions;
+      suwayomi.rawExtensions = rJson.data.fetchExtensions.extensions;
     });
   },
   async updateExtension(pkgName: string, install: boolean): Promise<boolean> {

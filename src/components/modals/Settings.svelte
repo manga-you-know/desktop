@@ -258,9 +258,9 @@
                 <Switch id="check-retro" checked={retroMode.value} />
                 <Label class="cursor-pointer">Retro mode</Label>
               </button>
-              <span class="text-sm text-gray-400"
-                >| This makes everything go square brrrr (looks strangely nice)</span
-              >
+              <span class="text-sm text-gray-400">
+                | This makes everything go square brrrr (looks strangely nice)
+              </span>
             </div>
           </Card.Content>
         </Card.Root>
@@ -343,17 +343,17 @@
                     {/each}
                     {#if suwayomi.extensionRepos.length === 0}
                       <div class="flex w-full flex-col items-center gap-7">
-                        <span class="text-lg"
-                          >You don't seem to have any repositories...
+                        <span class="text-lg">
+                          You don't seem to have any repositories...
                         </span>
                         <span class="text-4xl">(￢_￢;)</span>
                       </div>
                     {/if}
                   </div>
                   <div class="flex w-full items-center justify-between">
-                    <Label class="text-lg"
-                      >{suwayomi.extensions.length} extensions available</Label
-                    >
+                    <Label class="text-lg">
+                      {suwayomi.rawExtensions.length} extensions available
+                    </Label>
                     <Button
                       class="h-10 rounded-xl"
                       effect="ringHover"
