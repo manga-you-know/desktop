@@ -146,7 +146,7 @@ class Suwayomi {
       (e) =>
         !blockedExtensions.value[e.pkgName] &&
         (showExtensionsNsfw.value ? true : !e.isNsfw) &&
-        activeExtensionRepos.value.includes(e.repo + "index.min.json"),
+        activeExtensionRepos.value.includes(e.repo),
     ),
   );
   installedExtensions: Extension[] = $derived(

@@ -5,6 +5,7 @@ import type { Languages } from "@/types";
 
 let settingsStore: Store | null = null;
 let blockedStore: Store | null = null;
+let fetchedStore: Store | null = null;
 let defaultData: Record<string, any> = null!;
 let loadingPromise: Promise<Record<string, any>> | null = null;
 const window = getCurrentWindow();
@@ -115,6 +116,15 @@ export const blockedExtensions = new StoredState<Record<string, boolean>>({
   defaultValue: {},
   store: blockedStore,
   storePath: "blocked.json",
+});
+
+export const repoInfo = new StoredState<
+  Record<string, { name: string; website: string }>
+>({
+  key: "repo_info",
+  defaultValue: {},
+  store: fetchedStore,
+  storePath: "fetched.json",
 });
 
 // Preferences cache

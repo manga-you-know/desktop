@@ -1,7 +1,8 @@
 import { fetch } from "@/lib/helpers";
-import { activeExtensionRepos, suwayomiUrl } from "@/states";
+import { activeExtensionRepos, repoInfo, suwayomiUrl } from "@/states";
 import { suwayomi } from "@/states";
 import { Child, Command } from "@tauri-apps/plugin-shell";
+import { getBasePath } from "../utils";
 
 const command = Command.sidecar("binaries/suwayomi");
 let child: Child = null!;
@@ -51,11 +52,23 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.extensionRepos = rJson.data.settings.extensionRepos;
+      this.getRepoInfo();
       if (activeExtensionRepos.value.length === 0) {
-        activeExtensionRepos.value = suwayomi.extensionRepos;
-        console.log(activeExtensionRepos.value);
+        activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
       }
     });
+  },
+  async getRepoInfo() {
+    for (const repo of suwayomi.extensionRepos) {
+      if (repoInfo.value[repo]) continue;
+      const infoFile = getBasePath(repo) + "repo.json";
+      const info = await fetch(infoFile);
+      const infoJson = await info.json();
+      repoInfo.value = {
+        ...repoInfo.value,
+        [repo]: { name: infoJson.meta.name, website: infoJson.meta.website },
+      };
+    }
   },
   async setRepos(): Promise<boolean> {
     return fetch(suwayomiUrl.value + "/api/graphql", {
@@ -80,8 +93,9 @@ export const suwaManager = {
         if (!Object.hasOwn(rJson, "errors")) {
           suwayomi.extensionRepos =
             rJson.data.setSettings.settings.extensionRepos;
-          activeExtensionRepos.value = suwayomi.extensionRepos;
+          activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
           // this.getExtensions();
+          this.getRepoInfo();
           return true;
         } else {
           return false;

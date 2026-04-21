@@ -74,13 +74,20 @@
     MANGASOURCES,
   } from "@/constants";
   import Icon from "@iconify/svelte";
-  import { cn } from "@/lib/utils";
+  import { cn, removeOrigin } from "@/lib/utils";
   import { emit, listen } from "@tauri-apps/api/event";
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
-  import { openExtensions, openSettings, retroMode, suwayomi } from "@/states";
+  import {
+    openExtensions,
+    openSettings,
+    repoInfo,
+    retroMode,
+    suwayomi,
+  } from "@/states";
   import { suwaManager } from "@/lib/helpers";
   import { fly } from "svelte/transition";
+  import { openUrl } from "@tauri-apps/plugin-opener";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -283,13 +290,31 @@
                   >
                     {#each suwayomi.extensionRepos as repo}
                       <div class="flex w-full gap-1">
-                        <Input
-                          divClass="w-full"
-                          class="w-full rounded-r-none"
-                          variant="outline"
-                          readonly
-                          value={repo}
-                        />
+                        {#if repoInfo.value[repo]}
+                          <Button
+                            class="w-full cursor-default justify-start rounded-r-none"
+                            variant="outline"
+                          >
+                            {repoInfo.value[repo].name}
+                          </Button>
+                          <Button
+                            class="rounded-none"
+                            variant="secondary"
+                            onclick={() => {
+                              openUrl(repoInfo.value[repo].website);
+                            }}
+                          >
+                            <Icon icon="lucide:external-link" />
+                          </Button>
+                        {:else}
+                          <Input
+                            divClass="w-full"
+                            class="w-full cursor-text rounded-r-none"
+                            variant="outline"
+                            readonly
+                            value={removeOrigin(repo)}
+                          />
+                        {/if}
                         <Button
                           class="rounded-l-none pr-2 transition-all"
                           variant="destructive"

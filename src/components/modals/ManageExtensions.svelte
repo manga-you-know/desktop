@@ -14,6 +14,7 @@
     activeExtensionRepos,
     blockedExtensions,
     openExtensions,
+    repoInfo,
     showExtensionsNsfw,
     suwayomi,
     suwayomiUrl,
@@ -24,7 +25,8 @@
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
   import { fade } from "svelte/transition";
   import { VList } from "virtua/svelte";
-  import { cn } from "@/lib/utils";
+  import { cn, getBasePath, removeOrigin } from "@/lib/utils";
+  import { openUrl } from "@tauri-apps/plugin-opener";
 
   let extensionQuery = $state("");
   let extensionGroup: "all" | "installed" | "noninstalled" | "blocked" =
@@ -33,6 +35,8 @@
   let availableLangs: string[] = $derived(
     Array.from(new Set(suwayomi.extensions.map((e) => e.lang))),
   );
+
+  let installingExtensions: Record<string, boolean> = $state({});
 
   let filteredExtensions = $derived(
     extensionGroup.includes("blocked")
@@ -102,31 +106,58 @@
                 class="flex cursor-pointer items-center gap-3"
                 onclick={(e) => {
                   e.stopPropagation();
+                  const sanitizedRepo = getBasePath(repo);
                   if (
-                    activeExtensionRepos.value.includes(repo) &&
+                    activeExtensionRepos.value.includes(sanitizedRepo) &&
                     activeExtensionRepos.value.length > 1
                   ) {
                     activeExtensionRepos.value =
-                      activeExtensionRepos.value.filter((r) => r !== repo);
+                      activeExtensionRepos.value.filter(
+                        (r) => r !== sanitizedRepo,
+                      );
                   } else {
                     activeExtensionRepos.value = [
                       ...activeExtensionRepos.value,
-                      repo,
+                      sanitizedRepo,
                     ];
                   }
                 }}
               >
                 <Switch
-                  checked={activeExtensionRepos.value.includes(repo)}
-                  disabled={activeExtensionRepos.value.includes(repo) &&
-                    activeExtensionRepos.value.length < 2}
+                  checked={activeExtensionRepos.value.includes(
+                    getBasePath(repo),
+                  )}
+                  disabled={activeExtensionRepos.value.includes(
+                    getBasePath(repo),
+                  ) && activeExtensionRepos.value.length < 2}
                 />
-                <Input
-                  class="h-7 rounded-lg"
-                  variant="secondary"
-                  readonly
-                  value={repo}
-                />
+                {#if repoInfo.value[repo]}
+                  <div class="flex w-full gap-1">
+                    <Button
+                      class="h-7 w-full cursor-default justify-start rounded-r-none"
+                      variant="outline"
+                    >
+                      {repoInfo.value[repo].name}
+                    </Button>
+                    <Button
+                      class="size-7 rounded-l-none"
+                      variant="secondary"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openUrl(repoInfo.value[repo].website);
+                      }}
+                    >
+                      <Icon icon="lucide:external-link" />
+                    </Button>
+                  </div>
+                {:else}
+                  <Input
+                    class="h-7 cursor-text rounded-lg"
+                    variant="secondary"
+                    readonly
+                    value={removeOrigin(repo)}
+                  />
+                {/if}
               </button>
             {/each}
           </Popover.Content>
@@ -247,15 +278,24 @@
                     {/if}
                     <Button
                       class="h-8 w-22 rounded-lg font-bold"
-                      variant={extension.isInstalled ? "outline" : "default"}
+                      variant={installingExtensions[extension.pkgName]
+                        ? "outline"
+                        : extension.isInstalled
+                          ? "destructive"
+                          : "default"}
+                      disabled={installingExtensions[extension.pkgName]}
                       onclick={async (e) => {
                         e.stopPropagation();
                         if (extensionGroup !== "blocked") {
+                          if (!extension.isInstalled) {
+                            installingExtensions[extension.pkgName] = true;
+                          }
                           extension.isInstalled =
                             await suwaManager.updateExtension(
                               extension.pkgName,
                               !extension.isInstalled,
                             );
+                          delete installingExtensions[extension.pkgName];
                         } else {
                           blockedExtensions.value = {
                             ...blockedExtensions.value,
@@ -265,9 +305,11 @@
                       }}
                     >
                       {extensionGroup !== "blocked"
-                        ? extension.isInstalled
-                          ? "Remove"
-                          : "Install"
+                        ? installingExtensions[extension.pkgName]
+                          ? "..."
+                          : extension.isInstalled
+                            ? "Remove"
+                            : "Install"
                         : "Show"}
                     </Button>
                   </div>
