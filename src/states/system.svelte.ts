@@ -160,6 +160,9 @@ class Suwayomi {
   blockedExtensions: Extension[] = $derived(
     this.rawExtensions.filter((e) => blockedExtensions.value[e.pkgName]),
   );
+  availableLangs: string[] = $derived(
+    Array.from(new Set(this.extensions.map((e) => e.lang))),
+  );
 
   constructor() {
     this.#checkConnection();

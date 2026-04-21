@@ -53,7 +53,10 @@
       <Input
         class="w-full rounded-r-none"
         divClass="w-full"
-        variant={status !== "error" ? "outline" : "destructive"}
+        variant={status === "error" ||
+        suwayomi.extensionRepos.includes(input.trim())
+          ? "destructive"
+          : "outline"}
         placeholder="https://github.com/USER/REPO"
         disabled={status === "loading" || status === "success"}
         oninput={() => (status = "idle")}

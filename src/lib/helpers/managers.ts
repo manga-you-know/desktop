@@ -1,8 +1,14 @@
 import { fetch } from "@/lib/helpers";
-import { activeExtensionRepos, repoInfo, suwayomiUrl } from "@/states";
+import {
+  activeExtensionRepos,
+  allowedExtensionLanguages,
+  repoInfo,
+  suwayomiUrl,
+} from "@/states";
 import { suwayomi } from "@/states";
 import { Child, Command } from "@tauri-apps/plugin-shell";
 import { getBasePath } from "../utils";
+import { delay } from "@/utils";
 
 const command = Command.sidecar("binaries/suwayomi");
 let child: Child = null!;
@@ -94,7 +100,14 @@ export const suwaManager = {
           suwayomi.extensionRepos =
             rJson.data.setSettings.settings.extensionRepos;
           activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
-          // this.getExtensions();
+          this.getExtensions().then(async (_) => {
+            await delay(10);
+            const data: Record<string, boolean> = {};
+            for (const lang of suwayomi.availableLangs) {
+              data[lang] = true;
+            }
+            allowedExtensionLanguages.value = data;
+          });
           this.getRepoInfo();
           return true;
         } else {
@@ -134,6 +147,17 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.rawExtensions = rJson.data.fetchExtensions.extensions;
+      await delay(10);
+      if (
+        Object.values(allowedExtensionLanguages.value).filter((e) => e)
+          .length === 0
+      ) {
+        const data: Record<string, boolean> = {};
+        for (const lang of suwayomi.availableLangs) {
+          data[lang] = true;
+        }
+        allowedExtensionLanguages.value = data;
+      }
     });
   },
   async updateExtension(pkgName: string, install: boolean): Promise<boolean> {

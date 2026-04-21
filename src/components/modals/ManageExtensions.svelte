@@ -12,6 +12,7 @@
   import { suwaManager } from "@/lib/helpers";
   import {
     activeExtensionRepos,
+    allowedExtensionLanguages,
     blockedExtensions,
     openExtensions,
     repoInfo,
@@ -27,14 +28,11 @@
   import { VList } from "virtua/svelte";
   import { cn, getBasePath, removeOrigin } from "@/lib/utils";
   import { openUrl } from "@tauri-apps/plugin-opener";
+  import { IsoLanguages } from "@/constants";
 
   let extensionQuery = $state("");
   let extensionGroup: "all" | "installed" | "noninstalled" | "blocked" =
     $state("all");
-
-  let availableLangs: string[] = $derived(
-    Array.from(new Set(suwayomi.extensions.map((e) => e.lang))),
-  );
 
   let installingExtensions: Record<string, boolean> = $state({});
 
@@ -47,13 +45,38 @@
         ? suwayomi.extensions.filter(
             (e) =>
               e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
-              (extensionGroup === "all" ? true : !e.isInstalled),
+              (extensionGroup === "all" ? true : !e.isInstalled) &&
+              allowedExtensionLanguages.value[e.lang],
           )
-        : suwayomi.installedExtensions.filter(
-            (e) =>
-              e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
-              (showExtensionsNsfw.value ? true : !e.isNsfw),
-          ),
+        : suwayomi.installedExtensions
+            .filter(
+              (e) =>
+                e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
+                (showExtensionsNsfw.value ? true : !e.isNsfw) &&
+                allowedExtensionLanguages.value[e.lang],
+            )
+            .sort((a, b) => {
+              const aName = IsoLanguages[a.lang]?.nativeName ?? a.lang;
+              const bName = IsoLanguages[b.lang]?.nativeName ?? b.lang;
+              return aName.localeCompare(bName, "en", { sensitivity: "base" });
+            }),
+  );
+
+  let sortedLangs = $derived(
+    suwayomi.availableLangs.sort((a, b) => {
+      const aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
+      const bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
+      if (aAllowed !== bAllowed) return bAllowed - aAllowed;
+      const aName = IsoLanguages[a]?.nativeName ?? a;
+      const bName = IsoLanguages[b]?.nativeName ?? b;
+      return aName.localeCompare(bName, "en", { sensitivity: "base" });
+    }),
+  );
+
+  let allowedOnly: string[] = $derived(
+    Object.entries(allowedExtensionLanguages.value)
+      .filter(([_, v]) => v)
+      .map(([k, _]) => k),
   );
 </script>
 
@@ -67,6 +90,9 @@
     </Dialog.Header>
     <div class="flex w-full flex-col justify-center gap-3">
       <div class="flex w-full justify-between gap-2">
+        <Badge class="w-12 rounded-xl" variant="outline">
+          {filteredExtensions.length}
+        </Badge>
         <Input
           class="w-full rounded-xl"
           divClass="w-full"
@@ -76,7 +102,7 @@
         />
         <Button
           class="flex min-w-24 justify-between rounded-xl font-bold"
-          variant={showExtensionsNsfw.value ? "destructive" : "outline"}
+          variant={showExtensionsNsfw.value ? "destructive" : "secondary"}
           disabled={extensionGroup === "blocked"}
           onclick={showExtensionsNsfw.toggle}
         >
@@ -100,71 +126,115 @@
             </Button>
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 p-2">
-            <Label>Active repositories</Label>
-            {#each suwayomi.extensionRepos as repo}
-              <button
-                class="flex cursor-pointer items-center gap-3"
-                onclick={(e) => {
-                  e.stopPropagation();
-                  const sanitizedRepo = getBasePath(repo);
-                  if (
-                    activeExtensionRepos.value.includes(sanitizedRepo) &&
-                    activeExtensionRepos.value.length > 1
-                  ) {
-                    activeExtensionRepos.value =
-                      activeExtensionRepos.value.filter(
-                        (r) => r !== sanitizedRepo,
-                      );
-                  } else {
-                    activeExtensionRepos.value = [
-                      ...activeExtensionRepos.value,
-                      sanitizedRepo,
-                    ];
-                  }
-                }}
-              >
-                <Switch
-                  checked={activeExtensionRepos.value.includes(
-                    getBasePath(repo),
-                  )}
-                  disabled={activeExtensionRepos.value.includes(
-                    getBasePath(repo),
-                  ) && activeExtensionRepos.value.length < 2}
-                />
-                {#if repoInfo.value[repo]}
-                  <div class="flex w-full gap-1">
-                    <Button
-                      class="h-7 w-full cursor-default justify-start rounded-r-none"
-                      variant="outline"
-                    >
-                      {repoInfo.value[repo].name}
-                    </Button>
-                    <Button
-                      class="size-7 rounded-l-none"
-                      variant="secondary"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        openUrl(repoInfo.value[repo].website);
-                      }}
-                    >
-                      <Icon icon="lucide:external-link" />
-                    </Button>
-                  </div>
-                {:else}
-                  <Input
-                    class="h-7 cursor-text rounded-lg"
-                    variant="secondary"
-                    readonly
-                    value={removeOrigin(repo)}
+            <Label>Allowed repositories</Label>
+            <div class="flex max-h-60 flex-col gap-2 overflow-scroll p-2">
+              {#each suwayomi.extensionRepos as repo}
+                <button
+                  class="flex cursor-pointer items-center gap-3"
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    const sanitizedRepo = getBasePath(repo);
+                    if (
+                      activeExtensionRepos.value.includes(sanitizedRepo) &&
+                      activeExtensionRepos.value.length > 1
+                    ) {
+                      activeExtensionRepos.value =
+                        activeExtensionRepos.value.filter(
+                          (r) => r !== sanitizedRepo,
+                        );
+                    } else {
+                      activeExtensionRepos.value = [
+                        ...activeExtensionRepos.value,
+                        sanitizedRepo,
+                      ];
+                    }
+                  }}
+                >
+                  <Switch
+                    checked={activeExtensionRepos.value.includes(
+                      getBasePath(repo),
+                    )}
+                    disabled={activeExtensionRepos.value.includes(
+                      getBasePath(repo),
+                    ) && activeExtensionRepos.value.length < 2}
                   />
-                {/if}
-              </button>
-            {/each}
+                  {#if repoInfo.value[repo]}
+                    <div class="flex w-full gap-1">
+                      <Button
+                        class="h-7 w-full cursor-default justify-start rounded-r-none"
+                        variant="outline"
+                      >
+                        {repoInfo.value[repo].name}
+                      </Button>
+                      <Button
+                        class="size-7 rounded-l-none"
+                        variant="secondary"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          openUrl(repoInfo.value[repo].website);
+                        }}
+                      >
+                        <Icon icon="lucide:external-link" />
+                      </Button>
+                    </div>
+                  {:else}
+                    <Input
+                      class="h-7 cursor-text rounded-lg"
+                      variant="secondary"
+                      readonly
+                      value={removeOrigin(repo)}
+                    />
+                  {/if}
+                </button>
+              {/each}
+            </div>
           </Popover.Content>
         </Popover.Root>
-        <Button class="rounded-xl">
-          <Icon icon="lucide:languages" />
-        </Button>
+        <Popover.Root>
+          <Popover.Trigger>
+            <Tooltip
+              text="{allowedOnly.length} allowed language{allowedOnly.length > 1
+                ? 's'
+                : ''}"
+            >
+              <Button class="rounded-xl">
+                <Icon icon="lucide:languages" />
+              </Button>
+            </Tooltip>
+          </Popover.Trigger>
+          <Popover.Content class="flex flex-col gap-2 overflow-scroll p-2">
+            <Label>Allowed languages</Label>
+            <div class="flex max-h-80 flex-col gap-2 overflow-scroll p-2">
+              {#each sortedLangs as lang}
+                <button
+                  class="flex cursor-pointer items-center gap-3"
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    allowedExtensionLanguages.value = {
+                      ...allowedExtensionLanguages.value,
+                      [lang]: !allowedExtensionLanguages.value[lang],
+                    };
+                  }}
+                  disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                >
+                  <Switch
+                    checked={allowedExtensionLanguages.value[lang]}
+                    disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                  />
+                  <Button
+                    class="h-6 w-full justify-start rounded-xl"
+                    variant="outline"
+                    disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                  >
+                    {lang === "all"
+                      ? "All"
+                      : (IsoLanguages[lang]?.nativeName ?? lang)}
+                  </Button>
+                </button>
+              {/each}
+            </div>
+          </Popover.Content>
+        </Popover.Root>
       </div>
       <div class="flex w-full">
         <Button

@@ -137,6 +137,12 @@ export const activeExtensionRepos = new StoredState<string[]>({
   key: "active_extension_repos",
   defaultValue: [],
 });
+export const allowedExtensionLanguages = new StoredState<
+  Record<string, boolean>
+>({
+  key: "allowed_extension_languages",
+  defaultValue: {},
+});
 export const showOnlyWithChapter = new StoredState<boolean>({
   key: "show_only_with_chapter",
   defaultValue: false,
