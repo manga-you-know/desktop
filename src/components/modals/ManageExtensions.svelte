@@ -42,12 +42,18 @@
           e.name.toLowerCase().includes(extensionQuery.toLowerCase()),
         )
       : ["noninstalled", "all"].includes(extensionGroup)
-        ? suwayomi.extensions.filter(
-            (e) =>
-              e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
-              (extensionGroup === "all" ? true : !e.isInstalled) &&
-              allowedExtensionLanguages.value[e.lang],
-          )
+        ? suwayomi.extensions
+            .filter(
+              (e) =>
+                e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
+                (extensionGroup === "all" ? true : !e.isInstalled) &&
+                allowedExtensionLanguages.value[e.lang],
+            )
+            .sort((a, b) => {
+              const aName = getLang(a.lang);
+              const bName = getLang(b.lang);
+              return aName.localeCompare(bName, "en", { sensitivity: "base" });
+            })
         : suwayomi.installedExtensions
             .filter(
               (e) =>
@@ -56,8 +62,8 @@
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
-              const aName = IsoLanguages[a.lang]?.nativeName ?? a.lang;
-              const bName = IsoLanguages[b.lang]?.nativeName ?? b.lang;
+              const aName = getLang(a.lang);
+              const bName = getLang(b.lang);
               return aName.localeCompare(bName, "en", { sensitivity: "base" });
             }),
   );
@@ -78,6 +84,9 @@
       .filter(([_, v]) => v)
       .map(([k, _]) => k),
   );
+
+  const getLang = (lang: string) =>
+    lang === "all" ? "All" : (IsoLanguages[lang]?.nativeName ?? lang);
 </script>
 
 <Dialog.Root bind:open={openExtensions.active}>
@@ -203,11 +212,11 @@
             </Tooltip>
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 overflow-scroll p-2">
-            <Label>Allowed languages</Label>
+            <Label>Allowed languages: {allowedOnly.length}</Label>
             <div class="flex max-h-80 flex-col gap-2 overflow-scroll p-2">
               {#each sortedLangs as lang}
                 <button
-                  class="flex cursor-pointer items-center gap-3"
+                  class="flex cursor-pointer items-center gap-1"
                   onclick={(e) => {
                     e.stopPropagation();
                     allowedExtensionLanguages.value = {
@@ -226,9 +235,7 @@
                     variant="outline"
                     disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
                   >
-                    {lang === "all"
-                      ? "All"
-                      : (IsoLanguages[lang]?.nativeName ?? lang)}
+                    {getLang(lang)}
                   </Button>
                 </button>
               {/each}
@@ -313,77 +320,83 @@
           {#snippet children(extension, _)}
             <ContextMenu.Root>
               <ContextMenu.Trigger {onmouseleave}>
-                <Button
-                  class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
-                  variant="link"
+                <Tooltip
+                  text={extension.name}
+                  subtext={getLang(extension.lang)}
+                  placement="left"
                 >
-                  <div class="flex items-center gap-2">
-                    <Image
-                      class="size-10"
-                      src={suwayomiUrl.value + extension.iconUrl}
-                    />
-                    <div
-                      class="gap-0.1 flex flex-col items-start justify-center"
-                    >
-                      <Label
-                        class="cursor-pointer text-lg group-hover/extension:underline!"
+                  <Button
+                    class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                    variant="link"
+                  >
+                    <div class="flex items-center gap-2">
+                      <Image
+                        class="size-10"
+                        src={suwayomiUrl.value + extension.iconUrl}
+                      />
+                      <div
+                        class="gap-0.1 flex flex-col items-start justify-center"
                       >
-                        {extension.name}
-                      </Label>
-                      <div class="* flex w-18 justify-between">
-                        <span class="text-gray-500">
-                          {extension.versionName}
-                        </span>
-                        <span class="text-red-500">
-                          {extension.isNsfw ? "+18" : ""}
-                        </span>
+                        <Label
+                          class="cursor-pointer text-lg group-hover/extension:underline!"
+                        >
+                          {extension.name}
+                        </Label>
+                        <div class="* flex w-18 justify-between">
+                          <span class="text-gray-500">
+                            {extension.versionName}
+                          </span>
+                          <span class="text-red-500">
+                            {extension.isNsfw ? "+18" : ""}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    {#if extension.isInstalled}
-                      <Button class="h-8 w-9 rounded-lg" variant="ghost">
-                        <Icon icon="lucide:settings" />
-                      </Button>
-                    {/if}
-                    <Button
-                      class="h-8 w-22 rounded-lg font-bold"
-                      variant={installingExtensions[extension.pkgName]
-                        ? "outline"
-                        : extension.isInstalled
-                          ? "destructive"
-                          : "default"}
-                      disabled={installingExtensions[extension.pkgName]}
-                      onclick={async (e) => {
-                        e.stopPropagation();
-                        if (extensionGroup !== "blocked") {
-                          if (!extension.isInstalled) {
-                            installingExtensions[extension.pkgName] = true;
-                          }
-                          extension.isInstalled =
-                            await suwaManager.updateExtension(
-                              extension.pkgName,
-                              !extension.isInstalled,
-                            );
-                          delete installingExtensions[extension.pkgName];
-                        } else {
-                          blockedExtensions.value = {
-                            ...blockedExtensions.value,
-                            [extension.pkgName]: false,
-                          };
-                        }
-                      }}
-                    >
-                      {extensionGroup !== "blocked"
-                        ? installingExtensions[extension.pkgName]
-                          ? "..."
+                    <div class="flex items-center gap-2">
+                      {#if extension.isInstalled}
+                        <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                          <Icon icon="lucide:settings" />
+                        </Button>
+                      {/if}
+                      <Button
+                        class="h-8 w-22 rounded-lg font-bold"
+                        variant={installingExtensions[extension.pkgName]
+                          ? "outline"
                           : extension.isInstalled
-                            ? "Remove"
-                            : "Install"
-                        : "Show"}
-                    </Button>
-                  </div>
-                </Button>
+                            ? "destructive"
+                            : "default"}
+                        disabled={installingExtensions[extension.pkgName]}
+                        onclick={async (e) => {
+                          e.stopPropagation();
+                          if (extensionGroup !== "blocked") {
+                            if (!extension.isInstalled) {
+                              installingExtensions[extension.pkgName] = true;
+                            }
+                            extension.isInstalled =
+                              await suwaManager.updateExtension(
+                                extension.pkgName,
+                                !extension.isInstalled,
+                              );
+                            delete installingExtensions[extension.pkgName];
+                          } else {
+                            blockedExtensions.value = {
+                              ...blockedExtensions.value,
+                              [extension.pkgName]: false,
+                            };
+                          }
+                        }}
+                      >
+                        {extensionGroup !== "blocked"
+                          ? installingExtensions[extension.pkgName]
+                            ? "..."
+                            : extension.isInstalled
+                              ? "Remove"
+                              : "Install"
+                          : "Show"}
+                      </Button>
+                    </div>
+                  </Button>
+                </Tooltip>
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item class="flex justify-between">
