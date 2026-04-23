@@ -108,6 +108,8 @@
             >
               <Icon icon="lucide:settings" /> Settings
             </Button>
+            <Label>Sources</Label>
+            <div class="flex h-80 flex-col overflow-y-scroll"></div>
           </div>
         </div>
         <div class="flex gap-1"></div>

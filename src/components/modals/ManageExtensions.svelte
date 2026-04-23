@@ -39,7 +39,7 @@
 
   let extensionQuery = $state("");
   let extensionGroup: "all" | "installed" | "noninstalled" | "blocked" =
-    $state("all");
+    $state("installed");
 
   let installingExtensions: Record<string, boolean> = $state({});
 
@@ -251,20 +251,6 @@
         <Button
           class={cn(
             "w-full rounded-r-none rounded-b-none",
-            extensionGroup === "all" &&
-              "border-b-transparent bg-transparent hover:bg-transparent",
-          )}
-          variant="outline"
-          onclick={() => {
-            extensionGroup = "all";
-          }}
-        >
-          All
-          <Badge variant="secondary">{suwayomi.extensions.length}</Badge>
-        </Button>
-        <Button
-          class={cn(
-            "w-full rounded-none",
             extensionGroup === "installed" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
@@ -277,6 +263,20 @@
           <Badge variant="secondary">
             {suwayomi.installedExtensions.length}
           </Badge>
+        </Button>
+        <Button
+          class={cn(
+            "w-full rounded-none",
+            extensionGroup === "all" &&
+              "border-b-transparent bg-transparent hover:bg-transparent",
+          )}
+          variant="outline"
+          onclick={() => {
+            extensionGroup = "all";
+          }}
+        >
+          All
+          <Badge variant="secondary">{suwayomi.extensions.length}</Badge>
         </Button>
         <Button
           class={cn(
@@ -357,7 +357,7 @@
                         >
                           {extension.name}
                         </Label>
-                        <div class="* flex w-18 justify-between">
+                        <div class="flex w-18 justify-between">
                           <span class="text-gray-500">
                             {extension.versionName}
                           </span>
