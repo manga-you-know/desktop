@@ -31,6 +31,7 @@ export { default as FavoritePanel } from "./cards/FavoritePanel.svelte";
 // Modals
 export { default as SuggestionModal } from "./modals/SuggestionModal.svelte";
 export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";
+export { default as SetExtension } from "./modals/SetExtension.svelte";
 export { default as ChaptersMenu } from "./modals/ChaptersMenu.svelte";
 export { default as ReadFavorite } from "./modals/ReadFavorite.svelte";
 export { default as EditFavorite } from "./modals/EditFavorite.svelte";

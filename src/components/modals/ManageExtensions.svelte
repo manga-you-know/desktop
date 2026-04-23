@@ -14,6 +14,7 @@
     activeExtensionRepos,
     allowedExtensionLanguages,
     blockedExtensions,
+    openedExtension,
     openExtensions,
     repoInfo,
     showExtensionsNsfw,
@@ -26,7 +27,13 @@
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
   import { fade } from "svelte/transition";
   import { VList } from "virtua/svelte";
-  import { cn, getBasePath, removeOrigin } from "@/lib/utils";
+  import {
+    cn,
+    getBasePath,
+    getLang,
+    prettifyRepo,
+    removeOrigin,
+  } from "@/lib/utils";
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { IsoLanguages } from "@/constants";
 
@@ -84,9 +91,6 @@
       .filter(([_, v]) => v)
       .map(([k, _]) => k),
   );
-
-  const getLang = (lang: string) =>
-    lang === "all" ? "All" : (IsoLanguages[lang]?.nativeName ?? lang);
 </script>
 
 <Dialog.Root bind:open={openExtensions.active}>
@@ -319,17 +323,28 @@
         >
           {#snippet children(extension, _)}
             <ContextMenu.Root>
-              <ContextMenu.Trigger {onmouseleave}>
+              <ContextMenu.Trigger>
                 <Tooltip
                   text={extension.name}
-                  subtext={getLang(extension.lang)}
+                  subtext="Lang: {getLang(
+                    extension.lang,
+                  )} | Repo: {prettifyRepo(extension.repo)}"
                   placement="left"
                 >
                   <Button
                     class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                     variant="link"
+                    onclick={() => {
+                      openedExtension.set(extension);
+                      openExtensions.close();
+                      openedExtension.onchange = (ex) => {
+                        if (ex === null) {
+                          openExtensions.open();
+                        }
+                      };
+                    }}
                   >
-                    <div class="flex items-center gap-2">
+                    <div class="pointer-events-none flex items-center gap-2">
                       <Image
                         class="size-10"
                         src={suwayomiUrl.value + extension.iconUrl}
@@ -338,7 +353,7 @@
                         class="gap-0.1 flex flex-col items-start justify-center"
                       >
                         <Label
-                          class="cursor-pointer text-lg group-hover/extension:underline!"
+                          class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
                         >
                           {extension.name}
                         </Label>

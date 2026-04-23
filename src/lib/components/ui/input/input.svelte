@@ -2,8 +2,10 @@
   import type { HTMLInputAttributes } from "svelte/elements";
   import type { WithElementRef } from "bits-ui";
   import { type VariantProps, tv } from "tailwind-variants";
+  import { Button } from "@/lib/components";
   import { cn } from "$lib/utils.js";
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
+  import Icon from "@iconify/svelte";
 
   export const inputVariants = tv({
     base: "flex h-10 text-sm font-medium rounded-2xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
@@ -41,6 +43,8 @@
     variant?: InputVariant;
     borderFocus?: InputBorderFocus;
     floatingLabel?: boolean;
+    deleteButton?: boolean;
+    ondelete?: VoidFunction;
     rightToCopy?: boolean;
     labelClass?: string;
     divClass?: string;
@@ -58,6 +62,8 @@
     variant = "default",
     borderFocus = false,
     floatingLabel = false,
+    deleteButton = true,
+    ondelete = () => {},
     rightToCopy = true,
     required = false,
     onenter,
@@ -119,9 +125,22 @@
         labelClass,
         disabled ? "cursor-not-allowed" : "cursor-text",
         value === "" && "top-[25%]! translate-y-0! scale-100!",
-        "absolute start-1 top-2 z-10 origin-left -translate-y-4 scale-75 transform px-2 text-sm font-medium text-gray-800 duration-300 select-none peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-gray-900 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-gray-400",
+        "absolute inset-s-1 top-2 z-10 origin-left -translate-y-4 scale-75 transform px-2 text-sm font-medium text-gray-800 duration-300 select-none peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-gray-900 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-gray-400",
       )}
-      >{placeholder}
+    >
+      {placeholder}
     </label>
+  {/if}
+  {#if deleteButton && value !== ""}
+    <Button
+      class="absolute top-1 right-1 size-8 rounded-lg backdrop-blur-sm"
+      variant="ghost"
+      onclick={() => {
+        value = "";
+        ondelete?.();
+      }}
+    >
+      <Icon icon="lucide:x" />
+    </Button>
   {/if}
 </button>

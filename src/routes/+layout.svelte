@@ -68,6 +68,7 @@
   import { delay } from "@/utils";
   import { onNavigate } from "$app/navigation";
     import { suwaManager } from "@/lib/helpers";
+    import SetExtension from "@/components/modals/SetExtension.svelte";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -220,6 +221,7 @@
   <Downloads />
   <PatchNotes />
   <ManageExtensions />
+  <SetExtension />
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

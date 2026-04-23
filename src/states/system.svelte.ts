@@ -54,9 +54,35 @@ class OpenState {
   };
 }
 
+class OpenedObject<T> {
+  #value: T | null = $state(null);
+  onchange: (_: T | null) => void;
+
+  constructor(config?: { onchange?: (_: T | null) => void }) {
+    this.onchange = config?.onchange ?? (() => { });
+  }
+
+  get value(): T | null {
+    return this.#value;
+  }
+
+  set value(v: T | null) {
+    this.#value = v;
+    this.onchange?.(v);
+  }
+
+  set(v: T | null) {
+    this.#value = v;
+    this.onchange?.(v);
+  }
+}
+
 export const openAdd = new OpenState();
 export const openSettings = new OpenState();
 export const openExtensions = new OpenState();
+
+export const openedExtension = new OpenedObject<Extension>();
+
 export const openTag = new (class {
   active = $state(false);
 })();

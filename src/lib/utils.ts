@@ -1,3 +1,5 @@
+import { IsoLanguages } from "@/constants";
+import { repoInfo } from "@/states";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -25,3 +27,9 @@ export const getBasePath = (url: string) => {
   const { href } = new URL(url);
   return href.substring(0, href.lastIndexOf("/") + 1);
 };
+
+export const getLang = (lang: string) =>
+  lang === "all" ? "All" : (IsoLanguages[lang]?.nativeName ?? lang);
+
+export const prettifyRepo = (repo: string) =>
+  repoInfo.value[repo]?.name ?? removeOrigin(repo);

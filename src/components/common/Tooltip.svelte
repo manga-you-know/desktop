@@ -44,7 +44,7 @@
     )}
     slot="title"
   >
-    <Label class="text-sm">
+    <Label class="max-w-80 text-sm text-clip">
       {text}
     </Label>
     {#if subtext}

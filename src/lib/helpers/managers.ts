@@ -66,13 +66,16 @@ export const suwaManager = {
   },
   async getRepoInfo() {
     for (const repo of suwayomi.extensionRepos) {
-      if (repoInfo.value[repo]) continue;
+      if (repoInfo.value[getBasePath(repo)]) continue;
       const infoFile = getBasePath(repo) + "repo.json";
       const info = await fetch(infoFile);
       const infoJson = await info.json();
       repoInfo.value = {
         ...repoInfo.value,
-        [repo]: { name: infoJson.meta.name, website: infoJson.meta.website },
+        [getBasePath(repo)]: {
+          name: infoJson.meta.name,
+          website: infoJson.meta.website,
+        },
       };
     }
   },

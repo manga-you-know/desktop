@@ -74,11 +74,12 @@
     MANGASOURCES,
   } from "@/constants";
   import Icon from "@iconify/svelte";
-  import { cn, removeOrigin } from "@/lib/utils";
+  import { cn, getBasePath, removeOrigin } from "@/lib/utils";
   import { emit, listen } from "@tauri-apps/api/event";
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
   import {
+    openedExtension,
     openExtensions,
     openSettings,
     repoInfo,
@@ -290,18 +291,20 @@
                   >
                     {#each suwayomi.extensionRepos as repo}
                       <div class="flex w-full gap-1">
-                        {#if repoInfo.value[repo]}
+                        {#if repoInfo.value[getBasePath(repo)]}
                           <Button
                             class="w-full cursor-default justify-start rounded-r-none"
                             variant="outline"
                           >
-                            {repoInfo.value[repo].name}
+                            {repoInfo.value[getBasePath(repo)].name}
                           </Button>
                           <Button
                             class="rounded-none"
                             variant="secondary"
                             onclick={() => {
-                              openUrl(repoInfo.value[repo].website);
+                              openUrl(
+                                repoInfo.value[getBasePath(repo)].website,
+                              );
                             }}
                           >
                             <Icon icon="lucide:external-link" />
@@ -395,7 +398,7 @@
                   openExtensions.open();
                   openSettings.close();
                   openExtensions.onchange = (open) => {
-                    if (!open) {
+                    if (!open && openedExtension.value === null) {
                       openSettings.open();
                       scrollTo("extensions");
                       openExtensions.onchange = () => {};
