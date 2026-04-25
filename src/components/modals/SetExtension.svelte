@@ -9,12 +9,7 @@
   let isInstalling = $state(false);
 </script>
 
-<Dialog.Root
-  open={openedExtension.value !== null}
-  onOpenChange={(open) => {
-    if (!open) openedExtension.set(null);
-  }}
->
+<Dialog.Root bind:open={openedExtension.active}>
   <Dialog.Content
     class="data-[state=closed]:slide-out-to-right-1/2 data-[state=open]:slide-in-from-right-1/2"
   >
@@ -98,7 +93,7 @@
               {isInstalling
                 ? "..."
                 : openedExtension.value.isInstalled
-                  ? "Remove"
+                  ? "Uninstall"
                   : "Install"}
             </Button>
             <Button

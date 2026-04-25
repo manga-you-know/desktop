@@ -56,10 +56,16 @@ class OpenState {
 
 class OpenedObject<T> {
   #value: T | null = $state(null);
-  onchange: (_: T | null) => void;
+  #active: boolean = $state(false);
+  onvaluechange: (_: T | null) => void;
+  onopenchange: (_: boolean) => void;
 
-  constructor(config?: { onchange?: (_: T | null) => void }) {
-    this.onchange = config?.onchange ?? (() => { });
+  constructor(config?: {
+    onvaluechange?: (_: T | null) => void;
+    onopenchange?: (_: boolean) => void;
+  }) {
+    this.onvaluechange = config?.onvaluechange ?? (() => { });
+    this.onopenchange = config?.onopenchange ?? (() => { });
   }
 
   get value(): T | null {
@@ -68,13 +74,34 @@ class OpenedObject<T> {
 
   set value(v: T | null) {
     this.#value = v;
-    this.onchange?.(v);
+    this.onvaluechange?.(v);
+  }
+
+  get active(): boolean {
+    return this.#active;
+  }
+
+  set active(v: boolean) {
+    this.#active = v;
+    this.onopenchange?.(v);
   }
 
   set(v: T | null) {
     this.#value = v;
-    this.onchange?.(v);
+    this.onvaluechange?.(v);
   }
+
+  open = () => {
+    this.#active = true;
+    this.onopenchange?.(true);
+  };
+
+  close = () => {
+    this.#active = false;
+    this.onopenchange?.(false);
+    this.#value = null;
+    this.onvaluechange?.(null);
+  };
 }
 
 export const openAdd = new OpenState();
@@ -160,7 +187,28 @@ type Extension = {
   isInstalled: boolean;
   isObsolete: boolean;
   hasUpdate: boolean;
-  isBlocked?: boolean;
+};
+
+type SourceMeta = {
+  sourceId: string;
+  key: string;
+  value: string;
+};
+
+type Source = {
+  id: string;
+  name: string;
+  displayName: string;
+  lang: string;
+  iconUrl: string;
+  isNsfw: boolean;
+  isConfigurable: boolean;
+  supportsLatest: boolean;
+  meta: SourceMeta[];
+  extension: {
+    pkgName: string;
+    repo: string;
+  };
 };
 
 class Suwayomi {
@@ -189,6 +237,7 @@ class Suwayomi {
   availableLangs: string[] = $derived(
     Array.from(new Set(this.extensions.map((e) => e.lang))),
   );
+  rawSources: Source[] = $state([]);
 
   constructor() {
     this.#checkConnection();

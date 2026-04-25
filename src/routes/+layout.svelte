@@ -9,6 +9,7 @@
     ManageExtensions,
     PatchNotes,
     Search,
+    SetExtension,
     Settings,
     TitleBar,
     Update,
@@ -67,8 +68,7 @@
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
   import { onNavigate } from "$app/navigation";
-    import { suwaManager } from "@/lib/helpers";
-    import SetExtension from "@/components/modals/SetExtension.svelte";
+  import { suwaManager } from "@/lib/helpers";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -207,6 +207,8 @@
     themeMode.value
   )}
 >
+
+
   <Toaster
     theme={themeMode.value}
     toastOptions={{ classes: { toast: "rounded-2xl" } }}

@@ -37,23 +37,26 @@
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { IsoLanguages } from "@/constants";
 
-  let extensionQuery = $state("");
-  let extensionGroup: "all" | "installed" | "noninstalled" | "blocked" =
+  let query = $state("");
+  let tab: "sources" | "extensions" = $state(
+    suwayomi.installedExtensions.length > 0 ? "sources" : "extensions",
+  );
+  let showedGroup: "all" | "installed" | "noninstalled" | "blocked" =
     $state("installed");
 
   let installingExtensions: Record<string, boolean> = $state({});
 
   let filteredExtensions = $derived(
-    extensionGroup.includes("blocked")
+    showedGroup.includes("blocked")
       ? suwayomi.blockedExtensions.filter((e) =>
-          e.name.toLowerCase().includes(extensionQuery.toLowerCase()),
+          e.name.toLowerCase().includes(query.toLowerCase()),
         )
-      : ["noninstalled", "all"].includes(extensionGroup)
+      : ["noninstalled", "all"].includes(showedGroup)
         ? suwayomi.extensions
             .filter(
               (e) =>
-                e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
-                (extensionGroup === "all" ? true : !e.isInstalled) &&
+                e.name.toLowerCase().includes(query.toLowerCase()) &&
+                (showedGroup === "all" ? true : !e.isInstalled) &&
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
@@ -64,7 +67,7 @@
         : suwayomi.installedExtensions
             .filter(
               (e) =>
-                e.name.toLowerCase().includes(extensionQuery.toLowerCase()) &&
+                e.name.toLowerCase().includes(query.toLowerCase()) &&
                 (showExtensionsNsfw.value ? true : !e.isNsfw) &&
                 allowedExtensionLanguages.value[e.lang],
             )
@@ -86,21 +89,60 @@
     }),
   );
 
-  let allowedOnly: string[] = $derived(
+  let allowedLanguages: string[] = $derived(
     Object.entries(allowedExtensionLanguages.value)
       .filter(([_, v]) => v)
       .map(([k, _]) => k),
   );
 </script>
 
-<Dialog.Root bind:open={openExtensions.active}>
+<Dialog.Root
+  bind:open={openExtensions.active}
+  onOpenChange={(open) => {
+    if (open) {
+      tab = suwayomi.installedExtensions.length > 0 ? "sources" : "extensions";
+    }
+  }}
+>
   <Dialog.Content>
     <Dialog.Header>
-      <Dialog.Title>Manage extensions</Dialog.Title>
+      <Dialog.Title>Manage {tab}</Dialog.Title>
       <Dialog.Description>
-        Select which extensions you want to install
+        Select which {tab} you want to install
       </Dialog.Description>
     </Dialog.Header>
+    <div class="flex w-full justify-center">
+      <div
+        class="bg-background/40 parent flex w-full justify-center rounded-2xl p-2 font-bold"
+      >
+        <Button
+          class={cn(
+            "pointer-events-none absolute start h-8 w-1/2 rounded-xl transition-all duration-500",
+            tab === "sources" ? "translate-x-8" : "translate-x-55",
+          )}
+        />
+        <Button
+          class={cn(
+            "hover:text-primary/70 z-2 h-8 w-full rounded-xl hover:bg-transparent",
+            tab === "sources" && "text-background hover:text-background/70",
+          )}
+          variant="ghost"
+          onclick={() => (tab = "sources")}
+        >
+          Sources
+        </Button>
+        <Button
+          class={cn(
+            "hover:text-primary/70 z-2 h-8 w-full rounded-xl hover:bg-transparent",
+            tab === "extensions" && "text-background hover:text-background/70",
+          )}
+          variant="ghost"
+          onclick={() => (tab = "extensions")}
+        >
+          Extensions
+        </Button>
+      </div>
+    </div>
     <div class="flex w-full flex-col justify-center gap-3">
       <div class="flex w-full justify-between gap-2">
         <Badge class="w-12 rounded-xl" variant="outline">
@@ -110,13 +152,13 @@
           class="w-full rounded-xl"
           divClass="w-full"
           variant="outline"
-          placeholder="Search for extensions..."
-          bind:value={extensionQuery}
+          placeholder="Search for {tab}..."
+          bind:value={query}
         />
         <Button
           class="flex min-w-24 justify-between rounded-xl font-bold"
           variant={showExtensionsNsfw.value ? "destructive" : "secondary"}
-          disabled={extensionGroup === "blocked"}
+          disabled={showedGroup === "blocked"}
           onclick={showExtensionsNsfw.toggle}
         >
           <Icon
@@ -128,22 +170,35 @@
         </Button>
         <Popover.Root>
           <Popover.Trigger
-            disabled={["installed", "blocked"].includes(extensionGroup)}
+            disabled={["installed", "blocked"].includes(showedGroup)}
           >
             <Button
               class="rounded-xl"
               variant="secondary"
-              disabled={["installed", "blocked"].includes(extensionGroup)}
+              disabled={["installed", "blocked"].includes(showedGroup)}
             >
               <Icon icon="lucide:link" />
             </Button>
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 p-2">
-            <Label>Allowed repositories</Label>
-            <div class="flex max-h-60 flex-col gap-2 overflow-scroll p-2">
+            <div class="flex w-full items-center justify-between p-1">
+              <Label>Allowed repositories</Label>
+              <Button
+                class="h-6 rounded-lg px-2.5"
+                variant="secondary"
+                onclick={() => {
+                  activeExtensionRepos.value =
+                    suwayomi.extensionRepos.map(getBasePath);
+                }}
+              >
+                Enable all
+              </Button>
+            </div>
+            <div class="flex max-h-60 flex-col gap-1 overflow-scroll p-2">
               {#each suwayomi.extensionRepos as repo}
-                <button
-                  class="flex cursor-pointer items-center gap-3"
+                <Button
+                  class="cursor-pointer items-center justify-between gap-3 px-2"
+                  variant="outline"
                   onclick={(e) => {
                     e.stopPropagation();
                     const sanitizedRepo = getBasePath(repo);
@@ -173,14 +228,11 @@
                   />
                   {#if repoInfo.value[repo]}
                     <div class="flex w-full gap-1">
-                      <Button
-                        class="h-7 w-full cursor-default justify-start rounded-r-none"
-                        variant="outline"
-                      >
+                      <Button class="h-7 w-full justify-start" variant="ghost">
                         {repoInfo.value[repo].name}
                       </Button>
                       <Button
-                        class="size-7 rounded-l-none"
+                        class="hover:bg-background/70 size-7 rounded-xl"
                         variant="secondary"
                         onclick={(e) => {
                           e.stopPropagation();
@@ -193,12 +245,12 @@
                   {:else}
                     <Input
                       class="h-7 cursor-text rounded-lg"
-                      variant="secondary"
+                      variant="ghost"
                       readonly
                       value={removeOrigin(repo)}
                     />
                   {/if}
-                </button>
+                </Button>
               {/each}
             </div>
           </Popover.Content>
@@ -206,7 +258,8 @@
         <Popover.Root>
           <Popover.Trigger>
             <Tooltip
-              text="{allowedOnly.length} allowed language{allowedOnly.length > 1
+              text="{allowedLanguages.length} allowed language{allowedLanguages.length >
+              1
                 ? 's'
                 : ''}"
             >
@@ -216,11 +269,27 @@
             </Tooltip>
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 overflow-scroll p-2">
-            <Label>Allowed languages: {allowedOnly.length}</Label>
-            <div class="flex max-h-80 flex-col gap-2 overflow-scroll p-2">
+            <div class="flex w-full items-center justify-between p-1">
+              <Label>Allowed languages: {allowedLanguages.length}</Label>
+              <Button
+                class="h-6 rounded-lg px-2.5"
+                variant="secondary"
+                onclick={() => {
+                  const data: Record<string, boolean> = {};
+                  for (const lang of suwayomi.availableLangs) {
+                    data[lang] = true;
+                  }
+                  allowedExtensionLanguages.value = data;
+                }}
+              >
+                Enable all
+              </Button>
+            </div>
+            <div class="flex max-h-80 flex-col gap-1 overflow-scroll p-2">
               {#each sortedLangs as lang}
-                <button
-                  class="flex cursor-pointer items-center gap-1"
+                <Button
+                  class="cursor-pointer items-center gap-1 px-2"
+                  variant="outline"
                   onclick={(e) => {
                     e.stopPropagation();
                     allowedExtensionLanguages.value = {
@@ -228,20 +297,23 @@
                       [lang]: !allowedExtensionLanguages.value[lang],
                     };
                   }}
-                  disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                  disabled={allowedLanguages.length < 2 &&
+                    allowedLanguages[0] === lang}
                 >
                   <Switch
                     checked={allowedExtensionLanguages.value[lang]}
-                    disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                    disabled={allowedLanguages.length < 2 &&
+                      allowedLanguages[0] === lang}
                   />
                   <Button
                     class="h-6 w-full justify-start rounded-xl"
-                    variant="outline"
-                    disabled={allowedOnly.length < 2 && allowedOnly[0] === lang}
+                    variant="ghost"
+                    disabled={allowedLanguages.length < 2 &&
+                      allowedLanguages[0] === lang}
                   >
                     {getLang(lang)}
                   </Button>
-                </button>
+                </Button>
               {/each}
             </div>
           </Popover.Content>
@@ -251,15 +323,15 @@
         <Button
           class={cn(
             "w-full rounded-r-none rounded-b-none",
-            extensionGroup === "installed" &&
+            showedGroup === "installed" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
           variant="outline"
           onclick={() => {
-            extensionGroup = "installed";
+            showedGroup = "installed";
           }}
         >
-          Installed
+          {tab === "sources" ? "Active" : "Installed"}
           <Badge variant="secondary">
             {suwayomi.installedExtensions.length}
           </Badge>
@@ -267,43 +339,43 @@
         <Button
           class={cn(
             "w-full rounded-none",
-            extensionGroup === "all" &&
+            showedGroup === "noninstalled" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
           variant="outline"
           onclick={() => {
-            extensionGroup = "all";
+            showedGroup = "noninstalled";
+          }}
+        >
+          {tab === "sources" ? "Disabled" : "Not installed"}
+          <Badge variant="secondary">
+            {suwayomi.nonInstalledExtensions.length}
+          </Badge>
+        </Button>
+        <Button
+          class={cn(
+            "w-full rounded-none",
+            showedGroup === "all" &&
+              "border-b-transparent bg-transparent hover:bg-transparent",
+          )}
+          variant="outline"
+          onclick={() => {
+            showedGroup = "all";
           }}
         >
           All
           <Badge variant="secondary">{suwayomi.extensions.length}</Badge>
         </Button>
-        <Button
-          class={cn(
-            "w-full rounded-none",
-            extensionGroup === "noninstalled" &&
-              "border-b-transparent bg-transparent hover:bg-transparent",
-          )}
-          variant="outline"
-          onclick={() => {
-            extensionGroup = "noninstalled";
-          }}
-        >
-          Not installed
-          <Badge variant="secondary">
-            {suwayomi.nonInstalledExtensions.length}
-          </Badge>
-        </Button>
-        <Tooltip text="{suwayomi.blockedExtensions.length} blocked extensions">
+        <Tooltip text="{suwayomi.blockedExtensions.length} hided extensions">
           <Button
             class={cn(
               "w-12 rounded-l-none rounded-b-none",
-              extensionGroup === "blocked" &&
+              showedGroup === "blocked" &&
                 "border-b-transparent bg-transparent hover:bg-transparent",
             )}
             variant="outline"
             onclick={() => {
-              extensionGroup = "blocked";
+              showedGroup = "blocked";
             }}
           >
             <Icon icon="lucide:eye-off" />
@@ -337,9 +409,11 @@
                     onclick={() => {
                       openedExtension.set(extension);
                       openExtensions.close();
-                      openedExtension.onchange = (ex) => {
-                        if (ex === null) {
+                      openedExtension.open();
+                      openedExtension.onopenchange = (open) => {
+                        if (!open) {
                           openExtensions.open();
+                          openedExtension.value = null;
                         }
                       };
                     }}
@@ -383,7 +457,7 @@
                         disabled={installingExtensions[extension.pkgName]}
                         onclick={async (e) => {
                           e.stopPropagation();
-                          if (extensionGroup !== "blocked") {
+                          if (showedGroup !== "blocked") {
                             if (!extension.isInstalled) {
                               installingExtensions[extension.pkgName] = true;
                             }
@@ -401,11 +475,11 @@
                           }
                         }}
                       >
-                        {extensionGroup !== "blocked"
+                        {showedGroup !== "blocked"
                           ? installingExtensions[extension.pkgName]
                             ? "..."
                             : extension.isInstalled
-                              ? "Remove"
+                              ? "Uninstall"
                               : "Install"
                           : "Show"}
                       </Button>
@@ -456,14 +530,14 @@
           class="text-primary flex h-90 w-full flex-col items-center justify-center gap-7"
         >
           <span class="text-lg">
-            {extensionQuery !== ""
+            {query !== ""
               ? "Nothing found... 67"
               : "You don't seem to have any " +
-                (extensionGroup === "all"
+                (showedGroup === "all"
                   ? ""
-                  : extensionGroup === "installed"
+                  : showedGroup === "installed"
                     ? "installed"
-                    : extensionGroup === "noninstalled"
+                    : showedGroup === "noninstalled"
                       ? "not installed"
                       : "blocked") +
                 " extensions..."}

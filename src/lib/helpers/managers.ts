@@ -203,4 +203,54 @@ export const suwaManager = {
       return rJson.data.updateExtension.extension.isInstalled;
     });
   },
+  async getSources() {
+    fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      bodyC: {
+        operationName: "GET_SOURCES_LIST",
+        variables: {},
+        query: `
+          fragment SOURCE_BASE_FIELDS on SourceType {
+            id
+            name
+            displayName
+            lang
+          }
+
+          fragment SOURCE_META_FIELDS on SourceMetaType {
+            sourceId
+            key
+            value
+          }
+
+          fragment SOURCE_LIST_FIELDS on SourceType {
+            ...SOURCE_BASE_FIELDS
+            lang
+            iconUrl
+            isNsfw
+            isConfigurable
+            supportsLatest
+            meta {
+              ...SOURCE_META_FIELDS
+            }
+            extension {
+              pkgName
+              repo
+            }
+          }
+
+          query GET_SOURCES_LIST {
+            sources {
+              nodes {
+                ...SOURCE_LIST_FIELDS
+              }
+            }
+          }
+      `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      suwayomi.rawSources = rJson.data.sources.nodes;
+    });
+  },
 };

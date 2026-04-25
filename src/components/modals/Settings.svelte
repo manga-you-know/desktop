@@ -173,6 +173,7 @@
     if (v) {
       suwaManager.getRepos();
       suwaManager.getExtensions();
+      suwaManager.getSources();
     }
     delay(10).then(() => {
       const observer = new IntersectionObserver(
