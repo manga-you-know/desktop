@@ -155,6 +155,10 @@ export const allowedExtensionLanguages = new StoredState<
   key: "allowed_extension_languages",
   defaultValue: {},
 });
+export const allowedSourceLanguages = new StoredState<Record<string, boolean>>({
+  key: "allowed_source_languages",
+  defaultValue: {},
+});
 export const showOnlyWithChapter = new StoredState<boolean>({
   key: "show_only_with_chapter",
   defaultValue: false,

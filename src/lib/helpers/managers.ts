@@ -2,6 +2,7 @@ import { fetch } from "@/lib/helpers";
 import {
   activeExtensionRepos,
   allowedExtensionLanguages,
+  allowedSourceLanguages,
   repoInfo,
   suwayomiUrl,
 } from "@/states";
@@ -106,10 +107,18 @@ export const suwaManager = {
           this.getExtensions().then(async (_) => {
             await delay(10);
             const data: Record<string, boolean> = {};
-            for (const lang of suwayomi.availableLangs) {
+            for (const lang of suwayomi.availableExtensionLangs) {
               data[lang] = true;
             }
             allowedExtensionLanguages.value = data;
+            this.getSources().then(async (_) => {
+              await delay(10);
+              const data: Record<string, boolean> = {};
+              for (const lang of suwayomi.availableSourceLangs) {
+                data[lang] = true;
+              }
+              allowedSourceLanguages.value = data;
+            });
           });
           this.getRepoInfo();
           return true;
@@ -156,7 +165,7 @@ export const suwaManager = {
           .length === 0
       ) {
         const data: Record<string, boolean> = {};
-        for (const lang of suwayomi.availableLangs) {
+        for (const lang of suwayomi.availableExtensionLangs) {
           data[lang] = true;
         }
         allowedExtensionLanguages.value = data;
@@ -251,6 +260,17 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.rawSources = rJson.data.sources.nodes;
+      await delay(10);
+      if (
+        Object.values(allowedSourceLanguages.value).filter((s) => s).length ===
+        0
+      ) {
+        const data: Record<string, boolean> = {};
+        for (const lang of suwayomi.availableSourceLangs) {
+          data[lang] = true;
+        }
+        allowedSourceLanguages.value = data;
+      }
     });
   },
 };

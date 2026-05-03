@@ -168,9 +168,9 @@ class Suwayomi {
   hiddenSources: Source[] = $derived(
     this.rawSources.filter((s) => hiddenSources.value[s.id.toString()]),
   );
-  // availableSourceLangs: string[] = $derived(
-  //   Array.from(new Set(this.sources.map((s) => s.lang))),
-  // );
+  availableSourceLangs: string[] = $derived(
+    Array.from(new Set(this.sources.map((s) => s.lang))),
+  );
   constructor() {
     this.#checkConnection();
   }

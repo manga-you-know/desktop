@@ -13,6 +13,7 @@
   import {
     activeExtensionRepos,
     allowedExtensionLanguages,
+    allowedSourceLanguages,
     enabledSources,
     hiddenExtensions,
     hiddenSources,
@@ -63,7 +64,7 @@
               (showedGroup === "all"
                 ? true
                 : !enabledSources.value[s.id.toString()]) &&
-              allowedExtensionLanguages.value[s.lang],
+              allowedSourceLanguages.value[s.lang],
           )
         : suwayomi.enabledSources.filter(
             (s) =>
@@ -71,8 +72,8 @@
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
               (showExtensionsNsfw.value
                 ? true
-                : !suwayomi.extensionsByPkgName[s.extension.pkgName].isNsfw) &&
-              allowedExtensionLanguages.value[s.lang],
+                : !suwayomi.extensionsByPkgName[s.extension.pkgName]?.isNsfw) &&
+              allowedSourceLanguages.value[s.lang],
           ),
   );
   let filteredExtensions = $derived(
@@ -112,20 +113,33 @@
   );
 
   let sortedLangs = $derived(
-    suwayomi.availableExtensionLangs.sort((a, b) => {
-      const aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
-      const bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
-      if (aAllowed !== bAllowed) return bAllowed - aAllowed;
-      const aName = IsoLanguages[a]?.nativeName ?? a;
-      const bName = IsoLanguages[b]?.nativeName ?? b;
-      return aName.localeCompare(bName, "en", { sensitivity: "base" });
-    }),
+    tab === "sources"
+      ? suwayomi.availableSourceLangs.sort((a, b) => {
+          const aAllowed = allowedSourceLanguages.value[a] ? 1 : 0;
+          const bAllowed = allowedSourceLanguages.value[b] ? 1 : 0;
+          if (aAllowed !== bAllowed) return bAllowed - aAllowed;
+          const aName = IsoLanguages[a]?.nativeName ?? a;
+          const bName = IsoLanguages[b]?.nativeName ?? b;
+          return aName.localeCompare(bName, "en", { sensitivity: "base" });
+        })
+      : suwayomi.availableExtensionLangs.sort((a, b) => {
+          const aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
+          const bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
+          if (aAllowed !== bAllowed) return bAllowed - aAllowed;
+          const aName = IsoLanguages[a]?.nativeName ?? a;
+          const bName = IsoLanguages[b]?.nativeName ?? b;
+          return aName.localeCompare(bName, "en", { sensitivity: "base" });
+        }),
   );
 
   let allowedLanguages: string[] = $derived(
-    Object.entries(allowedExtensionLanguages.value)
-      .filter(([_, v]) => v)
-      .map(([k, _]) => k),
+    tab === "sources"
+      ? Object.entries(allowedSourceLanguages.value)
+          .filter(([_, v]) => v)
+          .map(([k, _]) => k)
+      : Object.entries(allowedExtensionLanguages.value)
+          .filter(([_, v]) => v)
+          .map(([k, _]) => k),
   );
 </script>
 
@@ -272,7 +286,6 @@
                     disabled={activeExtensionRepos.value.includes(
                       getBasePath(repo),
                     ) && activeExtensionRepos.value.length < 2}
-                    data-mouse
                   />
                   {#if repoInfo.value[repo]}
                     <div class="flex w-full gap-1">
@@ -328,10 +341,17 @@
                 variant="secondary"
                 onclick={() => {
                   const data: Record<string, boolean> = {};
-                  for (const lang of suwayomi.availableExtensionLangs) {
-                    data[lang] = true;
+                  if (tab === "sources") {
+                    for (const lang of suwayomi.availableSourceLangs) {
+                      data[lang] = true;
+                    }
+                    allowedSourceLanguages.value = data;
+                  } else {
+                    for (const lang of suwayomi.availableExtensionLangs) {
+                      data[lang] = true;
+                    }
+                    allowedExtensionLanguages.value = data;
                   }
-                  allowedExtensionLanguages.value = data;
                 }}
               >
                 Enable all
@@ -344,16 +364,25 @@
                   variant="outline"
                   onclick={(e) => {
                     e.stopPropagation();
-                    allowedExtensionLanguages.value = {
-                      ...allowedExtensionLanguages.value,
-                      [lang]: !allowedExtensionLanguages.value[lang],
-                    };
+                    if (tab === "sources") {
+                      allowedSourceLanguages.value = {
+                        ...allowedSourceLanguages.value,
+                        [lang]: !allowedSourceLanguages.value[lang],
+                      };
+                    } else {
+                      allowedExtensionLanguages.value = {
+                        ...allowedExtensionLanguages.value,
+                        [lang]: !allowedExtensionLanguages.value[lang],
+                      };
+                    }
                   }}
                   disabled={allowedLanguages.length < 2 &&
                     allowedLanguages[0] === lang}
                 >
                   <Switch
-                    checked={allowedExtensionLanguages.value[lang]}
+                    checked={tab === "sources"
+                      ? allowedSourceLanguages.value[lang]
+                      : allowedExtensionLanguages.value[lang]}
                     disabled={allowedLanguages.length < 2 &&
                       allowedLanguages[0] === lang}
                   />
