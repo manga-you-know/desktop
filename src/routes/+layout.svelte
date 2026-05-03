@@ -56,7 +56,6 @@
     showPatchNotes,
   } from "@/functions";
   import { getCurrentWindow, ProgressBarStatus } from "@tauri-apps/api/window";
-  import { twMerge } from "tailwind-merge";
   import { get } from "svelte/store";
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
@@ -207,8 +206,6 @@
     themeMode.value
   )}
 >
-
-
   <Toaster
     theme={themeMode.value}
     toastOptions={{ classes: { toast: "rounded-2xl" } }}
@@ -223,7 +220,7 @@
   <Downloads />
   <PatchNotes />
   <ManageExtensions />
-  <SetExtension />
+  <!-- <SetExtension /> -->
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

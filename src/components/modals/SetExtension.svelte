@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Badge, Button, Dialog, Label } from "@/lib/components";
   import { cn, getLang, prettifyRepo } from "@/lib/utils";
-  import { openedExtension, suwayomiUrl } from "@/states";
+  import { suwayomiUrl, openedExtension } from "@/states";
   import { Image } from "@/components";
-  import Icon from "@iconify/svelte";
   import { suwaManager } from "@/lib/helpers";
+  import Icon from "@iconify/svelte";
 
   let isInstalling = $state(false);
 </script>

@@ -1,4 +1,4 @@
-import { DownloadManager } from "@/managers";
+// import { DownloadManager } from "@/managers";
 import {
   ANIMESOURCES,
   COMICSOURCES,
@@ -21,122 +21,31 @@ import { suwaManager } from "@/lib/helpers";
 import { delay } from "@/utils";
 import {
   activeExtensionRepos,
-  blockedExtensions,
+  enabledSources,
+  hiddenExtensions,
+  hiddenSources,
   showExtensionsNsfw,
 } from "./stored.svelte";
+import { OpenedObject, OpenState } from "./classes.svelte";
 // import { favorites } from "@/lib/db";
-
-class OpenState {
-  #active = $state(false);
-  onchange: (value: boolean) => void;
-
-  constructor(onchange = (_open: boolean) => { }) {
-    this.onchange = onchange;
-  }
-
-  get active() {
-    return this.#active;
-  }
-
-  set active(open) {
-    this.#active = open;
-    this.onchange(open);
-  }
-
-  open = () => {
-    this.#active = true;
-    this.onchange(true);
-  };
-
-  close = () => {
-    this.#active = false;
-    this.onchange(false);
-  };
-}
-
-class OpenedObject<T> {
-  #value: T | null = $state(null);
-  #active: boolean = $state(false);
-  onvaluechange: (_: T | null) => void;
-  onopenchange: (_: boolean) => void;
-
-  constructor(config?: {
-    onvaluechange?: (_: T | null) => void;
-    onopenchange?: (_: boolean) => void;
-  }) {
-    this.onvaluechange = config?.onvaluechange ?? (() => { });
-    this.onopenchange = config?.onopenchange ?? (() => { });
-  }
-
-  get value(): T | null {
-    return this.#value;
-  }
-
-  set value(v: T | null) {
-    this.#value = v;
-    this.onvaluechange?.(v);
-  }
-
-  get active(): boolean {
-    return this.#active;
-  }
-
-  set active(v: boolean) {
-    this.#active = v;
-    this.onopenchange?.(v);
-  }
-
-  set(v: T | null) {
-    this.#value = v;
-    this.onvaluechange?.(v);
-  }
-
-  open = () => {
-    this.#active = true;
-    this.onopenchange?.(true);
-  };
-
-  close = () => {
-    this.#active = false;
-    this.onopenchange?.(false);
-    this.#value = null;
-    this.onvaluechange?.(null);
-  };
-}
 
 export const openAdd = new OpenState();
 export const openSettings = new OpenState();
 export const openExtensions = new OpenState();
+export const openUpdate = new OpenState();
+export const openMenuChapters = new OpenState();
+export const openReaderMenu = new OpenState({ value: true });
+export const openReaderDrawer = new OpenState();
+export const openSavedModal = new OpenState();
+export const openSearch = new OpenState();
+export const openInfo = new OpenState();
+export const openDownloads = new OpenState();
+export const openPatchNotes = new OpenState();
+export const openFeedback = new OpenState();
+export const openTag = new OpenState();
+export const blockKeyboard = new OpenState();
 
 export const openedExtension = new OpenedObject<Extension>();
-
-export const openTag = new (class {
-  active = $state(false);
-})();
-export const openInfo = new (class {
-  active = $state(false);
-})();
-export const openUpdate = new (class {
-  active = $state(false);
-})();
-export const openSearch = new (class {
-  active = $state(false);
-})();
-export const openFeedback = new (class {
-  active = $state(false);
-})();
-export const openReadModal = new (class {
-  active = $state(false);
-})();
-export const openReaderMenu = new (class {
-  active = $state(false);
-})();
-export const openPatchNotes = new (class {
-  active = $state(false);
-})();
-export const openReaderDrawer = new (class {
-  active = $state(false);
-})();
 
 export const rawSaveds = new (class {
   value: Favorite[] = $state([]);
@@ -218,27 +127,50 @@ class Suwayomi {
   extensions: Extension[] = $derived(
     this.rawExtensions.filter(
       (e) =>
-        !blockedExtensions.value[e.pkgName] &&
+        !hiddenExtensions.value[e.pkgName] &&
         (showExtensionsNsfw.value ? true : !e.isNsfw) &&
         activeExtensionRepos.value.includes(e.repo),
     ),
   );
   installedExtensions: Extension[] = $derived(
     this.rawExtensions.filter(
-      (e) => e.isInstalled && !blockedExtensions.value[e.pkgName],
+      (e) => e.isInstalled && !hiddenExtensions.value[e.pkgName],
     ),
   );
   nonInstalledExtensions: Extension[] = $derived(
     this.extensions.filter((e) => !e.isInstalled),
   );
-  blockedExtensions: Extension[] = $derived(
-    this.rawExtensions.filter((e) => blockedExtensions.value[e.pkgName]),
+  hiddenExtensions: Extension[] = $derived(
+    this.rawExtensions.filter((e) => hiddenExtensions.value[e.pkgName]),
   );
-  availableLangs: string[] = $derived(
+  availableExtensionLangs: string[] = $derived(
     Array.from(new Set(this.extensions.map((e) => e.lang))),
   );
+  extensionsByPkgName: Record<string, Extension> = $derived(
+    Object.fromEntries(this.rawExtensions.map((e) => [e.pkgName, e])),
+  );
   rawSources: Source[] = $state([]);
-
+  sources: Source[] = $derived(
+    this.rawSources.filter(
+      (s) =>
+        !hiddenSources.value[s.id.toString()] &&
+        (showExtensionsNsfw.value
+          ? true
+          : !this.extensionsByPkgName[s.extension.pkgName]?.isNsfw),
+    ),
+  );
+  enabledSources: Source[] = $derived(
+    this.sources.filter((s) => enabledSources.value[s.id.toString()]),
+  );
+  disabledSources: Source[] = $derived(
+    this.sources.filter((s) => !enabledSources.value[s.id.toString()]),
+  );
+  hiddenSources: Source[] = $derived(
+    this.rawSources.filter((s) => hiddenSources.value[s.id.toString()]),
+  );
+  // availableSourceLangs: string[] = $derived(
+  //   Array.from(new Set(this.sources.map((s) => s.lang))),
+  // );
   constructor() {
     this.#checkConnection();
   }
@@ -256,7 +188,7 @@ export const suwayomi = new Suwayomi();
 // export const selectedScan = writable<string>("");
 // export const libraryTag = writable<Mark | undefined>(undefined);
 // export const libraryOrder = writable<string>("id");
-// export const isRefreshing = writable<boolean>(false);
+// export const isRefreshing = new OpenState();
 // export const extraTitle = writable<string>("");
 // export const libraryQuery = writable<string>("");
 // export const librarySource = writable<string>("");
@@ -275,5 +207,3 @@ export const suwayomi = new Suwayomi();
 //   url: "",
 //   fetchUpdate: () => Promise.resolve(),
 // });
-// export const blockKeyboard = writable<boolean>(false);
-// export const openDownloads = writable<boolean>(false);

@@ -13,7 +13,9 @@
   import {
     activeExtensionRepos,
     allowedExtensionLanguages,
-    blockedExtensions,
+    enabledSources,
+    hiddenExtensions,
+    hiddenSources,
     openedExtension,
     openExtensions,
     repoInfo,
@@ -41,14 +43,41 @@
   let tab: "sources" | "extensions" = $state(
     suwayomi.installedExtensions.length > 0 ? "sources" : "extensions",
   );
-  let showedGroup: "all" | "installed" | "noninstalled" | "blocked" =
+  let showedGroup: "all" | "installed" | "noninstalled" | "hidden" =
     $state("installed");
 
   let installingExtensions: Record<string, boolean> = $state({});
 
+  let filteredSources = $derived(
+    showedGroup.includes("hidden")
+      ? suwayomi.hiddenSources.filter(
+          (s) =>
+            s.displayName.toLowerCase().includes(query.toLowerCase()) ||
+            s.name.toLowerCase().includes(query.toLowerCase()),
+        )
+      : ["noninstalled", "all"].includes(showedGroup)
+        ? suwayomi.sources.filter(
+            (s) =>
+              (s.name.toLowerCase().includes(query.toLowerCase()) ||
+                s.displayName.toLowerCase().includes(query.toLowerCase())) &&
+              (showedGroup === "all"
+                ? true
+                : !enabledSources.value[s.id.toString()]) &&
+              allowedExtensionLanguages.value[s.lang],
+          )
+        : suwayomi.enabledSources.filter(
+            (s) =>
+              (s.name.toLowerCase().includes(query.toLowerCase()) ||
+                s.displayName.toLowerCase().includes(query.toLowerCase())) &&
+              (showExtensionsNsfw.value
+                ? true
+                : !suwayomi.extensionsByPkgName[s.extension.pkgName].isNsfw) &&
+              allowedExtensionLanguages.value[s.lang],
+          ),
+  );
   let filteredExtensions = $derived(
-    showedGroup.includes("blocked")
-      ? suwayomi.blockedExtensions.filter((e) =>
+    showedGroup.includes("hidden")
+      ? suwayomi.hiddenExtensions.filter((e) =>
           e.name.toLowerCase().includes(query.toLowerCase()),
         )
       : ["noninstalled", "all"].includes(showedGroup)
@@ -62,7 +91,9 @@
             .sort((a, b) => {
               const aName = getLang(a.lang);
               const bName = getLang(b.lang);
-              return aName.localeCompare(bName, "en", { sensitivity: "base" });
+              return aName.localeCompare(bName, "en", {
+                sensitivity: "base",
+              });
             })
         : suwayomi.installedExtensions
             .filter(
@@ -74,12 +105,14 @@
             .sort((a, b) => {
               const aName = getLang(a.lang);
               const bName = getLang(b.lang);
-              return aName.localeCompare(bName, "en", { sensitivity: "base" });
+              return aName.localeCompare(bName, "en", {
+                sensitivity: "base",
+              });
             }),
   );
 
   let sortedLangs = $derived(
-    suwayomi.availableLangs.sort((a, b) => {
+    suwayomi.availableExtensionLangs.sort((a, b) => {
       const aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
       const bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
       if (aAllowed !== bAllowed) return bAllowed - aAllowed;
@@ -108,7 +141,9 @@
     <Dialog.Header>
       <Dialog.Title>Manage {tab}</Dialog.Title>
       <Dialog.Description>
-        Select which {tab} you want to install
+        Select which {tab} you want to {tab === "sources"
+          ? "enable"
+          : "install"}
       </Dialog.Description>
     </Dialog.Header>
     <div class="flex w-full justify-center">
@@ -146,7 +181,9 @@
     <div class="flex w-full flex-col justify-center gap-3">
       <div class="flex w-full justify-between gap-2">
         <Badge class="w-12 rounded-xl" variant="outline">
-          {filteredExtensions.length}
+          {tab === "sources"
+            ? filteredSources.length
+            : filteredExtensions.length}
         </Badge>
         <Input
           class="w-full rounded-xl"
@@ -158,7 +195,7 @@
         <Button
           class="flex min-w-24 justify-between rounded-xl font-bold"
           variant={showExtensionsNsfw.value ? "destructive" : "secondary"}
-          disabled={showedGroup === "blocked"}
+          disabled={showedGroup === "hidden"}
           onclick={showExtensionsNsfw.toggle}
         >
           <Icon
@@ -170,12 +207,12 @@
         </Button>
         <Popover.Root>
           <Popover.Trigger
-            disabled={["installed", "blocked"].includes(showedGroup)}
+            disabled={["installed", "hidden"].includes(showedGroup)}
           >
             <Button
               class="rounded-xl"
               variant="secondary"
-              disabled={["installed", "blocked"].includes(showedGroup)}
+              disabled={["installed", "hidden"].includes(showedGroup)}
             >
               <Icon icon="lucide:link" />
             </Button>
@@ -197,11 +234,21 @@
             <div class="flex max-h-60 flex-col gap-1 overflow-scroll p-2">
               {#each suwayomi.extensionRepos as repo}
                 <Button
-                  class="cursor-pointer items-center justify-between gap-3 px-2"
+                  class={cn(
+                    "cursor-pointer items-center justify-between gap-3 px-2",
+                    activeExtensionRepos.value.includes(getBasePath(repo)) &&
+                      activeExtensionRepos.value.length < 2 &&
+                      "ponter-events-none! cursor-default hover:bg-transparent",
+                  )}
                   variant="outline"
                   onclick={(e) => {
                     e.stopPropagation();
                     const sanitizedRepo = getBasePath(repo);
+                    if (
+                      activeExtensionRepos.value.includes(sanitizedRepo) &&
+                      activeExtensionRepos.value.length < 2
+                    )
+                      return;
                     if (
                       activeExtensionRepos.value.includes(sanitizedRepo) &&
                       activeExtensionRepos.value.length > 1
@@ -225,14 +272,19 @@
                     disabled={activeExtensionRepos.value.includes(
                       getBasePath(repo),
                     ) && activeExtensionRepos.value.length < 2}
+                    data-mouse
                   />
                   {#if repoInfo.value[repo]}
                     <div class="flex w-full gap-1">
-                      <Button class="h-7 w-full justify-start" variant="ghost">
+                      <Button
+                        class="h-7 w-full justify-start opacity-100 hover:bg-transparent"
+                        variant="ghost"
+                        data-mouse
+                      >
                         {repoInfo.value[repo].name}
                       </Button>
                       <Button
-                        class="hover:bg-background/70 size-7 rounded-xl"
+                        class="hover:bg-background/70 pointer-events-auto z-2 size-7 cursor-pointer! rounded-xl opacity-100"
                         variant="secondary"
                         onclick={(e) => {
                           e.stopPropagation();
@@ -276,7 +328,7 @@
                 variant="secondary"
                 onclick={() => {
                   const data: Record<string, boolean> = {};
-                  for (const lang of suwayomi.availableLangs) {
+                  for (const lang of suwayomi.availableExtensionLangs) {
                     data[lang] = true;
                   }
                   allowedExtensionLanguages.value = data;
@@ -331,9 +383,11 @@
             showedGroup = "installed";
           }}
         >
-          {tab === "sources" ? "Active" : "Installed"}
+          {tab === "sources" ? "Enabled" : "Installed"}
           <Badge variant="secondary">
-            {suwayomi.installedExtensions.length}
+            {tab === "sources"
+              ? suwayomi.enabledSources.length
+              : suwayomi.installedExtensions.length}
           </Badge>
         </Button>
         <Button
@@ -349,7 +403,9 @@
         >
           {tab === "sources" ? "Disabled" : "Not installed"}
           <Badge variant="secondary">
-            {suwayomi.nonInstalledExtensions.length}
+            {tab === "sources"
+              ? suwayomi.disabledSources.length
+              : suwayomi.nonInstalledExtensions.length}
           </Badge>
         </Button>
         <Button
@@ -364,18 +420,22 @@
           }}
         >
           All
-          <Badge variant="secondary">{suwayomi.extensions.length}</Badge>
+          <Badge variant="secondary">
+            {tab === "sources"
+              ? suwayomi.sources.length
+              : suwayomi.extensions.length}
+          </Badge>
         </Button>
-        <Tooltip text="{suwayomi.blockedExtensions.length} hided extensions">
+        <Tooltip text="{suwayomi.hiddenExtensions.length} hided extensions">
           <Button
             class={cn(
               "w-12 rounded-l-none rounded-b-none",
-              showedGroup === "blocked" &&
+              showedGroup === "hidden" &&
                 "border-b-transparent bg-transparent hover:bg-transparent",
             )}
             variant="outline"
             onclick={() => {
-              showedGroup = "blocked";
+              showedGroup = "hidden";
             }}
           >
             <Icon icon="lucide:eye-off" />
@@ -385,146 +445,295 @@
           </Button>
         </Tooltip>
       </div>
-      {#if filteredExtensions.length > 0}
-        <VList
-          class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
-          data={filteredExtensions}
-          getKey={(_, i) => i}
-          tabindex={-1}
-          bufferSize={400}
-        >
-          {#snippet children(extension, _)}
-            <ContextMenu.Root>
-              <ContextMenu.Trigger>
-                <Tooltip
-                  text={extension.name}
-                  subtext="Lang: {getLang(
-                    extension.lang,
-                  )} | Repo: {prettifyRepo(extension.repo)}"
-                  placement="left"
-                >
-                  <Button
-                    class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
-                    variant="link"
-                    onclick={() => {
-                      openedExtension.set(extension);
-                      openExtensions.close();
-                      openedExtension.open();
-                      openedExtension.onopenchange = (open) => {
-                        if (!open) {
-                          openExtensions.open();
-                          openedExtension.value = null;
-                        }
-                      };
-                    }}
+      {#if tab === "sources" ? filteredSources.length > 0 : filteredExtensions.length > 0}
+        {#if tab === "sources"}
+          <VList
+            class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
+            data={filteredSources}
+            getKey={(_, i) => i}
+            tabindex={-1}
+            bufferSize={400}
+          >
+            {#snippet children(source, _)}
+              <ContextMenu.Root>
+                <ContextMenu.Trigger>
+                  <Tooltip
+                    text={source.name}
+                    subtext="Lang: {getLang(source.lang)} | Repo: {prettifyRepo(
+                      source.extension.repo,
+                    )}"
+                    placement="left"
                   >
-                    <div class="pointer-events-none flex items-center gap-2">
-                      <Image
-                        class="size-10"
-                        src={suwayomiUrl.value + extension.iconUrl}
-                      />
-                      <div
-                        class="gap-0.1 flex flex-col items-start justify-center"
-                      >
-                        <Label
-                          class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
+                    <Button
+                      class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                      variant="link"
+                      onclick={() => {
+                        // openedExtension.set(source);
+                        // openExtensions.close();
+                        // openedExtension.open();
+                        // openedExtension.onopenchange = (open) => {
+                        //   if (!open) {
+                        //     openExtensions.open();
+                        //     openedExtension.value = null;
+                        //   }
+                        // };
+                      }}
+                    >
+                      <div class="pointer-events-none flex items-center gap-2">
+                        <Image
+                          class="size-10"
+                          src={suwayomiUrl.value + source.iconUrl}
+                        />
+                        <div
+                          class="gap-0.1 flex flex-col items-start justify-center"
                         >
-                          {extension.name}
-                        </Label>
-                        <div class="flex w-18 justify-between">
-                          <span class="text-gray-500">
-                            {extension.versionName}
-                          </span>
-                          <span class="text-red-500">
-                            {extension.isNsfw ? "+18" : ""}
-                          </span>
+                          <Label
+                            class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
+                          >
+                            {source.name}
+                          </Label>
+                          <div class="flex w-18 justify-between">
+                            <span class="text-gray-500">
+                              {source.displayName}
+                            </span>
+                            <span class="text-red-500">
+                              {source.isNsfw ? "+18" : ""}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      {#if extension.isInstalled}
-                        <Button class="h-8 w-9 rounded-lg" variant="ghost">
-                          <Icon icon="lucide:settings" />
-                        </Button>
-                      {/if}
-                      <Button
-                        class="h-8 w-22 rounded-lg font-bold"
-                        variant={installingExtensions[extension.pkgName]
-                          ? "outline"
-                          : extension.isInstalled
-                            ? "destructive"
-                            : "default"}
-                        disabled={installingExtensions[extension.pkgName]}
-                        onclick={async (e) => {
-                          e.stopPropagation();
-                          if (showedGroup !== "blocked") {
-                            if (!extension.isInstalled) {
-                              installingExtensions[extension.pkgName] = true;
+                      <div class="flex items-center gap-2">
+                        {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
+                          <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                            <Icon icon="lucide:settings" />
+                          </Button>
+                        {/if}
+                        <Switch
+                          // class="rounded-lg font-bold"
+                          // variant={source.iconUrl ? "destructive" : "default"}
+                          checked={enabledSources.value[source.id.toString()]}
+                          onclick={async (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (enabledSources.value[source.id.toString()]) {
+                              enabledSources.value = {
+                                ...enabledSources.value,
+                                [source.id.toString()]: false,
+                              };
+                            } else {
+                              enabledSources.value = {
+                                ...enabledSources.value,
+                                [source.id.toString()]: true,
+                              };
                             }
-                            extension.isInstalled =
-                              await suwaManager.updateExtension(
-                                extension.pkgName,
-                                !extension.isInstalled,
-                              );
-                            delete installingExtensions[extension.pkgName];
-                          } else {
-                            blockedExtensions.value = {
-                              ...blockedExtensions.value,
-                              [extension.pkgName]: false,
-                            };
+                          }}
+                        />
+                        <!-- <Button -->
+                        <!--   class="h-8 w-22 rounded-lg font-bold" -->
+                        <!--   variant={enabledSources.value[source.id.toString()] -->
+                        <!--     ? "default" -->
+                        <!--     : "outline"} -->
+                        <!--   onclick={async (e) => { -->
+                        <!--     e.stopPropagation(); -->
+                        <!--     if (enabledSources.value[source.id.toString()]) { -->
+                        <!--       enabledSources.value = { -->
+                        <!--         ...enabledSources.value, -->
+                        <!--         [source.id.toString()]: false, -->
+                        <!--       }; -->
+                        <!--     } else { -->
+                        <!--       enabledSources.value = { -->
+                        <!--         ...enabledSources.value, -->
+                        <!--         [source.id.toString()]: true, -->
+                        <!--       }; -->
+                        <!--     } -->
+                        <!--   }} -->
+                        <!-- > -->
+                        <!--   {enabledSources.value[source.id.toString()] -->
+                        <!--     ? "Disable" -->
+                        <!--     : "Enable"} -->
+                        <!-- </Button> -->
+                      </div>
+                    </Button>
+                  </Tooltip>
+                </ContextMenu.Trigger>
+                <ContextMenu.Content>
+                  <ContextMenu.Item class="flex justify-between">
+                    <Label>See info</Label>
+                    <Icon icon="lucide:square-menu" />
+                  </ContextMenu.Item>
+                  <ContextMenu.Item
+                    class="flex justify-between"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      if (hiddenSources.value[source.id.toString()]) {
+                        hiddenSources.value = {
+                          ...hiddenSources.value,
+                          [source.id.toString()]: false,
+                        };
+                      } else {
+                        hiddenSources.value = {
+                          ...hiddenSources.value,
+                          [source.id.toString()]: true,
+                        };
+                      }
+                    }}
+                  >
+                    <Label>
+                      {hiddenSources.value[source.id.toString()]
+                        ? "Show"
+                        : "Hide"} source
+                    </Label>
+                    <Icon
+                      icon={hiddenSources.value[source.id.toString()]
+                        ? "lucide:eye"
+                        : "lucide:eye-off"}
+                    />
+                  </ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Root>
+            {/snippet}
+          </VList>
+        {:else}
+          <VList
+            class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
+            data={filteredExtensions}
+            getKey={(_, i) => i}
+            tabindex={-1}
+            bufferSize={400}
+          >
+            {#snippet children(extension, _)}
+              <ContextMenu.Root>
+                <ContextMenu.Trigger>
+                  <Tooltip
+                    text={extension.name}
+                    subtext="Lang: {getLang(
+                      extension.lang,
+                    )} | Repo: {prettifyRepo(extension.repo)}"
+                    placement="left"
+                  >
+                    <Button
+                      class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                      variant="link"
+                      onclick={() => {
+                        openedExtension.set(extension);
+                        openExtensions.close();
+                        openedExtension.open();
+                        openedExtension.onopenchange = (open) => {
+                          if (!open) {
+                            openExtensions.open();
+                            openedExtension.value = null;
                           }
-                        }}
-                      >
-                        {showedGroup !== "blocked"
-                          ? installingExtensions[extension.pkgName]
-                            ? "..."
+                        };
+                      }}
+                    >
+                      <div class="pointer-events-none flex items-center gap-2">
+                        <Image
+                          class="size-10"
+                          src={suwayomiUrl.value + extension.iconUrl}
+                        />
+                        <div
+                          class="gap-0.1 flex flex-col items-start justify-center"
+                        >
+                          <Label
+                            class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
+                          >
+                            {extension.name}
+                          </Label>
+                          <div class="flex w-18 justify-between">
+                            <span class="text-gray-500">
+                              {extension.versionName}
+                            </span>
+                            <span class="text-red-500">
+                              {extension.isNsfw ? "+18" : ""}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        {#if extension.isInstalled}
+                          <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                            <Icon icon="lucide:settings" />
+                          </Button>
+                        {/if}
+                        <Button
+                          class="h-8 w-22 rounded-lg font-bold"
+                          variant={installingExtensions[extension.pkgName]
+                            ? "outline"
                             : extension.isInstalled
-                              ? "Uninstall"
-                              : "Install"
-                          : "Show"}
-                      </Button>
-                    </div>
-                  </Button>
-                </Tooltip>
-              </ContextMenu.Trigger>
-              <ContextMenu.Content>
-                <ContextMenu.Item class="flex justify-between">
-                  <Label>See info</Label>
-                  <Icon icon="lucide:square-menu" />
-                </ContextMenu.Item>
-                <ContextMenu.Item
-                  class="flex justify-between"
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    if (blockedExtensions.value[extension.pkgName]) {
-                      blockedExtensions.value = {
-                        ...blockedExtensions.value,
-                        [extension.pkgName]: false,
-                      };
-                    } else {
-                      blockedExtensions.value = {
-                        ...blockedExtensions.value,
-                        [extension.pkgName]: true,
-                      };
-                    }
-                  }}
-                >
-                  <Label>
-                    {blockedExtensions.value[extension.pkgName]
-                      ? "Show"
-                      : "Hide"} extension
-                  </Label>
-                  <Icon
-                    icon={blockedExtensions.value[extension.pkgName]
-                      ? "lucide:eye"
-                      : "lucide:eye-off"}
-                  />
-                </ContextMenu.Item>
-              </ContextMenu.Content>
-            </ContextMenu.Root>
-            <!-- {/if} -->
-          {/snippet}
-        </VList>
+                              ? "destructive"
+                              : "default"}
+                          disabled={installingExtensions[extension.pkgName]}
+                          onclick={async (e) => {
+                            e.stopPropagation();
+                            if (showedGroup !== "hidden") {
+                              if (!extension.isInstalled) {
+                                installingExtensions[extension.pkgName] = true;
+                              }
+                              extension.isInstalled =
+                                await suwaManager.updateExtension(
+                                  extension.pkgName,
+                                  !extension.isInstalled,
+                                );
+                              delete installingExtensions[extension.pkgName];
+                            } else {
+                              hiddenExtensions.value = {
+                                ...hiddenExtensions.value,
+                                [extension.pkgName]: false,
+                              };
+                            }
+                          }}
+                        >
+                          {showedGroup !== "hidden"
+                            ? installingExtensions[extension.pkgName]
+                              ? "..."
+                              : extension.isInstalled
+                                ? "Uninstall"
+                                : "Install"
+                            : "Show"}
+                        </Button>
+                      </div>
+                    </Button>
+                  </Tooltip>
+                </ContextMenu.Trigger>
+                <ContextMenu.Content>
+                  <ContextMenu.Item class="flex justify-between">
+                    <Label>See info</Label>
+                    <Icon icon="lucide:square-menu" />
+                  </ContextMenu.Item>
+                  <ContextMenu.Item
+                    class="flex justify-between"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      if (hiddenExtensions.value[extension.pkgName]) {
+                        hiddenExtensions.value = {
+                          ...hiddenExtensions.value,
+                          [extension.pkgName]: false,
+                        };
+                      } else {
+                        hiddenExtensions.value = {
+                          ...hiddenExtensions.value,
+                          [extension.pkgName]: true,
+                        };
+                      }
+                    }}
+                  >
+                    <Label>
+                      {hiddenExtensions.value[extension.pkgName]
+                        ? "Show"
+                        : "Hide"} extension
+                    </Label>
+                    <Icon
+                      icon={hiddenExtensions.value[extension.pkgName]
+                        ? "lucide:eye"
+                        : "lucide:eye-off"}
+                    />
+                  </ContextMenu.Item>
+                </ContextMenu.Content>
+              </ContextMenu.Root>
+              <!-- {/if} -->
+            {/snippet}
+          </VList>
+        {/if}
       {:else}
         <div
           class="text-primary flex h-90 w-full flex-col items-center justify-center gap-7"
@@ -536,11 +745,15 @@
                 (showedGroup === "all"
                   ? ""
                   : showedGroup === "installed"
-                    ? "installed"
+                    ? tab === "sources"
+                      ? "enabled"
+                      : "installed"
                     : showedGroup === "noninstalled"
-                      ? "not installed"
-                      : "blocked") +
-                " extensions..."}
+                      ? tab === "sources"
+                        ? "disabled"
+                        : "not installed"
+                      : "hidden") +
+                (tab === "sources" ? " sources..." : " extensions...")}
           </span>
           <span class="text-4xl">¯\_(ツ)_/¯</span>
         </div>

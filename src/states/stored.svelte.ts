@@ -4,7 +4,7 @@ import { load, Store } from "@tauri-apps/plugin-store";
 import type { Languages } from "@/types";
 
 let settingsStore: Store | null = null;
-let blockedStore: Store | null = null;
+let serverStore: Store | null = null;
 let fetchedStore: Store | null = null;
 let defaultData: Record<string, any> = null!;
 let loadingPromise: Promise<Record<string, any>> | null = null;
@@ -111,11 +111,23 @@ class StoredState<T> {
 }
 
 // Store
-export const blockedExtensions = new StoredState<Record<string, boolean>>({
-  key: "extensions",
+export const enabledSources = new StoredState<Record<string, boolean>>({
+  key: "enabled_sources",
   defaultValue: {},
-  store: blockedStore,
-  storePath: "blocked.json",
+  store: serverStore,
+  storePath: "server.json",
+});
+export const hiddenExtensions = new StoredState<Record<string, boolean>>({
+  key: "hidden_extensions",
+  defaultValue: {},
+  store: serverStore,
+  storePath: "server.json",
+});
+export const hiddenSources = new StoredState<Record<string, boolean>>({
+  key: "hidden_sources",
+  defaultValue: {},
+  store: serverStore,
+  storePath: "server.json",
 });
 
 export const repoInfo = new StoredState<

@@ -79,12 +79,12 @@
   import { delay } from "@/utils";
   import { toast } from "svelte-sonner";
   import {
-    openedExtension,
+    suwayomi,
     openExtensions,
     openSettings,
+    openedExtension,
     repoInfo,
     retroMode,
-    suwayomi,
   } from "@/states";
   import { suwaManager } from "@/lib/helpers";
   import { fly } from "svelte/transition";
