@@ -1,4 +1,3 @@
-// import { DownloadManager } from "@/managers";
 import {
   ANIMESOURCES,
   COMICSOURCES,
@@ -16,6 +15,8 @@ import type {
   UpdateInfo,
   Downloading,
   FavoriteLoaded,
+  Extension,
+  Source,
 } from "@/types";
 import { suwaManager } from "@/lib/helpers";
 import { delay } from "@/utils";
@@ -24,7 +25,6 @@ import {
   enabledSources,
   hiddenExtensions,
   hiddenSources,
-  showExtensionsNsfw,
 } from "./stored.svelte";
 import { OpenedObject, OpenState } from "./classes.svelte";
 // import { favorites } from "@/lib/db";
@@ -84,42 +84,6 @@ export const panels = new (class {
   }
 })();
 
-type Extension = {
-  pkgName: string;
-  name: string;
-  lang: string;
-  versionCode: string;
-  versionName: string;
-  iconUrl: string;
-  repo: string;
-  isNsfw: boolean;
-  isInstalled: boolean;
-  isObsolete: boolean;
-  hasUpdate: boolean;
-};
-
-type SourceMeta = {
-  sourceId: string;
-  key: string;
-  value: string;
-};
-
-type Source = {
-  id: string;
-  name: string;
-  displayName: string;
-  lang: string;
-  iconUrl: string;
-  isNsfw: boolean;
-  isConfigurable: boolean;
-  supportsLatest: boolean;
-  meta: SourceMeta[];
-  extension: {
-    pkgName: string;
-    repo: string;
-  };
-};
-
 class Suwayomi {
   isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
@@ -128,7 +92,6 @@ class Suwayomi {
     this.rawExtensions.filter(
       (e) =>
         !hiddenExtensions.value[e.pkgName] &&
-        (showExtensionsNsfw.value ? true : !e.isNsfw) &&
         activeExtensionRepos.value.includes(e.repo),
     ),
   );
@@ -154,13 +117,15 @@ class Suwayomi {
     this.rawSources.filter(
       (s) =>
         !hiddenSources.value[s.id.toString()] &&
-        (showExtensionsNsfw.value
-          ? true
-          : !this.extensionsByPkgName[s.extension.pkgName]?.isNsfw),
+        activeExtensionRepos.value.includes(s.extension.repo),
     ),
   );
   enabledSources: Source[] = $derived(
-    this.sources.filter((s) => enabledSources.value[s.id.toString()]),
+    this.rawSources.filter(
+      (s) =>
+        enabledSources.value[s.id.toString()] &&
+        !hiddenSources.value[s.id.toString()],
+    ),
   );
   disabledSources: Source[] = $derived(
     this.sources.filter((s) => !enabledSources.value[s.id.toString()]),

@@ -12,21 +12,21 @@ import type { Source } from "@/types";
 
 export const MANGASOURCES: Source[] = [
   // { name: "Comick", language: "Multi", isRecommended: true },
-  { name: "MangaDex", language: "Multi" },
-  { name: "MangaFire", language: "Multi" },
-  { name: "Atsumaru", language: "English", isRecommended: true },
-  { name: "WeebCentral", language: "English", isProblem: true },
-  { name: "MangaPark", language: "English" },
-  { name: "MangaLivre", language: "Português" },
-  { name: "TCB", language: "English", isRecommended: true },
-  { name: "MangaReaderTo", language: "English", isProblem: true },
-  // { name: "MangaPill", language: "English", isProblem: true },
-  { name: "Taosect", language: "Português" },
+  // { name: "MangaDex", language: "Multi" },
+  // { name: "MangaFire", language: "Multi" },
+  // { name: "Atsumaru", language: "English", isRecommended: true },
+  // { name: "WeebCentral", language: "English", isProblem: true },
+  // { name: "MangaPark", language: "English" },
+  // { name: "MangaLivre", language: "Português" },
+  // { name: "TCB", language: "English", isRecommended: true },
+  // { name: "MangaReaderTo", language: "English", isProblem: true },
+  // // { name: "MangaPill", language: "English", isProblem: true },
+  // { name: "Taosect", language: "Português" },
   // { name: "MangaSwat", language: "العربية", }
 ];
 
 export const COMICSOURCES: Source[] = [
-  { name: "BatcaveBiz", language: "English" },
+  // { name: "BatcaveBiz", language: "English" },
 ];
 
 export const READSOURCES_LANGUAGE: { [key: string]: string } = {
@@ -47,6 +47,6 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
 };
 
 export const ANIMESOURCES: Source[] = [
-  { name: "Aniplay", language: "Multi", isProblem: true },
-  { name: "AnimeOwl", language: "English" },
+  // { name: "Aniplay", language: "Multi", isProblem: true },
+  // { name: "AnimeOwl", language: "English" },
 ];

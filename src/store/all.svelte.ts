@@ -21,7 +21,6 @@ import {
 import { favorites } from "@/lib/db";
 import { downloader } from "@/services/downloader";
 
-// export const downloadManager = writable<DownloadManager>(new DownloadManager());
 export const downloadManager = writable(new DownloadManager());
 export const favoritesLoaded = writable<Record<string, FavoriteLoaded>>({});
 export const undoTasks = writable<
@@ -74,7 +73,7 @@ export const chaptersCache = writable<
 >([]);
 export const readerClock = writable<boolean>(false);
 export const showCurrentChapter = writable<boolean>(false);
-export const selectedSource = writable<string>(MANGASOURCES[2].name);
+export const selectedSource = writable<string>("why");
 export const isAscending = writable<boolean>(true);
 export const downloadings = writable<Downloading[]>([]);
 export const searchTerm = writable<string>("");

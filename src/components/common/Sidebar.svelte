@@ -198,8 +198,10 @@
                   class={cn(
                     "cursor-pointer transition-all",
                     page.url.pathname === item.path && "text-sidebar!",
-                  )}>{item.name}</Label
+                  )}
                 >
+                  {item.name}
+                </Label>
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
@@ -234,8 +236,10 @@
                 class={cn(
                   "cursor-pointer transition-all",
                   $openTag && "text-sidebar!",
-                )}>Tags</Label
+                )}
               >
+                Tags
+              </Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
           <Sidebar.MenuItem class="hidden">
@@ -260,8 +264,10 @@
                 class={cn(
                   "cursor-pointer transition-all",
                   $openAdd && "text-sidebar!",
-                )}>Add</Label
+                )}
               >
+                Add
+              </Label>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>

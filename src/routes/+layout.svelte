@@ -68,9 +68,15 @@
   import { delay } from "@/utils";
   import { onNavigate } from "$app/navigation";
   import { suwaManager } from "@/lib/helpers";
+  import { addCollection } from "@iconify/svelte";
+  import lucide from "@iconify-json/lucide/icons.json"
 
   let { children } = $props();
   const window = getCurrentWindow();
+
+  // add icons to use
+  addCollection(lucide)
+
   // const interval = setInterval(
   //   async () => {
   //     try {

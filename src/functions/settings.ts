@@ -52,7 +52,13 @@ import { goto } from "$app/navigation";
 import type { Language } from "@/types";
 import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { saveWindowState, StateFlags } from "@tauri-apps/plugin-window-state";
-import { updateBadge, addBlurWindow, removeBlurWindow, removeCountIcon, verifyCustomNotificator } from "@/functions";
+import {
+  updateBadge,
+  addBlurWindow,
+  removeBlurWindow,
+  removeCountIcon,
+  verifyCustomNotificator,
+} from "@/functions";
 import { toast } from "svelte-sonner";
 import { ANIMESOURCES, COMICSOURCES, MANGASOURCES } from "@/constants";
 
@@ -86,7 +92,7 @@ interface SettingConfig {
 
 const SETTINGS_SCHEMA: Record<string, SettingConfig> = {
   selected_source: { store: selectedSource, default: "Atsumaru" },
-  activated_sources: { store: activatedSources, default: [...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)] },
+  // activated_sources: { store: activatedSources, default: [...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)] },
   auto_search_updates: { store: autoSearchUpdates, default: true },
   preferable_language: {
     store: preferableLanguage,
@@ -157,7 +163,7 @@ export async function loadSettings() {
   Object.entries(SETTINGS_SCHEMA).forEach(
     ([key, { store, default: defaultValue }]) => {
       store.set(data[key] !== undefined ? data[key] : defaultValue);
-    }
+    },
   );
   if (get(lastPage) !== "/home") goto(get(lastPage));
   const isDecorated = await window.isDecorated();
@@ -179,7 +185,7 @@ export async function loadSettings() {
     removeBlurWindow();
   }
   if (get(downloadPath) === "Mangas") {
-    downloadPath.set("Mangas/")
+    downloadPath.set("Mangas/");
   }
   verifyCustomNotificator();
 }
@@ -187,9 +193,9 @@ export async function loadSettings() {
 export async function saveSettings() {
   await ensureConnected();
   await Promise.all(
-    Object.entries(SETTINGS_SCHEMA).map(async ([key, { store }]) =>
-      await loadedSettings.set(key, get(store))
-    )
+    Object.entries(SETTINGS_SCHEMA).map(
+      async ([key, { store }]) => await loadedSettings.set(key, get(store)),
+    ),
   );
   const isDecorated = await window.isDecorated();
   if (get(customTitlebar)) {
@@ -216,9 +222,9 @@ export async function resetSettings() {
   await ensureConnected();
   await Promise.all(
     Object.entries(SETTINGS_SCHEMA).map(([key, { default: defaultValue }]) =>
-      loadedSettings.set(key, defaultValue)
-    )
+      loadedSettings.set(key, defaultValue),
+    ),
   );
   await loadSettings();
-  toast.success("Settings reseted!")
+  toast.success("Settings reseted!");
 }

@@ -7,24 +7,23 @@ import {
   BaseDirectory,
   readFile,
 } from "@tauri-apps/plugin-fs";
-import {
-  // MangaDl
-  MangaDexDl,
-  MangaReaderToDl,
+import { } from // MangaDl
+  // MangaDexDl,
+  // MangaReaderToDl,
   // MangaSeeDl,
-  TCBScansDl,
-  MangaPillDl,
-  TaosectDl,
-  WeebCentralDl,
-  MangaLivreDl,
-  MangaParkDl,
-  AtsumaruDl,
+  // TCBScansDl,
+  // MangaPillDl,
+  // TaosectDl,
+  // WeebCentralDl,
+  // MangaLivreDl,
+  // MangaParkDl,
+  // AtsumaruDl,
   // ComicDl
-  BatcaveBizDl,
+  // BatcaveBizDl,
   // AnimeDl
-  AniplayDl,
-  AnimeOwlDl,
-} from "@/downloaders";
+  // AniplayDl,
+  // AnimeOwlDl,
+  "@/downloaders";
 import type { AnimeDl, MangaDl } from "@/interfaces";
 import type { Favorite, Chapter, Episode, Language } from "@/types";
 import { memoizeExpiring, retry } from "@/utils";
@@ -58,22 +57,22 @@ export class DownloadManager {
   getChapters;
   constructor() {
     this.mangaSources = {
-      TCB: new TCBScansDl(),
-      Taosect: new TaosectDl(),
-      MangaDex: new MangaDexDl(),
-      MangaPill: new MangaPillDl(),
-      MangaPark: new MangaParkDl(),
-      Atsumaru: new AtsumaruDl(),
-      MangaLivre: new MangaLivreDl(),
-      WeebCentral: new WeebCentralDl(),
-      MangaReaderTo: new MangaReaderToDl(),
+      // TCB: new TCBScansDl(),
+      // Taosect: new TaosectDl(),
+      // MangaDex: new MangaDexDl(),
+      // MangaPill: new MangaPillDl(),
+      // MangaPark: new MangaParkDl(),
+      // Atsumaru: new AtsumaruDl(),
+      // MangaLivre: new MangaLivreDl(),
+      // WeebCentral: new WeebCentralDl(),
+      // MangaReaderTo: new MangaReaderToDl(),
     };
     this.comicSources = {
-      BatcaveBiz: new BatcaveBizDl(),
+      // BatcaveBiz: new BatcaveBizDl(),
     };
     this.animeSources = {
-      Aniplay: new AniplayDl(),
-      AnimeOwl: new AnimeOwlDl(),
+      // Aniplay: new AniplayDl(),
+      // AnimeOwl: new AnimeOwlDl(),
     };
     this.search = this.search.bind(this);
     this.getEpisodes = this.getEpisodes.bind(this);

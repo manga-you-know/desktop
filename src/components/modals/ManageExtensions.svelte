@@ -39,6 +39,7 @@
   } from "@/lib/utils";
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { IsoLanguages } from "@/constants";
+  import type { Source } from "@/types";
 
   let query = $state("");
   let tab: "sources" | "extensions" = $state(
@@ -59,6 +60,7 @@
       : ["noninstalled", "all"].includes(showedGroup)
         ? suwayomi.sources.filter(
             (s) =>
+              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
               (showedGroup === "all"
@@ -68,14 +70,50 @@
           )
         : suwayomi.enabledSources.filter(
             (s) =>
+              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-              (showExtensionsNsfw.value
-                ? true
-                : !suwayomi.extensionsByPkgName[s.extension.pkgName]?.isNsfw) &&
+              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
               allowedSourceLanguages.value[s.lang],
           ),
   );
+
+  let sourcesGrouped: [string, Source[]][] = $derived(
+    Object.entries(Object.groupBy(filteredSources, (s) => s.extension.pkgName)),
+  );
+  // let sourcesGrouped: [string, Source[]][] = $derived.by(() => {
+  //   const filtered = showedGroup.includes("hidden")
+  //     ? suwayomi.hiddenSources.filter(
+  //         (s) =>
+  //           s.displayName.toLowerCase().includes(query.toLowerCase()) ||
+  //           s.name.toLowerCase().includes(query.toLowerCase()),
+  //       )
+  //     : ["noninstalled", "all"].includes(showedGroup)
+  //       ? suwayomi.sources.filter(
+  //           (s) =>
+  //             (showExtensionsNsfw.value ? true : !s.isNsfw) &&
+  //             (s.name.toLowerCase().includes(query.toLowerCase()) ||
+  //               s.displayName.toLowerCase().includes(query.toLowerCase())) &&
+  //             (showedGroup === "all"
+  //               ? true
+  //               : !enabledSources.value[s.id.toString()]) &&
+  //             allowedSourceLanguages.value[s.lang],
+  //         )
+  //       : suwayomi.enabledSources.filter(
+  //           (s) =>
+  //             (showExtensionsNsfw.value ? true : !s.isNsfw) &&
+  //             (s.name.toLowerCase().includes(query.toLowerCase()) ||
+  //               s.displayName.toLowerCase().includes(query.toLowerCase())) &&
+  //             (showExtensionsNsfw.value
+  //               ? true
+  //               : !suwayomi.extensionsByPkgName[s.extension.pkgName]?.isNsfw) &&
+  //             allowedSourceLanguages.value[s.lang],
+  //         );
+  //
+  //   return Object.entries(
+  //     Object.groupBy(filtered, (s) => s.extension.pkgName),
+  //   ) as [string, Source[]][];
+  // });
   let filteredExtensions = $derived(
     showedGroup.includes("hidden")
       ? suwayomi.hiddenExtensions.filter((e) =>
@@ -85,6 +123,7 @@
         ? suwayomi.extensions
             .filter(
               (e) =>
+                (showExtensionsNsfw.value ? true : !e.isNsfw) &&
                 e.name.toLowerCase().includes(query.toLowerCase()) &&
                 (showedGroup === "all" ? true : !e.isInstalled) &&
                 allowedExtensionLanguages.value[e.lang],
@@ -99,8 +138,8 @@
         : suwayomi.installedExtensions
             .filter(
               (e) =>
-                e.name.toLowerCase().includes(query.toLowerCase()) &&
                 (showExtensionsNsfw.value ? true : !e.isNsfw) &&
+                e.name.toLowerCase().includes(query.toLowerCase()) &&
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
@@ -478,148 +517,157 @@
         {#if tab === "sources"}
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
-            data={filteredSources}
+            data={sourcesGrouped}
             getKey={(_, i) => i}
             tabindex={-1}
             bufferSize={400}
           >
-            {#snippet children(source, _)}
-              <ContextMenu.Root>
-                <ContextMenu.Trigger>
-                  <Tooltip
-                    text={source.name}
-                    subtext="Lang: {getLang(source.lang)} | Repo: {prettifyRepo(
-                      source.extension.repo,
-                    )}"
-                    placement="left"
-                  >
-                    <Button
-                      class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
-                      variant="link"
-                      onclick={() => {
-                        // openedExtension.set(source);
-                        // openExtensions.close();
-                        // openedExtension.open();
-                        // openedExtension.onopenchange = (open) => {
-                        //   if (!open) {
-                        //     openExtensions.open();
-                        //     openedExtension.value = null;
-                        //   }
-                        // };
-                      }}
+            {#snippet children([extension, sources], _)}
+              {#if (sources?.length ?? 0) > 1}{:else}
+                <ContextMenu.Root>
+                  <ContextMenu.Trigger>
+                    <Tooltip
+                      text={sources[0].name}
+                      subtext="Lang: {getLang(
+                        sources[0].lang,
+                      )} | Repo: {prettifyRepo(sources[0].extension.repo)}"
+                      placement="left"
                     >
-                      <div class="pointer-events-none flex items-center gap-2">
-                        <Image
-                          class="size-10"
-                          src={suwayomiUrl.value + source.iconUrl}
-                        />
+                      <Button
+                        class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                        variant="link"
+                        onclick={() => {
+                          // openedExtension.set(source);
+                          // openExtensions.close();
+                          // openedExtension.open();
+                          // openedExtension.onopenchange = (open) => {
+                          //   if (!open) {
+                          //     openExtensions.open();
+                          //     openedExtension.value = null;
+                          //   }
+                          // };
+                        }}
+                      >
                         <div
-                          class="gap-0.1 flex flex-col items-start justify-center"
+                          class="pointer-events-none flex items-center gap-2"
                         >
-                          <Label
-                            class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
+                          <Image
+                            class="size-10"
+                            src={suwayomiUrl.value + sources[0].iconUrl}
+                          />
+                          <div
+                            class="gap-0.1 flex flex-col items-start justify-center"
                           >
-                            {source.name}
-                          </Label>
-                          <div class="flex w-18 justify-between">
-                            <span class="text-gray-500">
-                              {source.displayName}
-                            </span>
-                            <span class="text-red-500">
-                              {source.isNsfw ? "+18" : ""}
-                            </span>
+                            <Label
+                              class="max-w-54 cursor-pointer truncate text-lg group-hover/extension:underline!"
+                            >
+                              {sources[0].name}
+                            </Label>
+                            <div class="flex w-18 justify-between">
+                              <span class="text-gray-500">
+                                <!-- {sources[0].displayName} -->
+                                {getLang(sources[0].lang)}
+                              </span>
+                              <span class="text-red-500">
+                                {sources[0].isNsfw ? "+18" : ""}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
-                          <Button class="h-8 w-9 rounded-lg" variant="ghost">
-                            <Icon icon="lucide:settings" />
-                          </Button>
-                        {/if}
-                        <Switch
-                          // class="rounded-lg font-bold"
-                          // variant={source.iconUrl ? "destructive" : "default"}
-                          checked={enabledSources.value[source.id.toString()]}
-                          onclick={async (e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            if (enabledSources.value[source.id.toString()]) {
-                              enabledSources.value = {
-                                ...enabledSources.value,
-                                [source.id.toString()]: false,
-                              };
-                            } else {
-                              enabledSources.value = {
-                                ...enabledSources.value,
-                                [source.id.toString()]: true,
-                              };
-                            }
-                          }}
-                        />
-                        <!-- <Button -->
-                        <!--   class="h-8 w-22 rounded-lg font-bold" -->
-                        <!--   variant={enabledSources.value[source.id.toString()] -->
-                        <!--     ? "default" -->
-                        <!--     : "outline"} -->
-                        <!--   onclick={async (e) => { -->
-                        <!--     e.stopPropagation(); -->
-                        <!--     if (enabledSources.value[source.id.toString()]) { -->
-                        <!--       enabledSources.value = { -->
-                        <!--         ...enabledSources.value, -->
-                        <!--         [source.id.toString()]: false, -->
-                        <!--       }; -->
-                        <!--     } else { -->
-                        <!--       enabledSources.value = { -->
-                        <!--         ...enabledSources.value, -->
-                        <!--         [source.id.toString()]: true, -->
-                        <!--       }; -->
-                        <!--     } -->
-                        <!--   }} -->
-                        <!-- > -->
-                        <!--   {enabledSources.value[source.id.toString()] -->
-                        <!--     ? "Disable" -->
-                        <!--     : "Enable"} -->
-                        <!-- </Button> -->
-                      </div>
-                    </Button>
-                  </Tooltip>
-                </ContextMenu.Trigger>
-                <ContextMenu.Content>
-                  <ContextMenu.Item class="flex justify-between">
-                    <Label>See info</Label>
-                    <Icon icon="lucide:square-menu" />
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    class="flex justify-between"
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      if (hiddenSources.value[source.id.toString()]) {
-                        hiddenSources.value = {
-                          ...hiddenSources.value,
-                          [source.id.toString()]: false,
-                        };
-                      } else {
-                        hiddenSources.value = {
-                          ...hiddenSources.value,
-                          [source.id.toString()]: true,
-                        };
-                      }
-                    }}
-                  >
-                    <Label>
-                      {hiddenSources.value[source.id.toString()]
-                        ? "Show"
-                        : "Hide"} source
-                    </Label>
-                    <Icon
-                      icon={hiddenSources.value[source.id.toString()]
-                        ? "lucide:eye"
-                        : "lucide:eye-off"}
-                    />
-                  </ContextMenu.Item>
-                </ContextMenu.Content>
-              </ContextMenu.Root>
+                        <div class="flex items-center gap-2">
+                          {#if sources[0].isConfigurable && enabledSources.value[sources[0].id.toString()]}
+                            <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                              <Icon icon="lucide:settings" />
+                            </Button>
+                          {/if}
+                          <Switch
+                            // class="rounded-lg font-bold"
+                            // variant={source.iconUrl ? "destructive" : "default"}
+                            checked={enabledSources.value[
+                              sources[0].id.toString()
+                            ]}
+                            onclick={async (e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              if (
+                                enabledSources.value[sources[0].id.toString()]
+                              ) {
+                                enabledSources.value = {
+                                  ...enabledSources.value,
+                                  [sources[0].id.toString()]: false,
+                                };
+                              } else {
+                                enabledSources.value = {
+                                  ...enabledSources.value,
+                                  [sources[0].id.toString()]: true,
+                                };
+                              }
+                            }}
+                          />
+                          <!-- <Button -->
+                          <!--   class="h-8 w-22 rounded-lg font-bold" -->
+                          <!--   variant={enabledSources.value[source.id.toString()] -->
+                          <!--     ? "default" -->
+                          <!--     : "outline"} -->
+                          <!--   onclick={async (e) => { -->
+                          <!--     e.stopPropagation(); -->
+                          <!--     if (enabledSources.value[source.id.toString()]) { -->
+                          <!--       enabledSources.value = { -->
+                          <!--         ...enabledSources.value, -->
+                          <!--         [source.id.toString()]: false, -->
+                          <!--       }; -->
+                          <!--     } else { -->
+                          <!--       enabledSources.value = { -->
+                          <!--         ...enabledSources.value, -->
+                          <!--         [source.id.toString()]: true, -->
+                          <!--       }; -->
+                          <!--     } -->
+                          <!--   }} -->
+                          <!-- > -->
+                          <!--   {enabledSources.value[source.id.toString()] -->
+                          <!--     ? "Disable" -->
+                          <!--     : "Enable"} -->
+                          <!-- </Button> -->
+                        </div>
+                      </Button>
+                    </Tooltip>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item class="flex justify-between">
+                      <Label>See info</Label>
+                      <Icon icon="lucide:square-menu" />
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      class="flex justify-between"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        if (hiddenSources.value[source.id.toString()]) {
+                          hiddenSources.value = {
+                            ...hiddenSources.value,
+                            [source.id.toString()]: false,
+                          };
+                        } else {
+                          hiddenSources.value = {
+                            ...hiddenSources.value,
+                            [source.id.toString()]: true,
+                          };
+                        }
+                      }}
+                    >
+                      <Label>
+                        {hiddenSources.value[source.id.toString()]
+                          ? "Show"
+                          : "Hide"} source
+                      </Label>
+                      <Icon
+                        icon={hiddenSources.value[source.id.toString()]
+                          ? "lucide:eye"
+                          : "lucide:eye-off"}
+                      />
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
+              {/if}
             {/snippet}
           </VList>
         {:else}
