@@ -226,7 +226,7 @@
   <Downloads />
   <PatchNotes />
   <ManageExtensions />
-  <!-- <SetExtension /> -->
+  <SetExtension />
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

@@ -46,7 +46,7 @@ class StoredState<T> {
   #key: string;
   #defaultValue: T;
   #alternatives: T[];
-  #onChange: (_: T) => void;
+  onchange: (_: T) => void;
   #store: Store | null;
   #storePath: string;
 
@@ -54,7 +54,7 @@ class StoredState<T> {
     key: string;
     defaultValue: T;
     alternatives?: T[];
-    onChange?: (_: T) => void;
+    onchange?: (_: T) => void;
     store?: Store | null;
     storePath?: string;
   }) {
@@ -62,7 +62,7 @@ class StoredState<T> {
     this.#key = config.key;
     this.#defaultValue = config.defaultValue;
     this.#alternatives = config.alternatives ?? [];
-    this.#onChange = config.onChange ?? (() => { });
+    this.onchange = config.onchange ?? (() => { });
     this.#store = config.store ?? settingsStore;
     this.#storePath = config.storePath ?? "settings.json";
     getBefore(this.#key, this.#defaultValue, this.#store, this.#storePath).then(
@@ -79,13 +79,13 @@ class StoredState<T> {
   set value(v) {
     this.#value = v;
     writeValue(this.#key, this.#value, this.#store, this.#storePath);
-    this.#onChange(this.#value);
+    this.onchange(this.#value);
   }
 
   resetValue = () => {
     this.#value = this.#defaultValue;
     writeValue(this.#key, this.#defaultValue, this.#store, this.#storePath);
-    this.#onChange(this.#value);
+    this.onchange(this.#value);
   };
 
   toggle = () => {
@@ -95,7 +95,7 @@ class StoredState<T> {
           ? this.#alternatives[1]
           : this.#alternatives[0];
       writeValue(this.#key, this.#value, this.#store, this.#storePath);
-      this.#onChange(this.#value);
+      this.onchange(this.#value);
     } else throw new Error("More or less than 2 options were passed");
   };
 
@@ -105,7 +105,7 @@ class StoredState<T> {
       const next = (currentIndex + 1) % this.#alternatives.length;
       this.#value = this.#alternatives[next];
       writeValue(this.#key, this.#value, this.#store, this.#storePath);
-      this.#onChange(this.#value);
+      this.onchange(this.#value);
     } else throw new Error("Less than 2 options were passed");
   };
 }
@@ -210,7 +210,7 @@ export const customTitlebar = new StoredState<boolean>({
   key: "custom_titlebar",
   defaultValue: type() !== "macos",
   alternatives: [true, false],
-  onChange: (v) => {
+  onchange: (v) => {
     window.isDecorated().then((isDecorated) => {
       if (isDecorated && !v) {
         window.setDecorations(false);

@@ -209,6 +209,7 @@ export const suwaManager = {
       },
     }).then(async (r) => {
       const rJson = await r.json();
+      this.getSources();
       return rJson.data.updateExtension.extension.isInstalled;
     });
   },

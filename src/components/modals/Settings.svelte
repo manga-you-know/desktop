@@ -213,7 +213,7 @@
 </script>
 
 <AlertDialog.Root bind:open={openSettings.active}>
-  <AlertDialog.Content class="flex flex-col items-center px-2 pt-2 pb-0">
+  <AlertDialog.Content class="flex flex-col items-center py-3">
     <AddRepo bind:open={openAddRepo} />
     <div class="absolute -left-20">
       <div class="mr-2 flex flex-col gap-[0.apx]">
@@ -231,7 +231,10 @@
         {/each}
       </div>
     </div>
-    <div class="max-h-140 overflow-scroll" bind:this={scrollDiv}>
+    <div
+      class="max-h-140 overflow-scroll rounded-3xl py-1"
+      bind:this={scrollDiv}
+    >
       <div class="flex w-110 flex-col gap-1 overflow-y-hidden">
         <!-- {#each sections as section (section.id)} -->
         <!--   <Card.Root -->
