@@ -10,6 +10,10 @@ import { suwayomi } from "@/states";
 import { Child, Command } from "@tauri-apps/plugin-shell";
 import { getBasePath } from "../utils";
 import { delay } from "@/utils";
+import type {
+  SourceSettings,
+  UpdateSourcePreferencesInput,
+} from "@/types/server";
 
 const command = Command.sidecar("binaries/suwayomi");
 let child: Child = null!;
@@ -272,6 +276,181 @@ export const suwaManager = {
         }
         allowedSourceLanguages.value = data;
       }
+    });
+  },
+  async getSourceSettings(sourceId: string): Promise<SourceSettings> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      bodyC: {
+        operationName: "GET_SOURCE_SETTINGS",
+        variables: {
+          id: sourceId,
+        },
+        query: `
+      fragment SOURCE_BASE_FIELDS on SourceType {
+        id
+        name
+        displayName
+        lang
+      }
+
+      fragment SOURCE_SETTING_FIELDS on SourceType {
+        ...SOURCE_BASE_FIELDS
+        preferences {
+          ... on CheckBoxPreference {
+            type: __typename
+            CheckBoxCheckBoxCurrentValue: currentValue
+            summary
+            CheckBoxDefault: default
+            key
+            CheckBoxTitle: title
+          }
+          ... on EditTextPreference {
+            type: __typename
+            EditTextPreferenceCurrentValue: currentValue
+            EditTextPreferenceDefault: default
+            EditTextPreferenceTitle: title
+            text
+            summary
+            key
+            dialogTitle
+            dialogMessage
+          }
+          ... on SwitchPreference {
+            type: __typename
+            SwitchPreferenceCurrentValue: currentValue
+            summary
+            key
+            SwitchPreferenceDefault: default
+            SwitchPreferenceTitle: title
+          }
+          ... on MultiSelectListPreference {
+            type: __typename
+            dialogMessage
+            dialogTitle
+            MultiSelectListPreferenceTitle: title
+            summary
+            key
+            entryValues
+            entries
+            MultiSelectListPreferenceDefault: default
+            MultiSelectListPreferenceCurrentValue: currentValue
+          }
+          ... on ListPreference {
+            type: __typename
+            ListPreferenceCurrentValue: currentValue
+            ListPreferenceDefault: default
+            ListPreferenceTitle: title
+            summary
+            key
+            entryValues
+            entries
+          }
+        }
+      }
+
+      query GET_SOURCE_SETTINGS($id: LongString!) {
+        source(id: $id) {
+          ...SOURCE_SETTING_FIELDS
+        }
+      }
+    `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      return rJson.data.source;
+    });
+  },
+  async setSourceSettingPreference(
+    input: UpdateSourcePreferencesInput,
+  ): Promise<SourceSettings> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      bodyC: {
+        operationName: "UPDATE_SOURCE_PREFERENCES",
+        variables: { input },
+        query: `
+        fragment SOURCE_BASE_FIELDS on SourceType {
+          id
+          name
+          displayName
+          lang
+          iconUrl
+        }
+
+        fragment SOURCE_SETTING_FIELDS on SourceType {
+          ...SOURCE_BASE_FIELDS
+          preferences {
+            ... on CheckBoxPreference {
+              type: __typename
+              CheckBoxCheckBoxCurrentValue: currentValue
+              summary
+              CheckBoxDefault: default
+              key
+              CheckBoxTitle: title
+            }
+            ... on EditTextPreference {
+              type: __typename
+              EditTextPreferenceCurrentValue: currentValue
+              EditTextPreferenceDefault: default
+              EditTextPreferenceTitle: title
+              text
+              summary
+              key
+              dialogTitle
+              dialogMessage
+            }
+            ... on SwitchPreference {
+              type: __typename
+              SwitchPreferenceCurrentValue: currentValue
+              summary
+              key
+              SwitchPreferenceDefault: default
+              SwitchPreferenceTitle: title
+            }
+            ... on MultiSelectListPreference {
+              type: __typename
+              dialogMessage
+              dialogTitle
+              MultiSelectListPreferenceTitle: title
+              summary
+              key
+              entryValues
+              entries
+              MultiSelectListPreferenceDefault: default
+              MultiSelectListPreferenceCurrentValue: currentValue
+            }
+            ... on ListPreference {
+              type: __typename
+              ListPreferenceCurrentValue: currentValue
+              ListPreferenceDefault: default
+              ListPreferenceTitle: title
+              summary
+              key
+              entryValues
+              entries
+            }
+          }
+        }
+
+        mutation UPDATE_SOURCE_PREFERENCES($input: UpdateSourcePreferenceInput!) {
+          updateSourcePreference(input: $input) {
+            source {
+              ...SOURCE_SETTING_FIELDS
+            }
+          }
+        }
+      `,
+      },
+    }).then(async (r) => {
+      const rJson = await r.json();
+      return rJson.data.updateSourcePreference.source;
     });
   },
 };

@@ -402,7 +402,10 @@
                   openExtensions.open();
                   openSettings.close();
                   openExtensions.onchange = (open) => {
-                    if (!open && openedExtension.value === null) {
+                    if (
+                      !open &&
+                      openedExtension.value.extension === undefined
+                    ) {
                       openSettings.open();
                       scrollTo("extensions");
                       openExtensions.onchange = () => {};

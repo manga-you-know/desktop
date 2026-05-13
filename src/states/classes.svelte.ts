@@ -31,24 +31,26 @@ export class OpenState {
 }
 
 export class OpenedObject<T> {
-  #value: T | null = $state(null);
+  #value: T = $state()!;
   #active: boolean = $state(false);
-  onvaluechange: (_: T | null) => void;
+  onvaluechange: (_: T) => void;
   onopenchange: (_: boolean) => void;
 
-  constructor(config?: {
-    onvaluechange?: (_: T | null) => void;
+  constructor(config: {
+    value: T;
+    onvaluechange?: (_: T) => void;
     onopenchange?: (_: boolean) => void;
   }) {
+    this.#value = config.value;
     this.onvaluechange = config?.onvaluechange ?? (() => { });
     this.onopenchange = config?.onopenchange ?? (() => { });
   }
 
-  get value(): T | null {
+  get value(): T {
     return this.#value;
   }
 
-  set value(v: T | null) {
+  set value(v: T) {
     this.#value = v;
     this.onvaluechange?.(v);
   }
@@ -62,7 +64,7 @@ export class OpenedObject<T> {
     this.onopenchange?.(v);
   }
 
-  set(v: T | null) {
+  set(v: T) {
     this.#value = v;
     this.onvaluechange?.(v);
   }
@@ -75,7 +77,6 @@ export class OpenedObject<T> {
   close = () => {
     this.#active = false;
     this.onopenchange?.(false);
-    this.#value = null;
-    this.onvaluechange?.(null);
+    this.onvaluechange?.(this.#value);
   };
 }

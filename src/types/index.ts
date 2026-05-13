@@ -1,4 +1,17 @@
-export type { Source, SourceMeta, Extension } from "./server";
+export type {
+  Source,
+  SourceMeta,
+  Extension,
+  Preference,
+  PreferenceChange,
+  UpdateSourcePreferencesInput,
+  CheckBoxPreference,
+  SourceSettings,
+  SwitchPreference,
+  MultiSelectListPreference,
+  ListPreference,
+  EditTextPreference,
+} from "./server";
 export type { Mark } from "./mark";
 export type { Panel } from "./panel";
 export type { Readed } from "./readed";

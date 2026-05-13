@@ -605,15 +605,16 @@
                             variant="secondary"
                             onclick={(e) => {
                               e.stopPropagation();
-                              openedExtension.set(
-                                suwayomi.extensionsByPkgName[extension],
-                              );
+                              openedExtension.set({
+                                extension:
+                                  suwayomi.extensionsByPkgName[extension],
+                              });
                               openExtensions.close();
                               openedExtension.open();
                               openedExtension.onopenchange = (open) => {
                                 if (!open) {
                                   openExtensions.open();
-                                  openedExtension.value = null;
+                                  openedExtension.value = {};
                                 }
                               };
                             }}
@@ -679,15 +680,15 @@
                     <ContextMenu.Item
                       class="flex justify-between"
                       onclick={() => {
-                        openedExtension.set(
-                          suwayomi.extensionsByPkgName[extension],
-                        );
+                        openedExtension.set({
+                          extension: suwayomi.extensionsByPkgName[extension],
+                        });
                         openExtensions.close();
                         openedExtension.open();
                         openedExtension.onopenchange = (open) => {
                           if (!open) {
                             openExtensions.open();
-                            openedExtension.value = null;
+                            openedExtension.value = {};
                           }
                         };
                       }}
@@ -809,6 +810,24 @@
                                   <Button
                                     class="h-8 w-9 rounded-lg"
                                     variant="ghost"
+                                    onclick={(e) => {
+                                      e.stopPropagation();
+                                      openedExtension.set({
+                                        source: source,
+                                        extension:
+                                          suwayomi.extensionsByPkgName[
+                                            extension
+                                          ],
+                                      });
+                                      openExtensions.close();
+                                      openedExtension.open();
+                                      openedExtension.onopenchange = (open) => {
+                                        if (!open) {
+                                          openExtensions.open();
+                                          openedExtension.value = {};
+                                        }
+                                      };
+                                    }}
                                   >
                                     <Icon icon="lucide:settings" />
                                   </Button>
@@ -845,15 +864,16 @@
                           <ContextMenu.Item
                             class="flex justify-between"
                             onclick={() => {
-                              openedExtension.set(
-                                suwayomi.extensionsByPkgName[extension],
-                              );
+                              openedExtension.set({
+                                extension:
+                                  suwayomi.extensionsByPkgName[extension],
+                              });
                               openExtensions.close();
                               openedExtension.open();
                               openedExtension.onopenchange = (open) => {
                                 if (!open) {
                                   openExtensions.open();
-                                  openedExtension.value = null;
+                                  openedExtension.value = {};
                                 }
                               };
                             }}
@@ -908,15 +928,15 @@
                         class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                         variant="link"
                         onclick={() => {
-                          openedExtension.set(
-                            suwayomi.extensionsByPkgName[extension],
-                          );
+                          openedExtension.set({
+                            extension: suwayomi.extensionsByPkgName[extension],
+                          });
                           openExtensions.close();
                           openedExtension.open();
                           openedExtension.onopenchange = (open) => {
                             if (!open) {
                               openExtensions.open();
-                              openedExtension.value = null;
+                              openedExtension.value = {};
                             }
                           };
                         }}
@@ -1041,13 +1061,13 @@
                       class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                       variant="link"
                       onclick={() => {
-                        openedExtension.set(extension);
+                        openedExtension.set({ extension });
                         openExtensions.close();
                         openedExtension.open();
                         openedExtension.onopenchange = (open) => {
                           if (!open) {
                             openExtensions.open();
-                            openedExtension.value = null;
+                            openedExtension.value = {};
                           }
                         };
                       }}

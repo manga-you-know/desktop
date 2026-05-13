@@ -45,7 +45,10 @@ export const openFeedback = new OpenState();
 export const openTag = new OpenState();
 export const blockKeyboard = new OpenState();
 
-export const openedExtension = new OpenedObject<Extension>();
+export const openedExtension = new OpenedObject<{
+  extension?: Extension;
+  source?: Source;
+}>({ value: {} });
 
 export const rawSaveds = new (class {
   value: Favorite[] = $state([]);
