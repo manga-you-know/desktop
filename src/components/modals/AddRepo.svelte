@@ -73,7 +73,7 @@
           }
         }}
       >
-        <Icon icon="lucide:clipboard-list" />
+        <Icon icon="lucide:clipboard-paste" />
       </Button>
       <Button
         class="h-10 rounded-l-none rounded-r-xl"

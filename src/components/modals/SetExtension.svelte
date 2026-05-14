@@ -3,13 +3,21 @@
     Badge,
     Button,
     Checkbox,
+    ContextMenu,
     Dialog,
     Label,
     Switch,
   } from "@/lib/components";
   import { cn, getLang, prettifyRepo } from "@/lib/utils";
-  import { suwayomiUrl, openedExtension, suwayomi } from "@/states";
-  import { Image } from "@/components";
+  import {
+    suwayomiUrl,
+    openedExtension,
+    suwayomi,
+    hiddenSources,
+    openExtensions,
+    enabledSources,
+  } from "@/states";
+  import { Image, SelectEditSourceSetting, Tooltip } from "@/components";
   import { suwaManager } from "@/lib/helpers";
   import Icon from "@iconify/svelte";
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
@@ -41,12 +49,23 @@
   let sourcePreferences: Preference[] = $derived(
     sourceSettings !== undefined ? sourceSettings.preferences : [],
   );
+
+  let selectedPreference: Preference | undefined = $state(undefined);
+
+  let openSetting = $state(false);
 </script>
 
 <Dialog.Root bind:open={openedExtension.active}>
   <Dialog.Content
     class="data-[state=closed]:slide-out-to-right-1/2 data-[state=open]:slide-in-from-right-1/2"
   >
+    {#if sourceSettings && selectedPreference}
+      <SelectEditSourceSetting
+        bind:open={openSetting}
+        bind:sourceSettings
+        bind:preference={selectedPreference}
+      />
+    {/if}
     {#if openedExtension.value?.extension}
       <div class="relative mb-2 overflow-hidden">
         <div
@@ -146,18 +165,155 @@
                       ? "Uninstall"
                       : "Install"}
                 </Button>
-                <Button
-                  class="rounded-xl"
-                  variant="outline"
-                  disabled={!openedExtension.value.extension.isInstalled}
-                >
-                  <Icon icon="lucide:settings" /> Settings
-                </Button>
-                <Label>Sources</Label>
-                <div class="flex h-80 flex-col overflow-y-scroll"></div>
               </div>
             </div>
-            <div class="flex gap-1"></div>
+            <Label class="text-xl">Sources</Label>
+            <div class="flex h-60 flex-col overflow-y-scroll rounded-xl">
+              {#each sources as source}
+                <ContextMenu.Root>
+                  <ContextMenu.Trigger>
+                    <Tooltip
+                      text={source.displayName}
+                      subtext="Language: {getLang(source.lang)}"
+                      placement="left"
+                    >
+                      <Button
+                        class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                        variant="link"
+                        onclick={() => {
+                          if (enabledSources.value[source.id.toString()]) {
+                            enabledSources.value = {
+                              ...enabledSources.value,
+                              [source.id.toString()]: false,
+                            };
+                          } else {
+                            enabledSources.value = {
+                              ...enabledSources.value,
+                              [source.id.toString()]: true,
+                            };
+                          }
+                        }}
+                      >
+                        <div
+                          class="pointer-events-none flex items-center gap-2"
+                        >
+                          <div
+                            class="gap-0.1 flex flex-col items-start justify-center"
+                          >
+                            <Label
+                              class="max-w-54 cursor-pointer truncate text-base text-gray-500 group-hover/extension:underline!"
+                            >
+                              {getLang(source.lang)}
+                            </Label>
+                            <!-- <div class="flex w-18 justify-between"> -->
+                            <!--   <span class="text-gray-500"> -->
+                            <!--     <!-- {sources[0].displayName} -->
+                            <!--     {getLang(source.lang)} -->
+                            <!--   </span> -->
+                            <!--   <span class="text-red-500"> -->
+                            <!--     {source.isNsfw ? "+18" : ""} -->
+                            <!--   </span> -->
+                            <!-- </div> -->
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
+                            <Button
+                              class="h-8 w-9 rounded-lg"
+                              variant="ghost"
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                openedExtension.set({
+                                  source: source,
+                                  extension: openedExtension.value.extension,
+                                });
+                                openExtensions.close();
+                                openedExtension.open();
+                                openedExtension.onopenchange = (open) => {
+                                  if (!open) {
+                                    openExtensions.open();
+                                    openedExtension.value = {};
+                                  }
+                                };
+                              }}
+                            >
+                              <Icon icon="lucide:settings" />
+                            </Button>
+                          {/if}
+                          <Switch
+                            checked={enabledSources.value[source.id.toString()]}
+                            onclick={async (e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              if (enabledSources.value[source.id.toString()]) {
+                                enabledSources.value = {
+                                  ...enabledSources.value,
+                                  [source.id.toString()]: false,
+                                };
+                              } else {
+                                enabledSources.value = {
+                                  ...enabledSources.value,
+                                  [source.id.toString()]: true,
+                                };
+                              }
+                            }}
+                          />
+                        </div>
+                      </Button>
+                    </Tooltip>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item
+                      class="flex justify-between"
+                      onclick={() => {
+                        openedExtension.set({
+                          extension: openedExtension.value.extension,
+                        });
+                        openExtensions.close();
+                        openedExtension.open();
+                        openedExtension.onopenchange = (open) => {
+                          if (!open) {
+                            openExtensions.open();
+                            openedExtension.value = {};
+                          }
+                        };
+                      }}
+                    >
+                      <Label>See extension</Label>
+                      <Icon icon="lucide:square-menu" />
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      class="flex justify-between"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        if (hiddenSources.value[source.id.toString()]) {
+                          hiddenSources.value = {
+                            ...hiddenSources.value,
+                            [source.id.toString()]: false,
+                          };
+                        } else {
+                          hiddenSources.value = {
+                            ...hiddenSources.value,
+                            [source.id.toString()]: true,
+                          };
+                        }
+                      }}
+                    >
+                      <Label>
+                        {hiddenSources.value[source.id.toString()]
+                          ? "Unhide"
+                          : "Hide"} source
+                      </Label>
+                      <Icon
+                        icon={hiddenSources.value[source.id.toString()]
+                          ? "lucide:eye"
+                          : "lucide:eye-off"}
+                      />
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
+              {/each}
+            </div>
           </div>
           <div class="flex w-1/2 flex-col gap-2">
             <Button
@@ -189,40 +345,131 @@
                   getLang(openedExtension.value.source?.lang ?? "")}
               </Label>
             </Badge>
-            <div class="flex h-120 flex-col gap-4 overflow-scroll">
+            <div class="flex h-120 flex-col gap-0.5 overflow-scroll rounded-xl">
               {#each sourcePreferences as preference, i}
                 {#if preference.type === "CheckBoxPreference"}
-                  <Checkbox checked={preference.CheckBoxCheckBoxCurrentValue} />
-                {:else if preference.type === "SwitchPreference"}
-                  <div
-                    class="flex w-full items-center justify-between gap-2 pr-3"
+                  <Button
+                    class="h-fit w-full justify-between rounded-xl"
+                    variant="ghost"
+                    onclick={() => {
+                      suwaManager
+                        .setSourceSettingPreference({
+                          source: openedExtension.value.source?.id ?? "",
+                          change: {
+                            position: i,
+                            switchState:
+                              !preference.CheckBoxCheckBoxCurrentValue,
+                          },
+                        })
+                        .then((ss) => {
+                          sourceSettings = ss;
+                        });
+                    }}
                   >
-                    <div class="flex flex-col gap-1">
-                      <Label>{preference.SwitchPreferenceTitle}</Label>
-                      <span class="text-xs text-gray-500">
+                    <div class="flex flex-col items-start gap-1">
+                      <Label class="cursor-pointer">
+                        {preference.CheckBoxTitle}
+                      </Label>
+                      <span class="text-xs text-wrap text-gray-500">
+                        {preference.summary}
+                      </span>
+                    </div>
+                    <Checkbox
+                      class="pointer-events-none"
+                      checked={preference.CheckBoxCheckBoxCurrentValue}
+                    />
+                  </Button>
+                {:else if preference.type === "SwitchPreference"}
+                  <Button
+                    class="h-fit w-full justify-between rounded-xl"
+                    variant="ghost"
+                    onclick={() => {
+                      suwaManager
+                        .setSourceSettingPreference({
+                          source: openedExtension.value.source?.id ?? "",
+                          change: {
+                            position: i,
+                            switchState:
+                              !preference.SwitchPreferenceCurrentValue,
+                          },
+                        })
+                        .then((ss) => {
+                          sourceSettings = ss;
+                        });
+                    }}
+                  >
+                    <div class="flex flex-col items-start gap-1">
+                      <Label class="cursor-pointer">
+                        {preference.SwitchPreferenceTitle}
+                      </Label>
+                      <span class="text-start text-xs text-wrap text-gray-500">
                         {preference.summary}
                       </span>
                     </div>
                     <Switch
+                      class="pointer-vents-none"
                       checked={preference.SwitchPreferenceCurrentValue}
-                      onclick={(e) => {
-                        e.preventDefault();
-                        suwaManager
-                          .setSourceSettingPreference({
-                            source: openedExtension.value.source?.id ?? "",
-                            change: {
-                              position: i,
-                              switchState:
-                                !preference.SwitchPreferenceCurrentValue,
-                            },
-                          })
-                          .then((ss) => {
-                            sourceSettings = ss;
-                          });
-                      }}
                     />
-                  </div>
-                {:else if preference.type === "EditTextPreference"}{:else if preference.type === "ListPreference"}{:else if preference.type === "MultiSelectListPreference"}{/if}
+                  </Button>
+                {:else if preference.type === "EditTextPreference"}
+                  <Button
+                    class="h-fit justify-start rounded-xl text-wrap"
+                    variant="ghost"
+                    onclick={() => {
+                      selectedPreference = preference;
+                      openSetting = true;
+                    }}
+                  >
+                    <div class="flex flex-col items-start gap-1">
+                      <Label class="cursor-pointer">
+                        {preference.EditTextPreferenceTitle}
+                      </Label>
+                      <span class="text-start text-xs text-wrap text-gray-500">
+                        {preference.summary}
+                      </span>
+                    </div>
+                  </Button>
+                {:else if preference.type === "ListPreference"}
+                  <Button
+                    class="h-fit justify-start rounded-xl text-wrap"
+                    variant="ghost"
+                    onclick={() => {
+                      selectedPreference = preference;
+                      openSetting = true;
+                    }}
+                  >
+                    <div class="flex flex-col items-start gap-1">
+                      <Label class="cursor-pointer">
+                        {preference.ListPreferenceTitle}
+                      </Label>
+                      <span class="text-start text-xs text-wrap text-gray-500">
+                        {preference.entries[
+                          preference.entryValues.indexOf(
+                            preference.ListPreferenceCurrentValue,
+                          )
+                        ]}
+                      </span>
+                    </div>
+                  </Button>
+                {:else if preference.type === "MultiSelectListPreference"}
+                  <Button
+                    class="h-fit justify-start rounded-xl"
+                    variant="ghost"
+                    onclick={() => {
+                      selectedPreference = preference;
+                      openSetting = true;
+                    }}
+                  >
+                    <div class="flex flex-col items-start gap-1">
+                      <Label class="cursor-pointer">
+                        {preference.MultiSelectListPreferenceTitle}
+                      </Label>
+                      <span class="text-start text-xs text-wrap text-gray-500">
+                        {preference.summary}
+                      </span>
+                    </div>
+                  </Button>
+                {/if}
               {/each}
             </div>
           </div>

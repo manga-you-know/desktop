@@ -78,24 +78,6 @@
           ),
   );
 
-  // let sourcesGrouped: [string, Source[]][] = $state([])
-  //
-  // showExtensionsNsfw.onChange = (value) => {
-  //   if (value || showedGroup === "hidden") {
-  //     sourcesGrouped =
-  //   Object.entries(
-  //     Object.groupBy(filteredSources, (s) => s.extension.pkgName),
-  //   ).map(([key, sources]) => [key, sources ?? []])
-
-  //   } else {
-  //
-  //     sourcesGrouped =
-  //   Object.entries(
-  //     Object.groupBy(filteredSources, (s) => s.extension.pkgName),
-  //   ).map(([key, sources]) => [key, sources ?? []])
-  //   }
-  // }
-
   let groupedSources: [string, Source[]][] = $derived(
     Object.entries(
       Object.groupBy(filteredSources, (s) => s.extension.pkgName),
@@ -112,39 +94,6 @@
     ]),
   );
 
-  // let sourcesGrouped: [string, Source[]][] = $derived.by(() => {
-  //   const filtered = showedGroup.includes("hidden")
-  //     ? suwayomi.hiddenSources.filter(
-  //         (s) =>
-  //           s.displayName.toLowerCase().includes(query.toLowerCase()) ||
-  //           s.name.toLowerCase().includes(query.toLowerCase()),
-  //       )
-  //     : ["noninstalled", "all"].includes(showedGroup)
-  //       ? suwayomi.sources.filter(
-  //           (s) =>
-  //             (showExtensionsNsfw.value ? true : !s.isNsfw) &&
-  //             (s.name.toLowerCase().includes(query.toLowerCase()) ||
-  //               s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-  //             (showedGroup === "all"
-  //               ? true
-  //               : !enabledSources.value[s.id.toString()]) &&
-  //             allowedSourceLanguages.value[s.lang],
-  //         )
-  //       : suwayomi.enabledSources.filter(
-  //           (s) =>
-  //             (showExtensionsNsfw.value ? true : !s.isNsfw) &&
-  //             (s.name.toLowerCase().includes(query.toLowerCase()) ||
-  //               s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-  //             (showExtensionsNsfw.value
-  //               ? true
-  //               : !suwayomi.extensionsByPkgName[s.extension.pkgName]?.isNsfw) &&
-  //             allowedSourceLanguages.value[s.lang],
-  //         );
-  //
-  //   return Object.entries(
-  //     Object.groupBy(filtered, (s) => s.extension.pkgName),
-  //   ) as [string, Source[]][];
-  // });
   let filteredExtensions = $derived(
     showedGroup.includes("hidden")
       ? suwayomi.hiddenExtensions.filter((e) =>
@@ -1096,16 +1045,11 @@
                         </div>
                       </div>
                       <div class="flex items-center gap-2">
-                        {#if extension.isInstalled}
-                          <Button class="h-8 w-9 rounded-lg" variant="ghost">
-                            <Icon icon="lucide:settings" />
-                          </Button>
-                        {/if}
                         <Button
                           class="h-8 w-22 rounded-lg font-bold"
-                          variant={installingExtensions[extension.pkgName]
+                          variant={extension.isInstalled
                             ? "outline"
-                            : extension.isInstalled
+                            : installingExtensions[extension.pkgName]
                               ? "destructive"
                               : "default"}
                           disabled={installingExtensions[extension.pkgName]}
@@ -1115,12 +1059,13 @@
                               if (!extension.isInstalled) {
                                 installingExtensions[extension.pkgName] = true;
                               }
+                              const pkgToRemove = extension.pkgName;
                               extension.isInstalled =
                                 await suwaManager.updateExtension(
                                   extension.pkgName,
                                   !extension.isInstalled,
                                 );
-                              delete installingExtensions[extension.pkgName];
+                              delete installingExtensions[pkgToRemove];
                             } else {
                               hiddenExtensions.value = {
                                 ...hiddenExtensions.value,
