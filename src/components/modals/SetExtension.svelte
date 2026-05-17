@@ -33,7 +33,7 @@
   let sourceSettings: SourceSettings | undefined = $state();
   let tab: "extension" | "source" = $state("extension");
   openedExtension.onvaluechange = (value) => {
-    if (value.source !== undefined) {
+    if (value.source) {
       tab = "source";
       if (value.source.id !== sourceSettings?.id) {
         sourceSettings = undefined;

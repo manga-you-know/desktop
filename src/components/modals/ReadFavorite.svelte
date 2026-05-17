@@ -617,7 +617,8 @@
                       }
                     }
                   }}
-                  ><Icon
+                >
+                  <Icon
                     icon={nextChapter
                       ? isDownloading(nextChapter) &&
                         !downloaded
@@ -1104,7 +1105,6 @@
                       ? displayedLocalChapters
                       : displayedLocalChapters.toReversed()}
                     getKey={(_, i) => i}
-                    overscan={20}
                     tabindex={-1}
                   >
                     {#snippet children(chapter, i)}

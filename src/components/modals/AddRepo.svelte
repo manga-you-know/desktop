@@ -57,7 +57,7 @@
         suwayomi.extensionRepos.includes(input.trim())
           ? "destructive"
           : "outline"}
-        placeholder="https://github.com/USER/REPO"
+        placeholder="https://example.com/index.min.json"
         disabled={status === "loading" || status === "success"}
         oninput={() => (status = "idle")}
         bind:value={input}

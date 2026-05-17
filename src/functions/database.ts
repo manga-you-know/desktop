@@ -163,9 +163,11 @@ export async function refreshLibrary() {
 
 export async function refreshFavorites() {
   // const favs = await FavoriteDB.getUltraFavorites();
-  // const favs = await db.query.favorites.findMany({ where: eq(favorites.isUltraFavorite, true) })
+  const favs = await db.query.favorites.findMany({
+    where: eq(favorites.isUltraFavorite, true),
+  });
   // console.log(favs)
-  // ultraFavorites.set(favs);
+  ultraFavorites.set(favs);
   // const uload = get(favoritesLoaded);
   // for (let id of Object.keys(uload)) {
   //   if (!favs.map((f) => f.id.toString()).includes(id)) {

@@ -254,9 +254,17 @@ export const downloadPath = new StoredState<string>({
   defaultValue: "Mangas/",
 });
 
+// Server stuff
+
 export const suwayomiUrl = new StoredState<string>({
   key: "suwayomi_url",
   defaultValue: "http://127.0.0.1:4567",
+});
+
+export const autoUpdateExtensions = new StoredState<boolean>({
+  key: "auto_update_extensions",
+  defaultValue: true,
+  alternatives: [true, false],
 });
 
 // Reader

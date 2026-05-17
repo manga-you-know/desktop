@@ -85,6 +85,7 @@
     openedExtension,
     repoInfo,
     retroMode,
+    autoUpdateExtensions,
   } from "@/states";
   import { suwaManager } from "@/lib/helpers";
   import { fly } from "svelte/transition";
@@ -282,7 +283,23 @@
         >
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Extensions</Label>
-            <div class="flex w-full flex-col gap-2">
+            <div class="flex w-full flex-col gap-4">
+              <div class="flex w-full flex-col gap-2">
+                <button
+                  class="flex cursor-pointer items-center gap-3"
+                  onclick={autoUpdateExtensions.toggle}
+                >
+                  <Switch
+                    id="check-retro"
+                    checked={autoUpdateExtensions.value}
+                  />
+                  <Label class="cursor-pointer">Auto update extensions</Label>
+                </button>
+                <span class="text-sm text-gray-400">
+                  | Enable updating extensions with new versions. You can also
+                  disable updates for single extensions.
+                </span>
+              </div>
               <Label>Repositories</Label>
               <Card.Root
                 class="bg-background/60 h-60 w-full rounded-2xl border-0"

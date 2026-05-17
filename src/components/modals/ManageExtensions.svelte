@@ -40,6 +40,8 @@
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { IsoLanguages } from "@/constants";
   import type { Source } from "@/types";
+  import { flip } from "svelte/animate";
+  import { animate } from "animejs";
 
   let query = $state("");
   let tab: "sources" | "extensions" = $state(
@@ -162,6 +164,56 @@
   );
 
   let expandedSources: Record<string, boolean> = $state({});
+  let stateSourcesActivated: Record<string, boolean> = $state({});
+
+  // let animate = $state(false);
+  //@ts-ignore
+  // function maybe(node, options) {
+  //   if (openExtensions.active && animate) {
+  //     return options.fn(node, options);
+  //   }
+  // }
+  const removeClean = async (elId: string) => {
+    await animate(`#${elId}`, {
+      opacity: 0,
+      maxHeight: ["100px", "0px"], 
+      marginBottom: 0,
+      paddingTop: 0,
+      paddingBottom: 0,
+      translateY: -20,
+      delay: 200,
+      duration: 300,
+      easing: "easeInQuad",
+    });
+    return;
+  };
+
+  const toggleSourceActive = async (sourceId: string) => {
+    if (showedGroup !== "all") {
+      if (enabledSources.value[sourceId]) {
+        stateSourcesActivated = {
+          [sourceId]: false,
+        };
+      } else {
+        stateSourcesActivated = {
+          [sourceId]: true,
+        };
+      }
+      await removeClean(`source-${sourceId}`);
+      stateSourcesActivated = {};
+    }
+    if (enabledSources.value[sourceId]) {
+      enabledSources.value = {
+        ...enabledSources.value,
+        [sourceId]: false,
+      };
+    } else {
+      enabledSources.value = {
+        ...enabledSources.value,
+        [sourceId]: true,
+      };
+    }
+  };
 </script>
 
 <Dialog.Root
@@ -500,9 +552,9 @@
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
             data={groupedSources}
-            getKey={(_, i) => i}
+            getKey={(s, _) => s[0]}
             tabindex={-1}
-            bufferSize={400}
+            itemSize={300}
           >
             {#snippet children([extension, sources], _)}
               {#if sources.length > 1}
@@ -703,7 +755,7 @@
                   <div
                     class="bg-background/50 mr-4 overflow-hidden rounded-xl p-1"
                   >
-                    {#each sources as source}
+                    {#each sources as source (source.id)}
                       <ContextMenu.Root>
                         <ContextMenu.Trigger>
                           <Tooltip
@@ -716,21 +768,8 @@
                             <Button
                               class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                               variant="link"
-                              onclick={() => {
-                                if (
-                                  enabledSources.value[source.id.toString()]
-                                ) {
-                                  enabledSources.value = {
-                                    ...enabledSources.value,
-                                    [source.id.toString()]: false,
-                                  };
-                                } else {
-                                  enabledSources.value = {
-                                    ...enabledSources.value,
-                                    [source.id.toString()]: true,
-                                  };
-                                }
-                              }}
+                              id="source-{source.id}"
+                              onclick={() => toggleSourceActive(source.id)}
                             >
                               <div
                                 class="pointer-events-none flex items-center gap-2"
@@ -755,7 +794,7 @@
                                 </div>
                               </div>
                               <div class="flex items-center gap-2">
-                                {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
+                                {#if source.isConfigurable && enabledSources.value[source.id]}
                                   <Button
                                     class="h-8 w-9 rounded-lg"
                                     variant="ghost"
@@ -782,28 +821,10 @@
                                   </Button>
                                 {/if}
                                 <Switch
-                                  // class="rounded-lg font-bold"
-                                  // variant={source.iconUrl ? "destructive" : "default"}
-                                  checked={enabledSources.value[
-                                    source.id.toString()
-                                  ]}
-                                  onclick={async (e) => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    if (
-                                      enabledSources.value[source.id.toString()]
-                                    ) {
-                                      enabledSources.value = {
-                                        ...enabledSources.value,
-                                        [source.id.toString()]: false,
-                                      };
-                                    } else {
-                                      enabledSources.value = {
-                                        ...enabledSources.value,
-                                        [source.id.toString()]: true,
-                                      };
-                                    }
-                                  }}
+                                  class="pointer-events-none rounded-lg font-bold"
+                                  checked={source.id in stateSourcesActivated
+                                    ? stateSourcesActivated[source.id]
+                                    : enabledSources.value[source.id]}
                                 />
                               </div>
                             </Button>
@@ -837,23 +858,23 @@
                               if (hiddenSources.value[source.id.toString()]) {
                                 hiddenSources.value = {
                                   ...hiddenSources.value,
-                                  [source.id.toString()]: false,
+                                  [source.id]: false,
                                 };
                               } else {
                                 hiddenSources.value = {
                                   ...hiddenSources.value,
-                                  [source.id.toString()]: true,
+                                  [source.id]: true,
                                 };
                               }
                             }}
                           >
                             <Label>
-                              {hiddenSources.value[source.id.toString()]
+                              {hiddenSources.value[source.id]
                                 ? "Unhide"
                                 : "Hide"} source
                             </Label>
                             <Icon
-                              icon={hiddenSources.value[source.id.toString()]
+                              icon={hiddenSources.value[source.id]
                                 ? "lucide:eye"
                                 : "lucide:eye-off"}
                             />
@@ -876,6 +897,7 @@
                       <Button
                         class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-12 w-110 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                         variant="link"
+                        id="source-{sources[0].id}"
                         onclick={() => {
                           openedExtension.set({
                             extension: suwayomi.extensionsByPkgName[extension],
@@ -917,33 +939,53 @@
                           </div>
                         </div>
                         <div class="flex items-center gap-2">
-                          {#if sources[0].isConfigurable && enabledSources.value[sources[0].id.toString()]}
-                            <Button class="h-8 w-9 rounded-lg" variant="ghost">
+                          {#if sources[0].isConfigurable && enabledSources.value[sources[0].id]}
+                            <Button
+                              class="h-8 w-9 rounded-lg"
+                              variant="ghost"
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                openedExtension.set({
+                                  source: sources[0],
+                                  extension:
+                                    suwayomi.extensionsByPkgName[extension],
+                                });
+                                openExtensions.close();
+                                openedExtension.open();
+                                openedExtension.onopenchange = (open) => {
+                                  if (!open) {
+                                    openExtensions.open();
+                                    openedExtension.value = {};
+                                  }
+                                };
+                              }}
+                            >
                               <Icon icon="lucide:settings" />
                             </Button>
                           {/if}
                           <Switch
                             // class="rounded-lg font-bold"
                             // variant={source.iconUrl ? "destructive" : "default"}
-                            checked={enabledSources.value[
-                              sources[0].id.toString()
-                            ]}
+                            checked={sources[0].id in stateSourcesActivated
+                              ? stateSourcesActivated[sources[0].id]
+                              : enabledSources.value[sources[0].id.toString()]}
                             onclick={async (e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              if (
-                                enabledSources.value[sources[0].id.toString()]
-                              ) {
-                                enabledSources.value = {
-                                  ...enabledSources.value,
-                                  [sources[0].id.toString()]: false,
-                                };
-                              } else {
-                                enabledSources.value = {
-                                  ...enabledSources.value,
-                                  [sources[0].id.toString()]: true,
-                                };
-                              }
+                              toggleSourceActive(sources[0].id);
+                              // if (
+                              //   enabledSources.value[sources[0].id.toString()]
+                              // ) {
+                              //   enabledSources.value = {
+                              //     ...enabledSources.value,
+                              //     [sources[0].id.toString()]: false,
+                              //   };
+                              // } else {
+                              //   enabledSources.value = {
+                              //     ...enabledSources.value,
+                              //     [sources[0].id.toString()]: true,
+                              //   };
+                              // }
                             }}
                           />
                         </div>
@@ -992,7 +1034,7 @@
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
             data={filteredExtensions}
-            getKey={(_, i) => i}
+            getKey={(e, _) => e.pkgName}
             tabindex={-1}
             bufferSize={400}
           >

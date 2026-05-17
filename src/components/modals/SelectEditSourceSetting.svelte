@@ -5,6 +5,7 @@
   import type { Preference, SourceSettings } from "@/types";
   import Icon from "@iconify/svelte";
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
+  import { untrack } from "svelte";
 
   type Props = {
     open: boolean;
@@ -27,48 +28,47 @@
           ? preference.MultiSelectListPreferenceTitle
           : "",
   );
-  let lastValue = $state({
-    text: "",
-    changed: false,
+  let preferenceHere: string = $state("");
+  let preferencesHere: string[] = $state([]);
+  let changed = $derived<boolean>(
+    preference.type === "MultiSelectListPreference"
+      ? JSON.stringify(preferencesHere) !==
+          JSON.stringify(preference.MultiSelectListPreferenceCurrentValue)
+      : preference.type === "EditTextPreference"
+        ? preferenceHere !== preference.EditTextPreferenceCurrentValue
+        : preference.type === "ListPreference"
+          ? preferenceHere !== preference.ListPreferenceCurrentValue
+          : false,
+  );
+  $effect(() => {
+    if (open) {
+      untrack(() => {
+        if (preference.type === "MultiSelectListPreference") {
+          preferencesHere = preference.MultiSelectListPreferenceCurrentValue;
+          console.log(preferencesHere);
+        } else {
+          preferenceHere =
+            preference.type === "EditTextPreference"
+              ? preference.EditTextPreferenceCurrentValue
+              : preference.type === "ListPreference"
+                ? preference.ListPreferenceCurrentValue
+                : "";
+          console.log(preferenceHere);
+        }
+      });
+    } else {
+      untrack(() => {
+        preferenceHere = "";
+        preferencesHere = [];
+      });
+    }
   });
-  let lastValues = $state({
-    texts: [],
-    changed: false,
-  });
-  let saved = $state(false);
 </script>
 
 <Dialog.Root
   bind:open
-  onOpenChange={(op) => {
-    if (!op && !saved) {
-      if (preference.type === "EditTextPreference") {
-        preference.EditTextPreferenceCurrentValue = lastValue.text;
-        lastValue = {
-          text: "",
-          changed: false,
-        };
-      } else if (preference.type === "ListPreference") {
-        preference.ListPreferenceCurrentValue = lastValue.text;
-        lastValue = {
-          text: "",
-          changed: false,
-        };
-      } else if (preference.type === "MultiSelectListPreference") {
-        preference.MultiSelectListPreferenceCurrentValue = lastValues.texts;
-        lastValues = {
-          texts: [],
-          changed: false,
-        };
-      }
-      saved = false;
-    }
-    if (op && preference.type === "EditTextPreference") {
-      lastValue = {
-        text: preference.EditTextPreferenceCurrentValue,
-        changed: true,
-      };
-    }
+  onOpenChangeComplete={(op) => {
+    console.log(op);
   }}
 >
   <Dialog.Content overlayClass="bg-black/50 transition-colors! duration-400">
@@ -84,7 +84,7 @@
           divClass="w-full"
           variant="outline"
           placeholder=""
-          bind:value={preference.EditTextPreferenceCurrentValue}
+          bind:value={preferenceHere}
         />
         <Button
           class="h-10 rounded-l-none rounded-r-xl"
@@ -92,7 +92,7 @@
           onclick={async () => {
             const text = await readText();
             if (text) {
-              preference.EditTextPreferenceCurrentValue = text;
+              preferenceHere = text;
             }
           }}
         >
@@ -103,24 +103,16 @@
           {#each preference.entryValues as entry, i}
             <Button
               class="w-full justify-between rounded-xl"
-              variant={preference.ListPreferenceCurrentValue === entry
-                ? "secondary"
-                : "outline"}
+              variant={preferenceHere === entry ? "secondary" : "outline"}
               onclick={() => {
-                if (!lastValue.changed)
-                  lastValue = {
-                    text: preference.ListPreferenceCurrentValue,
-                    changed: true,
-                  };
-                preference.ListPreferenceCurrentValue = entry;
+                preferenceHere = entry;
               }}
             >
               {preference.entries[i]}
               <div
                 class={cn(
                   "transition-all duration-400",
-                  preference.ListPreferenceCurrentValue !== entry &&
-                    "opacity-0",
+                  preferenceHere !== entry && "opacity-0",
                 )}
               >
                 <Icon icon="lucide:check" />
@@ -133,42 +125,23 @@
           {#each preference.entryValues as entry, i}
             <Button
               class="w-full justify-between rounded-xl"
-              variant={preference.MultiSelectListPreferenceCurrentValue.includes(
-                entry,
-              )
+              variant={preferencesHere.includes(entry)
                 ? "secondary"
                 : "outline"}
               onclick={() => {
-                if (!lastValues.changed) {
-                  lastValues = {
-                    //@ts-ignore
-                    texts: preference.MultiSelectListPreferenceCurrentValue,
-                    changed: true,
-                  };
-                }
-                if (
-                  preference.MultiSelectListPreferenceCurrentValue.includes(
-                    entry,
-                  )
-                ) {
-                  preference.MultiSelectListPreferenceCurrentValue =
-                    preference.MultiSelectListPreferenceCurrentValue.filter(
-                      (value) => value !== entry,
-                    );
+                if (preferencesHere.includes(entry)) {
+                  preferencesHere = preferencesHere.filter(
+                    (value) => value !== entry,
+                  );
                 } else {
-                  preference.MultiSelectListPreferenceCurrentValue = [
-                    ...preference.MultiSelectListPreferenceCurrentValue,
-                    entry,
-                  ];
+                  preferencesHere = [...preferencesHere, entry];
                 }
               }}
             >
               {preference.entries[i]}
               <Checkbox
                 class="pointer-events-none"
-                checked={preference.MultiSelectListPreferenceCurrentValue.includes(
-                  entry,
-                )}
+                checked={preferencesHere.includes(entry)}
               />
             </Button>
           {/each}
@@ -180,28 +153,6 @@
         class="rounded-xl"
         variant="outline"
         onclick={() => {
-          if (preference.type === "EditTextPreference") {
-            preference.EditTextPreferenceCurrentValue = lastValue.text;
-            lastValue = {
-              text: "",
-              changed: false,
-            };
-          } else if (preference.type === "ListPreference") {
-            preference.ListPreferenceCurrentValue = lastValue.text;
-            lastValue = {
-              text: "",
-              changed: false,
-            };
-          } else if (
-            preference.type === "MultiSelectListPreference" &&
-            lastValues.changed
-          ) {
-            preference.MultiSelectListPreferenceCurrentValue = lastValues.texts;
-            lastValues = {
-              texts: [],
-              changed: false,
-            };
-          }
           open = false;
         }}
       >
@@ -210,23 +161,23 @@
       </Button>
       <Button
         class="rounded-xl"
+        disabled={!changed}
         onclick={() => {
           const change =
             preference.type === "EditTextPreference"
               ? {
                   position: sourceSettings.preferences.indexOf(preference),
-                  editTextState: preference.EditTextPreferenceCurrentValue,
+                  editTextState: preferenceHere,
                 }
               : preference.type === "ListPreference"
                 ? {
                     position: sourceSettings.preferences.indexOf(preference),
-                    listState: preference.ListPreferenceCurrentValue,
+                    listState: preferenceHere,
                   }
                 : preference.type === "MultiSelectListPreference"
                   ? {
                       position: sourceSettings.preferences.indexOf(preference),
-                      multiSelectState:
-                        preference.MultiSelectListPreferenceCurrentValue,
+                      multiSelectState: preferencesHere,
                     }
                   : {};
           suwaManager
@@ -236,10 +187,15 @@
               change,
             })
             .then((ss) => {
+              if (preference.type === "EditTextPreference") {
+                preference.EditTextPreferenceCurrentValue = preferenceHere;
+              } else if (preference.type === "ListPreference") {
+                preference.ListPreferenceCurrentValue = preferenceHere;
+              } else if (preference.type === "MultiSelectListPreference") {
+                preference.MultiSelectListPreferenceCurrentValue =
+                  preferencesHere;
+              }
               sourceSettings = ss;
-              saved = true;
-              lastValue = { text: "", changed: false };
-              lastValues = { texts: [], changed: false };
               open = false;
             });
         }}
