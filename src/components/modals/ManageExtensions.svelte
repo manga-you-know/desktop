@@ -83,7 +83,7 @@
 
   type SourceRow =
     | { kind: "header"; lang: string; count: number }
-    | { kind: "source"; source: Source };
+    | { kind: "source"; source: Source; indexLang: number };
 
   let sourceRows: SourceRow[] = $derived.by(() => {
     const rows: SourceRow[] = [];
@@ -104,10 +104,11 @@
           });
           const rType: "source" | "header" = "source";
           rows.push(
-            ...sources.map((s) => {
+            ...sources.map((s, i) => {
               return {
                 kind: rType,
                 source: s,
+                indexLang: i,
               };
             }),
           );
@@ -115,6 +116,14 @@
       });
     return rows;
   });
+
+  let filteredSourceRows: SourceRow[] = $derived(
+    sourceRows.filter((r) =>
+      r.kind === "header"
+        ? true
+        : !unexpandedLangSources[r.source.lang] || r.indexLang < 10,
+    ),
+  );
 
   let filteredExtensions = $derived(
     showedGroup === "hidden"
@@ -188,6 +197,14 @@
       });
     return rows;
   });
+
+  let filteredExtensionRows: ExtensionRow[] = $derived(
+    extensionRows.filter((r) =>
+      r.kind === "header"
+        ? true
+        : !unexpandedLangExtensions[r.extension.lang] || r.indexLang < 10,
+    ),
+  );
 
   let sortedLangs = $derived(
     tab === "sources"
@@ -601,7 +618,7 @@
         {#if tab === "sources"}
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
-            data={sourceRows}
+            data={filteredSourceRows}
             getKey={(s, _) => (s.kind === "source" ? s.source.id : s.lang)}
             tabindex={-1}
           >
@@ -783,7 +800,7 @@
         {:else}
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
-            data={extensionRows}
+            data={filteredExtensionRows}
             getKey={(e, _) =>
               e.kind === "extension" ? e.extension.pkgName : e.lang}
             tabindex={-1}
