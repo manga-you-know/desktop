@@ -110,18 +110,28 @@ export const suwaManager = {
           activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
           this.getExtensions().then(async (_) => {
             await delay(10);
-            const data: Record<string, boolean> = {};
-            for (const lang of suwayomi.availableExtensionLangs) {
-              data[lang] = true;
+            if (
+              Object.values(allowedExtensionLanguages.value).filter((e) => e)
+                .length === 0
+            ) {
+              const data: Record<string, boolean> = {};
+              for (const lang of suwayomi.availableExtensionLangs) {
+                data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
+              }
+              allowedExtensionLanguages.value = data;
             }
-            allowedExtensionLanguages.value = data;
             this.getSources().then(async (_) => {
               await delay(10);
-              const data: Record<string, boolean> = {};
-              for (const lang of suwayomi.availableSourceLangs) {
-                data[lang] = true;
+              if (
+                Object.values(allowedExtensionLanguages.value).filter((e) => e)
+                  .length === 0
+              ) {
+                const data: Record<string, boolean> = {};
+                for (const lang of suwayomi.availableSourceLangs) {
+                  data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
+                }
+                allowedSourceLanguages.value = data;
               }
-              allowedSourceLanguages.value = data;
             });
           });
           this.getRepoInfo();
@@ -170,7 +180,7 @@ export const suwaManager = {
       ) {
         const data: Record<string, boolean> = {};
         for (const lang of suwayomi.availableExtensionLangs) {
-          data[lang] = true;
+          data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
         }
         allowedExtensionLanguages.value = data;
       }
@@ -272,7 +282,7 @@ export const suwaManager = {
       ) {
         const data: Record<string, boolean> = {};
         for (const lang of suwayomi.availableSourceLangs) {
-          data[lang] = true;
+          data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
         }
         allowedSourceLanguages.value = data;
       }

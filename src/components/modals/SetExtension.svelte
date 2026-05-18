@@ -21,13 +21,28 @@
   import { suwaManager } from "@/lib/helpers";
   import Icon from "@iconify/svelte";
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
+  import { flip } from "svelte/animate";
+  import {} from "@/states";
 
   let isInstalling = $state(false);
 
   let sources: Source[] = $derived(
-    suwayomi.rawSources.filter(
-      (s) => s.extension.pkgName === openedExtension.value.extension?.pkgName,
-    ),
+    suwayomi.rawSources
+      .filter(
+        (s) => s.extension.pkgName === openedExtension.value.extension?.pkgName,
+      )
+      .sort((a, b) => {
+        const aAllowed = enabledSources.value[a.id] ? 1 : 0;
+        const bAllowed = enabledSources.value[b.id] ? 1 : 0;
+        if (aAllowed !== bAllowed) return bAllowed - aAllowed;
+        const aName = getLang(a.lang);
+        const bName = getLang(b.lang);
+        return aName.localeCompare(bName, "en", { sensitivity: "base" });
+      }),
+  );
+
+  let enabledSourcesHere: Source[] = $derived(
+    sources.filter((s) => enabledSources.value[s.id]),
   );
 
   let sourceSettings: SourceSettings | undefined = $state();
@@ -167,151 +182,171 @@
                 </Button>
               </div>
             </div>
-            <Label class="text-xl">Sources</Label>
+            <div class="flex gap-3">
+              <Label class="text-xl">Sources</Label>
+              <Tooltip
+                text="{enabledSourcesHere.length} sources enabled of {sources.length}"
+              >
+                <Badge
+                  class="min-w-8 rounded-xl text-sm font-bold"
+                  variant="outline"
+                >
+                  {enabledSourcesHere.length}
+                  /
+                  {sources.length}
+                </Badge>
+              </Tooltip>
+            </div>
             <div class="flex h-60 flex-col overflow-y-scroll rounded-xl">
-              {#each sources as source}
-                <ContextMenu.Root>
-                  <ContextMenu.Trigger>
-                    <Tooltip
-                      text={source.displayName}
-                      subtext="Language: {getLang(source.lang)}"
-                      placement="left"
-                    >
-                      <Button
-                        class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
-                        variant="link"
+              {#each sources as source (source.id)}
+                <div animate:flip>
+                  <ContextMenu.Root>
+                    <ContextMenu.Trigger>
+                      <Tooltip
+                        text={source.displayName}
+                        subtext="Language: {getLang(source.lang)}"
+                        placement="left"
+                      >
+                        <Button
+                          class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
+                          variant="link"
+                          onclick={() => {
+                            if (enabledSources.value[source.id.toString()]) {
+                              enabledSources.value = {
+                                ...enabledSources.value,
+                                [source.id.toString()]: false,
+                              };
+                            } else {
+                              enabledSources.value = {
+                                ...enabledSources.value,
+                                [source.id.toString()]: true,
+                              };
+                            }
+                          }}
+                        >
+                          <div
+                            class="pointer-events-none flex items-center gap-2"
+                          >
+                            <div
+                              class="gap-0.1 flex flex-col items-start justify-center"
+                            >
+                              <Label
+                                class="max-w-54 cursor-pointer truncate text-base text-gray-500 group-hover/extension:underline!"
+                              >
+                                {getLang(source.lang)}
+                              </Label>
+                              <!-- <div class="flex w-18 justify-between"> -->
+                              <!--   <span class="text-gray-500"> -->
+                              <!--     <!-- {sources[0].displayName} -->
+                              <!--     {getLang(source.lang)} -->
+                              <!--   </span> -->
+                              <!--   <span class="text-red-500"> -->
+                              <!--     {source.isNsfw ? "+18" : ""} -->
+                              <!--   </span> -->
+                              <!-- </div> -->
+                            </div>
+                          </div>
+                          <div class="flex items-center gap-2">
+                            {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
+                              <Button
+                                class="h-8 w-9 rounded-lg"
+                                variant="ghost"
+                                onclick={(e) => {
+                                  e.stopPropagation();
+                                  openedExtension.set({
+                                    source: source,
+                                    extension: openedExtension.value.extension,
+                                  });
+                                  openExtensions.close();
+                                  openedExtension.open();
+                                  openedExtension.onopenchange = (open) => {
+                                    if (!open) {
+                                      openExtensions.open();
+                                      openedExtension.value = {};
+                                    }
+                                  };
+                                }}
+                              >
+                                <Icon icon="lucide:settings" />
+                              </Button>
+                            {/if}
+                            <Switch
+                              checked={enabledSources.value[
+                                source.id.toString()
+                              ]}
+                              onclick={async (e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (
+                                  enabledSources.value[source.id.toString()]
+                                ) {
+                                  enabledSources.value = {
+                                    ...enabledSources.value,
+                                    [source.id.toString()]: false,
+                                  };
+                                } else {
+                                  enabledSources.value = {
+                                    ...enabledSources.value,
+                                    [source.id.toString()]: true,
+                                  };
+                                }
+                              }}
+                            />
+                          </div>
+                        </Button>
+                      </Tooltip>
+                    </ContextMenu.Trigger>
+                    <ContextMenu.Content>
+                      <ContextMenu.Item
+                        class="flex justify-between"
                         onclick={() => {
-                          if (enabledSources.value[source.id.toString()]) {
-                            enabledSources.value = {
-                              ...enabledSources.value,
+                          openedExtension.set({
+                            extension: openedExtension.value.extension,
+                          });
+                          openExtensions.close();
+                          openedExtension.open();
+                          openedExtension.onopenchange = (open) => {
+                            if (!open) {
+                              openExtensions.open();
+                              openedExtension.value = {};
+                            }
+                          };
+                        }}
+                      >
+                        <Label>See extension</Label>
+                        <Icon icon="lucide:square-menu" />
+                      </ContextMenu.Item>
+                      <ContextMenu.Item
+                        class="flex justify-between"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          if (hiddenSources.value[source.id.toString()]) {
+                            hiddenSources.value = {
+                              ...hiddenSources.value,
                               [source.id.toString()]: false,
                             };
                           } else {
-                            enabledSources.value = {
-                              ...enabledSources.value,
+                            hiddenSources.value = {
+                              ...hiddenSources.value,
                               [source.id.toString()]: true,
                             };
                           }
                         }}
                       >
-                        <div
-                          class="pointer-events-none flex items-center gap-2"
-                        >
-                          <div
-                            class="gap-0.1 flex flex-col items-start justify-center"
-                          >
-                            <Label
-                              class="max-w-54 cursor-pointer truncate text-base text-gray-500 group-hover/extension:underline!"
-                            >
-                              {getLang(source.lang)}
-                            </Label>
-                            <!-- <div class="flex w-18 justify-between"> -->
-                            <!--   <span class="text-gray-500"> -->
-                            <!--     <!-- {sources[0].displayName} -->
-                            <!--     {getLang(source.lang)} -->
-                            <!--   </span> -->
-                            <!--   <span class="text-red-500"> -->
-                            <!--     {source.isNsfw ? "+18" : ""} -->
-                            <!--   </span> -->
-                            <!-- </div> -->
-                          </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                          {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
-                            <Button
-                              class="h-8 w-9 rounded-lg"
-                              variant="ghost"
-                              onclick={(e) => {
-                                e.stopPropagation();
-                                openedExtension.set({
-                                  source: source,
-                                  extension: openedExtension.value.extension,
-                                });
-                                openExtensions.close();
-                                openedExtension.open();
-                                openedExtension.onopenchange = (open) => {
-                                  if (!open) {
-                                    openExtensions.open();
-                                    openedExtension.value = {};
-                                  }
-                                };
-                              }}
-                            >
-                              <Icon icon="lucide:settings" />
-                            </Button>
-                          {/if}
-                          <Switch
-                            checked={enabledSources.value[source.id.toString()]}
-                            onclick={async (e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              if (enabledSources.value[source.id.toString()]) {
-                                enabledSources.value = {
-                                  ...enabledSources.value,
-                                  [source.id.toString()]: false,
-                                };
-                              } else {
-                                enabledSources.value = {
-                                  ...enabledSources.value,
-                                  [source.id.toString()]: true,
-                                };
-                              }
-                            }}
-                          />
-                        </div>
-                      </Button>
-                    </Tooltip>
-                  </ContextMenu.Trigger>
-                  <ContextMenu.Content>
-                    <ContextMenu.Item
-                      class="flex justify-between"
-                      onclick={() => {
-                        openedExtension.set({
-                          extension: openedExtension.value.extension,
-                        });
-                        openExtensions.close();
-                        openedExtension.open();
-                        openedExtension.onopenchange = (open) => {
-                          if (!open) {
-                            openExtensions.open();
-                            openedExtension.value = {};
-                          }
-                        };
-                      }}
-                    >
-                      <Label>See extension</Label>
-                      <Icon icon="lucide:square-menu" />
-                    </ContextMenu.Item>
-                    <ContextMenu.Item
-                      class="flex justify-between"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        if (hiddenSources.value[source.id.toString()]) {
-                          hiddenSources.value = {
-                            ...hiddenSources.value,
-                            [source.id.toString()]: false,
-                          };
-                        } else {
-                          hiddenSources.value = {
-                            ...hiddenSources.value,
-                            [source.id.toString()]: true,
-                          };
-                        }
-                      }}
-                    >
-                      <Label>
-                        {hiddenSources.value[source.id.toString()]
-                          ? "Unhide"
-                          : "Hide"} source
-                      </Label>
-                      <Icon
-                        icon={hiddenSources.value[source.id.toString()]
-                          ? "lucide:eye"
-                          : "lucide:eye-off"}
-                      />
-                    </ContextMenu.Item>
-                  </ContextMenu.Content>
-                </ContextMenu.Root>
+                        <Label>
+                          {hiddenSources.value[source.id.toString()]
+                            ? "Unhide"
+                            : "Hide"} source
+                        </Label>
+                        <Icon
+                          icon={hiddenSources.value[source.id.toString()]
+                            ? "lucide:eye"
+                            : "lucide:eye-off"}
+                        />
+                      </ContextMenu.Item>
+                    </ContextMenu.Content>
+                  </ContextMenu.Root>
+                </div>
               {/each}
             </div>
           </div>

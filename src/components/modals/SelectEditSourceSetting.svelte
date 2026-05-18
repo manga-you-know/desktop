@@ -45,7 +45,6 @@
       untrack(() => {
         if (preference.type === "MultiSelectListPreference") {
           preferencesHere = preference.MultiSelectListPreferenceCurrentValue;
-          console.log(preferencesHere);
         } else {
           preferenceHere =
             preference.type === "EditTextPreference"
@@ -53,7 +52,6 @@
               : preference.type === "ListPreference"
                 ? preference.ListPreferenceCurrentValue
                 : "";
-          console.log(preferenceHere);
         }
       });
     } else {
