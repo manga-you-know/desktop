@@ -8,7 +8,7 @@
     Label,
     Switch,
   } from "@/lib/components";
-  import { cn, getLang, prettifyRepo } from "@/lib/utils";
+  import { cn, getLangNative, prettifyRepo } from "@/lib/utils";
   import {
     suwayomiUrl,
     openedExtension,
@@ -22,7 +22,6 @@
   import Icon from "@iconify/svelte";
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
   import { flip } from "svelte/animate";
-  import {} from "@/states";
 
   let isInstalling = $state(false);
 
@@ -35,8 +34,8 @@
         const aAllowed = enabledSources.value[a.id] ? 1 : 0;
         const bAllowed = enabledSources.value[b.id] ? 1 : 0;
         if (aAllowed !== bAllowed) return bAllowed - aAllowed;
-        const aName = getLang(a.lang);
-        const bName = getLang(b.lang);
+        const aName = getLangNative(a.lang);
+        const bName = getLangNative(b.lang);
         return aName.localeCompare(bName, "en", { sensitivity: "base" });
       }),
   );
@@ -106,7 +105,7 @@
                   class="flex w-full flex-col rounded-xl"
                   variant="secondary"
                 >
-                  {getLang(openedExtension.value.extension.lang)}
+                  {getLangNative(openedExtension.value.extension.lang)}
                   <span class="text-sm! text-gray-400">Language</span>
                 </Badge>
                 <Badge
@@ -204,7 +203,7 @@
                     <ContextMenu.Trigger>
                       <Tooltip
                         text={source.displayName}
-                        subtext="Language: {getLang(source.lang)}"
+                        subtext="Language: {getLangNative(source.lang)}"
                         placement="left"
                       >
                         <Button
@@ -233,7 +232,7 @@
                               <Label
                                 class="max-w-54 cursor-pointer truncate text-base text-gray-500 group-hover/extension:underline!"
                               >
-                                {getLang(source.lang)}
+                                {getLangNative(source.lang)}
                               </Label>
                               <!-- <div class="flex w-18 justify-between"> -->
                               <!--   <span class="text-gray-500"> -->
@@ -377,7 +376,7 @@
               <Label class="flex w-full justify-center text-xl">
                 {openedExtension.value.source?.displayName +
                   " - " +
-                  getLang(openedExtension.value.source?.lang ?? "")}
+                  getLangNative(openedExtension.value.source?.lang ?? "")}
               </Label>
             </Badge>
             <div class="flex h-120 flex-col gap-0.5 overflow-scroll rounded-xl">

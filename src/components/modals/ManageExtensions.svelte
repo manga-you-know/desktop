@@ -33,7 +33,8 @@
   import {
     cn,
     getBasePath,
-    getLang,
+    getLangName,
+    getLangNative,
     prettifyRepo,
     removeOrigin,
   } from "@/lib/utils";
@@ -44,6 +45,7 @@
   import { animate } from "animejs";
 
   let query = $state("");
+  let queryLangs = $state("");
   let tab: "sources" | "extensions" = $state(
     suwayomi.installedExtensions.length > 0 ? "sources" : "extensions",
   );
@@ -91,8 +93,8 @@
       .sort((a, b) => {
         if (a[0] === "all") return -1;
         if (b[0] === "all") return 1;
-        const aName = getLang(a[0]);
-        const bName = getLang(b[0]);
+        const aName = getLangNative(a[0]);
+        const bName = getLangNative(b[0]);
         return aName.localeCompare(bName, "en", { sensitivity: "base" });
       })
       .forEach(([lang, sources]) => {
@@ -140,8 +142,8 @@
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
-              const aName = getLang(a.lang);
-              const bName = getLang(b.lang);
+              const aName = getLangNative(a.lang);
+              const bName = getLangNative(b.lang);
               return aName.localeCompare(bName, "en", {
                 sensitivity: "base",
               });
@@ -154,8 +156,8 @@
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
-              const aName = getLang(a.lang);
-              const bName = getLang(b.lang);
+              const aName = getLangNative(a.lang);
+              const bName = getLangNative(b.lang);
               return aName.localeCompare(bName, "en", {
                 sensitivity: "base",
               });
@@ -172,8 +174,8 @@
       .sort((a, b) => {
         if (a[0] === "all") return -1;
         if (b[0] === "all") return 1;
-        const aName = getLang(a[0]);
-        const bName = getLang(b[0]);
+        const aName = getLangNative(a[0]);
+        const bName = getLangNative(b[0]);
         return aName.localeCompare(bName, "en", { sensitivity: "base" });
       })
       .forEach(([lang, extensions]) => {
@@ -206,24 +208,39 @@
     ),
   );
 
-  let sortedLangs = $derived(
+  let availableLangsByTab = $derived(
     tab === "sources"
-      ? suwayomi.availableSourceLangs.sort((a, b) => {
-          const aAllowed = allowedSourceLanguages.value[a] ? 1 : 0;
-          const bAllowed = allowedSourceLanguages.value[b] ? 1 : 0;
-          if (aAllowed !== bAllowed) return bAllowed - aAllowed;
-          const aName = IsoLanguages[a]?.nativeName ?? a;
-          const bName = IsoLanguages[b]?.nativeName ?? b;
-          return aName.localeCompare(bName, "en", { sensitivity: "base" });
-        })
-      : suwayomi.availableExtensionLangs.sort((a, b) => {
-          const aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
-          const bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
-          if (aAllowed !== bAllowed) return bAllowed - aAllowed;
-          const aName = IsoLanguages[a]?.nativeName ?? a;
-          const bName = IsoLanguages[b]?.nativeName ?? b;
-          return aName.localeCompare(bName, "en", { sensitivity: "base" });
-        }),
+      ? suwayomi.availableSourceLangs
+      : suwayomi.availableExtensionLangs,
+  );
+
+  let filteredLangs = $derived(
+    availableLangsByTab
+      .sort((a, b) => {
+        if (a === "all") return -1;
+        if (b === "all") return 1;
+        // let aAllowed = 0;
+        // let bAllowed = 0;
+        // if (tab === "sources") {
+        //   aAllowed = allowedSourceLanguages.value[a] ? 1 : 0;
+        //   bAllowed = allowedSourceLanguages.value[b] ? 1 : 0;
+        // } else {
+        //   aAllowed = allowedExtensionLanguages.value[a] ? 1 : 0;
+        //   bAllowed = allowedExtensionLanguages.value[b] ? 1 : 0;
+        // }
+        // if (aAllowed !== bAllowed) return bAllowed - aAllowed;
+        const aName = getLangNative(a);
+        const bName = getLangNative(b);
+        return aName.localeCompare(bName, "en", { sensitivity: "base" });
+      })
+      .filter(
+        (lang) =>
+          lang.toLowerCase().includes(queryLangs.toLowerCase()) ||
+          getLangNative(lang)
+            .toLowerCase()
+            .includes(queryLangs.toLowerCase()) ||
+          getLangName(lang).toLowerCase().includes(queryLangs.toLowerCase()),
+      ),
   );
 
   let allowedLanguages: string[] = $derived(
@@ -475,7 +492,12 @@
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 overflow-scroll p-2">
             <div class="flex w-full items-center justify-between p-1">
-              <Label>Allowed languages: {allowedLanguages.length}</Label>
+              <!-- <Label> -->
+              <!--   Allowed languages: {allowedLanguages.length} / {availableLangsByTab.length} -->
+              <!-- </Label> -->
+              <Badge class="w-20 text-sm" variant="secondary">
+                {allowedLanguages.length} / {availableLangsByTab.length}
+              </Badge>
               <Button
                 class="h-6 rounded-lg px-2.5"
                 variant="secondary"
@@ -497,44 +519,59 @@
                 Enable all
               </Button>
             </div>
+            <div class="flex gap-2">
+              <Input
+                class="w-full"
+                bind:value={queryLangs}
+                variant="outline"
+                placeholder="Search langs..."
+              />
+            </div>
             <div class="flex max-h-80 flex-col gap-1 overflow-scroll p-2">
-              {#each sortedLangs as lang}
-                <Button
-                  class="cursor-pointer items-center gap-1 px-2"
-                  variant="outline"
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    if (tab === "sources") {
-                      allowedSourceLanguages.value = {
-                        ...allowedSourceLanguages.value,
-                        [lang]: !allowedSourceLanguages.value[lang],
-                      };
-                    } else {
-                      allowedExtensionLanguages.value = {
-                        ...allowedExtensionLanguages.value,
-                        [lang]: !allowedExtensionLanguages.value[lang],
-                      };
-                    }
-                  }}
-                  disabled={allowedLanguages.length < 2 &&
-                    allowedLanguages[0] === lang}
-                >
-                  <Switch
-                    checked={tab === "sources"
-                      ? allowedSourceLanguages.value[lang]
-                      : allowedExtensionLanguages.value[lang]}
-                    disabled={allowedLanguages.length < 2 &&
-                      allowedLanguages[0] === lang}
-                  />
+              {#each filteredLangs as lang (lang)}
+                <div class="w-full">
                   <Button
-                    class="h-6 w-full justify-start rounded-xl"
-                    variant="ghost"
+                    class="w-full cursor-pointer items-center gap-1 px-2"
+                    variant="outline"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      if (tab === "sources") {
+                        allowedSourceLanguages.value = {
+                          ...allowedSourceLanguages.value,
+                          [lang]: !allowedSourceLanguages.value[lang],
+                        };
+                      } else {
+                        allowedExtensionLanguages.value = {
+                          ...allowedExtensionLanguages.value,
+                          [lang]: !allowedExtensionLanguages.value[lang],
+                        };
+                      }
+                    }}
                     disabled={allowedLanguages.length < 2 &&
                       allowedLanguages[0] === lang}
                   >
-                    {getLang(lang)}
+                    <Switch
+                      checked={tab === "sources"
+                        ? allowedSourceLanguages.value[lang]
+                        : allowedExtensionLanguages.value[lang]}
+                      disabled={allowedLanguages.length < 2 &&
+                        allowedLanguages[0] === lang}
+                    />
+                    <Button
+                      class="h-6 w-full justify-start rounded-xl"
+                      variant="ghost"
+                      disabled={allowedLanguages.length < 2 &&
+                        allowedLanguages[0] === lang}
+                    >
+                      {getLangNative(lang)}
+                    </Button>
                   </Button>
-                </Button>
+                </div>
+              {:else}
+                <Badge class="w-full text-sm font-bold flex flex-col">
+                  No languages found...
+                  <span class="text-xl">┐(‘～` )┌</span>
+                </Badge>
               {/each}
             </div>
           </Popover.Content>
@@ -638,7 +675,7 @@
                       }}
                     >
                       <div class="flex text-lg">
-                        {getLang(sRow.lang)}
+                        {getLangNative(sRow.lang)}
                       </div>
                       <div class="flex items-center gap-3">
                         <Badge
@@ -664,7 +701,7 @@
                   <ContextMenu.Trigger>
                     <Tooltip
                       text={sRow.source.name}
-                      subtext="Lang: {getLang(
+                      subtext="Lang: {getLangNative(
                         sRow.source.lang,
                       )} | Repo: {prettifyRepo(sRow.source.extension.repo)}"
                       placement="left"
@@ -822,7 +859,7 @@
                       }}
                     >
                       <div class="flex text-lg">
-                        {getLang(eRow.lang)}
+                        {getLangNative(eRow.lang)}
                       </div>
                       <div class="flex items-center gap-3">
                         <Badge
@@ -849,7 +886,7 @@
                   <ContextMenu.Trigger>
                     <Tooltip
                       text={eRow.extension.name}
-                      subtext="Lang: {getLang(
+                      subtext="Lang: {getLangNative(
                         eRow.extension.lang,
                       )} | Repo: {prettifyRepo(eRow.extension.repo)}"
                       placement="left"

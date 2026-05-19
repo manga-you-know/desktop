@@ -18,6 +18,10 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & {
   ref?: U | null;
 };
 
+export function titleCase(str: string | undefined): string {
+  return str === undefined ? "" : str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export const removeOrigin = (url: string) => {
   const { pathname, search, hash } = new URL(url);
   return pathname + search + hash;
@@ -25,11 +29,16 @@ export const removeOrigin = (url: string) => {
 
 export const getBasePath = (url: string) => {
   const { href } = new URL(url);
+
   return href.substring(0, href.lastIndexOf("/") + 1);
 };
 
-export const getLang = (lang: string) =>
-  lang === "all" ? "All" : (IsoLanguages[lang]?.nativeName ?? lang);
+export const getLangNative = (lang: string) =>
+  lang === "all" || lang === "other"
+    ? titleCase(lang)
+    : (IsoLanguages[lang]?.nativeName ?? lang);
+
+export const getLangName = (lang: string) => IsoLanguages[lang]?.name ?? lang;
 
 export const prettifyRepo = (repo: string) =>
   repoInfo.value[repo]?.name ?? removeOrigin(repo);
