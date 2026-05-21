@@ -157,11 +157,13 @@
                     if (!openedExtension.value.extension.isInstalled) {
                       isInstalling = true;
                     }
-                    openedExtension.value.extension.isInstalled =
+                    openedExtension.value.extension.isInstalled = (
                       await suwaManager.updateExtension(
                         openedExtension.value.extension.pkgName,
+                        "install",
                         !openedExtension.value.extension.isInstalled,
-                      );
+                      )
+                    ).isInstalled;
                     suwaManager.getExtensions();
                     isInstalling = false;
                   }}

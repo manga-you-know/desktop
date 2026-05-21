@@ -11,6 +11,7 @@ import { Child, Command } from "@tauri-apps/plugin-shell";
 import { getBasePath } from "../utils";
 import { delay } from "@/utils";
 import type {
+  Extension,
   SourceSettings,
   UpdateSourcePreferencesInput,
 } from "@/types/server";
@@ -186,7 +187,11 @@ export const suwaManager = {
       }
     });
   },
-  async updateExtension(pkgName: string, install: boolean): Promise<boolean> {
+  async updateExtension(
+    pkgName: string,
+    operation: "install" | "update",
+    value: boolean,
+  ): Promise<Extension> {
     return fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
       bodyC: {
@@ -194,7 +199,12 @@ export const suwaManager = {
         variables: {
           input: {
             id: pkgName,
-            patch: install ? { install: true } : { uninstall: true },
+            patch:
+              operation === "install"
+                ? value
+                  ? { install: true }
+                  : { uninstall: true }
+                : { update: true },
           },
         },
         query: `
@@ -224,7 +234,7 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       this.getSources();
-      return rJson.data.updateExtension.extension.isInstalled;
+      return rJson.data.updateExtension.extension;
     });
   },
   async getSources() {

@@ -257,6 +257,7 @@
   let unexpandedLangExtensions: Record<string, boolean> = $state({});
   let stateSourcesActivated: Record<string, boolean> = $state({});
   let stateExtensionsActivated: Record<string, boolean> = $state({});
+  let updatingExtension: Record<string, boolean> = $state({});
 
   const removeClean = async (elId: string) => {
     return await animate(`#${elId}`, {
@@ -297,6 +298,34 @@
         [sourceId]: true,
       };
     }
+  };
+
+  const toggleExtensionInstalled = async (
+    extension: Extension,
+  ): Promise<boolean> => {
+    installingExtensions[extension.pkgName] = true;
+    const isInstalled = (
+      await suwaManager.updateExtension(
+        extension.pkgName,
+        "install",
+        !extension.isInstalled,
+      )
+    ).isInstalled;
+    delete installingExtensions[extension.pkgName];
+    if (showedGroup !== "all") {
+      if (extension.isInstalled) {
+        stateExtensionsActivated = {
+          [extension.pkgName]: false,
+        };
+      } else {
+        stateExtensionsActivated = {
+          [extension.pkgName]: true,
+        };
+      }
+      await removeClean(`extension-${extension.pkgName.split(".").at(-1)}`);
+      stateExtensionsActivated = {};
+    }
+    return isInstalled;
   };
 </script>
 
@@ -495,12 +524,12 @@
               <!-- <Label> -->
               <!--   Allowed languages: {allowedLanguages.length} / {availableLangsByTab.length} -->
               <!-- </Label> -->
-              <Badge class="w-20 text-sm" variant="secondary">
+              <Badge class="h-8 w-20 rounded-lg text-sm" variant="secondary">
                 {allowedLanguages.length} / {availableLangsByTab.length}
               </Badge>
               <Button
-                class="h-6 rounded-lg px-2.5"
-                variant="secondary"
+                class="h-8 rounded-lg px-2.5"
+                variant="default"
                 onclick={() => {
                   const data: Record<string, boolean> = {};
                   if (tab === "sources") {
@@ -518,8 +547,24 @@
               >
                 Enable all
               </Button>
+              <Button
+                class="h-8 rounded-lg px-2.5"
+                variant="destructive"
+                onclick={() => {
+                  if (tab === "sources") {
+                    allowedSourceLanguages.value = {};
+                  } else {
+                    allowedExtensionLanguages.value = {};
+                  }
+                }}
+              >
+                Disable all
+              </Button>
             </div>
             <div class="flex gap-2">
+              <Badge class="w-14" variant="outline">
+                {filteredLangs.length}
+              </Badge>
               <Input
                 class="w-full"
                 bind:value={queryLangs}
@@ -547,21 +592,15 @@
                         };
                       }
                     }}
-                    disabled={allowedLanguages.length < 2 &&
-                      allowedLanguages[0] === lang}
                   >
                     <Switch
                       checked={tab === "sources"
                         ? allowedSourceLanguages.value[lang]
                         : allowedExtensionLanguages.value[lang]}
-                      disabled={allowedLanguages.length < 2 &&
-                        allowedLanguages[0] === lang}
                     />
                     <Button
                       class="h-6 w-full justify-start rounded-xl"
                       variant="ghost"
-                      disabled={allowedLanguages.length < 2 &&
-                        allowedLanguages[0] === lang}
                     >
                       {getLangNative(lang)}
                     </Button>
@@ -660,43 +699,7 @@
             tabindex={-1}
           >
             {#snippet children(sRow, _)}
-              {#if sRow.kind === "header"}
-                <ContextMenu.Root>
-                  <ContextMenu.Trigger>
-                    <Button
-                      class="bg-secondary/70 group/extension hover:bg-secondary/40 m-0.5 flex h-8 w-110 items-center justify-between gap-2 rounded-lg p-2 hover:no-underline!"
-                      variant="link"
-                      onclick={() => {
-                        if (unexpandedLangSources[sRow.lang]) {
-                          unexpandedLangSources[sRow.lang] = false;
-                        } else {
-                          unexpandedLangSources[sRow.lang] = true;
-                        }
-                      }}
-                    >
-                      <div class="flex text-lg">
-                        {getLangNative(sRow.lang)}
-                      </div>
-                      <div class="flex items-center gap-3">
-                        <Badge
-                          class="pointer-events-none min-w-10 rounded-xl text-sm"
-                          variant="outline"
-                        >
-                          {sRow.count}
-                        </Badge>
-                        <Icon
-                          class={cn(
-                            "size-5! transition-all duration-400",
-                            unexpandedLangSources[sRow.lang] && "-rotate-180",
-                          )}
-                          icon="lucide:chevron-up"
-                        />
-                      </div>
-                    </Button>
-                  </ContextMenu.Trigger><ContextMenu.Content
-                  ></ContextMenu.Content>
-                </ContextMenu.Root>
-              {:else}
+              {#if sRow.kind === "source"}
                 <ContextMenu.Root>
                   <ContextMenu.Trigger>
                     <Tooltip
@@ -756,6 +759,41 @@
                           </div>
                         </div>
                         <div class="flex items-center gap-2">
+                          {#if suwayomi.extensionsByPkgName[sRow.source.extension.pkgName]?.hasUpdate && enabledSources.value[sRow.source.id]}
+                            <Tooltip text="New update available!">
+                              <Button
+                                class="size-8 rounded-lg"
+                                variant="info"
+                                disabled={updatingExtension[
+                                  sRow.source.extension.pkgName
+                                ]}
+                                onclick={async (e) => {
+                                  e.stopPropagation();
+                                  updatingExtension[
+                                    sRow.source.extension.pkgName
+                                  ] = true;
+                                  await suwaManager.updateExtension(
+                                    sRow.source.extension.pkgName,
+                                    "update",
+                                    true,
+                                  );
+                                  suwaManager.getExtensions();
+                                  updatingExtension[
+                                    sRow.source.extension.pkgName
+                                  ] = false;
+                                }}
+                              >
+                                <Icon
+                                  class={cn(
+                                    updatingExtension[
+                                      sRow.source.extension.pkgName
+                                    ] && "animate-spin",
+                                  )}
+                                  icon="lucide:refresh-cw"
+                                />
+                              </Button>
+                            </Tooltip>
+                          {/if}
                           {#if sRow.source.isConfigurable && enabledSources.value[sRow.source.id]}
                             <Button
                               class="h-8 w-9 rounded-lg"
@@ -831,6 +869,55 @@
                     </ContextMenu.Item>
                   </ContextMenu.Content>
                 </ContextMenu.Root>
+              {:else}
+                <ContextMenu.Root>
+                  <ContextMenu.Trigger>
+                    <Button
+                      class="bg-secondary/70 group/extension hover:bg-secondary/40 m-0.5 flex h-8 w-110 items-center justify-between gap-2 rounded-lg p-2 hover:no-underline!"
+                      variant="link"
+                      onclick={() => {
+                        if (unexpandedLangSources[sRow.lang]) {
+                          unexpandedLangSources[sRow.lang] = false;
+                        } else {
+                          unexpandedLangSources[sRow.lang] = true;
+                        }
+                      }}
+                    >
+                      <div class="flex text-lg">
+                        {getLangNative(sRow.lang)}
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <Button
+                          class="h-6"
+                          variant="secondary"
+                          onclick={(e) => {
+                            e.stopPropagation();
+                            allowedSourceLanguages.value = {
+                              ...allowedSourceLanguages.value,
+                              [sRow.lang]: false,
+                            };
+                          }}
+                        >
+                          Hide
+                        </Button>
+                        <Badge
+                          class="pointer-events-none min-w-10 rounded-xl text-sm"
+                          variant="outline"
+                        >
+                          {sRow.count}
+                        </Badge>
+                        <Icon
+                          class={cn(
+                            "size-5! transition-all duration-400",
+                            unexpandedLangSources[sRow.lang] && "-rotate-180",
+                          )}
+                          icon="lucide:chevron-up"
+                        />
+                      </div>
+                    </Button>
+                  </ContextMenu.Trigger><ContextMenu.Content
+                  ></ContextMenu.Content>
+                </ContextMenu.Root>
               {/if}
             {/snippet}
           </VList>
@@ -844,44 +931,7 @@
             bufferSize={400}
           >
             {#snippet children(eRow, _)}
-              {#if eRow.kind === "header"}
-                <ContextMenu.Root>
-                  <ContextMenu.Trigger>
-                    <Button
-                      class="bg-secondary/70 group/extension hover:bg-secondary/40 m-0.5 flex h-8 w-110 items-center justify-between gap-2 rounded-lg p-2 hover:no-underline!"
-                      variant="link"
-                      onclick={() => {
-                        if (unexpandedLangExtensions[eRow.lang]) {
-                          unexpandedLangExtensions[eRow.lang] = false;
-                        } else {
-                          unexpandedLangExtensions[eRow.lang] = true;
-                        }
-                      }}
-                    >
-                      <div class="flex text-lg">
-                        {getLangNative(eRow.lang)}
-                      </div>
-                      <div class="flex items-center gap-3">
-                        <Badge
-                          class="pointer-events-none min-w-10 rounded-xl text-sm"
-                          variant="outline"
-                        >
-                          {eRow.count}
-                        </Badge>
-                        <Icon
-                          class={cn(
-                            "size-5! transition-all duration-400",
-                            unexpandedLangExtensions[eRow.lang] &&
-                              "-rotate-180",
-                          )}
-                          icon="lucide:chevron-up"
-                        />
-                      </div>
-                    </Button>
-                  </ContextMenu.Trigger><ContextMenu.Content
-                  ></ContextMenu.Content>
-                </ContextMenu.Root>
-              {:else if !unexpandedLangExtensions[eRow.extension.lang] || eRow.indexLang < 10}
+              {#if eRow.kind === "extension"}
                 <ContextMenu.Root>
                   <ContextMenu.Trigger>
                     <Tooltip
@@ -902,6 +952,9 @@
                             "transition-[height,opacity,padding] duration-400",
                         )}
                         variant="link"
+                        id="extension-{eRow.extension.pkgName
+                          .split('.')
+                          .at(-1)}"
                         onclick={() => {
                           openedExtension.set({ extension: eRow.extension });
                           openExtensions.close();
@@ -940,12 +993,47 @@
                           </div>
                         </div>
                         <div class="flex items-center gap-2">
+                          {#if eRow.extension.hasUpdate && eRow.extension.isInstalled}
+                            <Tooltip text="New update available!">
+                              <Button
+                                class="size-8 rounded-lg"
+                                variant="info"
+                                disabled={updatingExtension[
+                                  eRow.extension.pkgName
+                                ]}
+                                onclick={async (e) => {
+                                  e.stopPropagation();
+                                  updatingExtension[eRow.extension.pkgName] =
+                                    true;
+                                  eRow.extension =
+                                    await suwaManager.updateExtension(
+                                      eRow.extension.pkgName,
+                                      "update",
+                                      true,
+                                    );
+                                  updatingExtension[eRow.extension.pkgName] =
+                                    false;
+                                }}
+                              >
+                                <Icon
+                                  class={cn(
+                                    updatingExtension[eRow.extension.pkgName] &&
+                                      "animate-spin",
+                                  )}
+                                  icon="lucide:refresh-cw"
+                                />
+                              </Button>
+                            </Tooltip>
+                          {/if}
                           <Button
                             class="h-8 w-22 rounded-lg font-bold"
-                            variant={eRow.extension.isInstalled
-                              ? "outline"
-                              : installingExtensions[eRow.extension.pkgName]
-                                ? "destructive"
+                            variant={eRow.extension.pkgName in
+                            stateExtensionsActivated
+                              ? stateExtensionsActivated[eRow.extension.pkgName]
+                                ? "outline"
+                                : "default"
+                              : eRow.extension.isInstalled
+                                ? "outline"
                                 : "default"}
                             disabled={installingExtensions[
                               eRow.extension.pkgName
@@ -953,17 +1041,10 @@
                             onclick={async (e) => {
                               e.stopPropagation();
                               if (showedGroup !== "hidden") {
-                                if (!eRow.extension.isInstalled) {
-                                  installingExtensions[eRow.extension.pkgName] =
-                                    true;
-                                }
-                                const pkgToRemove = eRow.extension.pkgName;
                                 eRow.extension.isInstalled =
-                                  await suwaManager.updateExtension(
-                                    eRow.extension.pkgName,
-                                    !eRow.extension.isInstalled,
+                                  await toggleExtensionInstalled(
+                                    eRow.extension,
                                   );
-                                delete installingExtensions[pkgToRemove];
                               } else {
                                 hiddenExtensions.value = {
                                   ...hiddenExtensions.value,
@@ -973,11 +1054,18 @@
                             }}
                           >
                             {showedGroup !== "hidden"
-                              ? installingExtensions[eRow.extension.pkgName]
-                                ? "..."
-                                : eRow.extension.isInstalled
+                              ? eRow.extension.pkgName in
+                                stateExtensionsActivated
+                                ? stateExtensionsActivated[
+                                    eRow.extension.pkgName
+                                  ]
                                   ? "Uninstall"
                                   : "Install"
+                                : installingExtensions[eRow.extension.pkgName]
+                                  ? "..."
+                                  : eRow.extension.isInstalled
+                                    ? "Uninstall"
+                                    : "Install"
                               : "Unhide"}
                           </Button>
                         </div>
@@ -1018,6 +1106,43 @@
                       />
                     </ContextMenu.Item>
                   </ContextMenu.Content>
+                </ContextMenu.Root>
+              {:else}
+                <ContextMenu.Root>
+                  <ContextMenu.Trigger>
+                    <Button
+                      class="bg-secondary/70 group/extension hover:bg-secondary/40 m-0.5 flex h-8 w-110 items-center justify-between gap-2 rounded-lg p-2 hover:no-underline!"
+                      variant="link"
+                      onclick={() => {
+                        if (unexpandedLangExtensions[eRow.lang]) {
+                          unexpandedLangExtensions[eRow.lang] = false;
+                        } else {
+                          unexpandedLangExtensions[eRow.lang] = true;
+                        }
+                      }}
+                    >
+                      <div class="flex text-lg">
+                        {getLangNative(eRow.lang)}
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <Badge
+                          class="pointer-events-none min-w-10 rounded-xl text-sm"
+                          variant="outline"
+                        >
+                          {eRow.count}
+                        </Badge>
+                        <Icon
+                          class={cn(
+                            "size-5! transition-all duration-400",
+                            unexpandedLangExtensions[eRow.lang] &&
+                              "-rotate-180",
+                          )}
+                          icon="lucide:chevron-up"
+                        />
+                      </div>
+                    </Button>
+                  </ContextMenu.Trigger><ContextMenu.Content
+                  ></ContextMenu.Content>
                 </ContextMenu.Root>
               {/if}
             {/snippet}
