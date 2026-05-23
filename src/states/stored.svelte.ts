@@ -110,19 +110,30 @@ class StoredState<T> {
   };
 }
 
-// Store
+// Server
 export const enabledSources = new StoredState<Record<string, boolean>>({
   key: "enabled_sources",
   defaultValue: {},
   store: serverStore,
   storePath: "server.json",
 });
+
+export const disableAutoUpdateByExtension = new StoredState<
+  Record<string, boolean>
+>({
+  key: "disable_auto_update_by_extension",
+  defaultValue: {},
+  store: serverStore,
+  storePath: "server.json",
+});
+
 export const hiddenExtensions = new StoredState<Record<string, boolean>>({
   key: "hidden_extensions",
   defaultValue: {},
   store: serverStore,
   storePath: "server.json",
 });
+
 export const hiddenSources = new StoredState<Record<string, boolean>>({
   key: "hidden_sources",
   defaultValue: {},
@@ -130,6 +141,7 @@ export const hiddenSources = new StoredState<Record<string, boolean>>({
   storePath: "server.json",
 });
 
+// Fetches
 export const repoInfo = new StoredState<
   Record<string, { name: string; website: string }>
 >({
@@ -139,22 +151,31 @@ export const repoInfo = new StoredState<
   storePath: "fetched.json",
 });
 
-// Preferences cache
-export const showExtensionsNsfw = new StoredState<boolean>({
-  key: "show_extensions_nsfw",
+// Navigation cache
+
+export const extensionManagerTab = new StoredState<"extensions" | "sources">({
+  key: "extension_manager_tab",
+  defaultValue: "extensions",
+});
+
+export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
+  key: "show_extensions_sources_nsfw",
   defaultValue: false,
   alternatives: [true, false],
 });
+
 export const activeExtensionRepos = new StoredState<string[]>({
   key: "active_extension_repos",
   defaultValue: [],
 });
+
 export const allowedExtensionLanguages = new StoredState<
   Record<string, boolean>
 >({
   key: "allowed_extension_languages",
   defaultValue: {},
 });
+
 export const allowedSourceLanguages = new StoredState<Record<string, boolean>>({
   key: "allowed_source_languages",
   defaultValue: {},
@@ -179,6 +200,7 @@ export const orderLibraryBy = new StoredState<string>({
   defaultValue: "id",
   alternatives: ["id", "date"],
 });
+
 export const openReadMenu = new StoredState<boolean>({
   key: "open_read_menu",
   defaultValue: true,

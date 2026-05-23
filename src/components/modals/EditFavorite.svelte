@@ -67,6 +67,7 @@
     folderName = favLoad.folderName;
     description = favLoad.description ?? description;
     anilistId = favLoad.anilistId ?? anilistId;
+
     favorite.name = name;
     favorite.link = link;
     favorite.cover = cover;
@@ -126,9 +127,9 @@
   <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>Edit Favorite</Dialog.Title>
-      <Dialog.Description
-        >Change your favorites attributes and save it.</Dialog.Description
-      >
+      <Dialog.Description>
+        Change your favorites attributes and save it.
+      </Dialog.Description>
       <div class="flex gap-4">
         <Input
           id="name-{favorite.id}"

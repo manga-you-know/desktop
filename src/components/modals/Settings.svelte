@@ -389,15 +389,14 @@
                           </span>
                         </Button>
                       </div>
-                    {/each}
-                    {#if suwayomi.extensionRepos.length === 0}
+                    {:else}
                       <div class="flex w-full flex-col items-center gap-7">
                         <span class="text-lg">
                           You don't seem to have any repositories...
                         </span>
                         <span class="text-4xl">(￢_￢;)</span>
                       </div>
-                    {/if}
+                    {/each}
                   </div>
                   <div class="flex w-full items-center justify-between">
                     <Label class="text-lg">

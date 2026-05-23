@@ -5,6 +5,7 @@
     Checkbox,
     ContextMenu,
     Dialog,
+    Input,
     Label,
     Switch,
   } from "@/lib/components";
@@ -16,19 +17,34 @@
     hiddenSources,
     openExtensions,
     enabledSources,
+    disableAutoUpdateByExtension,
+    autoUpdateExtensions,
   } from "@/states";
-  import { Image, SelectEditSourceSetting, Tooltip } from "@/components";
+  import {
+    AskSure,
+    Image,
+    SelectEditSourceSetting,
+    Tooltip,
+  } from "@/components";
   import { suwaManager } from "@/lib/helpers";
   import Icon from "@iconify/svelte";
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
   import { flip } from "svelte/animate";
 
   let isInstalling = $state(false);
+  let selectedPreference: Preference | undefined = $state(undefined);
+  let isUpdating = $state(false);
+
+  let openSetting = $state(false);
+  let openAskSure = $state(false);
+  let querySources = $state("");
 
   let sources: Source[] = $derived(
     suwayomi.rawSources
       .filter(
-        (s) => s.extension.pkgName === openedExtension.value.extension?.pkgName,
+        (s) =>
+          s.extension.pkgName === openedExtension.value.extension?.pkgName &&
+          !hiddenSources.value[s.id],
       )
       .sort((a, b) => {
         const aAllowed = enabledSources.value[a.id] ? 1 : 0;
@@ -44,9 +60,21 @@
     sources.filter((s) => enabledSources.value[s.id]),
   );
 
+  let filteredSources: Source[] = $derived(
+    sources.filter(
+      (s) =>
+        s.lang.toLowerCase().includes(querySources.toLowerCase()) ||
+        getLangNative(s.lang)
+          .toLowerCase()
+          .includes(querySources.toLowerCase()),
+    ),
+  );
+
   let sourceSettings: SourceSettings | undefined = $state();
   let tab: "extension" | "source" = $state("extension");
   openedExtension.onvaluechange = (value) => {
+    isInstalling = false;
+    isUpdating = false;
     if (value.source) {
       tab = "source";
       if (value.source.id !== sourceSettings?.id) {
@@ -64,9 +92,20 @@
     sourceSettings !== undefined ? sourceSettings.preferences : [],
   );
 
-  let selectedPreference: Preference | undefined = $state(undefined);
-
-  let openSetting = $state(false);
+  const toggleInstalled = async () => {
+    if (openedExtension.value.extension === undefined) return;
+    if (!openedExtension.value.extension.isInstalled) {
+      isInstalling = true;
+    }
+    openedExtension.value.extension.isInstalled = (
+      await suwaManager.patchExtension(
+        openedExtension.value.extension.pkgName,
+        openedExtension.value.extension.isInstalled ? "uninstall" : "install",
+      )
+    ).isInstalled;
+    suwaManager.getExtensions();
+    isInstalling = false;
+  };
 </script>
 
 <Dialog.Root bind:open={openedExtension.active}>
@@ -80,6 +119,13 @@
         bind:preference={selectedPreference}
       />
     {/if}
+    <AskSure
+      bind:open={openAskSure}
+      message="You have {enabledSourcesHere.length} sources enabled from this extension."
+      deleteText="Uninstall"
+      overlayClass="bg-black/30"
+      onokay={toggleInstalled}
+    />
     {#if openedExtension.value?.extension}
       <div class="relative mb-2 overflow-hidden">
         <div
@@ -95,77 +141,43 @@
                 src={suwayomiUrl.value +
                   openedExtension.value.extension.iconUrl}
               />
-              {openedExtension.value.extension.name}
-            </Dialog.Title>
-            <div class="flex w-full">
-              <div
-                class="flex w-1/2 flex-col items-center gap-2 **:py-1 **:text-lg/5"
-              >
-                <Badge
-                  class="flex w-full flex-col rounded-xl"
-                  variant="secondary"
-                >
-                  {getLangNative(openedExtension.value.extension.lang)}
-                  <span class="text-sm! text-gray-400">Language</span>
-                </Badge>
-                <Badge
-                  class="flex w-full flex-col rounded-xl"
-                  variant="default"
-                >
-                  {prettifyRepo(openedExtension.value.extension.repo)}
-                  <span class="text-sm! text-gray-500">Repository</span>
-                </Badge>
-                <div
-                  class={cn(
-                    "flex w-full gap-2",
-                    openedExtension.value.extension.isNsfw && "pr-2",
-                  )}
-                >
-                  <Badge
-                    class={cn(
-                      "flex flex-col rounded-xl",
-                      openedExtension.value.extension.isNsfw
-                        ? "w-1/2"
-                        : "w-full",
-                    )}
-                    variant="outline"
-                  >
-                    {openedExtension.value.extension.versionName}
-                    <span class="text-sm! text-gray-500">Version</span>
-                  </Badge>
-                  {#if openedExtension.value.extension.isNsfw}
-                    <Badge
-                      class="flex w-1/2 flex-col rounded-xl"
-                      variant="destructive"
-                    >
-                      +18
-                      <span class="text-sm! text-gray-400">Age rating</span>
-                    </Badge>
-                  {/if}
-                </div>
+              <div class="flex flex-col gap-0.5">
+                <span>
+                  {openedExtension.value.extension.name}
+                </span>
+                <span class="flex gap-3 text-base">
+                  {openedExtension.value.extension.versionName}
+                  <span class="text-red-500">
+                    {openedExtension.value.extension.isNsfw ? "+18" : ""}
+                  </span>
+                </span>
               </div>
-              <div class="flex w-1/2 flex-col items-center gap-2">
+            </Dialog.Title>
+            <div class="flex w-full flex-col gap-2">
+              <div class="flex flex-col items-center gap-0.5 p-3 **:text-base">
+                <Badge class="flex w-full gap-3" variant="outline">
+                  <span class="text-sm! text-gray-400">Language:</span>
+                  {getLangNative(openedExtension.value.extension.lang)}
+                </Badge>
+                <Badge class="flex w-full gap-3" variant="outline">
+                  <span class="text-sm! text-gray-500">Repository:</span>
+                  {prettifyRepo(openedExtension.value.extension.repo)}
+                </Badge>
+              </div>
+              <div class="flex items-center justify-center gap-2">
                 <Button
-                  class="h-10 w-28 rounded-lg font-bold"
+                  class="w-40"
                   variant={isInstalling
                     ? "outline"
                     : openedExtension.value.extension.isInstalled
                       ? "destructive"
                       : "default"}
-                  onclick={async () => {
-                    if (openedExtension.value.extension === undefined) return;
-                    if (!openedExtension.value.extension.isInstalled) {
-                      isInstalling = true;
+                  onclick={() => {
+                    if (enabledSourcesHere.length > 0) {
+                      openAskSure = true;
+                    } else {
+                      toggleInstalled();
                     }
-                    openedExtension.value.extension.isInstalled = (
-                      await suwaManager.updateExtension(
-                        openedExtension.value.extension.pkgName,
-                        "install",
-                        !openedExtension.value.extension.isInstalled,
-                      )
-                    ).isInstalled;
-                    suwaManager.getExtensions();
-                    isInstalling = false;
                   }}
                 >
                   <Icon
@@ -181,6 +193,62 @@
                       ? "Uninstall"
                       : "Install"}
                 </Button>
+                <Button
+                  class="w-40"
+                  disabled={!autoUpdateExtensions.value ||
+                    !openedExtension.value.extension.isInstalled}
+                  variant="secondary"
+                  onclick={() => {
+                    const extensionId =
+                      openedExtension.value.extension?.pkgName ?? "";
+                    if (disableAutoUpdateByExtension.value[extensionId]) {
+                      disableAutoUpdateByExtension.value = {
+                        ...disableAutoUpdateByExtension.value,
+                        [extensionId]: false,
+                      };
+                    } else {
+                      disableAutoUpdateByExtension.value = {
+                        ...disableAutoUpdateByExtension.value,
+                        [extensionId]: true,
+                      };
+                    }
+                  }}
+                >
+                  <Checkbox
+                    class="pointer-events-none"
+                    checked={!disableAutoUpdateByExtension.value[
+                      openedExtension.value.extension.pkgName
+                    ]}
+                  />
+                  Auto update
+                </Button>
+                <Button
+                  class="w-40"
+                  variant={openedExtension.value.extension.hasUpdate
+                    ? "info"
+                    : "outline"}
+                  disabled={isUpdating ||
+                    !openedExtension.value.extension.hasUpdate}
+                  onclick={async () => {
+                    isUpdating = true;
+                    openedExtension.value.extension =
+                      await suwaManager.patchExtension(
+                        openedExtension.value.extension?.pkgName ?? "",
+                        "update",
+                      );
+                    isUpdating = false;
+                  }}
+                >
+                  <Icon
+                    class={cn(isUpdating && "animate-spin")}
+                    icon={openedExtension.value.extension.hasUpdate
+                      ? "lucide:refresh-cw"
+                      : "lucide:check"}
+                  />
+                  {openedExtension.value.extension.hasUpdate
+                    ? "Update"
+                    : "Up to date"}
+                </Button>
               </div>
             </div>
             <div class="flex gap-3">
@@ -189,7 +257,7 @@
                 text="{enabledSourcesHere.length} sources enabled of {sources.length}"
               >
                 <Badge
-                  class="min-w-8 rounded-xl text-sm font-bold"
+                  class="min-w-16 rounded-xl text-sm font-bold"
                   variant="outline"
                 >
                   {enabledSourcesHere.length}
@@ -198,9 +266,42 @@
                 </Badge>
               </Tooltip>
             </div>
-            <div class="flex h-60 flex-col overflow-y-scroll rounded-xl">
-              {#each sources as source (source.id)}
-                <div animate:flip>
+            <div class="flex justify-center gap-2 pr-6 pl-2">
+              <Badge class="min-w-12" variant="outline">
+                {filteredSources.length}
+              </Badge>
+              <Input
+                class="w-full"
+                divClass="w-full"
+                variant="outline"
+                placeholder="Search languages..."
+                bind:value={querySources}
+              />
+              <Button
+                class="w-40"
+                variant={enabledSourcesHere.length === sources.length
+                  ? "secondary"
+                  : "default"}
+                onclick={() => {
+                  const data: Record<string, boolean> = {};
+                  const isEnable = enabledSourcesHere.length !== sources.length;
+                  for (let source of sources) {
+                    data[source.id] = isEnable;
+                  }
+                  enabledSources.value = {
+                    ...enabledSources.value,
+                    ...data,
+                  };
+                }}
+              >
+                {enabledSourcesHere.length === sources.length
+                  ? "Disable"
+                  : "Enable"} all
+              </Button>
+            </div>
+            <div class="flex h-84 flex-col overflow-y-scroll rounded-xl">
+              {#each filteredSources as source (source.id)}
+                <div animate:flip={{ duration: querySources === "" ? 500 : 0 }}>
                   <ContextMenu.Root>
                     <ContextMenu.Trigger>
                       <Tooltip
@@ -212,15 +313,15 @@
                           class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                           variant="link"
                           onclick={() => {
-                            if (enabledSources.value[source.id.toString()]) {
+                            if (enabledSources.value[source.id]) {
                               enabledSources.value = {
                                 ...enabledSources.value,
-                                [source.id.toString()]: false,
+                                [source.id]: false,
                               };
                             } else {
                               enabledSources.value = {
                                 ...enabledSources.value,
-                                [source.id.toString()]: true,
+                                [source.id]: true,
                               };
                             }
                           }}
@@ -236,15 +337,6 @@
                               >
                                 {getLangNative(source.lang)}
                               </Label>
-                              <!-- <div class="flex w-18 justify-between"> -->
-                              <!--   <span class="text-gray-500"> -->
-                              <!--     <!-- {sources[0].displayName} -->
-                              <!--     {getLang(source.lang)} -->
-                              <!--   </span> -->
-                              <!--   <span class="text-red-500"> -->
-                              <!--     {source.isNsfw ? "+18" : ""} -->
-                              <!--   </span> -->
-                              <!-- </div> -->
                             </div>
                           </div>
                           <div class="flex items-center gap-2">
@@ -347,6 +439,15 @@
                       </ContextMenu.Item>
                     </ContextMenu.Content>
                   </ContextMenu.Root>
+                </div>
+              {:else}
+                <div class="flex flex-col w-full items-center mt-20">
+                  <Label class="text-xl">
+                    No sources{!openedExtension.value.extension.isInstalled
+                      ? "... You could install it... "
+                      : " found..."}
+                  </Label>
+                  <Label class="text-3xl">ヽ( `д´*)ノ</Label>
                 </div>
               {/each}
             </div>

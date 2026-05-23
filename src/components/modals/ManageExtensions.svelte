@@ -15,12 +15,13 @@
     allowedExtensionLanguages,
     allowedSourceLanguages,
     enabledSources,
+    extensionManagerTab,
     hiddenExtensions,
     hiddenSources,
     openedExtension,
     openExtensions,
     repoInfo,
-    showExtensionsNsfw,
+    showExtensionsNSourcesNSFW,
     suwayomi,
     suwayomiUrl,
   } from "@/states";
@@ -41,14 +42,13 @@
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { IsoLanguages } from "@/constants";
   import type { Extension, Source } from "@/types";
+  import { open as openFile } from "@tauri-apps/plugin-dialog";
   import { flip } from "svelte/animate";
   import { animate } from "animejs";
+  import { readFile } from "@tauri-apps/plugin-fs";
 
   let query = $state("");
   let queryLangs = $state("");
-  let tab: "sources" | "extensions" = $state(
-    suwayomi.installedExtensions.length > 0 ? "sources" : "extensions",
-  );
   let showedGroup = $state<"all" | "installed" | "noninstalled" | "hidden">(
     "all",
   );
@@ -65,7 +65,7 @@
       : showedGroup === "noninstalled" || showedGroup === "all"
         ? suwayomi.sources.filter(
             (s) =>
-              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
+              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
               (showedGroup === "all"
@@ -75,10 +75,10 @@
           )
         : suwayomi.enabledSources.filter(
             (s) =>
-              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
+              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-              (showExtensionsNsfw.value ? true : !s.isNsfw) &&
+              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
               allowedSourceLanguages.value[s.lang],
           ),
   );
@@ -136,7 +136,7 @@
         ? suwayomi.extensions
             .filter(
               (e) =>
-                (showExtensionsNsfw.value ? true : !e.isNsfw) &&
+                (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
                 e.name.toLowerCase().includes(query.toLowerCase()) &&
                 (showedGroup === "all" ? true : !e.isInstalled) &&
                 allowedExtensionLanguages.value[e.lang],
@@ -151,7 +151,7 @@
         : suwayomi.installedExtensions
             .filter(
               (e) =>
-                (showExtensionsNsfw.value ? true : !e.isNsfw) &&
+                (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
                 e.name.toLowerCase().includes(query.toLowerCase()) &&
                 allowedExtensionLanguages.value[e.lang],
             )
@@ -209,7 +209,7 @@
   );
 
   let availableLangsByTab = $derived(
-    tab === "sources"
+    extensionManagerTab.value === "sources"
       ? suwayomi.availableSourceLangs
       : suwayomi.availableExtensionLangs,
   );
@@ -244,7 +244,7 @@
   );
 
   let allowedLanguages: string[] = $derived(
-    tab === "sources"
+    extensionManagerTab.value === "sources"
       ? Object.entries(allowedSourceLanguages.value)
           .filter(([_, v]) => v)
           .map(([k, _]) => k)
@@ -305,10 +305,9 @@
   ): Promise<boolean> => {
     installingExtensions[extension.pkgName] = true;
     const isInstalled = (
-      await suwaManager.updateExtension(
+      await suwaManager.patchExtension(
         extension.pkgName,
-        "install",
-        !extension.isInstalled,
+        extension.isInstalled ? "uninstall" : "install",
       )
     ).isInstalled;
     delete installingExtensions[extension.pkgName];
@@ -333,15 +332,17 @@
   bind:open={openExtensions.active}
   onOpenChange={(open) => {
     if (open) {
-      tab = suwayomi.installedExtensions.length > 0 ? "sources" : "extensions";
+      extensionManagerTab.value =
+        suwayomi.installedExtensions.length > 0 ? "sources" : "extensions";
     }
   }}
 >
   <Dialog.Content>
     <Dialog.Header>
-      <Dialog.Title>Manage {tab}</Dialog.Title>
+      <Dialog.Title>Manage {extensionManagerTab.value}</Dialog.Title>
       <Dialog.Description>
-        Select which {tab} you want to {tab === "sources"
+        Select which {extensionManagerTab.value} you want to {extensionManagerTab.value ===
+        "sources"
           ? "enable"
           : "install"}
       </Dialog.Description>
@@ -353,26 +354,30 @@
         <Button
           class={cn(
             "pointer-events-none absolute start h-8 w-1/2 rounded-xl transition-all duration-500",
-            tab === "sources" ? "translate-x-8" : "translate-x-55",
+            extensionManagerTab.value === "sources"
+              ? "translate-x-8"
+              : "translate-x-55",
           )}
         />
         <Button
           class={cn(
             "hover:text-primary/70 z-2 h-8 w-full rounded-xl hover:bg-transparent",
-            tab === "sources" && "text-background hover:text-background/70",
+            extensionManagerTab.value === "sources" &&
+              "text-background hover:text-background/70",
           )}
           variant="ghost"
-          onclick={() => (tab = "sources")}
+          onclick={() => (extensionManagerTab.value = "sources")}
         >
           Sources
         </Button>
         <Button
           class={cn(
             "hover:text-primary/70 z-2 h-8 w-full rounded-xl hover:bg-transparent",
-            tab === "extensions" && "text-background hover:text-background/70",
+            extensionManagerTab.value === "extensions" &&
+              "text-background hover:text-background/70",
           )}
           variant="ghost"
-          onclick={() => (tab = "extensions")}
+          onclick={() => (extensionManagerTab.value = "extensions")}
         >
           Extensions
         </Button>
@@ -381,29 +386,65 @@
     <div class="flex w-full flex-col justify-center gap-3">
       <div class="flex w-full justify-between gap-2">
         <Badge class="w-12 rounded-xl" variant="outline">
-          {tab === "sources"
+          {extensionManagerTab.value === "sources"
             ? filteredSources.length
             : filteredExtensions.length}
         </Badge>
-        <Input
-          class="w-full rounded-xl"
-          divClass="w-full"
-          variant="outline"
-          placeholder="Search for {tab}..."
-          bind:value={query}
-        />
+        <div
+          class={cn(
+            "flex gap-2 transition-all duration-500",
+            extensionManagerTab.value === "sources" && "gap-0",
+          )}
+        >
+          <Input
+            class={cn(
+              "w-full rounded-xl transition-all duration-500",
+              extensionManagerTab.value === "extensions" &&
+                query === "" &&
+                "text-xs!",
+            )}
+            divClass="w-full"
+            variant="outline"
+            placeholder="Search {extensionManagerTab.value}..."
+            bind:value={query}
+          />
+          <Tooltip text="Install extension from file">
+            <Button
+              class={cn(
+                "max-w-12 transition-all duration-500",
+                extensionManagerTab.value === "sources" &&
+                  "max-w-0 px-0 opacity-0",
+              )}
+              variant="default"
+              onclick={async () => {
+                const path = await openFile({
+                  filters: [{ name: "Extension", extensions: ["apk"] }],
+                });
+
+                if (!path) return;
+                const bytes = await readFile(path);
+                const file = new File([bytes], path.split("/").pop()!, {
+                  type: "application/vnd.android.package-archive",
+                });
+                suwaManager.installExternalExtension(file);
+              }}
+            >
+              <Icon icon="lucide:file-plus-corner" />
+            </Button>
+          </Tooltip>
+        </div>
         <Button
           class="flex min-w-24 justify-between rounded-xl font-bold"
-          variant={showExtensionsNsfw.value ? "destructive" : "secondary"}
+          variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
           disabled={showedGroup === "hidden"}
-          onclick={showExtensionsNsfw.toggle}
+          onclick={showExtensionsNSourcesNSFW.toggle}
         >
           <Icon
-            icon={showExtensionsNsfw.value
+            icon={showExtensionsNSourcesNSFW.value
               ? "lucide:triangle-alert"
               : "lucide:heart"}
           />
-          {showExtensionsNsfw.value ? "N" : ""}SFW
+          {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
         </Button>
         <Popover.Root>
           <Popover.Trigger
@@ -532,7 +573,7 @@
                 variant="default"
                 onclick={() => {
                   const data: Record<string, boolean> = {};
-                  if (tab === "sources") {
+                  if (extensionManagerTab.value === "sources") {
                     for (const lang of suwayomi.availableSourceLangs) {
                       data[lang] = true;
                     }
@@ -551,7 +592,7 @@
                 class="h-8 rounded-lg px-2.5"
                 variant="destructive"
                 onclick={() => {
-                  if (tab === "sources") {
+                  if (extensionManagerTab.value === "sources") {
                     allowedSourceLanguages.value = {};
                   } else {
                     allowedExtensionLanguages.value = {};
@@ -580,7 +621,7 @@
                     variant="outline"
                     onclick={(e) => {
                       e.stopPropagation();
-                      if (tab === "sources") {
+                      if (extensionManagerTab.value === "sources") {
                         allowedSourceLanguages.value = {
                           ...allowedSourceLanguages.value,
                           [lang]: !allowedSourceLanguages.value[lang],
@@ -594,7 +635,7 @@
                     }}
                   >
                     <Switch
-                      checked={tab === "sources"
+                      checked={extensionManagerTab.value === "sources"
                         ? allowedSourceLanguages.value[lang]
                         : allowedExtensionLanguages.value[lang]}
                     />
@@ -628,9 +669,9 @@
             showedGroup = "installed";
           }}
         >
-          {tab === "sources" ? "Enabled" : "Installed"}
+          {extensionManagerTab.value === "sources" ? "Enabled" : "Installed"}
           <Badge variant="secondary">
-            {tab === "sources"
+            {extensionManagerTab.value === "sources"
               ? suwayomi.enabledSources.length
               : suwayomi.installedExtensions.length}
           </Badge>
@@ -646,9 +687,11 @@
             showedGroup = "noninstalled";
           }}
         >
-          {tab === "sources" ? "Disabled" : "Not installed"}
+          {extensionManagerTab.value === "sources"
+            ? "Disabled"
+            : "Not installed"}
           <Badge variant="secondary">
-            {tab === "sources"
+            {extensionManagerTab.value === "sources"
               ? suwayomi.disabledSources.length
               : suwayomi.nonInstalledExtensions.length}
           </Badge>
@@ -666,7 +709,7 @@
         >
           All
           <Badge variant="secondary">
-            {tab === "sources"
+            {extensionManagerTab.value === "sources"
               ? suwayomi.sources.length
               : suwayomi.extensions.length}
           </Badge>
@@ -690,8 +733,8 @@
           </Button>
         </Tooltip>
       </div>
-      {#if tab === "sources" ? filteredSources.length > 0 : filteredExtensions.length > 0}
-        {#if tab === "sources"}
+      {#if extensionManagerTab.value === "sources" ? filteredSources.length > 0 : filteredExtensions.length > 0}
+        {#if extensionManagerTab.value === "sources"}
           <VList
             class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
             data={filteredSourceRows}
@@ -772,12 +815,10 @@
                                   updatingExtension[
                                     sRow.source.extension.pkgName
                                   ] = true;
-                                  await suwaManager.updateExtension(
+                                  await suwaManager.patchExtension(
                                     sRow.source.extension.pkgName,
                                     "update",
-                                    true,
                                   );
-                                  suwaManager.getExtensions();
                                   updatingExtension[
                                     sRow.source.extension.pkgName
                                   ] = false;
@@ -887,19 +928,23 @@
                         {getLangNative(sRow.lang)}
                       </div>
                       <div class="flex items-center gap-3">
-                        <Button
-                          class="h-6"
-                          variant="secondary"
-                          onclick={(e) => {
-                            e.stopPropagation();
-                            allowedSourceLanguages.value = {
-                              ...allowedSourceLanguages.value,
-                              [sRow.lang]: false,
-                            };
-                          }}
+                        <Tooltip
+                          text="Hide language: {getLangNative(sRow.lang)}"
                         >
-                          Hide
-                        </Button>
+                          <Button
+                            class="size-6"
+                            variant="secondary"
+                            onclick={(e) => {
+                              e.stopPropagation();
+                              allowedSourceLanguages.value = {
+                                ...allowedSourceLanguages.value,
+                                [sRow.lang]: false,
+                              };
+                            }}
+                          >
+                            <Icon icon="lucide:eye-off" />
+                          </Button>
+                        </Tooltip>
                         <Badge
                           class="pointer-events-none min-w-10 rounded-xl text-sm"
                           variant="outline"
@@ -1006,10 +1051,9 @@
                                   updatingExtension[eRow.extension.pkgName] =
                                     true;
                                   eRow.extension =
-                                    await suwaManager.updateExtension(
+                                    await suwaManager.patchExtension(
                                       eRow.extension.pkgName,
                                       "update",
-                                      true,
                                     );
                                   updatingExtension[eRow.extension.pkgName] =
                                     false;
@@ -1159,15 +1203,17 @@
                 (showedGroup === "all"
                   ? ""
                   : showedGroup === "installed"
-                    ? tab === "sources"
+                    ? extensionManagerTab.value === "sources"
                       ? "enabled"
                       : "installed"
                     : showedGroup === "noninstalled"
-                      ? tab === "sources"
+                      ? extensionManagerTab.value === "sources"
                         ? "disabled"
                         : "not installed"
                       : "hidden") +
-                (tab === "sources" ? " sources..." : " extensions...")}
+                (extensionManagerTab.value === "sources"
+                  ? " sources..."
+                  : " extensions...")}
           </span>
           <span class="text-4xl">¯\_(ツ)_/¯</span>
         </div>

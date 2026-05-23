@@ -3,6 +3,7 @@ import {
   activeExtensionRepos,
   allowedExtensionLanguages,
   allowedSourceLanguages,
+  disableAutoUpdateByExtension,
   repoInfo,
   suwayomiUrl,
 } from "@/states";
@@ -42,8 +43,14 @@ export const suwaManager = {
   async isConnected(): Promise<boolean> {
     return fetch(suwayomiUrl.value)
       .then((r) => {
+        if (suwayomi.extensionRepos.length === 0) {
+          this.getRepos();
+        }
         if (suwayomi.rawExtensions.length === 0) {
           this.getExtensions();
+        }
+        if (suwayomi.rawSources.length === 0) {
+          this.getSources();
         }
         return r.ok;
       })
@@ -174,6 +181,7 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.rawExtensions = rJson.data.fetchExtensions.extensions;
+      this.updateAllExtensions();
       await delay(10);
       if (
         Object.values(allowedExtensionLanguages.value).filter((e) => e)
@@ -187,10 +195,28 @@ export const suwaManager = {
       }
     });
   },
-  async updateExtension(
+  async updateAllExtensions(excludeNonAuto: boolean = true) {
+    let hasUpdated = false;
+    for (let extension of suwayomi.rawExtensions) {
+      if (
+        extension.hasUpdate &&
+        (excludeNonAuto
+          ? !(disableAutoUpdateByExtension.value[extension.pkgName] ?? false)
+          : true)
+      ) {
+        await this.patchExtension(extension.pkgName, "update", false);
+        hasUpdated = true;
+      }
+    }
+    if (hasUpdated) {
+      this.getExtensions();
+      this.getSources();
+    }
+  },
+  async patchExtension(
     pkgName: string,
-    operation: "install" | "update",
-    value: boolean,
+    patch: "install" | "uninstall" | "update",
+    refreshAfter: boolean = true,
   ): Promise<Extension> {
     return fetch(suwayomiUrl.value + "/api/graphql", {
       method: "POST",
@@ -199,12 +225,7 @@ export const suwaManager = {
         variables: {
           input: {
             id: pkgName,
-            patch:
-              operation === "install"
-                ? value
-                  ? { install: true }
-                  : { uninstall: true }
-                : { update: true },
+            patch: { [patch]: true },
           },
         },
         query: `
@@ -231,10 +252,65 @@ export const suwaManager = {
           }
         `,
       },
+    })
+      .then(async (r) => {
+        const rJson = await r.json();
+        if (refreshAfter) {
+          this.getSources();
+          this.getExtensions();
+        }
+        return rJson.data.updateExtension.extension;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  },
+  async installExternalExtension(file: File): Promise<Extension> {
+    const formData = new FormData();
+    formData.append(
+      "operations",
+      JSON.stringify({
+        operationName: "INSTALL_EXTERNAL_EXTENSION",
+        variables: { file: null },
+        query: `
+      fragment EXTENSION_LIST_FIELDS on ExtensionType {
+        pkgName
+        name
+        lang
+        versionCode
+        versionName
+        iconUrl
+        repo
+        isNsfw
+        isInstalled
+        isObsolete
+        hasUpdate
+      }
+
+      mutation INSTALL_EXTERNAL_EXTENSION($file: Upload!) {
+        installExternalExtension(input: { extensionFile: $file }) {
+          extension {
+            ...EXTENSION_LIST_FIELDS
+          }
+        }
+      }
+    `,
+      }),
+    );
+    formData.append(
+      "map",
+      JSON.stringify({
+        "1": ["variables.file"],
+      }),
+    );
+    formData.append("1", file, file.name);
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      body: formData,
     }).then(async (r) => {
       const rJson = await r.json();
-      this.getSources();
-      return rJson.data.updateExtension.extension;
+      this.getExtensions();
+      return rJson.data.installExternalExtension.extension;
     });
   },
   async getSources() {

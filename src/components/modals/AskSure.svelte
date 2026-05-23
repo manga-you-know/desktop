@@ -5,6 +5,7 @@
   interface Props {
     open: boolean;
     message: string;
+    deleteText?: string;
     overlayClass?: string;
     onokay: () => Promise<void>;
   }
@@ -13,6 +14,7 @@
     open = $bindable(false),
     message,
     overlayClass,
+    deleteText = "Delete",
     onokay,
   }: Props = $props();
 </script>
@@ -31,10 +33,11 @@
         effect="gooeyLeft"
         onclick={async () => {
           await onokay();
-          toast.warning("Deleted with success.");
+          open = false;
+          // toast.warning("Deleted with success.");
         }}
       >
-        Delete
+        {deleteText}
       </Button>
       <AlertDialog.Cancel class="dark:text-white">Cancel</AlertDialog.Cancel>
     </AlertDialog.Footer>
