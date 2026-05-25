@@ -26,7 +26,12 @@ import {
   hiddenExtensions,
   hiddenSources,
 } from "./stored.svelte";
-import { OpenedObject, OpenState } from "./classes.svelte";
+import {
+  OpenedObject,
+  OpenState,
+  TextState,
+  ValueState,
+} from "./classes.svelte";
 // import { favorites } from "@/lib/db";
 
 export const openAdd = new OpenState();
@@ -44,6 +49,8 @@ export const openPatchNotes = new OpenState();
 export const openFeedback = new OpenState();
 export const openTag = new OpenState();
 export const blockKeyboard = new OpenState();
+
+export const searchInput = new TextState({ value: "" });
 
 export const openedExtension = new OpenedObject<{
   extension?: Extension;

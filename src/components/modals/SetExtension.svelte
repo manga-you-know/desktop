@@ -9,7 +9,7 @@
     Label,
     Switch,
   } from "@/lib/components";
-  import { cn, getLangNative, prettifyRepo } from "@/lib/utils";
+  import { cn, getLangName, getLangNative, prettifyRepo } from "@/lib/utils";
   import {
     suwayomiUrl,
     openedExtension,
@@ -19,6 +19,7 @@
     enabledSources,
     disableAutoUpdateByExtension,
     autoUpdateExtensions,
+    favoriteSources,
   } from "@/states";
   import {
     AskSure,
@@ -30,6 +31,7 @@
   import Icon from "@iconify/svelte";
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
   import { flip } from "svelte/animate";
+  import { ScrollingValue } from "svelte-ux";
 
   let isInstalling = $state(false);
   let selectedPreference: Preference | undefined = $state(undefined);
@@ -64,6 +66,9 @@
     sources.filter(
       (s) =>
         s.lang.toLowerCase().includes(querySources.toLowerCase()) ||
+        getLangName(s.lang)
+          .toLowerCase()
+          .includes(querySources.toLowerCase()) ||
         getLangNative(s.lang)
           .toLowerCase()
           .includes(querySources.toLowerCase()),
@@ -160,7 +165,7 @@
                   {getLangNative(openedExtension.value.extension.lang)}
                 </Badge>
                 <Badge class="flex w-full gap-3" variant="outline">
-                  <span class="text-sm! text-gray-500">Repository:</span>
+                  <span class="text-sm! text-gray-400">Repository:</span>
                   {prettifyRepo(openedExtension.value.extension.repo)}
                 </Badge>
               </div>
@@ -260,15 +265,15 @@
                   class="min-w-16 rounded-xl text-sm font-bold"
                   variant="outline"
                 >
-                  {enabledSourcesHere.length}
+                  <ScrollingValue value={enabledSourcesHere.length} />
                   /
-                  {sources.length}
+                  <ScrollingValue value={sources.length} />
                 </Badge>
               </Tooltip>
             </div>
             <div class="flex justify-center gap-2 pr-6 pl-2">
               <Badge class="min-w-12" variant="outline">
-                {filteredSources.length}
+                <ScrollingValue value={filteredSources.length} />
               </Badge>
               <Input
                 class="w-full"
@@ -339,7 +344,7 @@
                               </Label>
                             </div>
                           </div>
-                          <div class="flex items-center gap-2">
+                          <div class="flex items-center gap-1">
                             {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
                               <Button
                                 class="h-8 w-9 rounded-lg"
@@ -363,24 +368,61 @@
                                 <Icon icon="lucide:settings" />
                               </Button>
                             {/if}
+                            <Tooltip
+                              text="{favoriteSources.value[source.id]
+                                ? 'Unfavorite'
+                                : 'Favorite'} source {source.displayName}"
+                            >
+                              <Button
+                                class={cn(
+                                  "h-8 w-9 max-w-0 rounded-4xl px-0 opacity-0 transition-all duration-500",
+                                  enabledSources.value[source.id] &&
+                                    "max-w-9 px-2 opacity-100",
+                                )}
+                                variant={favoriteSources.value[source.id]
+                                  ? "default"
+                                  : "ghost"}
+                                onclick={(e) => {
+                                  e.stopPropagation();
+                                  if (favoriteSources.value[source.id]) {
+                                    favoriteSources.value = {
+                                      ...favoriteSources.value,
+                                      [source.id]: false,
+                                    };
+                                  } else {
+                                    favoriteSources.value = {
+                                      ...favoriteSources.value,
+                                      [source.id]: true,
+                                    };
+                                  }
+                                }}
+                              >
+                                <Icon
+                                  class={cn(
+                                    "transition-transform duration-400",
+                                    favoriteSources.value[source.id] &&
+                                      "rotate-360",
+                                  )}
+                                  icon={favoriteSources.value[source.id]
+                                    ? "lucide:star"
+                                    : "lucide:star-off"}
+                                />
+                              </Button>
+                            </Tooltip>
                             <Switch
-                              checked={enabledSources.value[
-                                source.id.toString()
-                              ]}
+                              checked={enabledSources.value[source.id]}
                               onclick={async (e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                if (
-                                  enabledSources.value[source.id.toString()]
-                                ) {
+                                if (enabledSources.value[source.id]) {
                                   enabledSources.value = {
                                     ...enabledSources.value,
-                                    [source.id.toString()]: false,
+                                    [source.id]: false,
                                   };
                                 } else {
                                   enabledSources.value = {
                                     ...enabledSources.value,
-                                    [source.id.toString()]: true,
+                                    [source.id]: true,
                                   };
                                 }
                               }}

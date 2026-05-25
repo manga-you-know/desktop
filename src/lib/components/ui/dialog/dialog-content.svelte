@@ -40,6 +40,7 @@
   {#if overlay}
     <Dialog.Overlay
       class={cn(
+        "transition-all duration-500",
         $customTitlebar && "mt-10 max-h-[calc(100vh-2.5rem)]",
         $blackWhiteMode && "grayscale",
         overlayClass,

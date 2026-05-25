@@ -118,11 +118,25 @@ export const enabledSources = new StoredState<Record<string, boolean>>({
   storePath: "server.json",
 });
 
+export const favoriteSources = new StoredState<Record<string, boolean>>({
+  key: "favorite_sources",
+  defaultValue: {},
+  store: serverStore,
+  storePath: "server.json",
+});
+
 export const disableAutoUpdateByExtension = new StoredState<
   Record<string, boolean>
 >({
   key: "disable_auto_update_by_extension",
   defaultValue: {},
+  store: serverStore,
+  storePath: "server.json",
+});
+
+export const activeExtensionRepos = new StoredState<string[]>({
+  key: "active_extension_repos",
+  defaultValue: [],
   store: serverStore,
   storePath: "server.json",
 });
@@ -155,6 +169,7 @@ export const repoInfo = new StoredState<
 
 export const extensionManagerTab = new StoredState<"extensions" | "sources">({
   key: "extension_manager_tab",
+
   defaultValue: "extensions",
 });
 
@@ -164,9 +179,13 @@ export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
   alternatives: [true, false],
 });
 
-export const activeExtensionRepos = new StoredState<string[]>({
-  key: "active_extension_repos",
-  defaultValue: [],
+export const searchType = new StoredState<"filter" | "popular" | "latest">({
+  key: "search_type",
+  defaultValue: "filter",
+});
+export const searchMode = new StoredState<"single" | "multiple" | "global">({
+  key: "search_mode",
+  defaultValue: "single",
 });
 
 export const allowedExtensionLanguages = new StoredState<

@@ -131,9 +131,12 @@
       {placeholder}
     </label>
   {/if}
-  {#if deleteButton && value !== ""}
+  {#if deleteButton}
     <Button
-      class="absolute top-1 right-1 size-8 rounded-lg backdrop-blur-sm"
+      class={cn(
+        "pointer-events-none absolute top-1 right-1 size-8 rounded-lg opacity-0 backdrop-blur-sm transition-opacity duration-500",
+        value !== "" && "pointer-events-auto opacity-100",
+      )}
       variant="ghost"
       onclick={() => {
         value = "";

@@ -16,6 +16,7 @@
     allowedSourceLanguages,
     enabledSources,
     extensionManagerTab,
+    favoriteSources,
     hiddenExtensions,
     hiddenSources,
     openedExtension,
@@ -46,6 +47,7 @@
   import { flip } from "svelte/animate";
   import { animate } from "animejs";
   import { readFile } from "@tauri-apps/plugin-fs";
+  import { ScrollingValue } from "svelte-ux";
 
   let query = $state("");
   let queryLangs = $state("");
@@ -384,57 +386,29 @@
       </div>
     </div>
     <div class="flex w-full flex-col justify-center gap-3">
-      <div class="flex w-full justify-between gap-2">
-        <Badge class="w-12 rounded-xl" variant="outline">
-          {extensionManagerTab.value === "sources"
-            ? filteredSources.length
-            : filteredExtensions.length}
-        </Badge>
-        <div
-          class={cn(
-            "flex gap-2 transition-all duration-500",
-            extensionManagerTab.value === "sources" && "gap-0",
-          )}
-        >
-          <Input
-            class={cn(
-              "w-full rounded-xl transition-all duration-500",
-              extensionManagerTab.value === "extensions" &&
-                query === "" &&
-                "text-xs!",
-            )}
-            divClass="w-full"
-            variant="outline"
-            placeholder="Search {extensionManagerTab.value}..."
-            bind:value={query}
-          />
-          <Tooltip text="Install extension from file">
-            <Button
-              class={cn(
-                "max-w-12 transition-all duration-500",
-                extensionManagerTab.value === "sources" &&
-                  "max-w-0 px-0 opacity-0",
-              )}
-              variant="default"
-              onclick={async () => {
-                const path = await openFile({
-                  filters: [{ name: "Extension", extensions: ["apk"] }],
-                });
+      <div class="flex w-full gap-2">
+        <Tooltip text="Install extension from file">
+          <Button
+            variant="default"
+            onclick={async () => {
+              const path = await openFile({
+                filters: [{ name: "Extension", extensions: ["apk"] }],
+              });
 
-                if (!path) return;
-                const bytes = await readFile(path);
-                const file = new File([bytes], path.split("/").pop()!, {
-                  type: "application/vnd.android.package-archive",
-                });
-                suwaManager.installExternalExtension(file);
-              }}
-            >
-              <Icon icon="lucide:file-plus-corner" />
-            </Button>
-          </Tooltip>
-        </div>
+              if (!path) return;
+              const bytes = await readFile(path);
+              const file = new File([bytes], path.split("/").pop()!, {
+                type: "application/vnd.android.package-archive",
+              });
+              suwaManager.installExternalExtension(file);
+            }}
+          >
+            <Icon icon="lucide:file-plus-corner" />
+            Add
+          </Button>
+        </Tooltip>
         <Button
-          class="flex min-w-24 justify-between rounded-xl font-bold"
+          class="flex w-24 justify-between rounded-xl font-bold"
           variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
           disabled={showedGroup === "hidden"}
           onclick={showExtensionsNSourcesNSFW.toggle}
@@ -456,6 +430,7 @@
               disabled={["installed", "hidden"].includes(showedGroup)}
             >
               <Icon icon="lucide:link" />
+              Repositories
             </Button>
           </Popover.Trigger>
           <Popover.Content class="flex flex-col gap-2 p-2">
@@ -557,6 +532,7 @@
             >
               <Button class="rounded-xl">
                 <Icon icon="lucide:languages" />
+                Languages
               </Button>
             </Tooltip>
           </Popover.Trigger>
@@ -566,7 +542,9 @@
               <!--   Allowed languages: {allowedLanguages.length} / {availableLangsByTab.length} -->
               <!-- </Label> -->
               <Badge class="h-8 w-20 rounded-lg text-sm" variant="secondary">
-                {allowedLanguages.length} / {availableLangsByTab.length}
+                <ScrollingValue value={allowedLanguages.length} /> / <ScrollingValue
+                  value={availableLangsByTab.length}
+                />
               </Badge>
               <Button
                 class="h-8 rounded-lg px-2.5"
@@ -604,7 +582,7 @@
             </div>
             <div class="flex gap-2">
               <Badge class="w-14" variant="outline">
-                {filteredLangs.length}
+                <ScrollingValue value={filteredLangs.length} />
               </Badge>
               <Input
                 class="w-full"
@@ -657,6 +635,35 @@
           </Popover.Content>
         </Popover.Root>
       </div>
+      <div class="flex w-full gap-2">
+        <Badge class="w-12 rounded-xl" variant="outline">
+          <ScrollingValue
+            value={extensionManagerTab.value === "sources"
+              ? filteredSources.length
+              : filteredExtensions.length}
+          />
+        </Badge>
+        <Input
+          class="w-full"
+          divClass="w-full"
+          variant="outline"
+          placeholder="Search for {extensionManagerTab.value}..."
+          bind:value={query}
+        />
+        <Badge class="w-27 text-sm font-bold" variant="secondary">
+          <ScrollingValue
+            value={extensionManagerTab.value === "sources"
+              ? suwayomi.enabledSources.length
+              : suwayomi.installedExtensions.length}
+          />
+          /
+          <ScrollingValue
+            value={extensionManagerTab.value === "sources"
+              ? suwayomi.sources.length
+              : suwayomi.extensions.length}
+          />
+        </Badge>
+      </div>
       <div class="flex w-full">
         <Button
           class={cn(
@@ -671,9 +678,11 @@
         >
           {extensionManagerTab.value === "sources" ? "Enabled" : "Installed"}
           <Badge variant="secondary">
-            {extensionManagerTab.value === "sources"
-              ? suwayomi.enabledSources.length
-              : suwayomi.installedExtensions.length}
+            <ScrollingValue
+              value={extensionManagerTab.value === "sources"
+                ? suwayomi.enabledSources.length
+                : suwayomi.installedExtensions.length}
+            />
           </Badge>
         </Button>
         <Button
@@ -691,9 +700,11 @@
             ? "Disabled"
             : "Not installed"}
           <Badge variant="secondary">
-            {extensionManagerTab.value === "sources"
-              ? suwayomi.disabledSources.length
-              : suwayomi.nonInstalledExtensions.length}
+            <ScrollingValue
+              value={extensionManagerTab.value === "sources"
+                ? suwayomi.disabledSources.length
+                : suwayomi.nonInstalledExtensions.length}
+            />
           </Badge>
         </Button>
         <Button
@@ -709,9 +720,11 @@
         >
           All
           <Badge variant="secondary">
-            {extensionManagerTab.value === "sources"
-              ? suwayomi.sources.length
-              : suwayomi.extensions.length}
+            <ScrollingValue
+              value={extensionManagerTab.value === "sources"
+                ? suwayomi.sources.length
+                : suwayomi.extensions.length}
+            />
           </Badge>
         </Button>
         <Tooltip text="{suwayomi.hiddenExtensions.length} hided extensions">
@@ -801,7 +814,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1">
                           {#if suwayomi.extensionsByPkgName[sRow.source.extension.pkgName]?.hasUpdate && enabledSources.value[sRow.source.id]}
                             <Tooltip text="New update available!">
                               <Button
@@ -861,6 +874,47 @@
                               <Icon icon="lucide:settings" />
                             </Button>
                           {/if}
+                          <Tooltip
+                            text="{favoriteSources.value[sRow.source.id]
+                              ? 'Unfavorite'
+                              : 'Favorite'} source {sRow.source.displayName}"
+                          >
+                            <Button
+                              class={cn(
+                                "h-8 w-9 max-w-0 rounded-4xl px-0 opacity-0 transition-all duration-500",
+                                enabledSources.value[sRow.source.id] &&
+                                  "max-w-9 px-2 opacity-100",
+                              )}
+                              variant={favoriteSources.value[sRow.source.id]
+                                ? "default"
+                                : "ghost"}
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                if (favoriteSources.value[sRow.source.id]) {
+                                  favoriteSources.value = {
+                                    ...favoriteSources.value,
+                                    [sRow.source.id]: false,
+                                  };
+                                } else {
+                                  favoriteSources.value = {
+                                    ...favoriteSources.value,
+                                    [sRow.source.id]: true,
+                                  };
+                                }
+                              }}
+                            >
+                              <Icon
+                                class={cn(
+                                  "transition-transform duration-400",
+                                  favoriteSources.value[sRow.source.id] &&
+                                    "rotate-360",
+                                )}
+                                icon={favoriteSources.value[sRow.source.id]
+                                  ? "lucide:star"
+                                  : "lucide:star-off"}
+                              />
+                            </Button>
+                          </Tooltip>
                           <Switch
                             checked={sRow.source.id in stateSourcesActivated
                               ? stateSourcesActivated[sRow.source.id]
@@ -949,7 +1003,7 @@
                           class="pointer-events-none min-w-10 rounded-xl text-sm"
                           variant="outline"
                         >
-                          {sRow.count}
+                          <ScrollingValue value={sRow.count} />
                         </Badge>
                         <Icon
                           class={cn(
@@ -1169,11 +1223,28 @@
                         {getLangNative(eRow.lang)}
                       </div>
                       <div class="flex items-center gap-3">
+                        <Tooltip
+                          text="Hide language: {getLangNative(eRow.lang)}"
+                        >
+                          <Button
+                            class="size-6"
+                            variant="secondary"
+                            onclick={(e) => {
+                              e.stopPropagation();
+                              allowedSourceLanguages.value = {
+                                ...allowedSourceLanguages.value,
+                                [eRow.lang]: false,
+                              };
+                            }}
+                          >
+                            <Icon icon="lucide:eye-off" />
+                          </Button>
+                        </Tooltip>
                         <Badge
                           class="pointer-events-none min-w-10 rounded-xl text-sm"
                           variant="outline"
                         >
-                          {eRow.count}
+                          <ScrollingValue value={eRow.count} />
                         </Badge>
                         <Icon
                           class={cn(

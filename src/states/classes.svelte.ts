@@ -1,3 +1,57 @@
+export class ValueState<T> {
+  #value: T = $state()!;
+  onchange: (value: T) => void;
+  constructor(config: { value: T; onchange?: (_value: T) => void }) {
+    this.#value = config.value;
+    this.onchange = config.onchange ?? (() => { });
+  }
+
+  get value() {
+    return this.#value;
+  }
+
+  set value(v: T) {
+    this.#value = v;
+    this.onchange?.(v);
+  }
+}
+
+export class TextState extends ValueState<string> {
+  constructor(config: { value: string; onchange?: (_value: string) => void }) {
+    super(config);
+  }
+
+  clear = () => {
+    this.value = "";
+  };
+}
+
+export class RefreshState<T> extends ValueState<T> {
+  refresh: (value: T) => void;
+  constructor(config: {
+    value: T;
+    refresh: (_value: T) => void;
+    onchange?: (_value: T) => void;
+  }) {
+    super(config);
+    this.refresh = config.refresh;
+  }
+}
+
+export class RefreshListState<T> extends RefreshState<T[]> {
+  constructor(config: {
+    value: T[];
+    refresh: (_value: T[]) => void;
+    onchange?: (_value: T[]) => void;
+  }) {
+    super(config);
+  }
+
+  add = (item: T) => {
+    this.value = [...this.value, item];
+  };
+}
+
 export class OpenState {
   #active = $state(false);
   onchange: (value: boolean) => void;
