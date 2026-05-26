@@ -183,7 +183,7 @@ export const searchType = new StoredState<"filter" | "popular" | "latest">({
   key: "search_type",
   defaultValue: "filter",
 });
-export const searchMode = new StoredState<"single" | "multiple" | "global">({
+export const sourceGroupMode = new StoredState<"single" | "group" | "global">({
   key: "search_mode",
   defaultValue: "single",
 });

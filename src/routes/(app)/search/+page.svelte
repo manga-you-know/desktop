@@ -5,14 +5,16 @@
   import {
     openExtensions,
     searchInput,
-    searchMode,
+    sourceGroupMode,
     searchType,
     suwayomi,
   } from "@/states";
   import Icon from "@iconify/svelte";
+  import { animate } from "animejs";
   import { ScrollingValue } from "svelte-ux";
 
   let debounceTimer: ReturnType<typeof setTimeout>;
+  let resultFilter = $state("");
 
   function handleInput() {
     if (debounceTimer) {
@@ -20,44 +22,49 @@
     }
     debounceTimer = setTimeout(() => {
       // search(inputElement.value);
+      resultFilter = "";
     }, 300);
   }
 </script>
 
-<div class="justify-around-stretch flex flex-col gap-3">
+<div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
-    <Badge class="h-10 w-14" variant="outline">
-      <ScrollingValue value={0} />
-    </Badge>
     <Input
-      class="w-90"
-      divClass="w-90"
-      variant="outline"
-      placeholder="Filter the results..."
+      class="w-70"
+      divClass="w-70"
+      variant="secondary"
+      placeholder="Query in source{sourceGroupMode.value !== 'single'
+        ? 's'
+        : ''}..."
       bind:value={searchInput.value}
       oninput={handleInput}
     />
-    <Tooltip text="Search mode">
+    <Tooltip text="Source mode">
       <Button
-        class="w-27 justify-start"
-        onclick={() => {
-          if (searchMode.value === "single") {
-            searchMode.value = "multiple";
-          } else if (searchMode.value === "multiple") {
-            searchMode.value = "global";
+        class="w-27 justify-start font-bold"
+        onclick={(e) => {
+          if (sourceGroupMode.value === "single") {
+            sourceGroupMode.value = "group";
+          } else if (sourceGroupMode.value === "group") {
+            sourceGroupMode.value = "global";
           } else {
-            searchMode.value = "single";
+            sourceGroupMode.value = "single";
           }
+          animate(e.currentTarget, {
+            filter: ["blur(1px)", "blur(2px)", "blur(0px)"],
+            duration: 500,
+            easing: "easeOutQuad",
+          });
         }}
       >
         <Icon
-          icon={searchMode.value === "single"
+          icon={sourceGroupMode.value === "single"
             ? "lucide:square-divide"
-            : searchMode.value === "multiple"
+            : sourceGroupMode.value === "group"
               ? "lucide:layers"
               : "lucide:globe"}
         />
-        {titleCase(searchMode.value)}
+        {titleCase(sourceGroupMode.value)}
       </Button>
     </Tooltip>
     <Tooltip text="Manage extensions & sources">
@@ -74,7 +81,7 @@
         searchType.value = "filter";
       }}
     >
-      <Icon icon="lucide:text-search" />Filter
+      <Icon icon="lucide:text-search" />Search
     </Button>
     <Button
       class="w-30"
@@ -94,5 +101,21 @@
     >
       <Icon icon="lucide:badge-info" />Latest
     </Button>
+  </div>
+  <div class="bg-secondary h-1 w-full rounded-2xl"></div>
+  <div class="flex items-center justify-center gap-2">
+    <Badge class="h-10 w-14 text-sm font-bold" variant="outline">
+      <ScrollingValue value={0} />
+      /
+      <ScrollingValue value={0} />
+    </Badge>
+    <Input
+      class="hover:bg-secondary/20 w-70"
+      divClass="w-70"
+      variant="outline"
+      placeholder="Filter results..."
+      bind:value={resultFilter}
+    />
+    <Button></Button>
   </div>
 </div>

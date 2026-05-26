@@ -18,7 +18,7 @@
         outline:
           "border border-secondary bg-background/30 hover:bg-secondary text-primary placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary",
         secondary:
-          "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary",
+          "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary hover:bg-secondary/80",
         ghost:
           "bg-transparent text-primary hover:bg-accent hover:text-accent-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-accent",
         link: "bg-transparent text-primary underline-offset-4 hover:underline underline-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
