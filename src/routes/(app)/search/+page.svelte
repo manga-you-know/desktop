@@ -30,14 +30,15 @@
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Input
-      class="w-70"
-      divClass="w-70"
+      class="w-70 transition-all"
+      divClass="w-70 transition-all"
       variant="secondary"
       placeholder="Query in source{sourceGroupMode.value !== 'single'
         ? 's'
         : ''}..."
-      bind:value={searchInput.value}
+      disabled={searchType.value !== "filter"}
       oninput={handleInput}
+      bind:value={searchInput.value}
     />
     <Tooltip text="Source mode">
       <Button
@@ -51,7 +52,7 @@
             sourceGroupMode.value = "single";
           }
           animate(e.currentTarget, {
-            filter: ["blur(1px)", "blur(2px)", "blur(0px)"],
+            filter: ["blur(0px)", "blur(1px)", "blur(2px)", "blur(0px)"],
             duration: 500,
             easing: "easeOutQuad",
           });

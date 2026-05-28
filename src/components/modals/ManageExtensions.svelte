@@ -408,10 +408,17 @@
           </Button>
         </Tooltip>
         <Button
-          class="flex w-24 justify-between rounded-xl font-bold"
+          class="flex w-24 justify-between rounded-xl font-bold duration-500"
           variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
           disabled={showedGroup === "hidden"}
-          onclick={showExtensionsNSourcesNSFW.toggle}
+          onclick={(e) => {
+            showExtensionsNSourcesNSFW.toggle();
+            animate(e.currentTarget, {
+              filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
+              duration: 500,
+              easing: "easeOutQuad",
+            });
+          }}
         >
           <Icon
             icon={showExtensionsNSourcesNSFW.value

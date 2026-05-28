@@ -134,14 +134,15 @@
   {#if deleteButton}
     <Button
       class={cn(
-        "pointer-events-none absolute top-1 right-1 size-8 rounded-lg opacity-0 backdrop-blur-sm transition-opacity duration-500",
-        value !== "" && "pointer-events-auto opacity-100",
+        "pointer-events-none absolute top-1 right-1 size-8 rounded-lg opacity-0 backdrop-blur-sm transition-opacity duration-500 disabled:opacity-0",
+        value !== "" && "pointer-events-auto opacity-100 disabled:opacity-50",
       )}
       variant="ghost"
       onclick={() => {
         value = "";
         ondelete?.();
       }}
+      {disabled}
     >
       <Icon icon="lucide:x" />
     </Button>
