@@ -195,6 +195,12 @@
   //   clearInterval(interval);
   // });
 
+  window.onThemeChanged(({payload: theme}) => {
+  console.log("something changfed in themess!!")
+  console.log(theme)
+    themeMode.value = theme
+  })
+
   $effect(() => {
     if (!page.route?.id?.startsWith("/reader"))
       window.setProgressBar({

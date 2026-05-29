@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Tooltip } from "@/components";
   import { Badge, Button, Input } from "@/lib/components";
-  import { titleCase } from "@/lib/utils";
+  import { cn, titleCase } from "@/lib/utils";
   import {
     openExtensions,
     searchInput,
@@ -22,17 +22,21 @@
     }
     debounceTimer = setTimeout(() => {
       // search(inputElement.value);
+      console.log("fire", searchInput.value);
       resultFilter = "";
-    }, 300);
+    }, 600);
   }
 </script>
 
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
+    <Badge class="h-10 w-13" variant="outline">
+      <ScrollingValue value={0} />
+    </Badge>
     <Input
       class="w-70 transition-all"
       divClass="w-70 transition-all"
-      variant="secondary"
+      variant="outline"
       placeholder="Query in source{sourceGroupMode.value !== 'single'
         ? 's'
         : ''}..."
@@ -75,37 +79,65 @@
     </Tooltip>
   </div>
   <div class="flex items-center justify-center gap-1">
-    <Button
-      class="w-30"
-      variant={searchType.value === "filter" ? "secondary" : "outline"}
-      onclick={() => {
-        searchType.value = "filter";
-      }}
+    <div
+      class="border-secondary bg-background/30 parent flex gap-1 rounded-2xl border p-2"
     >
-      <Icon icon="lucide:text-search" />Search
-    </Button>
-    <Button
-      class="w-30"
-      variant={searchType.value === "popular" ? "secondary" : "outline"}
-      onclick={() => {
-        searchType.value = "popular";
-      }}
-    >
-      <Icon icon="lucide:heart" />Popular
-    </Button>
-    <Button
-      class="w-30"
-      variant={searchType.value === "latest" ? "secondary" : "outline"}
-      onclick={() => {
-        searchType.value = "latest";
-      }}
-    >
-      <Icon icon="lucide:badge-info" />Latest
-    </Button>
+      <Button
+        class={cn(
+          "pointer-events-none absolute w-30 transition-all duration-500",
+          searchType.value === "filter" && "translate-x-0",
+          searchType.value === "popular" && "translate-x-31",
+          searchType.value === "latest" && "translate-x-62",
+        )}
+        variant="secondary"
+        id="most"
+      ></Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/60 z-2 w-30",
+          searchType.value === "filter" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchType.value = "filter";
+          animate("#most", {
+            filter: ["blur(0px)", "blur(4)", "blur(0px)"],
+            duration: 500,
+            easing: "easeOutQuad",
+          });
+        }}
+      >
+        <Icon icon="lucide:text-search" />Search
+      </Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/60 z-2 w-30",
+          searchType.value === "popular" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchType.value = "popular";
+        }}
+      >
+        <Icon icon="lucide:heart" />Popular
+      </Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/60 z-2 w-30",
+          searchType.value === "latest" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchType.value = "latest";
+        }}
+      >
+        <Icon icon="lucide:badge-info" />Latest
+      </Button>
+    </div>
   </div>
-  <div class="bg-secondary h-1 w-full rounded-2xl"></div>
+  <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div class="flex items-center justify-center gap-2">
-    <Badge class="h-10 w-14 text-sm font-bold" variant="outline">
+    <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
       <ScrollingValue value={0} />
       /
       <ScrollingValue value={0} />
