@@ -62,7 +62,7 @@
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
-  import { retroMode, themeMode } from "@/states";
+  import {  colorTheme, squareBorders, themeMode } from "@/states";
   import { type } from "@tauri-apps/plugin-os";
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
@@ -275,9 +275,13 @@
 </div>
 
 <svelte:head>
-  {@html retroMode.value
+  {@html squareBorders.value
     ? "<style>* { border-radius: 0 !important; }</style>"
     : ""}
+  {@html `<style>
+    :root { --primary: ${colorTheme.value.primary}; }
+    .dark { --primary: ${colorTheme.value.primary}; }
+  </style>`}
 </svelte:head>
 
 <style>

@@ -80,8 +80,8 @@
               (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
-              allowedSourceLanguages.value[s.lang],
+              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
+            // && allowedSourceLanguages.value[s.lang],
           ),
   );
 
@@ -154,8 +154,8 @@
             .filter(
               (e) =>
                 (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
-                e.name.toLowerCase().includes(query.toLowerCase()) &&
-                allowedExtensionLanguages.value[e.lang],
+                e.name.toLowerCase().includes(query.toLowerCase()),
+              // && allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
               const aName = getLangNative(a.lang);
@@ -222,6 +222,7 @@
         if (a === "all") return -1;
         if (b === "all") return 1;
         // let aAllowed = 0;
+
         // let bAllowed = 0;
         // if (tab === "sources") {
         //   aAllowed = allowedSourceLanguages.value[a] ? 1 : 0;
@@ -537,7 +538,7 @@
                 ? 's'
                 : ''}"
             >
-              <Button class="rounded-xl">
+              <Button class="rounded-xl" disabled={showedGroup === "installed"}>
                 <Icon icon="lucide:languages" />
                 Languages
               </Button>

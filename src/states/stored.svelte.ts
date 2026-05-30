@@ -1,25 +1,34 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { type } from "@tauri-apps/plugin-os";
 import { load, Store } from "@tauri-apps/plugin-store";
-import type { Languages } from "@/types";
+import type { Source, Languages } from "@/types";
 
 let settingsStore: Store | null = null;
 let serverStore: Store | null = null;
+let cacheStore: Store | null = null;
 let fetchedStore: Store | null = null;
 let defaultData: Record<string, any> = null!;
 let loadingPromise: Promise<Record<string, any>> | null = null;
 const window = getCurrentWindow();
 
+type StoreKey = "settings" | "server" | "cache" | "fetched";
+
+const stores: Record<StoreKey, Store | null> = {
+  settings: settingsStore,
+  server: serverStore,
+  cache: cacheStore,
+  fetched: fetchedStore,
+};
+
 const getBefore = async (
   key: string,
   defaultValue: any,
-  store: Store | null,
-  storePath: string,
+  store: keyof typeof stores,
 ) => {
-  if (store === null) store = await load(storePath);
-  if (defaultData === null && storePath === "settings.json") {
+  if (stores[store] === null) stores[store] = await load(store + ".json");
+  if (defaultData === null && store === "settings") {
     if (loadingPromise === null) {
-      loadingPromise = store.entries().then((entries) => {
+      loadingPromise = stores[store].entries().then((entries) => {
         defaultData = Object.fromEntries(entries);
         return defaultData;
       });
@@ -27,18 +36,17 @@ const getBefore = async (
     await loadingPromise;
     return defaultData[key] ?? defaultValue;
   } else {
-    return (await store.get(key)) ?? defaultValue;
+    return (await stores[store].get(key)) ?? defaultValue;
   }
 };
 
 const writeValue = async (
   key: string,
   value: any,
-  store: Store | null,
-  storePath: string,
+  store: keyof typeof stores,
 ) => {
-  if (store === null) store = await load(storePath);
-  await store.set(key, value);
+  if (stores[store] === null) stores[store] = await load(store + ".json");
+  await stores[store].set(key, value);
 };
 
 class StoredState<T> {
@@ -47,29 +55,24 @@ class StoredState<T> {
   #defaultValue: T;
   #alternatives: T[];
   onchange: (_: T) => void;
-  #store: Store | null;
-  #storePath: string;
+  #store: keyof typeof stores;
 
   constructor(config: {
     key: string;
     defaultValue: T;
     alternatives?: T[];
     onchange?: (_: T) => void;
-    store?: Store | null;
-    storePath?: string;
+    store?: keyof typeof stores;
   }) {
     this.#value = $state(config.defaultValue);
     this.#key = config.key;
     this.#defaultValue = config.defaultValue;
     this.#alternatives = config.alternatives ?? [];
     this.onchange = config.onchange ?? (() => { });
-    this.#store = config.store ?? settingsStore;
-    this.#storePath = config.storePath ?? "settings.json";
-    getBefore(this.#key, this.#defaultValue, this.#store, this.#storePath).then(
-      (value: T) => {
-        this.#value = value;
-      },
-    );
+    this.#store = config.store ?? "settings";
+    getBefore(this.#key, this.#defaultValue, this.#store).then((value: T) => {
+      this.#value = value;
+    });
   }
 
   get value() {
@@ -78,13 +81,13 @@ class StoredState<T> {
 
   set value(v) {
     this.#value = v;
-    writeValue(this.#key, this.#value, this.#store, this.#storePath);
+    writeValue(this.#key, this.#value, this.#store);
     this.onchange(this.#value);
   }
 
   resetValue = () => {
     this.#value = this.#defaultValue;
-    writeValue(this.#key, this.#defaultValue, this.#store, this.#storePath);
+    writeValue(this.#key, this.#defaultValue, this.#store);
     this.onchange(this.#value);
   };
 
@@ -94,7 +97,7 @@ class StoredState<T> {
         this.#value === this.#alternatives[0]
           ? this.#alternatives[1]
           : this.#alternatives[0];
-      writeValue(this.#key, this.#value, this.#store, this.#storePath);
+      writeValue(this.#key, this.#value, this.#store);
       this.onchange(this.#value);
     } else throw new Error("More or less than 2 options were passed");
   };
@@ -104,25 +107,36 @@ class StoredState<T> {
       const currentIndex = this.#alternatives.indexOf(this.#value);
       const next = (currentIndex + 1) % this.#alternatives.length;
       this.#value = this.#alternatives[next];
-      writeValue(this.#key, this.#value, this.#store, this.#storePath);
+      writeValue(this.#key, this.#value, this.#store);
       this.onchange(this.#value);
     } else throw new Error("Less than 2 options were passed");
   };
 }
 
 // Server
+
+export const suwayomiUrl = new StoredState<string>({
+  key: "suwayomi_url",
+  defaultValue: "http://127.0.0.1:4567",
+  store: "server",
+});
+
 export const enabledSources = new StoredState<Record<string, boolean>>({
   key: "enabled_sources",
   defaultValue: {},
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
 });
 
 export const favoriteSources = new StoredState<Record<string, boolean>>({
   key: "favorite_sources",
   defaultValue: {},
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
+});
+
+export const groupSources = new StoredState<Record<string, string[]>>({
+  key: "group_sources",
+  defaultValue: {},
+  store: "server",
 });
 
 export const disableAutoUpdateByExtension = new StoredState<
@@ -130,29 +144,25 @@ export const disableAutoUpdateByExtension = new StoredState<
 >({
   key: "disable_auto_update_by_extension",
   defaultValue: {},
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
 });
 
 export const activeExtensionRepos = new StoredState<string[]>({
   key: "active_extension_repos",
   defaultValue: [],
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
 });
 
 export const hiddenExtensions = new StoredState<Record<string, boolean>>({
   key: "hidden_extensions",
   defaultValue: {},
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
 });
 
 export const hiddenSources = new StoredState<Record<string, boolean>>({
   key: "hidden_sources",
   defaultValue: {},
-  store: serverStore,
-  storePath: "server.json",
+  store: "server",
 });
 
 // Fetches
@@ -161,31 +171,45 @@ export const repoInfo = new StoredState<
 >({
   key: "repo_info",
   defaultValue: {},
-  store: fetchedStore,
-  storePath: "fetched.json",
+  store: "fetched",
 });
 
 // Navigation cache
 
 export const extensionManagerTab = new StoredState<"extensions" | "sources">({
   key: "extension_manager_tab",
-
   defaultValue: "extensions",
+  store: "cache",
 });
 
 export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
   key: "show_extensions_sources_nsfw",
   defaultValue: false,
   alternatives: [true, false],
+  store: "cache",
 });
 
 export const searchType = new StoredState<"filter" | "popular" | "latest">({
   key: "search_type",
   defaultValue: "filter",
+  store: "cache",
 });
 export const sourceGroupMode = new StoredState<"single" | "group" | "global">({
   key: "search_mode",
   defaultValue: "single",
+  store: "cache",
+});
+
+export const selectedSource = new StoredState<Source | undefined>({
+  key: "selected_source",
+  defaultValue: undefined,
+  store: "cache",
+});
+
+export const selectedGroupSource = new StoredState<string>({
+  key: "selected_group_source",
+  defaultValue: "Favorites",
+  store: "cache",
 });
 
 export const allowedExtensionLanguages = new StoredState<
@@ -199,31 +223,40 @@ export const allowedSourceLanguages = new StoredState<Record<string, boolean>>({
   key: "allowed_source_languages",
   defaultValue: {},
 });
+
 export const showOnlyWithChapter = new StoredState<boolean>({
   key: "show_only_with_chapter",
   defaultValue: false,
   alternatives: [true, false],
+  store: "cache",
 });
+
 export const libraryAscending = new StoredState<boolean>({
   key: "library_ascending",
   defaultValue: false,
   alternatives: [true, false],
+  store: "cache",
 });
+
 export const chaptersAscending = new StoredState<boolean>({
   key: "chapters_ascending",
   defaultValue: false,
   alternatives: [true, false],
+  store: "cache",
 });
+
 export const orderLibraryBy = new StoredState<string>({
   key: "order_library_by",
   defaultValue: "id",
   alternatives: ["id", "date"],
+  store: "cache",
 });
 
 export const openReadMenu = new StoredState<boolean>({
   key: "open_read_menu",
   defaultValue: true,
   alternatives: [true, false],
+  store: "cache",
 });
 
 // export const chaptersCache = writable<(ReadCache & { chapters: Chapter[]; images: string[] })[]>([]);
@@ -234,8 +267,8 @@ export const themeMode = new StoredState<"dark" | "light">({
   defaultValue: "dark",
   alternatives: ["light", "dark"],
 });
-export const retroMode = new StoredState<boolean>({
-  key: "retro_mode",
+export const squareBorders = new StoredState<boolean>({
+  key: "square_borders",
   defaultValue: false,
   alternatives: [true, false],
 });
@@ -244,6 +277,23 @@ export const sidebarOnRight = new StoredState<boolean>({
   defaultValue: false,
   alternatives: [true, false],
 });
+export const colorTheme = new StoredState<{
+  primary: string;
+  secondary: string;
+  background: string;
+  info: string;
+  destructive: string;
+}>({
+  key: "color_theme",
+  defaultValue: {
+    primary: "210 40% 98%",
+    secondary: "230 30% 85%",
+    background: "",
+    info: "",
+    destructive: "",
+  },
+});
+
 export const sidebarStyle = new StoredState<
   "collapsed" | "expanded" | "expand-on-hover"
 >({ key: "sidebar_style", defaultValue: "collapsed" });
@@ -293,13 +343,6 @@ export const appLanguage = new StoredState<Languages>({
 export const downloadPath = new StoredState<string>({
   key: "download_path",
   defaultValue: "Mangas/",
-});
-
-// Server stuff
-
-export const suwayomiUrl = new StoredState<string>({
-  key: "suwayomi_url",
-  defaultValue: "http://127.0.0.1:4567",
 });
 
 export const autoUpdateExtensions = new StoredState<boolean>({

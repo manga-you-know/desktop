@@ -84,12 +84,14 @@
     openSettings,
     openedExtension,
     repoInfo,
-    retroMode,
+    squareBorders,
     autoUpdateExtensions,
+    colorTheme,
   } from "@/states";
   import { suwaManager } from "@/lib/helpers";
   import { fly } from "svelte/transition";
   import { openUrl } from "@tauri-apps/plugin-opener";
+  import { readText } from "@tauri-apps/plugin-clipboard-manager";
 
   let isSearchingUpdates = $state(false);
   let version = $state("");
@@ -263,13 +265,43 @@
           <Card.Content class="flex flex-col items-center gap-4 pb-40">
             <Label class="text-2xl">Appearance</Label>
 
+            <div class="flex flex-col gap-1">
+              <div class="flex">
+                Primary: {colorTheme.value.primary}
+                <Button
+                  onclick={async () => {
+                    colorTheme.value.primary = await readText();
+                    document.documentElement.style.setProperty(
+                      "--primary",
+                      colorTheme.value.primary,
+                    );
+                  }}
+                >
+                  Paste
+                </Button>
+              </div>
+              <div class="flex">
+                Secondary: {colorTheme.value.secondary}
+                <Button
+                  onclick={async () => {
+                    colorTheme.value.secondary = await readText();
+                    document.documentElement.style.setProperty(
+                      "--secondary",
+                      colorTheme.value.secondary,
+                    );
+                  }}
+                >
+                  Paste
+                </Button>
+              </div>
+            </div>
             <div class="flex w-full flex-col gap-2">
               <button
                 class="flex cursor-pointer items-center gap-3"
-                onclick={retroMode.toggle}
+                onclick={squareBorders.toggle}
               >
-                <Switch id="check-retro" checked={retroMode.value} />
-                <Label class="cursor-pointer">Retro mode</Label>
+                <Switch id="check-retro" checked={squareBorders.value} />
+                <Label class="cursor-pointer">Square borders</Label>
               </button>
               <span class="text-sm text-gray-400">
                 | This makes everything go square brrrr (looks strangely nice)

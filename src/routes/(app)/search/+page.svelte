@@ -1,17 +1,23 @@
 <script lang="ts">
-  import { Tooltip } from "@/components";
-  import { Badge, Button, Input } from "@/lib/components";
-  import { cn, titleCase } from "@/lib/utils";
+  import { Image, Tooltip } from "@/components";
+  import { Badge, Button, Input, Label, Popover } from "@/lib/components";
+  import { cn, getLangName, getLangNative, titleCase } from "@/lib/utils";
   import {
     openExtensions,
     searchInput,
     sourceGroupMode,
     searchType,
     suwayomi,
+    selectedSource,
+    suwayomiUrl,
+    selectedGroupSource,
+    showExtensionsNSourcesNSFW,
   } from "@/states";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
+  import { onMount } from "svelte";
   import { ScrollingValue } from "svelte-ux";
+  import { VList } from "virtua/svelte";
 
   let debounceTimer: ReturnType<typeof setTimeout>;
   let resultFilter = $state("");
@@ -26,6 +32,31 @@
       resultFilter = "";
     }, 600);
   }
+
+  let selectSourceFilter = $state("");
+  let filteredSources = $derived(
+    suwayomi.enabledSources.filter(
+      (s) =>
+        (s.displayName
+          .toLowerCase()
+          .includes(selectSourceFilter.toLowerCase()) ||
+          s.name.toLowerCase().includes(selectSourceFilter.toLowerCase()) ||
+          s.lang.toLowerCase().includes(selectSourceFilter.toLowerCase()) ||
+          getLangNative(s.lang)
+            .toLowerCase()
+            .includes(selectSourceFilter.toLowerCase()) ||
+          getLangName(s.lang)
+            .toLowerCase()
+            .includes(selectSourceFilter.toLowerCase())) &&
+        (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
+    ),
+  );
+
+  onMount(() => {
+    if (suwayomi.enabledSources.length > 0) {
+      selectedSource.value = suwayomi.enabledSources[0];
+    }
+  });
 </script>
 
 <div class="justify-around-stretch flex w-full flex-col gap-3">
@@ -34,7 +65,7 @@
       <ScrollingValue value={0} />
     </Badge>
     <Input
-      class="w-70 transition-all"
+      class="hover:bg-secondary/20 w-70 transition-all"
       divClass="w-70 transition-all"
       variant="outline"
       placeholder="Query in source{sourceGroupMode.value !== 'single'
@@ -44,7 +75,14 @@
       oninput={handleInput}
       bind:value={searchInput.value}
     />
-    <Tooltip text="Source mode">
+    <Tooltip
+      text="Source mode"
+      subtext={sourceGroupMode.value === "single"
+        ? "Single uses one source to fetch"
+        : sourceGroupMode.value === "group"
+          ? "Group uses multiple sources to fetch"
+          : "Global uses all enabled sources to fetch"}
+    >
       <Button
         class="w-27 justify-start font-bold"
         onclick={(e) => {
@@ -56,10 +94,17 @@
             sourceGroupMode.value = "single";
           }
           animate(e.currentTarget, {
-            filter: ["blur(0px)", "blur(1px)", "blur(2px)", "blur(0px)"],
+            filter: ["blur(1px)", "blur(2px)", "blur(0px)"],
             duration: 500,
             easing: "easeOutQuad",
           });
+          if (sourceGroupMode.value !== "global") {
+            animate("#source-select", {
+              filter: ["blur(2px)", "blur(0px)"],
+              duration: 500,
+              easing: "easeOutQuad",
+            });
+          }
         }}
       >
         <Icon
@@ -78,9 +123,9 @@
       </Button>
     </Tooltip>
   </div>
-  <div class="flex items-center justify-center gap-1">
+  <div class="flex items-center justify-center gap-2">
     <div
-      class="border-secondary bg-background/30 parent flex gap-1 rounded-2xl border p-2"
+      class="border-secondary bg-background/30 parent flex gap-1 rounded-2xl border p-1"
     >
       <Button
         class={cn(
@@ -90,7 +135,6 @@
           searchType.value === "latest" && "translate-x-62",
         )}
         variant="secondary"
-        id="most"
       ></Button>
       <Button
         class={cn(
@@ -100,11 +144,6 @@
         variant="ghost"
         onclick={() => {
           searchType.value = "filter";
-          animate("#most", {
-            filter: ["blur(0px)", "blur(4)", "blur(0px)"],
-            duration: 500,
-            easing: "easeOutQuad",
-          });
         }}
       >
         <Icon icon="lucide:text-search" />Search
@@ -134,6 +173,102 @@
         <Icon icon="lucide:badge-info" />Latest
       </Button>
     </div>
+    <Popover.Root>
+      <Popover.Trigger class="flex items-center">
+        <Tooltip
+          text="Selected source {sourceGroupMode.value !== 'single'
+            ? 'group'
+            : ''}"
+          subtext={sourceGroupMode.value === "single"
+            ? (selectedSource.value?.displayName ?? "None.")
+            : selectedGroupSource.value}
+        >
+          <Button
+            class={cn(
+              "h-12 w-50 justify-start overflow-hidden",
+              sourceGroupMode.value === "single" && "px-2",
+            )}
+            variant="outline"
+            disabled={sourceGroupMode.value === "global"}
+            id="source-select"
+          >
+            {#if sourceGroupMode.value === "single"}
+              {#if selectedSource.value}
+                <Image
+                  class="size-10"
+                  src={suwayomiUrl.value + selectedSource.value.iconUrl}
+                />
+                <span class="truncate font-bold">
+                  {selectedSource.value.displayName}
+                </span>
+              {:else}
+                No sources...
+              {/if}
+            {:else}
+              <div class="flex w-full items-center justify-center gap-2">
+                {#if selectedGroupSource.value === "Favorites"}
+                  <Icon icon="lucide:star" />
+                  <Label class="cursor-pointer">Favorites</Label>
+                {:else}
+                  <Label class="cursor-pointer truncate text-ellipsis">
+                    {selectedGroupSource.value}
+                  </Label>
+                {/if}
+              </div>
+            {/if}
+          </Button>
+        </Tooltip>
+      </Popover.Trigger>
+      <Popover.Content>
+        <div class="flex w-60 flex-col gap-2">
+          <div class="flex gap-2">
+            <Input
+              class="w-40"
+              variant="outline"
+              placeholder="Enabled sources..."
+              bind:value={selectSourceFilter}
+            />
+            <Button
+              class="flex min-w-24 justify-between rounded-xl font-bold duration-500"
+              variant={showExtensionsNSourcesNSFW.value
+                ? "destructive"
+                : "info"}
+              onclick={(e) => {
+                showExtensionsNSourcesNSFW.toggle();
+                animate(e.currentTarget, {
+                  filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
+                  duration: 500,
+                  easing: "easeOutQuad",
+                });
+              }}
+            >
+              <Icon
+                icon={showExtensionsNSourcesNSFW.value
+                  ? "lucide:triangle-alert"
+                  : "lucide:heart"}
+              />
+              {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
+            </Button>
+          </div>
+          <VList class="h-70!" data={filteredSources} getKey={(d, _) => d.id}>
+            {#snippet children(source, _)}
+              <Button
+                onclick={() => {
+                  selectedSource.value = source;
+                  animate("#source-select", {
+                    filter: ["blur(2px)", "blur(0px)"],
+                    duration: 500,
+                    easing: "easeOutQuad",
+                  });
+                }}
+              >
+                {source.displayName}
+              </Button>
+            {/snippet}
+          </VList>
+        </div>
+      </Popover.Content>
+    </Popover.Root>
   </div>
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div class="flex items-center justify-center gap-2">
