@@ -85,20 +85,25 @@ class StoredState<T> {
     this.onchange(this.#value);
   }
 
-  resetValue = () => {
-    this.#value = this.#defaultValue;
-    writeValue(this.#key, this.#defaultValue, this.#store);
+  set = (v: T) => {
+    this.value = v;
+  };
+
+  save = () => {
+    writeValue(this.#key, this.#value, this.#store);
     this.onchange(this.#value);
+  };
+
+  reset = () => {
+    this.value = this.#defaultValue;
   };
 
   toggle = () => {
     if (this.#alternatives.length === 2) {
-      this.#value =
+      this.value =
         this.#value === this.#alternatives[0]
           ? this.#alternatives[1]
           : this.#alternatives[0];
-      writeValue(this.#key, this.#value, this.#store);
-      this.onchange(this.#value);
     } else throw new Error("More or less than 2 options were passed");
   };
 
@@ -106,9 +111,7 @@ class StoredState<T> {
     if (this.#alternatives.length > 1) {
       const currentIndex = this.#alternatives.indexOf(this.#value);
       const next = (currentIndex + 1) % this.#alternatives.length;
-      this.#value = this.#alternatives[next];
-      writeValue(this.#key, this.#value, this.#store);
-      this.onchange(this.#value);
+      this.value = this.#alternatives[next];
     } else throw new Error("Less than 2 options were passed");
   };
 }

@@ -172,34 +172,6 @@
               <div class="flex items-center justify-center gap-2">
                 <Button
                   class="w-40"
-                  variant={isInstalling
-                    ? "outline"
-                    : openedExtension.value.extension.isInstalled
-                      ? "destructive"
-                      : "default"}
-                  onclick={() => {
-                    if (enabledSourcesHere.length > 0) {
-                      openAskSure = true;
-                    } else {
-                      toggleInstalled();
-                    }
-                  }}
-                >
-                  <Icon
-                    icon={isInstalling
-                      ? ""
-                      : openedExtension.value.extension.isInstalled
-                        ? "lucide:trash"
-                        : "lucide:download"}
-                  />
-                  {isInstalling
-                    ? "..."
-                    : openedExtension.value.extension.isInstalled
-                      ? "Uninstall"
-                      : "Install"}
-                </Button>
-                <Button
-                  class="w-40"
                   disabled={!autoUpdateExtensions.value ||
                     !openedExtension.value.extension.isInstalled}
                   variant="secondary"
@@ -253,6 +225,34 @@
                   {openedExtension.value.extension.hasUpdate
                     ? "Update"
                     : "Up to date"}
+                </Button>
+                <Button
+                  class="w-40"
+                  variant={isInstalling
+                    ? "outline"
+                    : openedExtension.value.extension.isInstalled
+                      ? "destructive"
+                      : "default"}
+                  onclick={() => {
+                    if (enabledSourcesHere.length > 0) {
+                      openAskSure = true;
+                    } else {
+                      toggleInstalled();
+                    }
+                  }}
+                >
+                  <Icon
+                    icon={isInstalling
+                      ? ""
+                      : openedExtension.value.extension.isInstalled
+                        ? "lucide:trash"
+                        : "lucide:download"}
+                  />
+                  {isInstalling
+                    ? "..."
+                    : openedExtension.value.extension.isInstalled
+                      ? "Uninstall"
+                      : "Install"}
                 </Button>
               </div>
             </div>

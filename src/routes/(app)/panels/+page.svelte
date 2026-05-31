@@ -129,7 +129,6 @@
           }}
         />
         <Input
-          bind:value={searchTerm}
           class="w-52 pl-9"
           labelClass="ml-6"
           variant="outline"
@@ -138,6 +137,7 @@
           autocomplete="off"
           tabindex={-1}
           oninput={search}
+          bind:value={searchTerm}
         />
       </div>
       <Select

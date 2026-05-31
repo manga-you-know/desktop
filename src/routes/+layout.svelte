@@ -278,10 +278,10 @@
   {@html squareBorders.value
     ? "<style>* { border-radius: 0 !important; }</style>"
     : ""}
-  {@html `<style>
-    :root { --primary: ${colorTheme.value.primary}; }
-    .dark { --primary: ${colorTheme.value.primary}; }
-  </style>`}
+  <!-- {@html `<style> -->
+  <!--   :root { --primary: ${colorTheme.value.primary}; } -->
+  <!--   .dark { --primary: ${colorTheme.value.primary}; } -->
+  <!-- </style>`} -->
 </svelte:head>
 
 <style>

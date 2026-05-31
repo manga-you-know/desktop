@@ -331,15 +331,7 @@
   };
 </script>
 
-<Dialog.Root
-  bind:open={openExtensions.active}
-  onOpenChange={(open) => {
-    if (open) {
-      extensionManagerTab.value =
-        suwayomi.installedExtensions.length > 0 ? "sources" : "extensions";
-    }
-  }}
->
+<Dialog.Root bind:open={openExtensions.active}>
   <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>Manage {extensionManagerTab.value}</Dialog.Title>
@@ -352,13 +344,13 @@
     </Dialog.Header>
     <div class="flex w-full justify-center">
       <div
-        class="bg-background/40 parent flex w-full justify-center rounded-2xl p-2 font-bold"
+        class="bg-background/40 parent flex w-full rounded-2xl p-2 font-bold"
       >
         <Button
           class={cn(
-            "pointer-events-none absolute start h-8 w-1/2 rounded-xl transition-all duration-500",
+            "start pointer-events-none absolute h-8 w-1/2 rounded-xl transition-all duration-500",
             extensionManagerTab.value === "sources"
-              ? "translate-x-8"
+              ? "translate-x-0"
               : "translate-x-55",
           )}
         />
@@ -757,7 +749,7 @@
       {#if extensionManagerTab.value === "sources" ? filteredSources.length > 0 : filteredExtensions.length > 0}
         {#if extensionManagerTab.value === "sources"}
           <VList
-            class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
+            class="scrollbar h-80! gap-2 overflow-x-hidden scroll-smooth pr-2"
             data={filteredSourceRows}
             getKey={(s, _) => (s.kind === "source" ? s.source.id : s.lang)}
             tabindex={-1}
@@ -1030,7 +1022,7 @@
           </VList>
         {:else}
           <VList
-            class="scrollbar-chapters h-90! gap-2 overflow-x-hidden scroll-smooth pr-2"
+            class="scrollbar h-80! gap-2 overflow-x-hidden scroll-smooth pr-2"
             data={filteredExtensionRows}
             getKey={(e, _) =>
               e.kind === "extension" ? e.extension.pkgName : e.lang}
@@ -1273,7 +1265,7 @@
         {/if}
       {:else}
         <div
-          class="text-primary flex h-90 w-full flex-col items-center justify-center gap-7"
+          class="text-primary flex h-80 w-full flex-col items-center justify-center gap-7"
         >
           <span class="text-lg">
             {query !== ""

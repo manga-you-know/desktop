@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Image, Tooltip } from "@/components";
+  import { Image, SearchSettings, Tooltip } from "@/components";
   import { Badge, Button, Input, Label, Popover } from "@/lib/components";
   import { cn, getLangName, getLangNative, titleCase } from "@/lib/utils";
   import {
@@ -12,6 +12,7 @@
     suwayomiUrl,
     selectedGroupSource,
     showExtensionsNSourcesNSFW,
+    openedExtension,
   } from "@/states";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
@@ -52,6 +53,9 @@
     ),
   );
 
+  let openSearchSettings = $state(false);
+  let openSelectSource = $state(false);
+
   onMount(() => {
     if (suwayomi.enabledSources.length > 0) {
       selectedSource.value = suwayomi.enabledSources[0];
@@ -59,6 +63,7 @@
   });
 </script>
 
+<SearchSettings bind:open={openSearchSettings} />
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
@@ -75,6 +80,14 @@
       oninput={handleInput}
       bind:value={searchInput.value}
     />
+    <Button
+      variant="outline"
+      onclick={() => {
+        openSearchSettings = true;
+      }}
+    >
+      <Icon icon="lucide:sliders-horizontal" />
+    </Button>
     <Tooltip
       text="Source mode"
       subtext={sourceGroupMode.value === "single"
@@ -173,7 +186,7 @@
         <Icon icon="lucide:badge-info" />Latest
       </Button>
     </div>
-    <Popover.Root>
+    <Popover.Root bind:open={openSelectSource}>
       <Popover.Trigger class="flex items-center">
         <Tooltip
           text="Selected source {sourceGroupMode.value !== 'single'
@@ -253,6 +266,11 @@
           <VList class="h-70!" data={filteredSources} getKey={(d, _) => d.id}>
             {#snippet children(source, _)}
               <Button
+                class={cn(
+                  "bg-background group/extension hover:bg-secondary/40 text-primary m-0.5 flex h-12 w-60 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
+                  selectedSource.value === source &&
+                    "bg-secondary pointer-events-none",
+                )}
                 onclick={() => {
                   selectedSource.value = source;
                   animate("#source-select", {
@@ -262,7 +280,49 @@
                   });
                 }}
               >
-                {source.displayName}
+                <div class="pointer-events-none flex items-center gap-2">
+                  <Image
+                    class="size-10"
+                    src={suwayomiUrl.value + source.iconUrl}
+                  />
+                  <div class="gap-0.1 flex flex-col items-start justify-center">
+                    <Label
+                      class={cn(
+                        "max-w-40 cursor-pointer truncate text-lg group-hover/extension:underline!",
+                        source.isConfigurable && "max-w-36",
+                      )}
+                    >
+                      {source.displayName}
+                    </Label>
+                    <div class="flex w-18 justify-between">
+                      <span class="text-red-500">
+                        {source.isNsfw ? "+18" : ""}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  {#if source.isConfigurable}
+                    <Button
+                      class="pointer-events-auto h-8 w-9 rounded-lg"
+                      variant="ghost"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openSelectSource = false;
+                        openedExtension.set({
+                          source: source,
+                          extension:
+                            suwayomi.extensionsByPkgName[
+                              source.extension.pkgName
+                            ],
+                        });
+                        openedExtension.open();
+                      }}
+                    >
+                      <Icon icon="lucide:settings" />
+                    </Button>
+                  {/if}
+                </div>
               </Button>
             {/snippet}
           </VList>

@@ -233,7 +233,7 @@
 
   .scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #fffff0 transparent;
+    @apply scrollbar-thumb-primary scrollbar-track-secondary/15;
   }
 
   .no-blurry {
