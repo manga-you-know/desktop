@@ -114,3 +114,79 @@ export type UpdateSourcePreferencesInput = {
   source: string;
   change: PreferenceChange;
 };
+
+export type CheckBoxFilter = {
+  type: "CheckBoxFilter";
+  CheckBoxFilterDefault: boolean;
+  name: string;
+};
+
+export type HeaderFilter = {
+  type: "HeaderFilter";
+  name: string;
+};
+
+export type SelectFilter = {
+  type: "SelectFilter";
+  SelectFilterDefault: number;
+  name: string;
+  values: string[];
+};
+
+export type TriStateFilter = {
+  type: "TriStateFilter";
+  TriStateFilterDefault: number;
+  name: string;
+};
+
+export type TextFilter = {
+  type: "TextFilter";
+  TextFilterDefault: string;
+  name: string;
+};
+
+export type SortFilterDefault = {
+  ascending: boolean;
+  index: number;
+};
+
+export type SortFilter = {
+  type: "SortFilter";
+  SortFilterDefault: SortFilterDefault | null;
+  name: string;
+  values: string[];
+};
+
+export type SeparatorFilter = {
+  type: "SeparatorFilter";
+  name: string;
+};
+
+export type GroupFilter = {
+  type: "GroupFilter";
+  name: string;
+  filters: Exclude<SourceFilter, GroupFilter>[];
+};
+
+export type SourceFilter =
+  | CheckBoxFilter
+  | HeaderFilter
+  | SelectFilter
+  | TriStateFilter
+  | TextFilter
+  | SortFilter
+  | SeparatorFilter
+  | GroupFilter;
+
+export type SourceBrowse = {
+  id: string;
+  name: string;
+  displayName: string;
+  lang: string;
+  iconUrl: string;
+  baseUrl: string;
+  isConfigurable: boolean;
+  supportsLatest: boolean;
+  meta: SourceMeta[];
+  filters: SourceFilter[];
+};

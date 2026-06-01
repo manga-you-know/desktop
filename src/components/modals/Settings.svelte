@@ -321,7 +321,7 @@
                   class="flex cursor-pointer items-center gap-3"
                   onclick={autoUpdateExtensions.toggle}
                 >
-                  <Switch
+                  <Checkbox
                     id="check-retro"
                     checked={autoUpdateExtensions.value}
                   />

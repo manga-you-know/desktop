@@ -3,6 +3,7 @@ import {
   activeExtensionRepos,
   allowedExtensionLanguages,
   allowedSourceLanguages,
+  autoUpdateExtensions,
   disableAutoUpdateByExtension,
   repoInfo,
   suwayomiUrl,
@@ -13,6 +14,7 @@ import { getBasePath } from "../utils";
 import { delay } from "@/utils";
 import type {
   Extension,
+  SourceBrowse,
   SourceSettings,
   UpdateSourcePreferencesInput,
 } from "@/types/server";
@@ -181,8 +183,8 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       suwayomi.rawExtensions = rJson.data.fetchExtensions.extensions;
-      this.updateAllExtensions();
       await delay(10);
+      if (autoUpdateExtensions.value) this.updateAllExtensions();
       if (
         Object.values(allowedExtensionLanguages.value).filter((e) => e)
           .length === 0
@@ -548,6 +550,134 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       return rJson.data.updateSourcePreference.source;
+    });
+  },
+  async getSourceBrowse(sourceId: string): Promise<SourceBrowse> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        operationName: "GET_SOURCE_BROWSE",
+        variables: { id: sourceId },
+        query: `
+        fragment SOURCE_BASE_FIELDS on SourceType {
+          id
+          name
+          displayName
+          lang
+          iconUrl
+        }
+
+        fragment SOURCE_META_FIELDS on SourceMetaType {
+          sourceId
+          key
+          value
+        }
+
+        fragment SOURCE_BROWSE_FIELDS on SourceType {
+          ...SOURCE_BASE_FIELDS
+          baseUrl
+          isConfigurable
+          supportsLatest
+          meta {
+            ...SOURCE_META_FIELDS
+          }
+          filters {
+            ... on CheckBoxFilter {
+              type: __typename
+              CheckBoxFilterDefault: default
+              name
+            }
+            ... on HeaderFilter {
+              type: __typename
+              name
+            }
+            ... on SelectFilter {
+              type: __typename
+              SelectFilterDefault: default
+              name
+              values
+            }
+            ... on TriStateFilter {
+              type: __typename
+              TriStateFilterDefault: default
+              name
+            }
+            ... on TextFilter {
+              type: __typename
+              TextFilterDefault: default
+              name
+            }
+            ... on SortFilter {
+              type: __typename
+              SortFilterDefault: default {
+                ascending
+                index
+              }
+              name
+              values
+            }
+            ... on SeparatorFilter {
+              type: __typename
+              name
+            }
+            ... on GroupFilter {
+              type: __typename
+              name
+              filters {
+                ... on CheckBoxFilter {
+                  type: __typename
+                  CheckBoxFilterDefault: default
+                  name
+                }
+                ... on HeaderFilter {
+                  type: __typename
+                  name
+                }
+                ... on SelectFilter {
+                  type: __typename
+                  SelectFilterDefault: default
+                  name
+                  values
+                }
+                ... on TriStateFilter {
+                  type: __typename
+                  TriStateFilterDefault: default
+                  name
+                }
+                ... on TextFilter {
+                  type: __typename
+                  TextFilterDefault: default
+                  name
+                }
+                ... on SortFilter {
+                  type: __typename
+                  SortFilterDefault: default {
+                    ascending
+                    index
+                  }
+                  name
+                  values
+                }
+                ... on SeparatorFilter {
+                  type: __typename
+                  name
+                }
+              }
+            }
+          }
+        }
+
+        query GET_SOURCE_BROWSE($id: LongString!) {
+          source(id: $id) {
+            ...SOURCE_BROWSE_FIELDS
+          }
+        }
+      `,
+      }),
+    }).then(async (r) => {
+      const rJson = await r.json();
+      return rJson.data.source;
     });
   },
 };

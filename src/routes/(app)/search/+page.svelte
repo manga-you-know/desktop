@@ -1,6 +1,14 @@
 <script lang="ts">
   import { Image, SearchSettings, Tooltip } from "@/components";
-  import { Badge, Button, Input, Label, Popover } from "@/lib/components";
+  import {
+    Badge,
+    Button,
+    Checkbox,
+    Input,
+    Label,
+    Popover,
+  } from "@/lib/components";
+  import { suwaManager } from "@/lib/helpers";
   import { cn, getLangName, getLangNative, titleCase } from "@/lib/utils";
   import {
     openExtensions,
@@ -14,6 +22,7 @@
     showExtensionsNSourcesNSFW,
     openedExtension,
   } from "@/states";
+  import type { SourceBrowse } from "@/types/server";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
   import { onMount } from "svelte";
@@ -35,6 +44,23 @@
   }
 
   let selectSourceFilter = $state("");
+  let disabledLangs: Record<string, boolean> = $state({});
+  let groupByLangSources = $derived(
+    Object.entries(Object.groupBy(suwayomi.enabledSources, (s) => s.lang))
+      .map(([lang, sources]) => {
+        return {
+          lang: lang,
+          count: sources?.length ?? 0,
+        };
+      })
+      .sort((a, b) => {
+        if (a.lang === "all") return -1;
+        if (b.lang === "all") return 1;
+        const aName = getLangNative(a.lang);
+        const bName = getLangNative(b.lang);
+        return aName.localeCompare(bName, "en", { sensitivity: "base" });
+      }),
+  );
   let filteredSources = $derived(
     suwayomi.enabledSources.filter(
       (s) =>
@@ -49,21 +75,43 @@
           getLangName(s.lang)
             .toLowerCase()
             .includes(selectSourceFilter.toLowerCase())) &&
+        (selectedSource.value?.id === s.id ? true : !disabledLangs[s.lang]) &&
         (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
     ),
   );
 
   let openSearchSettings = $state(false);
   let openSelectSource = $state(false);
+  let sourceBrowse: SourceBrowse | undefined = $state();
 
   onMount(() => {
-    if (suwayomi.enabledSources.length > 0) {
+    if (
+      suwayomi.enabledSources.length > 0 &&
+      selectedSource.value === undefined
+    ) {
       selectedSource.value = suwayomi.enabledSources[0];
     }
+    if (selectedSource.value) {
+      suwaManager.getSourceBrowse(selectedSource.value.id).then((sb) => {
+        sourceBrowse = sb;
+      });
+    } else {
+      sourceBrowse = undefined;
+    }
   });
+
+  selectedSource.onchange = (s) => {
+    if (s) {
+      suwaManager.getSourceBrowse(s.id).then((sb) => {
+        sourceBrowse = sb;
+      });
+    } else {
+      sourceBrowse = undefined;
+    }
+  };
 </script>
 
-<SearchSettings bind:open={openSearchSettings} />
+<SearchSettings bind:open={openSearchSettings} {sourceBrowse} />
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
@@ -113,8 +161,8 @@
           });
           if (sourceGroupMode.value !== "global") {
             animate("#source-select", {
-              filter: ["blur(2px)", "blur(0px)"],
-              duration: 500,
+              filter: ["blur(3px)", "blur(0px)"],
+              duration: 700,
               easing: "easeOutQuad",
             });
           }
@@ -218,10 +266,12 @@
                 No sources...
               {/if}
             {:else}
-              <div class="flex w-full items-center justify-center gap-2">
+              <div
+                class="flex w-full items-center justify-center gap-2 font-bold"
+              >
                 {#if selectedGroupSource.value === "Favorites"}
                   <Icon icon="lucide:star" />
-                  <Label class="cursor-pointer">Favorites</Label>
+                  <Label class="cursor-pointer font-bold">Favorites</Label>
                 {:else}
                   <Label class="cursor-pointer truncate text-ellipsis">
                     {selectedGroupSource.value}
@@ -235,14 +285,20 @@
       <Popover.Content>
         <div class="flex w-60 flex-col gap-2">
           <div class="flex gap-2">
+            <Badge class="w-13" variant="outline">
+              <ScrollingValue value={filteredSources.length} />
+            </Badge>
             <Input
-              class="w-40"
+              class="w-full"
+              divClass="w-full"
               variant="outline"
               placeholder="Enabled sources..."
               bind:value={selectSourceFilter}
             />
+          </div>
+          <div class="flex gap-2">
             <Button
-              class="flex min-w-24 justify-between rounded-xl font-bold duration-500"
+              class="flex w-26 justify-between rounded-xl font-bold duration-500"
               variant={showExtensionsNSourcesNSFW.value
                 ? "destructive"
                 : "info"}
@@ -262,20 +318,67 @@
               />
               {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
             </Button>
+            <Popover.Root>
+              <Popover.Trigger>
+                <Button class="font-bold">
+                  <Icon icon="lucide:languages" />
+                  Languages
+                </Button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <div
+                  class="scrollbar flex max-h-50 flex-col gap-1 overflow-y-scroll"
+                >
+                  {#each groupByLangSources as l}
+                    <Button
+                      class="hover:bg-secondary/50 w-full justify-between px-3"
+                      variant="outline"
+                      onclick={() => {
+                        if (l.lang in disabledLangs) {
+                          disabledLangs[l.lang] = !disabledLangs[l.lang];
+                        } else {
+                          disabledLangs[l.lang] = true;
+                        }
+                      }}
+                    >
+                      <div class="flex items-center gap-2">
+                        <Checkbox
+                          class="pointer-events-none"
+                          checked={!disabledLangs[l.lang]}
+                        />
+                        <Label class="cursor-pointer">
+                          {getLangNative(l.lang)}
+                        </Label>
+                      </div>
+                      <Badge class="w-10" variant="secondary">
+                        <ScrollingValue value={l.count} />
+                      </Badge>
+                    </Button>
+                  {/each}
+                </div>
+              </Popover.Content>
+            </Popover.Root>
           </div>
-          <VList class="h-70!" data={filteredSources} getKey={(d, _) => d.id}>
+          <VList
+            class={cn(
+              "scrollbar",
+              filteredSources.length > 0 ? "h-60!" : "h-0",
+            )}
+            data={filteredSources}
+            getKey={(d, _) => d.id}
+          >
             {#snippet children(source, _)}
               <Button
                 class={cn(
                   "bg-background group/extension hover:bg-secondary/40 text-primary m-0.5 flex h-12 w-60 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
-                  selectedSource.value === source &&
+                  selectedSource.value?.id === source.id &&
                     "bg-secondary pointer-events-none",
                 )}
                 onclick={() => {
                   selectedSource.value = source;
                   animate("#source-select", {
-                    filter: ["blur(2px)", "blur(0px)"],
-                    duration: 500,
+                    filter: ["blur(4px)", "blur(0px)"],
+                    duration: 700,
                     easing: "easeOutQuad",
                   });
                 }}
@@ -326,6 +429,17 @@
               </Button>
             {/snippet}
           </VList>
+          {#if filteredSources.length === 0}
+            <div class="flex h-60 flex-col items-center p-4">
+              <Badge class="flex flex-col gap-1 text-base">
+                No source found lil bro.
+                {#if suwayomi.enabledSources.length === 0}
+                  <span>You could try enabling one...</span>
+                {/if}
+                <span class="text-xl">╮( ˘ ､ ˘ )╭</span>
+              </Badge>
+            </div>
+          {/if}
         </div>
       </Popover.Content>
     </Popover.Root>
