@@ -21,7 +21,7 @@
           "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary hover:bg-secondary/80",
         ghost:
           "bg-transparent text-primary hover:bg-accent hover:text-accent-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-accent",
-        link: "bg-transparent text-primary underline-offset-4 hover:underline underline-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
+        link: "rounded-none border-b-2 border-primary/60 bg-transparent text-primary underline-offset-4 hover:underline underline-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
       },
       borderFocus: {
         true: "focus-visible:outline-none",

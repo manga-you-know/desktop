@@ -14,6 +14,8 @@ import { getBasePath } from "../utils";
 import { delay } from "@/utils";
 import type {
   Extension,
+  FetchSourceMangaInput,
+  FetchSourceMangaResult,
   SourceBrowse,
   SourceSettings,
   UpdateSourcePreferencesInput,
@@ -678,6 +680,50 @@ export const suwaManager = {
     }).then(async (r) => {
       const rJson = await r.json();
       return rJson.data.source;
+    });
+  },
+  async fetchSourceManga(
+    input: FetchSourceMangaInput,
+  ): Promise<FetchSourceMangaResult> {
+    return fetch(suwayomiUrl.value + "/api/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        operationName: "GET_SOURCE_MANGAS_FETCH",
+        variables: { input },
+        query: `
+        mutation GET_SOURCE_MANGAS_FETCH($input: FetchSourceMangaInput!) {
+          fetchSourceManga(input: $input) {
+            hasNextPage
+            mangas {
+              id
+              title
+              thumbnailUrl
+              thumbnailUrlLastFetched
+              inLibrary
+              initialized
+              sourceId
+              genre
+              lastFetchedAt
+              inLibraryAt
+              status
+              artist
+              author
+              description
+              realUrl
+              meta {
+                mangaId
+                key
+                value
+              }
+            }
+          }
+        }
+      `,
+      }),
+    }).then(async (r) => {
+      const rJson = await r.json();
+      return rJson.data.fetchSourceManga;
     });
   },
 };

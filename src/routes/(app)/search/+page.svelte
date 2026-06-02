@@ -22,7 +22,7 @@
     showExtensionsNSourcesNSFW,
     openedExtension,
   } from "@/states";
-  import type { SourceBrowse } from "@/types/server";
+  import type { FilterChange, SourceBrowse } from "@/types/server";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
   import { onMount } from "svelte";
@@ -95,6 +95,12 @@
       suwaManager.getSourceBrowse(selectedSource.value.id).then((sb) => {
         sourceBrowse = sb;
       });
+      if (
+        !selectedSource.value.supportsLatest &&
+        searchType.value === "LATEST"
+      ) {
+        searchType.value = "POPULAR";
+      }
     } else {
       sourceBrowse = undefined;
     }
@@ -102,6 +108,9 @@
 
   selectedSource.onchange = (s) => {
     if (s) {
+      if (!s.supportsLatest && searchType.value === "LATEST") {
+        searchType.value = "POPULAR";
+      }
       suwaManager.getSourceBrowse(s.id).then((sb) => {
         sourceBrowse = sb;
       });
@@ -109,9 +118,11 @@
       sourceBrowse = undefined;
     }
   };
+
+  let changes: FilterChange[] = $state([]);
 </script>
 
-<SearchSettings bind:open={openSearchSettings} {sourceBrowse} />
+<SearchSettings bind:open={openSearchSettings} {sourceBrowse} bind:changes />
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
@@ -124,7 +135,7 @@
       placeholder="Query in source{sourceGroupMode.value !== 'single'
         ? 's'
         : ''}..."
-      disabled={searchType.value !== "filter"}
+      disabled={searchType.value !== "SEARCH"}
       oninput={handleInput}
       bind:value={searchInput.value}
     />
@@ -190,54 +201,59 @@
     >
       <Button
         class={cn(
-          "pointer-events-none absolute w-30 transition-all duration-500",
-          searchType.value === "filter" && "translate-x-0",
-          searchType.value === "popular" && "translate-x-31",
-          searchType.value === "latest" && "translate-x-62",
+          "pointer-events-none absolute w-30 transition-all duration-200",
+          searchType.value === "SEARCH" && "translate-x-0",
+          searchType.value === "POPULAR" && "translate-x-31",
+          searchType.value === "LATEST" && "translate-x-62",
         )}
         variant="secondary"
       ></Button>
       <Button
         class={cn(
-          "hover:bg-secondary/60 z-2 w-30",
-          searchType.value === "filter" && "hover:text-primary/70",
+          "hover:bg-secondary/30 z-2 w-30",
+          searchType.value === "SEARCH" && "hover:text-primary/70",
         )}
         variant="ghost"
         onclick={() => {
-          searchType.value = "filter";
+          searchType.value = "SEARCH";
         }}
       >
         <Icon icon="lucide:text-search" />Search
       </Button>
       <Button
         class={cn(
-          "hover:bg-secondary/60 z-2 w-30",
-          searchType.value === "popular" && "hover:text-primary/70",
+          "hover:bg-secondary/30 z-2 w-30",
+          searchType.value === "POPULAR" && "hover:text-primary/70",
         )}
         variant="ghost"
         onclick={() => {
-          searchType.value = "popular";
+          searchType.value = "POPULAR";
         }}
       >
         <Icon icon="lucide:heart" />Popular
       </Button>
       <Button
         class={cn(
-          "hover:bg-secondary/60 z-2 w-30",
-          searchType.value === "latest" && "hover:text-primary/70",
+          "hover:bg-secondary/30 z-2 w-30",
+          searchType.value === "LATEST" && "hover:text-primary/70",
         )}
         variant="ghost"
+        disabled={!selectedSource.value?.supportsLatest &&
+          sourceGroupMode.value === "single"}
         onclick={() => {
-          searchType.value = "latest";
+          searchType.value = "LATEST";
         }}
       >
         <Icon icon="lucide:badge-info" />Latest
       </Button>
     </div>
     <Popover.Root bind:open={openSelectSource}>
-      <Popover.Trigger class="flex items-center">
+      <Popover.Trigger
+        class="flex items-center"
+        disabled={sourceGroupMode.value === "global"}
+      >
         <Tooltip
-          text="Selected source {sourceGroupMode.value !== 'single'
+          text="Select source {sourceGroupMode.value !== 'single'
             ? 'group'
             : ''}"
           subtext={sourceGroupMode.value === "single"
@@ -283,7 +299,7 @@
         </Tooltip>
       </Popover.Trigger>
       <Popover.Content>
-        <div class="flex w-60 flex-col gap-2">
+        <div class="flex w-full flex-col gap-2">
           <div class="flex gap-2">
             <Badge class="w-13" variant="outline">
               <ScrollingValue value={filteredSources.length} />
@@ -296,9 +312,9 @@
               bind:value={selectSourceFilter}
             />
           </div>
-          <div class="flex gap-2">
+          <div class="flex justify-between gap-2">
             <Button
-              class="flex w-26 justify-between rounded-xl font-bold duration-500"
+              class="flex min-w-24 justify-between rounded-xl font-bold duration-500"
               variant={showExtensionsNSourcesNSFW.value
                 ? "destructive"
                 : "info"}
@@ -319,8 +335,8 @@
               {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
             </Button>
             <Popover.Root>
-              <Popover.Trigger>
-                <Button class="font-bold">
+              <Popover.Trigger class="w-full">
+                <Button class="w-full font-bold">
                   <Icon icon="lucide:languages" />
                   Languages
                 </Button>
@@ -361,7 +377,7 @@
           </div>
           <VList
             class={cn(
-              "scrollbar",
+              "scrollbar w-full",
               filteredSources.length > 0 ? "h-60!" : "h-0",
             )}
             data={filteredSources}
@@ -381,6 +397,8 @@
                     duration: 700,
                     easing: "easeOutQuad",
                   });
+                  openSelectSource = false;
+                  selectSourceFilter = "";
                 }}
               >
                 <div class="pointer-events-none flex items-center gap-2">

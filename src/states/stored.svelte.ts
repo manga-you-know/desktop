@@ -2,6 +2,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { type } from "@tauri-apps/plugin-os";
 import { load, Store } from "@tauri-apps/plugin-store";
 import type { Source, Languages } from "@/types";
+import type { FetchSourceMangaType, FilterChange } from "@/types/server";
 
 let settingsStore: Store | null = null;
 let serverStore: Store | null = null;
@@ -130,6 +131,14 @@ export const enabledSources = new StoredState<Record<string, boolean>>({
   store: "server",
 });
 
+export const sourceFilterConfig = new StoredState<
+  Record<string, FilterChange[]>
+>({
+  key: "source_filter_config",
+  defaultValue: {},
+  store: "server",
+});
+
 export const favoriteSources = new StoredState<Record<string, boolean>>({
   key: "favorite_sources",
   defaultValue: {},
@@ -192,9 +201,9 @@ export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
   store: "cache",
 });
 
-export const searchType = new StoredState<"filter" | "popular" | "latest">({
+export const searchType = new StoredState<FetchSourceMangaType>({
   key: "search_type",
-  defaultValue: "filter",
+  defaultValue: "SEARCH",
   store: "cache",
 });
 export const sourceGroupMode = new StoredState<"single" | "group" | "global">({

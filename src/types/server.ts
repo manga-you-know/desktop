@@ -190,3 +190,60 @@ export type SourceBrowse = {
   meta: SourceMeta[];
   filters: SourceFilter[];
 };
+
+export type MangaMeta = {
+  mangaId: number;
+  key: string;
+  value: string;
+};
+
+export type MangaStatus =
+  | "ONGOING"
+  | "COMPLETED"
+  | "LICENSED"
+  | "PUBLISHING_FINISHED"
+  | "CANCELLED"
+  | "ON_HIATUS"
+  | "UNKNOWN";
+
+export type Manga = {
+  id: number;
+  title: string;
+  thumbnailUrl: string | null;
+  thumbnailUrlLastFetched: number;
+  inLibrary: boolean;
+  initialized: boolean;
+  sourceId: string;
+  genre: string[];
+  lastFetchedAt: number;
+  inLibraryAt: number;
+  status: MangaStatus;
+  artist: string | null;
+  author: string | null;
+  description: string | null;
+  realUrl: string | null;
+  meta: MangaMeta[];
+};
+
+export type FetchSourceMangaType = "POPULAR" | "LATEST" | "SEARCH";
+
+export type FilterChange =
+  | { position: number; checkBoxState: boolean }
+  | { position: number; triStateState: number }
+  | { position: number; textState: string }
+  | { position: number; selectState: number }
+  | { position: number; sortState: { ascending: boolean; index: number } }
+  | { position: number; groupState: { position: number; state: FilterChange } };
+
+export type FetchSourceMangaInput = {
+  type: FetchSourceMangaType;
+  source: string;
+  page: number;
+  query?: string;
+  filters?: FilterChange[];
+};
+
+export type FetchSourceMangaResult = {
+  hasNextPage: boolean;
+  mangas: Manga[];
+};
