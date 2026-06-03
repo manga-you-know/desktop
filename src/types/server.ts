@@ -233,7 +233,10 @@ export type FilterChange =
   | { position: number; textState: string }
   | { position: number; selectState: number }
   | { position: number; sortState: { ascending: boolean; index: number } }
-  | { position: number; groupState: { position: number; state: FilterChange } };
+  | {
+      position: number;
+      groupChange: FilterChange;
+    };
 
 export type FetchSourceMangaInput = {
   type: FetchSourceMangaType;

@@ -6,7 +6,7 @@
     index: number;
     filter: CheckBoxFilter;
     changes: FilterChange[];
-    onchange?: (change: FilterChange, remove: boolean) => void;
+    onchange?: () => void;
   };
 
   let {
@@ -17,8 +17,10 @@
   }: Props = $props();
 
   let checked = $derived(
-    changes.find((e) => e.position === index)?.checkBoxState ??
-      filter.CheckBoxFilterDefault,
+    changes.find(
+      (c): c is Extract<FilterChange, { checkBoxState: boolean }> =>
+        "checkBoxState" in c && c.position === index,
+    )?.checkBoxState ?? filter.CheckBoxFilterDefault,
   );
 </script>
 
@@ -32,11 +34,10 @@
     };
     if (checked === filter.CheckBoxFilterDefault) {
       changes.push(change);
-      onchange?.(change, false);
     } else {
       changes = changes.filter((c) => c.position !== index);
-      onchange?.(change, true);
     }
+    onchange?.();
   }}
 >
   <Checkbox class="pointer-events-none" {checked} />

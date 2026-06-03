@@ -44,11 +44,12 @@
     borderFocus?: InputBorderFocus;
     floatingLabel?: boolean;
     deleteButton?: boolean;
-    ondelete?: VoidFunction;
     rightToCopy?: boolean;
     labelClass?: string;
     divClass?: string;
+    ondelete?: VoidFunction;
     onenter?: VoidFunction;
+    oncopy?: (value: string) => void;
   };
 </script>
 
@@ -63,10 +64,11 @@
     borderFocus = false,
     floatingLabel = false,
     deleteButton = true,
-    ondelete = () => {},
+    ondelete,
+    onenter,
+    oncopy,
     rightToCopy = true,
     required = false,
-    onenter,
     disabled,
     placeholder,
     ...restProps
@@ -94,6 +96,7 @@
   }}
   oncontextmenu={async () => {
     if (rightToCopy) value = await readText();
+    oncopy?.(value);
   }}
   tabindex={-1}
 >

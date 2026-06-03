@@ -6,7 +6,7 @@
     index: number;
     filter: TextFilter;
     changes: FilterChange[];
-    onchange?: (change: FilterChange, remove: boolean) => void;
+    onchange?: () => void;
   };
 
   let {
@@ -25,22 +25,24 @@
   variant="link"
   value={filter.TextFilterDefault}
   oninput={(e) => {
-    const value = {
+    changes = changes.filter((c) => c.position !== index);
+    changes.push({
       position: index,
       textState: e.currentTarget.value,
-    };
-    const idx = changes.findIndex((c) => c.position === index);
-    if (e.currentTarget.value !== filter.TextFilterDefault) {
-      if (idx === -1) {
-        changes.push(value);
-      } else {
-        changes[idx] = value;
-      }
-      onchange?.(value, false);
-    } else {
-      changes = changes.filter((c) => c.position !== index);
-      onchange?.(value, true);
-    }
+    });
+    onchange?.();
   }}
-  ondelete={() => {}}
+  ondelete={() => {
+    changes = changes.filter((c) => c.position !== index);
+    onchange?.();
+  }}
+  oncopy={(text) => {
+    changes = changes.filter((c) => c.position !== index);
+    changes.push({
+      position: index,
+      //@ts-ignore
+      textState: text,
+    });
+    onchange?.();
+  }}
 />
