@@ -22,26 +22,12 @@
     showExtensionsNSourcesNSFW,
     openedExtension,
   } from "@/states";
-  import type { FilterChange, SourceBrowse } from "@/types/server";
+  import type { FilterChange, Manga, SourceBrowse } from "@/types/server";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
   import { onMount } from "svelte";
   import { ScrollingValue } from "svelte-ux";
   import { VList } from "virtua/svelte";
-
-  let debounceTimer: ReturnType<typeof setTimeout>;
-  let resultFilter = $state("");
-
-  function handleInput() {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    debounceTimer = setTimeout(() => {
-      // search(inputElement.value);
-      console.log("fire", searchInput.value);
-      resultFilter = "";
-    }, 600);
-  }
 
   let selectSourceFilter = $state("");
   let disabledLangs: Record<string, boolean> = $state({});
@@ -106,6 +92,46 @@
     }
   });
 
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  let resultFilter = $state("");
+
+  let changes: FilterChange[] = $state([]);
+
+  let fetchedManga: Manga[] = $state([]);
+
+  const search = () => {
+    if (selectedSource.value === undefined) return;
+    suwaManager
+      .fetchSourceManga({
+        source: selectedSource.value.id,
+        type: searchType.value,
+        query: searchInput.value,
+        page: 1,
+        filters: changes,
+      })
+      .then((r) => {
+        console.log(r);
+        fetchedManga = r.mangas;
+      });
+  };
+
+  const handleInput = () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+    debounceTimer = setTimeout(() => {
+      search();
+      console.log("fire", searchInput.value);
+      resultFilter = "";
+    }, 600);
+  };
+
+  let filteredManga = $derived(
+    fetchedManga.filter((m) =>
+      m.title.toLowerCase().includes(resultFilter.toLowerCase()),
+    ),
+  );
+
   selectedSource.onchange = (s) => {
     if (s) {
       if (!s.supportsLatest && searchType.value === "LATEST") {
@@ -114,19 +140,22 @@
       suwaManager.getSourceBrowse(s.id).then((sb) => {
         sourceBrowse = sb;
       });
+      search();
     } else {
       sourceBrowse = undefined;
     }
   };
 
-  let changes: FilterChange[] = $state([]);
+  searchType.onchange = search;
+
+  $inspect(fetchedManga);
 </script>
 
 <SearchSettings bind:open={openSearchSettings} {sourceBrowse} bind:changes />
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
-      <ScrollingValue value={0} />
+      <ScrollingValue value={fetchedManga.length} />
     </Badge>
     <Input
       class="hover:bg-secondary/20 w-70 transition-all"
@@ -197,11 +226,11 @@
   </div>
   <div class="flex items-center justify-center gap-2">
     <div
-      class="border-secondary bg-background/30 parent flex gap-1 rounded-2xl border p-1"
+      class="border-secondary bg-background/30 parent flex gap-1 rounded-xl border p-1"
     >
       <Button
         class={cn(
-          "pointer-events-none absolute w-30 transition-all duration-200",
+          "pointer-events-none absolute w-30 rounded-lg transition-all duration-200",
           searchType.value === "SEARCH" && "translate-x-0",
           searchType.value === "POPULAR" && "translate-x-31",
           searchType.value === "LATEST" && "translate-x-62",
@@ -210,7 +239,7 @@
       ></Button>
       <Button
         class={cn(
-          "hover:bg-secondary/30 z-2 w-30",
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
           searchType.value === "SEARCH" && "hover:text-primary/70",
         )}
         variant="ghost"
@@ -222,7 +251,7 @@
       </Button>
       <Button
         class={cn(
-          "hover:bg-secondary/30 z-2 w-30",
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
           searchType.value === "POPULAR" && "hover:text-primary/70",
         )}
         variant="ghost"
@@ -234,7 +263,7 @@
       </Button>
       <Button
         class={cn(
-          "hover:bg-secondary/30 z-2 w-30",
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
           searchType.value === "LATEST" && "hover:text-primary/70",
         )}
         variant="ghost"
@@ -262,7 +291,7 @@
         >
           <Button
             class={cn(
-              "h-12 w-50 justify-start overflow-hidden",
+              "h-12.5 w-55 justify-start overflow-hidden",
               sourceGroupMode.value === "single" && "px-2",
             )}
             variant="outline"
@@ -465,9 +494,9 @@
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
-      <ScrollingValue value={0} />
+      <ScrollingValue value={filteredManga.length} />
       /
-      <ScrollingValue value={0} />
+      <ScrollingValue value={fetchedManga.length} />
     </Badge>
     <Input
       class="hover:bg-secondary/20 w-70"
@@ -477,5 +506,13 @@
       bind:value={resultFilter}
     />
     <Button></Button>
+  </div>
+  <div class="flex flex-wrap">
+    {#each filteredManga as manga (manga.id)}
+      <div class="flex h-90 w-40 flex-col gap-2">
+        <Label>{manga.title}</Label>
+        <Image src={suwayomiUrl.value + manga.thumbnailUrl} />
+      </div>
+    {/each}
   </div>
 </div>

@@ -39,7 +39,7 @@
   // let settingsPerfil = $state("auto")
   // let key = $derived(`${sourceBrowse?.id}-${settingsPerfil}` )
 
-  $inspect(changes);
+  // $inspect(changes);
 </script>
 
 <Dialog.Root bind:open>
@@ -50,7 +50,9 @@
       <Dialog.Title>Source filters</Dialog.Title>
       <Dialog.Description></Dialog.Description>
     </Dialog.Header>
-    <div class="scrollbar flex flex-col gap-1 overflow-y-scroll">
+    <div
+      class="scrollbar flex max-h-100 flex-col gap-1 overflow-x-hidden overflow-y-scroll"
+    >
       {#if sourceBrowse}
         {#each sourceBrowse.filters as filter, index (index)}
           {#if filter.type === "CheckBoxFilter"}
