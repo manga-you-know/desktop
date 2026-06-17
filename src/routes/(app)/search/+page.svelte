@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Image, SearchSettings, Tooltip } from "@/components";
+  import { Image, SearchFilters, Tooltip } from "@/components";
   import {
     Badge,
     Button,
@@ -21,6 +21,7 @@
     selectedGroupSource,
     showExtensionsNSourcesNSFW,
     openedExtension,
+    openedSearchFilters,
   } from "@/states";
   import type { FilterChange, Manga, SourceBrowse } from "@/types/server";
   import Icon from "@iconify/svelte";
@@ -87,6 +88,7 @@
       ) {
         searchType.value = "POPULAR";
       }
+      search();
     } else {
       sourceBrowse = undefined;
     }
@@ -147,11 +149,8 @@
   };
 
   searchType.onchange = search;
-
-  $inspect(fetchedManga);
 </script>
 
-<SearchSettings bind:open={openSearchSettings} {sourceBrowse} bind:changes />
 <div class="justify-around-stretch flex w-full flex-col gap-3">
   <div class="flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
@@ -168,12 +167,7 @@
       oninput={handleInput}
       bind:value={searchInput.value}
     />
-    <Button
-      variant="outline"
-      onclick={() => {
-        openSearchSettings = true;
-      }}
-    >
+    <Button variant="outline">
       <Icon icon="lucide:sliders-horizontal" />
     </Button>
     <Tooltip
@@ -226,7 +220,7 @@
   </div>
   <div class="flex items-center justify-center gap-2">
     <div
-      class="border-secondary bg-background/30 parent flex gap-1 rounded-xl border p-1"
+      class="border-secondary bg-background/30 parent flex justify-start gap-1 rounded-xl border p-1"
     >
       <Button
         class={cn(
@@ -327,48 +321,57 @@
           </Button>
         </Tooltip>
       </Popover.Trigger>
-      <Popover.Content>
+      <Popover.Content class="w-80">
         <div class="flex w-full flex-col gap-2">
-          <div class="flex gap-2">
-            <Badge class="w-13" variant="outline">
+          <div class="flex items-center gap-1">
+            <Badge class="h-9 w-12" variant="outline">
               <ScrollingValue value={filteredSources.length} />
             </Badge>
             <Input
-              class="w-full"
+              class="h-9 w-full"
               divClass="w-full"
               variant="outline"
-              placeholder="Enabled sources..."
+              placeholder="Sources..."
               bind:value={selectSourceFilter}
             />
-          </div>
-          <div class="flex justify-between gap-2">
-            <Button
-              class="flex min-w-24 justify-between rounded-xl font-bold duration-500"
-              variant={showExtensionsNSourcesNSFW.value
-                ? "destructive"
-                : "info"}
-              onclick={(e) => {
-                showExtensionsNSourcesNSFW.toggle();
-                animate(e.currentTarget, {
-                  filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
-                  duration: 500,
-                  easing: "easeOutQuad",
-                });
-              }}
+            <Tooltip
+              text="{showExtensionsNSourcesNSFW.value
+                ? 'Disable'
+                : 'Enable'} NSFW"
             >
-              <Icon
-                icon={showExtensionsNSourcesNSFW.value
-                  ? "lucide:triangle-alert"
-                  : "lucide:heart"}
-              />
-              {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
-            </Button>
+              <Button
+                class="flex h-9 justify-between rounded-xl font-bold duration-500"
+                variant={showExtensionsNSourcesNSFW.value
+                  ? "destructive"
+                  : "info"}
+                onclick={(e) => {
+                  showExtensionsNSourcesNSFW.toggle();
+                  animate(e.currentTarget, {
+                    filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
+                    duration: 500,
+                    easing: "easeOutQuad",
+                  });
+                }}
+              >
+                <Icon
+                  icon={showExtensionsNSourcesNSFW.value
+                    ? "lucide:triangle-alert"
+                    : "lucide:heart"}
+                />
+                <!-- {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW -->
+              </Button>
+            </Tooltip>
             <Popover.Root>
-              <Popover.Trigger class="w-full">
-                <Button class="w-full font-bold">
-                  <Icon icon="lucide:languages" />
-                  Languages
-                </Button>
+              <Popover.Trigger>
+                <Tooltip
+                  text="Enabled langs: {groupByLangSources.length -
+                    Object.values(disabledLangs).filter((v) => v).length}"
+                >
+                  <Button class="h-9 font-bold">
+                    <Icon icon="lucide:languages" />
+                    <!-- Languages -->
+                  </Button>
+                </Tooltip>
               </Popover.Trigger>
               <Popover.Content>
                 <div
@@ -404,6 +407,7 @@
               </Popover.Content>
             </Popover.Root>
           </div>
+          <!-- <div class="flex justify-between gap-2"></div> -->
           <VList
             class={cn(
               "scrollbar w-full",
@@ -415,7 +419,7 @@
             {#snippet children(source, _)}
               <Button
                 class={cn(
-                  "bg-background group/extension hover:bg-secondary/40 text-primary m-0.5 flex h-12 w-60 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
+                  "bg-background group/extension hover:bg-secondary/40 text-primary m-0.5 flex h-12 w-70 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
                   selectedSource.value?.id === source.id &&
                     "bg-secondary pointer-events-none",
                 )}
@@ -459,14 +463,13 @@
                       onclick={(e) => {
                         e.stopPropagation();
                         openSelectSource = false;
-                        openedExtension.set({
+                        openedExtension.open({
                           source: source,
                           extension:
                             suwayomi.extensionsByPkgName[
                               source.extension.pkgName
                             ],
                         });
-                        openedExtension.open();
                       }}
                     >
                       <Icon icon="lucide:settings" />
@@ -490,6 +493,20 @@
         </div>
       </Popover.Content>
     </Popover.Root>
+    <Tooltip text="Source filters">
+      <Button
+        class="h-12.5 w-14"
+        variant="outline"
+        disabled={searchType.value !== "SEARCH" ||
+          sourceGroupMode.value !== "single" ||
+          sourceBrowse?.filters.length === 0}
+        onclick={() => {
+          openedSearchFilters.open({ sourceBrowse });
+        }}
+      >
+        <Icon icon="lucide:list-filter" />
+      </Button>
+    </Tooltip>
   </div>
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div class="flex items-center justify-center gap-2">

@@ -9,6 +9,7 @@
     ManageExtensions,
     PatchNotes,
     Search,
+    SearchFilters,
     SetExtension,
     Settings,
     TitleBar,
@@ -233,6 +234,7 @@
   <PatchNotes />
   <ManageExtensions />
   <SetExtension />
+  <SearchFilters />
   {#if IS_MOBILE}
     {@render children?.()}
   {:else}

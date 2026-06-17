@@ -123,7 +123,8 @@ export class OpenedObject<T> {
     this.onvaluechange?.(v);
   }
 
-  open = () => {
+  open = (v: T) => {
+    this.#value = v;
     this.#active = true;
     this.onopenchange?.(true);
   };

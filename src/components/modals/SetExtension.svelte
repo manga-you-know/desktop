@@ -351,12 +351,11 @@
                                 variant="ghost"
                                 onclick={(e) => {
                                   e.stopPropagation();
-                                  openedExtension.set({
+                                  openExtensions.close();
+                                  openedExtension.open({
                                     source: source,
                                     extension: openedExtension.value.extension,
                                   });
-                                  openExtensions.close();
-                                  openedExtension.open();
                                   openedExtension.onopenchange = (open) => {
                                     if (!open) {
                                       openExtensions.open();
@@ -435,11 +434,10 @@
                       <ContextMenu.Item
                         class="flex justify-between"
                         onclick={() => {
-                          openedExtension.set({
+                          openExtensions.close();
+                          openedExtension.open({
                             extension: openedExtension.value.extension,
                           });
-                          openExtensions.close();
-                          openedExtension.open();
                           openedExtension.onopenchange = (open) => {
                             if (!open) {
                               openExtensions.open();

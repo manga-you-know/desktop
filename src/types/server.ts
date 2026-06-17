@@ -234,9 +234,9 @@ export type FilterChange =
   | { position: number; selectState: number }
   | { position: number; sortState: { ascending: boolean; index: number } }
   | {
-      position: number;
-      groupChange: FilterChange;
-    };
+    position: number;
+    groupChange: FilterChange;
+  };
 
 export type FetchSourceMangaInput = {
   type: FetchSourceMangaType;

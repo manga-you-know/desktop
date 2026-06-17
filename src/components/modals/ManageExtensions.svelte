@@ -351,7 +351,7 @@
             "start pointer-events-none absolute h-8 w-1/2 rounded-xl transition-all duration-500",
             extensionManagerTab.value === "sources"
               ? "translate-x-0"
-              : "translate-x-55",
+              : "translate-x-50",
           )}
         />
         <Button
@@ -776,14 +776,13 @@
                         variant="link"
                         id="source-{sRow.source.id}"
                         onclick={() => {
-                          openedExtension.set({
+                          openExtensions.close();
+                          openedExtension.open({
                             extension:
                               suwayomi.extensionsByPkgName[
                                 sRow.source.extension.pkgName
                               ],
                           });
-                          openExtensions.close();
-                          openedExtension.open();
                           openedExtension.onopenchange = (open) => {
                             if (!open) {
                               openExtensions.open();
@@ -854,15 +853,14 @@
                               variant="ghost"
                               onclick={(e) => {
                                 e.stopPropagation();
-                                openedExtension.set({
+                                openExtensions.close();
+                                openedExtension.open({
                                   source: sRow.source,
                                   extension:
                                     suwayomi.extensionsByPkgName[
                                       sRow.source.extension.pkgName
                                     ],
                                 });
-                                openExtensions.close();
-                                openedExtension.open();
                                 openedExtension.onopenchange = (open) => {
                                   if (!open) {
                                     openExtensions.open();
@@ -1055,9 +1053,8 @@
                           .split('.')
                           .at(-1)}"
                         onclick={() => {
-                          openedExtension.set({ extension: eRow.extension });
                           openExtensions.close();
-                          openedExtension.open();
+                          openedExtension.open({ extension: eRow.extension });
                           openedExtension.onopenchange = (open) => {
                             if (!open) {
                               openExtensions.open();

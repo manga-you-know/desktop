@@ -32,6 +32,7 @@ import {
   TextState,
   ValueState,
 } from "./classes.svelte";
+import type { SourceBrowse } from "@/types/server";
 // import { favorites } from "@/lib/db";
 
 export const openAdd = new OpenState();
@@ -55,6 +56,9 @@ export const searchInput = new TextState({ value: "" });
 export const openedExtension = new OpenedObject<{
   extension?: Extension;
   source?: Source;
+}>({ value: {} });
+export const openedSearchFilters = new OpenedObject<{
+  sourceBrowse?: SourceBrowse;
 }>({ value: {} });
 
 export const rawSaveds = new (class {

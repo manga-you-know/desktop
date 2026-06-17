@@ -7,7 +7,7 @@
     Input,
     Label,
   } from "@/lib/components";
-  import { sourceFilterConfig } from "@/states";
+  import { openedSearchFilters, sourceFilterConfig } from "@/states";
   import type {
     FilterChange,
     SourceBrowse,
@@ -24,25 +24,19 @@
     TriStateFilter,
   } from "../filters";
 
-  type Props = {
-    open: boolean;
-    sourceBrowse: SourceBrowse | undefined;
-    changes: FilterChange[];
-  };
-
-  let {
-    open = $bindable(false),
-    sourceBrowse,
-    changes = $bindable([]),
-  }: Props = $props();
+  // type Props = {
+  //   open: boolean;
+  //   sourceBrowse: SourceBrowse | undefined;
+  // };
 
   // let settingsPerfil = $state("auto")
   // let key = $derived(`${sourceBrowse?.id}-${settingsPerfil}` )
 
   // $inspect(changes);
+  let changes: FilterChange[] = $state([]);
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open={openedSearchFilters.active}>
   <Dialog.Content
     class="slide-out-to-left-0! slide-in-from-left-0! data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-bottom-full"
   >
@@ -53,8 +47,8 @@
     <div
       class="scrollbar flex max-h-100 flex-col gap-1 overflow-x-hidden overflow-y-scroll"
     >
-      {#if sourceBrowse}
-        {#each sourceBrowse.filters as filter, index (index)}
+      {#if openedSearchFilters.value.sourceBrowse}
+        {#each openedSearchFilters.value.sourceBrowse.filters as filter, index (index)}
           {#if filter.type === "CheckBoxFilter"}
             <CheckboxFilter {index} {filter} bind:changes />
           {:else if filter.type === "HeaderFilter"}

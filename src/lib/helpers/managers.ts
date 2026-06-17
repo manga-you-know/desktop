@@ -20,6 +20,12 @@ import type {
   SourceSettings,
   UpdateSourcePreferencesInput,
 } from "@/types/server";
+import { Client, cacheExchange, fetchExchange } from "@urql/svelte";
+
+const client = new Client({
+  url: suwayomiUrl.value + "/api/graphql",
+  exchanges: [cacheExchange, fetchExchange],
+});
 
 const command = Command.sidecar("binaries/suwayomi");
 let child: Child = null!;
@@ -677,10 +683,13 @@ export const suwaManager = {
         }
       `,
       }),
-    }).then(async (r) => {
-      const rJson = await r.json();
-      return rJson.data.source;
-    });
+    })
+      .then(async (r) => {
+        const rJson = await r.json();
+        console.log(rJson);
+        return rJson.data.source;
+      })
+      .catch((r) => console.log(r));
   },
   async fetchSourceManga(
     input: FetchSourceMangaInput,
