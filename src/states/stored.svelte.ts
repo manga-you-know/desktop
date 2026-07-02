@@ -179,7 +179,10 @@ export const hiddenSources = new StoredState<Record<string, boolean>>({
 
 // Fetches
 export const repoInfo = new StoredState<
-  Record<string, { name: string; website: string }>
+  Record<
+    string,
+    { name: string; badgeLabel: string; discord?: string; website: string }
+  >
 >({
   key: "repo_info",
   defaultValue: {},
@@ -212,9 +215,9 @@ export const sourceGroupMode = new StoredState<"single" | "group" | "global">({
   store: "cache",
 });
 
-export const selectedSource = new StoredState<Source | undefined>({
+export const selectedSourceId = new StoredState<string>({
   key: "selected_source",
-  defaultValue: undefined,
+  defaultValue: "",
   store: "cache",
 });
 

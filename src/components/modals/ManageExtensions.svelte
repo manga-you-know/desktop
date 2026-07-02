@@ -329,6 +329,8 @@
     }
     return isInstalled;
   };
+
+  $inspect(suwayomi.rawSources);
 </script>
 
 <Dialog.Root bind:open={openExtensions.active}>
@@ -489,21 +491,21 @@
                       getBasePath(repo),
                     ) && activeExtensionRepos.value.length < 2}
                   />
-                  {#if repoInfo.value[repo]}
+                  {#if repoInfo.value[getBasePath(repo)]}
                     <div class="flex w-full gap-1">
                       <Button
                         class="h-7 w-full justify-start opacity-100 hover:bg-transparent"
                         variant="ghost"
                         data-mouse
                       >
-                        {repoInfo.value[repo].name}
+                        {repoInfo.value[getBasePath(repo)].name}
                       </Button>
                       <Button
                         class="hover:bg-background/70 pointer-events-auto z-2 size-7 cursor-pointer! rounded-xl opacity-100"
                         variant="secondary"
                         onclick={(e) => {
                           e.stopPropagation();
-                          openUrl(repoInfo.value[repo].website);
+                          openUrl(repoInfo.value[getBasePath(repo)].website);
                         }}
                       >
                         <Icon icon="lucide:external-link" />
@@ -523,7 +525,9 @@
           </Popover.Content>
         </Popover.Root>
         <Popover.Root>
-          <Popover.Trigger>
+          <Popover.Trigger
+            disabled={["installed", "hidden"].includes(showedGroup)}
+          >
             <Tooltip
               text="{allowedLanguages.length} allowed language{allowedLanguages.length >
               1

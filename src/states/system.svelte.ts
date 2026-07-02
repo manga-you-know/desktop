@@ -33,6 +33,7 @@ import {
   ValueState,
 } from "./classes.svelte";
 import type { SourceBrowse } from "@/types/server";
+import { getBasePath } from "@/lib/utils";
 // import { favorites } from "@/lib/db";
 
 export const openAdd = new OpenState();
@@ -106,7 +107,7 @@ class Suwayomi {
     this.rawExtensions.filter(
       (e) =>
         !hiddenExtensions.value[e.pkgName] &&
-        activeExtensionRepos.value.includes(e.repo),
+        activeExtensionRepos.value.includes(getBasePath(e.repo)),
     ),
   );
   installedExtensions: Extension[] = $derived(
@@ -131,7 +132,9 @@ class Suwayomi {
     this.rawSources.filter(
       (s) =>
         !hiddenSources.value[s.id.toString()] &&
-        activeExtensionRepos.value.includes(s.extension.repo),
+        activeExtensionRepos.value.includes(
+          getBasePath(s.extension.repo ?? "https://google.com"),
+        ),
     ),
   );
   enabledSources: Source[] = $derived(
@@ -146,6 +149,9 @@ class Suwayomi {
   );
   hiddenSources: Source[] = $derived(
     this.rawSources.filter((s) => hiddenSources.value[s.id.toString()]),
+  );
+  sourcesById: Record<string, Source> = $derived(
+    Object.fromEntries(this.rawSources.map((s) => [s.id, s])),
   );
   availableSourceLangs: string[] = $derived(
     Array.from(new Set(this.sources.map((s) => s.lang))),

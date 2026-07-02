@@ -90,16 +90,32 @@ export const suwaManager = {
   async getRepoInfo() {
     for (const repo of suwayomi.extensionRepos) {
       if (repoInfo.value[getBasePath(repo)]) continue;
-      const infoFile = getBasePath(repo) + "repo.json";
+      const infoFile = getBasePath(repo) + "index.json";
       const info = await fetch(infoFile);
       const infoJson = await info.json();
-      repoInfo.value = {
-        ...repoInfo.value,
-        [getBasePath(repo)]: {
-          name: infoJson.meta.name,
-          website: infoJson.meta.website,
-        },
-      };
+      if (infoJson.badgeLabel) {
+        repoInfo.value = {
+          ...repoInfo.value,
+          [getBasePath(repo)]: {
+            name: infoJson.name,
+            badgeLabel: infoJson.badgeLabel,
+            website: infoJson.contact.website,
+            discord: infoJson.contact.discord,
+          },
+        };
+      } else {
+        const infoFilefb = getBasePath(repo) + "repo.json";
+        const infofb = await fetch(infoFilefb);
+        const infofbJson = await infofb.json();
+        repoInfo.value = {
+          ...repoInfo.value,
+          [getBasePath(repo)]: {
+            name: infofbJson.meta.name,
+            badgeLabel: infofbJson.meta.name.split(" ")[0],
+            website: infofbJson.meta.website,
+          },
+        };
+      }
     }
   },
   async setRepos(): Promise<boolean> {
@@ -173,7 +189,9 @@ export const suwaManager = {
             versionName
             iconUrl
             repo
+            storeIndexUrl
             isNsfw
+            contentWarning
             isInstalled
             isObsolete
             hasUpdate
@@ -467,7 +485,6 @@ export const suwaManager = {
       },
     }).then(async (r) => {
       const rJson = await r.json();
-      console.log(rJson);
       return rJson.data.source;
     });
   },
@@ -686,7 +703,6 @@ export const suwaManager = {
     })
       .then(async (r) => {
         const rJson = await r.json();
-        console.log(rJson);
         return rJson.data.source;
       })
       .catch((r) => console.log(r));

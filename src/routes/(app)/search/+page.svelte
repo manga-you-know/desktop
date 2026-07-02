@@ -16,7 +16,7 @@
     sourceGroupMode,
     searchType,
     suwayomi,
-    selectedSource,
+    selectedSourceId,
     suwayomiUrl,
     selectedGroupSource,
     showExtensionsNSourcesNSFW,
@@ -62,30 +62,25 @@
           getLangName(s.lang)
             .toLowerCase()
             .includes(selectSourceFilter.toLowerCase())) &&
-        (selectedSource.value?.id === s.id ? true : !disabledLangs[s.lang]) &&
+        (selectedSourceId.value === s.id ? true : !disabledLangs[s.lang]) &&
         (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
     ),
   );
 
+  let selectedSource = $derived(suwayomi.sourcesById[selectedSourceId.value]);
   let openSearchSettings = $state(false);
   let openSelectSource = $state(false);
   let sourceBrowse: SourceBrowse | undefined = $state();
 
   onMount(() => {
-    if (
-      suwayomi.enabledSources.length > 0 &&
-      selectedSource.value === undefined
-    ) {
-      selectedSource.value = suwayomi.enabledSources[0];
+    if (suwayomi.enabledSources.length > 0 && selectedSourceId.value === "") {
+      selectedSourceId.value = suwayomi.enabledSources[0].id ?? "";
     }
-    if (selectedSource.value) {
-      suwaManager.getSourceBrowse(selectedSource.value.id).then((sb) => {
+    if (selectedSource) {
+      suwaManager.getSourceBrowse(selectedSourceId.value).then((sb) => {
         sourceBrowse = sb;
       });
-      if (
-        !selectedSource.value.supportsLatest &&
-        searchType.value === "LATEST"
-      ) {
+      if (!selectedSource.supportsLatest && searchType.value === "LATEST") {
         searchType.value = "POPULAR";
       }
       search();
@@ -102,10 +97,10 @@
   let fetchedManga: Manga[] = $state([]);
 
   const search = () => {
-    if (selectedSource.value === undefined) return;
+    if (selectedSourceId.value === undefined) return;
     suwaManager
       .fetchSourceManga({
-        source: selectedSource.value.id,
+        source: selectedSourceId.value,
         type: searchType.value,
         query: searchInput.value,
         page: 1,
@@ -134,12 +129,12 @@
     ),
   );
 
-  selectedSource.onchange = (s) => {
-    if (s) {
-      if (!s.supportsLatest && searchType.value === "LATEST") {
+  selectedSourceId.onchange = (s) => {
+    if (selectedSource) {
+      if (!selectedSource.supportsLatest && searchType.value === "LATEST") {
         searchType.value = "POPULAR";
       }
-      suwaManager.getSourceBrowse(s.id).then((sb) => {
+      suwaManager.getSourceBrowse(s).then((sb) => {
         sourceBrowse = sb;
       });
       search();
@@ -261,7 +256,7 @@
           searchType.value === "LATEST" && "hover:text-primary/70",
         )}
         variant="ghost"
-        disabled={!selectedSource.value?.supportsLatest &&
+        disabled={!selectedSource?.supportsLatest &&
           sourceGroupMode.value === "single"}
         onclick={() => {
           searchType.value = "LATEST";
@@ -280,7 +275,7 @@
             ? 'group'
             : ''}"
           subtext={sourceGroupMode.value === "single"
-            ? (selectedSource.value?.displayName ?? "None.")
+            ? (selectedSource.displayName ?? "None.")
             : selectedGroupSource.value}
         >
           <Button
@@ -293,13 +288,13 @@
             id="source-select"
           >
             {#if sourceGroupMode.value === "single"}
-              {#if selectedSource.value}
+              {#if selectedSource}
                 <Image
                   class="size-10"
-                  src={suwayomiUrl.value + selectedSource.value.iconUrl}
+                  src={suwayomiUrl.value + selectedSource.iconUrl}
                 />
                 <span class="truncate font-bold">
-                  {selectedSource.value.displayName}
+                  {selectedSource.displayName}
                 </span>
               {:else}
                 No sources...
@@ -420,11 +415,11 @@
               <Button
                 class={cn(
                   "bg-background group/extension hover:bg-secondary/40 text-primary m-0.5 flex h-12 w-70 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
-                  selectedSource.value?.id === source.id &&
+                  selectedSourceId.value === source.id &&
                     "bg-secondary pointer-events-none",
                 )}
                 onclick={() => {
-                  selectedSource.value = source;
+                  selectedSourceId.value = source.id;
                   animate("#source-select", {
                     filter: ["blur(4px)", "blur(0px)"],
                     duration: 700,

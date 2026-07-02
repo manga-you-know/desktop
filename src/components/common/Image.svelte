@@ -13,10 +13,10 @@
   {...props}
   onloadstart={(e) => {
     const img = e.currentTarget as HTMLImageElement;
-    img.src = "/myk.png";
+    img.src = "/myk_error.png";
   }}
   onerror={(e) => {
     const img = e.currentTarget as HTMLImageElement;
-    img.src = "/myk.png";
+    img.src = "/myk_error.png";
   }}
 />
