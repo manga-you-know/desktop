@@ -18,7 +18,7 @@ import {
   type FavoriteLoaded,
   type ReadCache,
 } from "@/types";
-import { favorites } from "@/lib/db";
+import { mangas } from "@/lib/db";
 import { downloader } from "@/services/downloader";
 
 export const downloadManager = writable(new DownloadManager());
@@ -32,7 +32,7 @@ export const showOnlyNew = writable<boolean>(false);
 export const closeTray = writable<boolean>(false);
 export const rawFavorites = writable<Favorite[]>([]);
 export const libraryFavorites = writable<Favorite[]>([]);
-export const ultraFavorites = writable<(typeof favorites.$inferSelect)[]>([]);
+export const ultraFavorites = writable<(typeof mangas.$inferSelect)[]>([]);
 export const libraryQuery = writable<string>("");
 export const librarySource = writable<string>("");
 export const libraryTag = writable<Mark | undefined>(undefined);

@@ -748,7 +748,6 @@ export const suwaManager = {
       }),
     }).then(async (r) => {
       const rJson = await r.json();
-      console.log(rJson);
       return rJson.data.fetchSourceManga;
     });
   },

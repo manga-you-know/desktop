@@ -155,7 +155,7 @@
     refreshLibrary();
     refreshPanels();
     loadScreenState();
-    refreshFavorites();
+    // refreshFavorites();
     loadFavoritesChapters();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();

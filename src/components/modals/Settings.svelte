@@ -332,7 +332,7 @@
                   disable updates for single extensions.
                 </span>
               </div>
-              <Label>Repositories</Label>
+              <Label>Repositories (stores)</Label>
               <Card.Root
                 class="bg-background/60 h-60 w-full rounded-2xl border-0"
               >
@@ -351,6 +351,20 @@
                           >
                             {repoInfo.value[getBasePath(repo)].name}
                           </Button>
+                          {#if repoInfo.value[getBasePath(repo)].discord}
+                            <Button
+                              class="rounded-none"
+                              variant="info"
+                              onclick={() => {
+                                openUrl(
+                                  repoInfo.value[getBasePath(repo)].discord ??
+                                    "",
+                                );
+                              }}
+                            >
+                              <Icon icon="ic:baseline-discord" />
+                            </Button>
+                          {/if}
                           <Button
                             class="rounded-none"
                             variant="secondary"

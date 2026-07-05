@@ -172,9 +172,7 @@
                 </Badge>
                 <Badge class="flex w-full gap-3" variant="outline">
                   <span class="text-sm! text-gray-400">Repository:</span>
-                  {prettifyRepo(
-                    getBasePath(openedExtension.value.extension.repo),
-                  )}
+                  {prettifyRepo(openedExtension.value.extension.repo)}
                 </Badge>
               </div>
               <div class="flex items-center justify-center gap-2">

@@ -389,7 +389,6 @@
               const path = await openFile({
                 filters: [{ name: "Extension", extensions: ["apk"] }],
               });
-
               if (!path) return;
               const bytes = await readFile(path);
               const file = new File([bytes], path.split("/").pop()!, {
@@ -731,7 +730,7 @@
             />
           </Badge>
         </Button>
-        <Tooltip text="{suwayomi.hiddenExtensions.length} hided extensions">
+        <Tooltip text="{suwayomi.hiddenExtensions.length} hidded extensions">
           <Button
             class={cn(
               "w-12 rounded-l-none rounded-b-none",

@@ -44,4 +44,4 @@ export const getLangName = (lang: string) =>
     : (IsoLanguages[lang]?.name ?? lang);
 
 export const prettifyRepo = (repo: string) =>
-  repoInfo.value[repo]?.name ?? removeOrigin(repo);
+  repoInfo.value[getBasePath(repo)]?.name ?? removeOrigin(repo);

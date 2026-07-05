@@ -28,7 +28,7 @@ import { documentDir, join } from "@tauri-apps/api/path";
 import { removeFavorite } from "@/functions";
 import { get } from "svelte/store";
 import { toast } from "svelte-sonner";
-import { db, favorites } from "@/lib/db";
+import { db, mangas } from "@/lib/db";
 import { eq } from "drizzle-orm";
 
 let dbOld: Database = null!;
@@ -163,11 +163,11 @@ export async function refreshLibrary() {
 
 export async function refreshFavorites() {
   // const favs = await FavoriteDB.getUltraFavorites();
-  const favs = await db.query.favorites.findMany({
-    where: eq(favorites.isUltraFavorite, true),
-  });
-  // console.log(favs)
-  ultraFavorites.set(favs);
+  // const favs = await db.query.favorites.findMany({
+  //   where: eq(mangas.isUltraFavorite, true),
+  // });
+  // // console.log(favs)
+  // ultraFavorites.set(favs);
   // const uload = get(favoritesLoaded);
   // for (let id of Object.keys(uload)) {
   //   if (!favs.map((f) => f.id.toString()).includes(id)) {

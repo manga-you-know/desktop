@@ -11,7 +11,8 @@ import {
   removeFavorite,
 } from "@/functions";
 import { getBool } from "@/utils";
-import { db, favorites, markFavorites } from "@/lib/db";
+import { db, mangas } from "@/lib/db";
+import { markFavorites } from "@/lib/db/schemas";
 import { and, eq, inArray } from "drizzle-orm";
 
 let dbOld: Database = null!;
@@ -21,14 +22,14 @@ async function loadDb() {
 }
 
 export async function createFavorite(result: SearchResult): Promise<Favorite> {
-  await db.insert(favorites).values(result);
+  await db.insert(mangas).values(result);
   const saved = await db
     .select()
-    .from(favorites)
+    .from(mangas)
     .where(
       and(
-        eq(favorites.source, result.source),
-        eq(favorites.sourceId, result.sourceId),
+        eq(mangas.source, result.source),
+        eq(mangas.sourceId, result.sourceId),
       ),
     )
     .limit(1);
@@ -81,8 +82,8 @@ export async function getFavorite(id: number): Promise<Favorite> {
   // );
   const favorite: Favorite[] = await db
     .select()
-    .from(favorites)
-    .where(eq(favorites.id, id))
+    .from(mangas)
+    .where(eq(mangas.id, id))
     .limit(1);
   if (favorite) {
     return favorite[0];
@@ -100,8 +101,8 @@ export async function getFavoriteBySource(
   // );
   const favorite = await db
     .select()
-    .from(favorites)
-    .where(and(eq(favorites.source, source), eq(favorites.sourceId, sourceID)));
+    .from(mangas)
+    .where(and(eq(mangas.source, source), eq(mangas.sourceId, sourceID)));
   if (favorite) {
     return favorite[0];
   }
@@ -142,7 +143,7 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
     // if (libraryMark?.id === -1)
     //   return favorites.filter((f) => f.isUltraFavorite);
     // return favorites;
-    return db.select().from(favorites);
+    return db.select().from(mangas);
   } catch (error) {
     console.log(error);
     return [];
@@ -157,15 +158,15 @@ export async function getRawFavorites(): Promise<Favorite[]> {
   //   [defaultUser.id]
   // );
   // return favorites;
-  return await db.select().from(favorites);
+  return await db.select().from(mangas);
 }
 
 export async function getUltraFavorites(): Promise<Favorite[]> {
   try {
     return await db
       .select()
-      .from(favorites)
-      .where(eq(favorites.isUltraFavorite, true));
+      .from(mangas)
+      .where(eq(mangas.isUltraFavorite, true));
   } catch (error) {
     console.log("FDP");
     console.log(error);
@@ -186,12 +187,12 @@ export async function getFavoritesByMark(
       .where(eq(markFavorites.markID, mark.id));
     const favs: Favorite[] = await db
       .select()
-      .from(favorites)
+      .from(mangas)
       .where(
         and(
-          eq(favorites.userId, userID),
+          eq(mangas.userId, userID),
           inArray(
-            favorites.id,
+            mangas.id,
             subquery.map((s) => s.savedID),
           ),
         ),
@@ -274,11 +275,7 @@ export async function getFavoriteSources(): Promise<string[]> {
 
 export async function updateFavorite(saved: Favorite): Promise<void> {
   try {
-    await db
-      .update(favorites)
-      .set(saved)
-      .where(eq(favorites.id, saved.id))
-      .limit(1);
+    await db.update(mangas).set(saved).where(eq(mangas.id, saved.id)).limit(1);
   } catch (error) {
     console.log(error);
   } finally {
@@ -289,11 +286,7 @@ export async function updateFavorite(saved: Favorite): Promise<void> {
 export async function isUltraFavorite(favoriteID: number) {
   return (
     (
-      await db
-        .select()
-        .from(favorites)
-        .where(eq(favorites.id, favoriteID))
-        .limit(1)
+      await db.select().from(mangas).where(eq(mangas.id, favoriteID)).limit(1)
     )[1].isUltraFavorite ?? false
   );
 }
@@ -304,13 +297,13 @@ export async function toggleUltraFavorite(
 ): Promise<boolean> {
   try {
     await db
-      .update(favorites)
+      .update(mangas)
       .set({ isUltraFavorite: true })
-      .where(eq(favorites.id, favorite.id));
+      .where(eq(mangas.id, favorite.id));
     const result: { isUltraFavorite: boolean | null }[] = await db
-      .select({ isUltraFavorite: favorites.isUltraFavorite })
-      .from(favorites)
-      .where(eq(favorites.id, favorite.id))
+      .select({ isUltraFavorite: mangas.isUltraFavorite })
+      .from(mangas)
+      .where(eq(mangas.id, favorite.id))
       .limit(1);
     if (refresh) {
       refreshFavorites();

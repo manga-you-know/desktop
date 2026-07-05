@@ -19,9 +19,9 @@
   };
 
   const setRepo = async () => {
-    if (suwayomi.extensionRepos.includes(input.trim())) {
-      return;
-    }
+    if (suwayomi.extensionRepos.includes(input.trim())) return;
+    if (!regexStore.test(input)) return;
+    const oldRepos = suwayomi.extensionRepos;
     suwayomi.extensionRepos.push(input.trim());
     status = "loading";
     const added = await suwaManager.setRepos();
@@ -33,12 +33,15 @@
         input = "";
       });
     } else {
-      suwayomi.extensionRepos = suwayomi.extensionRepos.filter(
-        (repo) => repo != input,
-      );
+      suwayomi.extensionRepos = oldRepos;
       status = "error";
     }
   };
+
+  // const regexStore =
+  //   /https:\/\/(?:www|raw)?(?:github|githubusercontent)\.com\/([^/]+)\/([^/]+)(?:\/(?:tree|blob)\/(.*))?\/?/;
+  const regexStore =
+    /https:\/\/(?:(?:www|raw)\.)?(?:github|githubusercontent)\.com\/([^/]+)\/([^/]+)(?:\/(?:tree|blob)\/(.*))?\/?/;
 </script>
 
 <Dialog.Root bind:open>
@@ -54,7 +57,8 @@
         class="w-full rounded-r-none"
         divClass="w-full"
         variant={status === "error" ||
-        suwayomi.extensionRepos.includes(input.trim())
+        suwayomi.extensionRepos.includes(input.trim()) ||
+        (input.length === 0 ? false : !regexStore.test(input))
           ? "destructive"
           : "outline"}
         placeholder="https://example.com/index.min.json"
@@ -79,7 +83,8 @@
         class="h-10 rounded-l-none rounded-r-xl"
         effect="ringHover"
         disabled={input.trim() === "" ||
-          suwayomi.extensionRepos.includes(input.trim())}
+          suwayomi.extensionRepos.includes(input.trim()) ||
+          !regexStore.test(input)}
         onclick={setRepo}
       >
         <Icon icon={statusIcon[status]} />
