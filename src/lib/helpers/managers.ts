@@ -16,16 +16,25 @@ import type {
   Extension,
   FetchSourceMangaInput,
   FetchSourceMangaResult,
+  Source,
   SourceBrowse,
   SourceSettings,
   UpdateSourcePreferencesInput,
 } from "@/types/server";
-import { Client, cacheExchange, fetchExchange } from "@urql/svelte";
-
-const client = new Client({
-  url: suwayomiUrl.value + "/api/graphql",
-  exchanges: [cacheExchange, fetchExchange],
-});
+import { gqlMutation, gqlQuery } from "@/lib/gql/client";
+import {
+  getExtensionRepos,
+  getSourceBrowse as getSourceBrowseQuery,
+  getSourceSettings as getSourceSettingsQuery,
+  getSources as getSourcesQuery,
+} from "@/lib/gql/Queries";
+import {
+  fetchExtensions as fetchExtensionsMutation,
+  fetchSourceManga as fetchSourceMangaMutation,
+  setExtensionRepos,
+  updateExtension as updateExtensionMutation,
+  updateSourcePreference as updateSourcePreferenceMutation,
+} from "@/lib/gql/Mutations";
 
 const command = Command.sidecar("binaries/suwayomi");
 let child: Child = null!;
@@ -67,20 +76,11 @@ export const suwaManager = {
       .catch(() => false);
   },
   async getRepos() {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      bodyC: {
-        query: `
-          query {
-            settings {
-              extensionRepos
-            }
-          }
-        `,
-      },
-    }).then(async (r) => {
-      const rJson = await r.json();
-      suwayomi.extensionRepos = rJson.data.settings.extensionRepos;
+    return gqlQuery<
+      { settings: { extensionRepos: string[] } },
+      Record<string, never>
+    >(getExtensionRepos, {}).then((data) => {
+      suwayomi.extensionRepos = data.settings.extensionRepos;
       this.getRepoInfo();
       if (activeExtensionRepos.value.length === 0) {
         activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
@@ -119,96 +119,50 @@ export const suwaManager = {
     }
   },
   async setRepos(): Promise<boolean> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      bodyC: {
-        query: `
-          mutation {
-            setSettings(input: {
-              settings: {
-                extensionRepos: [${suwayomi.extensionRepos.map((rp) => `"${rp}"`)}] 
-              }
-            }) {
-            settings {
-              extensionRepos
+    return gqlMutation<
+      { setSettings: { settings: { extensionRepos: string[] } } },
+      { repos: string[] }
+    >(setExtensionRepos, { repos: suwayomi.extensionRepos })
+      .then(async (data) => {
+        suwayomi.extensionRepos = data.setSettings.settings.extensionRepos;
+        activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
+        this.getExtensions().then(async (_) => {
+          await delay(10);
+          if (
+            Object.values(allowedExtensionLanguages.value).filter((e) => e)
+              .length === 0
+          ) {
+            const data: Record<string, boolean> = {};
+            for (const lang of suwayomi.availableExtensionLangs) {
+              data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
             }
+            allowedExtensionLanguages.value = data;
           }
-        }`,
-      },
-    })
-      .then(async (r) => {
-        const rJson = await r.json();
-        if (!Object.hasOwn(rJson, "errors")) {
-          suwayomi.extensionRepos =
-            rJson.data.setSettings.settings.extensionRepos;
-          activeExtensionRepos.value = suwayomi.extensionRepos.map(getBasePath);
-          this.getExtensions().then(async (_) => {
+          this.getSources().then(async (_) => {
             await delay(10);
             if (
-              Object.values(allowedExtensionLanguages.value).filter((e) => e)
+              Object.values(allowedSourceLanguages.value).filter((e) => e)
                 .length === 0
             ) {
               const data: Record<string, boolean> = {};
-              for (const lang of suwayomi.availableExtensionLangs) {
+              for (const lang of suwayomi.availableSourceLangs) {
                 data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
               }
-              allowedExtensionLanguages.value = data;
+              allowedSourceLanguages.value = data;
             }
-            this.getSources().then(async (_) => {
-              await delay(10);
-              if (
-                Object.values(allowedExtensionLanguages.value).filter((e) => e)
-                  .length === 0
-              ) {
-                const data: Record<string, boolean> = {};
-                for (const lang of suwayomi.availableSourceLangs) {
-                  data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
-                }
-                allowedSourceLanguages.value = data;
-              }
-            });
           });
-          this.getRepoInfo();
-          return true;
-        } else {
-          return false;
-        }
+        });
+        this.getRepoInfo();
+        return true;
       })
       .catch(() => false);
   },
   async getExtensions() {
-    fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      bodyC: {
-        query: `
-          fragment EXTENSION_LIST_FIELDS on ExtensionType {
-            pkgName
-            name
-            lang
-            versionCode
-            versionName
-            iconUrl
-            repo
-            storeIndexUrl
-            isNsfw
-            contentWarning
-            isInstalled
-            isObsolete
-            hasUpdate
-          }
-
-          mutation GET_EXTENSIONS_FETCH($input: FetchExtensionsInput = {}) {
-            fetchExtensions(input: $input) {
-              extensions {
-                ...EXTENSION_LIST_FIELDS
-              }
-            }
-          }
-        `,
-      },
-    }).then(async (r) => {
-      const rJson = await r.json();
-      suwayomi.rawExtensions = rJson.data.fetchExtensions.extensions;
+    gqlMutation<
+      { fetchExtensions: { extensions: Extension[] } },
+      { input: Record<string, never> }
+    >(fetchExtensionsMutation, { input: {} }).then(async (data) => {
+      suwayomi.rawExtensions = data.fetchExtensions.extensions;
       await delay(10);
       if (autoUpdateExtensions.value) this.updateAllExtensions();
       if (
@@ -246,51 +200,34 @@ export const suwaManager = {
     patch: "install" | "uninstall" | "update",
     refreshAfter: boolean = true,
   ): Promise<Extension> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      bodyC: {
-        operationName: "UPDATE_EXTENSION",
-        variables: {
-          input: {
-            id: pkgName,
-            patch: { [patch]: true },
-          },
+    return gqlMutation<
+      { updateExtension: { extension: Extension } },
+      {
+        input: {
+          id: string;
+          patch: Record<"install" | "uninstall" | "update", boolean | null>;
+        };
+      }
+    >(updateExtensionMutation, {
+      input: {
+        id: pkgName,
+        patch: {
+          install: patch === "install" ? true : null,
+          uninstall: patch === "uninstall" ? true : null,
+          update: patch === "update" ? true : null,
         },
-        query: `
-          fragment EXTENSION_LIST_FIELDS on ExtensionType {
-            pkgName
-            name
-            lang
-            versionCode
-            versionName
-            iconUrl
-            repo
-            isNsfw
-            isInstalled
-            isObsolete
-            hasUpdate
-          }
-
-          mutation UPDATE_EXTENSION($input: UpdateExtensionInput!) {
-            updateExtension(input: $input) {
-              extension {
-                ...EXTENSION_LIST_FIELDS
-              }
-            }
-          }
-        `,
       },
     })
-      .then(async (r) => {
-        const rJson = await r.json();
+      .then((data) => {
         if (refreshAfter) {
           this.getSources();
           this.getExtensions();
         }
-        return rJson.data.updateExtension.extension;
+        return data.updateExtension.extension;
       })
       .catch((e) => {
         console.log(e);
+        throw e;
       });
   },
   async installExternalExtension(file: File): Promise<Extension> {
@@ -342,53 +279,11 @@ export const suwaManager = {
     });
   },
   async getSources() {
-    fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      bodyC: {
-        operationName: "GET_SOURCES_LIST",
-        variables: {},
-        query: `
-          fragment SOURCE_BASE_FIELDS on SourceType {
-            id
-            name
-            displayName
-            lang
-          }
-
-          fragment SOURCE_META_FIELDS on SourceMetaType {
-            sourceId
-            key
-            value
-          }
-
-          fragment SOURCE_LIST_FIELDS on SourceType {
-            ...SOURCE_BASE_FIELDS
-            lang
-            iconUrl
-            isNsfw
-            isConfigurable
-            supportsLatest
-            meta {
-              ...SOURCE_META_FIELDS
-            }
-            extension {
-              pkgName
-              repo
-            }
-          }
-
-          query GET_SOURCES_LIST {
-            sources {
-              nodes {
-                ...SOURCE_LIST_FIELDS
-              }
-            }
-          }
-      `,
-      },
-    }).then(async (r) => {
-      const rJson = await r.json();
-      suwayomi.rawSources = rJson.data.sources.nodes;
+    gqlQuery<{ sources: { nodes: Source[] } }, Record<string, never>>(
+      getSourcesQuery,
+      {},
+    ).then(async (data) => {
+      suwayomi.rawSources = data.sources.nodes;
       await delay(10);
       if (
         Object.values(allowedSourceLanguages.value).filter((s) => s).length ===
@@ -403,352 +298,35 @@ export const suwaManager = {
     });
   },
   async getSourceSettings(sourceId: string): Promise<SourceSettings> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      bodyC: {
-        operationName: "GET_SOURCE_SETTINGS",
-        variables: {
-          id: sourceId,
-        },
-        query: `
-      fragment SOURCE_BASE_FIELDS on SourceType {
-        id
-        name
-        displayName
-        lang
-      }
-
-      fragment SOURCE_SETTING_FIELDS on SourceType {
-        ...SOURCE_BASE_FIELDS
-        preferences {
-          ... on CheckBoxPreference {
-            type: __typename
-            CheckBoxCheckBoxCurrentValue: currentValue
-            summary
-            CheckBoxDefault: default
-            key
-            CheckBoxTitle: title
-          }
-          ... on EditTextPreference {
-            type: __typename
-            EditTextPreferenceCurrentValue: currentValue
-            EditTextPreferenceDefault: default
-            EditTextPreferenceTitle: title
-            text
-            summary
-            key
-            dialogTitle
-            dialogMessage
-          }
-          ... on SwitchPreference {
-            type: __typename
-            SwitchPreferenceCurrentValue: currentValue
-            summary
-            key
-            SwitchPreferenceDefault: default
-            SwitchPreferenceTitle: title
-          }
-          ... on MultiSelectListPreference {
-            type: __typename
-            dialogMessage
-            dialogTitle
-            MultiSelectListPreferenceTitle: title
-            summary
-            key
-            entryValues
-            entries
-            MultiSelectListPreferenceDefault: default
-            MultiSelectListPreferenceCurrentValue: currentValue
-          }
-          ... on ListPreference {
-            type: __typename
-            ListPreferenceCurrentValue: currentValue
-            ListPreferenceDefault: default
-            ListPreferenceTitle: title
-            summary
-            key
-            entryValues
-            entries
-          }
-        }
-      }
-
-      query GET_SOURCE_SETTINGS($id: LongString!) {
-        source(id: $id) {
-          ...SOURCE_SETTING_FIELDS
-        }
-      }
-    `,
-      },
-    }).then(async (r) => {
-      const rJson = await r.json();
-      return rJson.data.source;
-    });
+    return gqlQuery<{ source: SourceSettings }, { id: string }>(
+      getSourceSettingsQuery,
+      { id: sourceId },
+    ).then((data) => data.source);
   },
   async setSourceSettingPreference(
     input: UpdateSourcePreferencesInput,
   ): Promise<SourceSettings> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      bodyC: {
-        operationName: "UPDATE_SOURCE_PREFERENCES",
-        variables: { input },
-        query: `
-        fragment SOURCE_BASE_FIELDS on SourceType {
-          id
-          name
-          displayName
-          lang
-          iconUrl
-        }
-
-        fragment SOURCE_SETTING_FIELDS on SourceType {
-          ...SOURCE_BASE_FIELDS
-          preferences {
-            ... on CheckBoxPreference {
-              type: __typename
-              CheckBoxCheckBoxCurrentValue: currentValue
-              summary
-              CheckBoxDefault: default
-              key
-              CheckBoxTitle: title
-            }
-            ... on EditTextPreference {
-              type: __typename
-              EditTextPreferenceCurrentValue: currentValue
-              EditTextPreferenceDefault: default
-              EditTextPreferenceTitle: title
-              text
-              summary
-              key
-              dialogTitle
-              dialogMessage
-            }
-            ... on SwitchPreference {
-              type: __typename
-              SwitchPreferenceCurrentValue: currentValue
-              summary
-              key
-              SwitchPreferenceDefault: default
-              SwitchPreferenceTitle: title
-            }
-            ... on MultiSelectListPreference {
-              type: __typename
-              dialogMessage
-              dialogTitle
-              MultiSelectListPreferenceTitle: title
-              summary
-              key
-              entryValues
-              entries
-              MultiSelectListPreferenceDefault: default
-              MultiSelectListPreferenceCurrentValue: currentValue
-            }
-            ... on ListPreference {
-              type: __typename
-              ListPreferenceCurrentValue: currentValue
-              ListPreferenceDefault: default
-              ListPreferenceTitle: title
-              summary
-              key
-              entryValues
-              entries
-            }
-          }
-        }
-
-        mutation UPDATE_SOURCE_PREFERENCES($input: UpdateSourcePreferenceInput!) {
-          updateSourcePreference(input: $input) {
-            source {
-              ...SOURCE_SETTING_FIELDS
-            }
-          }
-        }
-      `,
-      },
-    }).then(async (r) => {
-      const rJson = await r.json();
-      return rJson.data.updateSourcePreference.source;
-    });
+    return gqlMutation<
+      { updateSourcePreference: { source: SourceSettings } },
+      { input: UpdateSourcePreferencesInput }
+    >(updateSourcePreferenceMutation, { input }).then(
+      (data) => data.updateSourcePreference.source,
+    );
   },
   async getSourceBrowse(sourceId: string): Promise<SourceBrowse> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        operationName: "GET_SOURCE_BROWSE",
-        variables: { id: sourceId },
-        query: `
-        fragment SOURCE_BASE_FIELDS on SourceType {
-          id
-          name
-          displayName
-          lang
-          iconUrl
-        }
-
-        fragment SOURCE_META_FIELDS on SourceMetaType {
-          sourceId
-          key
-          value
-        }
-
-        fragment SOURCE_BROWSE_FIELDS on SourceType {
-          ...SOURCE_BASE_FIELDS
-          baseUrl
-          isConfigurable
-          supportsLatest
-          meta {
-            ...SOURCE_META_FIELDS
-          }
-          filters {
-            ... on CheckBoxFilter {
-              type: __typename
-              CheckBoxFilterDefault: default
-              name
-            }
-            ... on HeaderFilter {
-              type: __typename
-              name
-            }
-            ... on SelectFilter {
-              type: __typename
-              SelectFilterDefault: default
-              name
-              values
-            }
-            ... on TriStateFilter {
-              type: __typename
-              TriStateFilterDefault: default
-              name
-            }
-            ... on TextFilter {
-              type: __typename
-              TextFilterDefault: default
-              name
-            }
-            ... on SortFilter {
-              type: __typename
-              SortFilterDefault: default {
-                ascending
-                index
-              }
-              name
-              values
-            }
-            ... on SeparatorFilter {
-              type: __typename
-              name
-            }
-            ... on GroupFilter {
-              type: __typename
-              name
-              filters {
-                ... on CheckBoxFilter {
-                  type: __typename
-                  CheckBoxFilterDefault: default
-                  name
-                }
-                ... on HeaderFilter {
-                  type: __typename
-                  name
-                }
-                ... on SelectFilter {
-                  type: __typename
-                  SelectFilterDefault: default
-                  name
-                  values
-                }
-                ... on TriStateFilter {
-                  type: __typename
-                  TriStateFilterDefault: default
-                  name
-                }
-                ... on TextFilter {
-                  type: __typename
-                  TextFilterDefault: default
-                  name
-                }
-                ... on SortFilter {
-                  type: __typename
-                  SortFilterDefault: default {
-                    ascending
-                    index
-                  }
-                  name
-                  values
-                }
-                ... on SeparatorFilter {
-                  type: __typename
-                  name
-                }
-              }
-            }
-          }
-        }
-
-        query GET_SOURCE_BROWSE($id: LongString!) {
-          source(id: $id) {
-            ...SOURCE_BROWSE_FIELDS
-          }
-        }
-      `,
-      }),
-    })
-      .then(async (r) => {
-        const rJson = await r.json();
-        return rJson.data.source;
-      })
-      .catch((r) => console.log(r));
+    return gqlQuery<{ source: SourceBrowse }, { id: string }>(
+      getSourceBrowseQuery,
+      { id: sourceId },
+    ).then((data) => data.source);
   },
   async fetchSourceManga(
     input: FetchSourceMangaInput,
   ): Promise<FetchSourceMangaResult> {
-    return fetch(suwayomiUrl.value + "/api/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        operationName: "GET_SOURCE_MANGAS_FETCH",
-        variables: { input },
-        query: `
-        mutation GET_SOURCE_MANGAS_FETCH($input: FetchSourceMangaInput!) {
-          fetchSourceManga(input: $input) {
-            hasNextPage
-            mangas {
-              id
-              title
-              thumbnailUrl
-              thumbnailUrlLastFetched
-              inLibrary
-              initialized
-              sourceId
-              genre
-              lastFetchedAt
-              inLibraryAt
-              status
-              artist
-              author
-              description
-              realUrl
-              meta {
-                mangaId
-                key
-                value
-              }
-            }
-          }
-        }
-      `,
-      }),
-    }).then(async (r) => {
-      const rJson = await r.json();
-      return rJson.data.fetchSourceManga;
-    });
+    return gqlMutation<
+      { fetchSourceManga: FetchSourceMangaResult },
+      { input: FetchSourceMangaInput }
+    >(fetchSourceMangaMutation, { input }).then(
+      (data) => data.fetchSourceManga,
+    );
   },
 };
