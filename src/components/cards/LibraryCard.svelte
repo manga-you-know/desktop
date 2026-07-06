@@ -21,7 +21,8 @@
   import { goto, onNavigate, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
   import { getBool } from "@/utils";
-  import { db, favorites } from "@/lib/db";
+  import { db } from "@/lib/db";
+  import { favorites } from "@/lib/db/schemas";
   import { eq } from "drizzle-orm";
   import { deleteFavorite } from "@/repositories/favorite";
 

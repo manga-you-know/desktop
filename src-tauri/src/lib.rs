@@ -9,8 +9,8 @@ mod utils;
 pub fn run() {
     let migrations = vec![Migration {
         version: 1,
-        description: "add_saved_tables",
-        sql: include_str!("../migrations/0000_familiar_cyclops.sql"),
+        description: "add first migration",
+        sql: include_str!("../migrations/0000_cool_lockjaw.sql"),
         kind: MigrationKind::Up,
     }];
     #[allow(unused_mut)]

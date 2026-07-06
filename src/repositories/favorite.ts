@@ -22,22 +22,22 @@ async function loadDb() {
 }
 
 export async function createFavorite(result: SearchResult): Promise<Favorite> {
-  await db.insert(mangas).values(result);
-  const saved = await db
-    .select()
-    .from(mangas)
-    .where(
-      and(
-        eq(mangas.source, result.source),
-        eq(mangas.sourceId, result.sourceId),
-      ),
-    )
-    .limit(1);
-  if (saved) {
-    return saved[0];
-  } else {
-    throw Error("Error adding favorite");
-  }
+  // await db.insert(mangas).values(result);
+  // const saved = await db
+  //   .select()
+  //   .from(mangas)
+  //   .where(
+  //     and(
+  //       eq(mangas.source, result.source),
+  //       eq(mangas.sourceId, result.sourceId),
+  //     ),
+  //   )
+  //   .limit(1);
+  // if (saved) {
+  //   return saved[0];
+  // } else {
+  throw Error("Error adding favorite");
+  // }
 }
 
 // export async function createFavoritesFromJson(
@@ -80,14 +80,14 @@ export async function getFavorite(id: number): Promise<Favorite> {
   //   "SELECT * FROM favorite WHERE id = ? LIMIT 1",
   //   [id]
   // );
-  const favorite: Favorite[] = await db
-    .select()
-    .from(mangas)
-    .where(eq(mangas.id, id))
-    .limit(1);
-  if (favorite) {
-    return favorite[0];
-  }
+  // const favorite: Favorite[] = await db
+  //   .select()
+  //   .from(mangas)
+  //   .where(eq(mangas.id, id))
+  //   .limit(1);
+  // if (favorite) {
+  //   return favorite[0];
+  // }
   throw new Error("Favorite not found");
 }
 
@@ -99,17 +99,18 @@ export async function getFavoriteBySource(
   //   "SELECT * FROM favorite WHERE source_id = ? AND source = ? LIMIT 1",
   //   [sourceId, source]
   // );
-  const favorite = await db
-    .select()
-    .from(mangas)
-    .where(and(eq(mangas.source, source), eq(mangas.sourceId, sourceID)));
-  if (favorite) {
-    return favorite[0];
-  }
+  // const favorite = await db
+  //   .select()
+  //   .from(mangas)
+  //   .where(and(eq(mangas.source, source), eq(mangas.sourceId, sourceID)));
+  // if (favorite) {
+  //   return favorite[0];
+  // }
   throw new Error("Favorite not found");
 }
 
 export async function getLibraryFavorites(): Promise<Favorite[]> {
+  return [];
   // let query = "SELECT * FROM favorite WHERE user_id = ?";
   // const params: (string | number | boolean)[] = [defaultUser.id ?? 0];
   // const favoriteQuery = get(libraryQuery);
@@ -143,7 +144,7 @@ export async function getLibraryFavorites(): Promise<Favorite[]> {
     // if (libraryMark?.id === -1)
     //   return favorites.filter((f) => f.isUltraFavorite);
     // return favorites;
-    return db.select().from(mangas);
+    // return db.select().from(mangas);
   } catch (error) {
     console.log(error);
     return [];
@@ -158,15 +159,15 @@ export async function getRawFavorites(): Promise<Favorite[]> {
   //   [defaultUser.id]
   // );
   // return favorites;
-  return await db.select().from(mangas);
+  // return await db.select().from(mangas);
+  throw new Error();
 }
 
 export async function getUltraFavorites(): Promise<Favorite[]> {
   try {
-    return await db
-      .select()
-      .from(mangas)
-      .where(eq(mangas.isUltraFavorite, true));
+    // return await db.select().from(mangas);
+    // .where(eq(mangas.isUltraFavorite, true));
+    return [];
   } catch (error) {
     console.log("FDP");
     console.log(error);
@@ -180,30 +181,31 @@ export async function getFavoritesByMark(
   userID: number,
   mark: Mark,
 ): Promise<Favorite[]> {
-  try {
-    const subquery = await db
-      .select({ savedID: markFavorites.savedID })
-      .from(markFavorites)
-      .where(eq(markFavorites.markID, mark.id));
-    const favs: Favorite[] = await db
-      .select()
-      .from(mangas)
-      .where(
-        and(
-          eq(mangas.userId, userID),
-          inArray(
-            mangas.id,
-            subquery.map((s) => s.savedID),
-          ),
-        ),
-      );
-    return favs;
-  } catch (error) {
-    console.log(error);
-    return [];
-  } finally {
-    // db.close()
-  }
+  return [];
+  // try {
+  //   const subquery = await db
+  //     .select({ savedID: markFavorites.savedID })
+  //     .from(markFavorites)
+  //     .where(eq(markFavorites.markID, mark.id));
+  //   const favs: Favorite[] = await db
+  //     .select()
+  //     .from(mangas)
+  //     .where(
+  //       and(
+  //         eq(mangas.userId, userID),
+  //         inArray(
+  //           mangas.id,
+  //           subquery.map((s) => s.savedID),
+  //         ),
+  //       ),
+  //     );
+  //   return favs;
+  // } catch (error) {
+  //   console.log(error);
+  //   return [];
+  // } finally {
+  //   // db.close()
+  // }
 }
 
 export async function getFavoritesByTypes(
@@ -284,53 +286,54 @@ export async function updateFavorite(saved: Favorite): Promise<void> {
 }
 
 export async function isUltraFavorite(favoriteID: number) {
-  return (
-    (
-      await db.select().from(mangas).where(eq(mangas.id, favoriteID)).limit(1)
-    )[1].isUltraFavorite ?? false
-  );
+  // return (
+  //   (
+  //     await db.select().from(mangas).where(eq(mangas.id, favoriteID)).limit(1)
+  //   )[1].isUltraFavorite ?? false
+  // );
 }
 
 export async function toggleUltraFavorite(
   favorite: Favorite,
   refresh: boolean = true,
 ): Promise<boolean> {
-  try {
-    await db
-      .update(mangas)
-      .set({ isUltraFavorite: true })
-      .where(eq(mangas.id, favorite.id));
-    const result: { isUltraFavorite: boolean | null }[] = await db
-      .select({ isUltraFavorite: mangas.isUltraFavorite })
-      .from(mangas)
-      .where(eq(mangas.id, favorite.id))
-      .limit(1);
-    if (refresh) {
-      refreshFavorites();
-      refreshLibrary();
-      if (result[0].isUltraFavorite) loadFavoriteChapters(favorite);
-    }
-    return result[0]?.isUltraFavorite ?? false;
-  } catch (error) {
-    console.log(error);
-    return false;
-  } finally {
-    // db.close()
-  }
+  return true;
+  // try {
+  //   await db
+  //     .update(mangas)
+  //     .set({ isUltraFavorite: true })
+  //     .where(eq(mangas.id, favorite.id));
+  //   const result: { isUltraFavorite: boolean | null }[] = await db
+  //     .select()
+  //     .from(mangas)
+  //     .where(eq(mangas.id, favorite.id))
+  //     .limit(1);
+  //   if (refresh) {
+  //     refreshFavorites();
+  //     refreshLibrary();
+  //     if (result[0].isUltraFavorite) loadFavoriteChapters(favorite);
+  //   }
+  //   return result[0]?.isUltraFavorite ?? false;
+  // } catch (error) {
+  //   console.log(error);
+  //   return false;
+  // } finally {
+  //   // db.close()
+  // }
 }
 
 export async function ultraFavoriteAll(favorites: Favorite[]): Promise<void> {
-  try {
-    const placeholders = favorites.map(() => "?").join(", ");
-    await dbOld.execute(
-      `UPDATE favorite SET is_ultra_favorite = 1 WHERE id IN (${placeholders})'`,
-      favorites.map((favorite: Favorite) => favorite.id),
-    );
-  } catch (error) {
-    console.log(error);
-  } finally {
-    // db.close()
-  }
+  // try {
+  //   const placeholders = favorites.map(() => "?").join(", ");
+  //   await dbOld.execute(
+  //     `UPDATE favorite SET is_ultra_favorite = 1 WHERE id IN (${placeholders})'`,
+  //     favorites.map((favorite: Favorite) => favorite.id),
+  //   );
+  // } catch (error) {
+  //   console.log(error);
+  // } finally {
+  //   // db.close()
+  // }
 }
 
 export async function deleteFavorite(favorite: Favorite): Promise<{
@@ -384,50 +387,50 @@ export async function undoDeleteFavorite(data: {
   readed: { favorite_id: number; chapter_id: string; language?: string }[];
 }): Promise<void> {
   if (!dbOld) await loadDb();
-  try {
-    await dbOld.execute(
-      `
-      BEGIN TRANSACTION;
-      INSERT INTO favorite (id, user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id, is_ultra_favorite) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-      ${data.markFavorites.map(() => "INSERT INTO mark_favorites (favorite_id, mark_id) VALUES (?, ?);").join("")}
-      ${data.readed.map(() => "INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?);").join("")}
-      COMMIT;
-    `,
-      [
-        data.favorite.id,
-        data.favorite.user_id,
-        data.favorite.name,
-        data.favorite.folder_name,
-        data.favorite.cover,
-        data.favorite.link,
-        data.favorite.source,
-        data.favorite.source_id,
-        data.favorite.type,
-        data.favorite.extra_name,
-        data.favorite.title_color,
-        data.favorite.card_color,
-        data.favorite.grade,
-        data.favorite.author,
-        data.favorite.description,
-        data.favorite.status,
-        data.favorite.mal_id,
-        data.favorite.anilist_id,
-        data.favorite.is_ultra_favorite,
-        ...data.markFavorites.flatMap((mf) => [mf.favorite_id, mf.mark_id]),
-        ...data.readed.flatMap((r) => [
-          r.favorite_id,
-          r.chapter_id,
-          data.favorite.source,
-          r.language ?? "default",
-        ]),
-      ],
-    );
-  } catch (error) {
-    console.log(error);
-    await dbOld.execute("ROLLBACK;");
-    throw error;
-  }
+  // try {
+  //   await dbOld.execute(
+  //     `
+  //     BEGIN TRANSACTION;
+  //     INSERT INTO favorite (id, user_id, name, folder_name, cover, link, source, source_id, type, extra_name, title_color, card_color, grade, author, description, status, mal_id, anilist_id, is_ultra_favorite)
+  //     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  //     ${data.markFavorites.map(() => "INSERT INTO mark_favorites (favorite_id, mark_id) VALUES (?, ?);").join("")}
+  //     ${data.readed.map(() => "INSERT INTO readed (favorite_id, chapter_id, source, language) VALUES (?, ?, ?, ?);").join("")}
+  //     COMMIT;
+  //   `,
+  //     [
+  //       data.favorite.id,
+  //       data.favorite.user_id,
+  //       data.favorite.name,
+  //       data.favorite.folder_name,
+  //       data.favorite.cover,
+  //       data.favorite.link,
+  //       data.favorite.source,
+  //       data.favorite.source_id,
+  //       data.favorite.type,
+  //       data.favorite.extra_name,
+  //       data.favorite.title_color,
+  //       data.favorite.card_color,
+  //       data.favorite.grade,
+  //       data.favorite.author,
+  //       data.favorite.description,
+  //       data.favorite.status,
+  //       data.favorite.mal_id,
+  //       data.favorite.anilist_id,
+  //       data.favorite.is_ultra_favorite,
+  //       ...data.markFavorites.flatMap((mf) => [mf.favorite_id, mf.mark_id]),
+  //       ...data.readed.flatMap((r) => [
+  //         r.favorite_id,
+  //         r.chapter_id,
+  //         data.favorite.source,
+  //         r.language ?? "default",
+  //       ]),
+  //     ],
+  //   );
+  // } catch (error) {
+  //   console.log(error);
+  //   await dbOld.execute("ROLLBACK;");
+  //   throw error;
+  // }
 }
 
 export async function deleteFavorites(favorites: Favorite[]): Promise<void> {

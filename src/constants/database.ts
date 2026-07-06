@@ -1,4 +1,4 @@
-export const DATABASE_NAME = "data.db";
+export const DATABASE_NAME = "database.db";
 export const defaultUser = {
   id: 1,
   icon: "",
