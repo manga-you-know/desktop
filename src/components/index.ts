@@ -28,6 +28,7 @@ export { default as SuggestionCard } from "./cards/SuggestionCard.svelte";
 export { default as FavoriteCard } from "./cards/FavoriteCard.svelte";
 export { default as LibraryCard } from "./cards/LibraryCard.svelte";
 export { default as FavoritePanel } from "./cards/FavoritePanel.svelte";
+export { default as MangaFetchCard } from "./cards/MangaFetchCard.svelte";
 // Modals
 export { default as SuggestionModal } from "./modals/SuggestionModal.svelte";
 export { default as WatchFavorite } from "./modals/WatchFavorite.svelte";

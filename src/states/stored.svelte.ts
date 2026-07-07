@@ -206,7 +206,7 @@ export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
 
 export const searchType = new StoredState<FetchSourceMangaType>({
   key: "search_type",
-  defaultValue: "SEARCH",
+  defaultValue: "POPULAR",
   store: "cache",
 });
 export const sourceGroupMode = new StoredState<"single" | "group" | "global">({

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Image, SearchFilters, Tooltip } from "@/components";
+  import { Image, MangaFetchCard, SearchFilters, Tooltip } from "@/components";
   import {
     Badge,
     Button,
@@ -22,8 +22,14 @@
     showExtensionsNSourcesNSFW,
     openedExtension,
     openedSearchFilters,
+    searchPage,
   } from "@/states";
-  import type { FilterChange, Manga, SourceBrowse } from "@/types/server";
+  import type {
+    FetchSourceMangaResult,
+    FilterChange,
+    MangaFetch,
+    SourceBrowse,
+  } from "@/types/server";
   import Icon from "@iconify/svelte";
   import { animate } from "animejs";
   import { onMount } from "svelte";
@@ -94,7 +100,7 @@
 
   let changes: FilterChange[] = $state([]);
 
-  let fetchedManga: Manga[] = $state([]);
+  let fetchedMangaData = $state<FetchSourceMangaResult | undefined>(undefined);
 
   const search = () => {
     if (selectedSourceId.value === undefined) return;
@@ -103,12 +109,20 @@
         source: selectedSourceId.value,
         type: searchType.value,
         query: searchInput.value,
-        page: 1,
+        page: searchPage.value,
         filters: changes,
       })
       .then((r) => {
-        console.log(r);
-        fetchedManga = r.mangas;
+        fetchedMangaData = r;
+        if (r.hasNextPage) {
+          suwaManager.fetchSourceManga({
+            source: selectedSourceId.value,
+            type: searchType.value,
+            query: searchInput.value,
+            page: searchPage.value + 1,
+            filters: changes,
+          });
+        }
       });
   };
 
@@ -124,9 +138,9 @@
   };
 
   let filteredManga = $derived(
-    fetchedManga.filter((m) =>
+    fetchedMangaData?.mangas.filter((m) =>
       m.title.toLowerCase().includes(resultFilter.toLowerCase()),
-    ),
+    ) ?? [],
   );
 
   selectedSourceId.onchange = (s) => {
@@ -146,10 +160,10 @@
   searchType.onchange = search;
 </script>
 
-<div class="justify-around-stretch flex w-full flex-col gap-3">
-  <div class="flex items-center justify-center gap-2">
+<div class="justify-around-stretch flex w-full flex-col">
+  <div class="my-2 flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
-      <ScrollingValue value={fetchedManga.length} />
+      <ScrollingValue value={fetchedMangaData?.mangas.length ?? 0} />
     </Badge>
     <Input
       class="hover:bg-secondary/20 w-70 transition-all"
@@ -213,31 +227,19 @@
       </Button>
     </Tooltip>
   </div>
-  <div class="flex items-center justify-center gap-2">
+  <div class="mb-2 flex items-center justify-center gap-2">
     <div
       class="border-secondary bg-background/30 parent flex justify-start gap-1 rounded-xl border p-1"
     >
       <Button
         class={cn(
           "pointer-events-none absolute w-30 rounded-lg transition-all duration-200",
-          searchType.value === "SEARCH" && "translate-x-0",
-          searchType.value === "POPULAR" && "translate-x-31",
-          searchType.value === "LATEST" && "translate-x-62",
+          searchType.value === "POPULAR" && "translate-x-0",
+          searchType.value === "LATEST" && "translate-x-31",
+          searchType.value === "SEARCH" && "translate-x-62",
         )}
         variant="secondary"
       ></Button>
-      <Button
-        class={cn(
-          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
-          searchType.value === "SEARCH" && "hover:text-primary/70",
-        )}
-        variant="ghost"
-        onclick={() => {
-          searchType.value = "SEARCH";
-        }}
-      >
-        <Icon icon="lucide:text-search" />Search
-      </Button>
       <Button
         class={cn(
           "hover:bg-secondary/30 z-2 w-30 rounded-lg",
@@ -245,6 +247,7 @@
         )}
         variant="ghost"
         onclick={() => {
+          searchPage.value = 1;
           searchType.value = "POPULAR";
         }}
       >
@@ -259,10 +262,24 @@
         disabled={!selectedSource?.supportsLatest &&
           sourceGroupMode.value === "single"}
         onclick={() => {
+          searchPage.value = 1;
           searchType.value = "LATEST";
         }}
       >
         <Icon icon="lucide:badge-info" />Latest
+      </Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
+          searchType.value === "SEARCH" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchPage.value = 1;
+          searchType.value = "SEARCH";
+        }}
+      >
+        <Icon icon="lucide:text-search" />Search
       </Button>
     </div>
     <Popover.Root bind:open={openSelectSource}>
@@ -504,27 +521,58 @@
     </Tooltip>
   </div>
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
-  <div class="flex items-center justify-center gap-2">
-    <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
-      <ScrollingValue value={filteredManga.length} />
-      /
-      <ScrollingValue value={fetchedManga.length} />
-    </Badge>
-    <Input
-      class="hover:bg-secondary/20 w-70"
-      divClass="w-70"
-      variant="outline"
-      placeholder="Filter results..."
-      bind:value={resultFilter}
-    />
-    <Button></Button>
-  </div>
-  <div class="flex flex-wrap">
-    {#each filteredManga as manga (manga.id)}
-      <div class="flex h-90 w-40 flex-col gap-2">
-        <Label>{manga.title}</Label>
-        <Image src={suwayomiUrl.value + manga.thumbnailUrl} />
+  <div
+    class="parent flex w-full flex-col items-center overflow-y-scroll scroll-smooth"
+  >
+    <div
+      class="border-background bg-background/30 absolute z-2 mt-0.5 flex items-center justify-center gap-2 rounded-2xl border p-1 backdrop-blur-sm"
+    >
+      <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
+        <ScrollingValue value={filteredManga.length} />
+        /
+        <ScrollingValue value={fetchedMangaData?.mangas.length ?? 0} />
+      </Badge>
+      <Input
+        class="hover:bg-secondary/20 w-70"
+        divClass="w-70"
+        variant="outline"
+        placeholder="Filter results..."
+        bind:value={resultFilter}
+      />
+      <div
+        class="bg-primary flex items-center justify-center gap-2 rounded-xl p-0.5"
+      >
+        <Button
+          class="hover:bg-secondary/30 h-9 w-3 rounded-lg"
+          disabled={searchPage.value === 1}
+          onclick={() => {
+            searchPage.value = searchPage.value - 1;
+            search();
+          }}
+        >
+          <Icon icon="lucide:chevron-left" />
+        </Button>
+        <Label class="text-background flex w-10 items-center justify-center">
+          <ScrollingValue value={searchPage.value} axis="x" />
+        </Label>
+        <Button
+          class="hover:bg-secondary/30 h-9 w-3 rounded-lg"
+          disabled={!fetchedMangaData?.hasNextPage}
+          onclick={() => {
+            searchPage.value = searchPage.value + 1;
+            search();
+          }}
+        >
+          <Icon icon="lucide:chevron-right" />
+        </Button>
       </div>
-    {/each}
+    </div>
+    <div class="mt-12 flex justify-center p-2">
+      <div class="flex w-full flex-wrap gap-0.5">
+        {#each filteredManga as manga (manga.id)}
+          <MangaFetchCard {manga} />
+        {/each}
+      </div>
+    </div>
   </div>
 </div>

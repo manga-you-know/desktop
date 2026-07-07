@@ -11,6 +11,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
+    "@0no-co/graphqlsp": "^1.17.3",
     "@iconify-json/lucide": "^1.2.111",
     "@neodrag/svelte": "^2.3.3",
     "@tauri-apps/api": "^2.11.0",
@@ -36,6 +37,7 @@
     "@types/lodash": "^4.17.24",
     "@types/node": "^24.12.4",
     "@urql/core": "^6.0.1",
+    "@urql/exchange-graphcache": "^9.0.1",
     "add": "^2.0.6",
     "animejs": "^4.4.1",
     "base64-js": "^1.5.1",
@@ -46,6 +48,7 @@
     "dev": "^0.1.5",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.19.13",
+    "gql.tada": "^1.11.2",
     "lodash": "^4.17.21",
     "lucide-svelte": "^1.0.1",
     "media-icons": "^0.10.0",

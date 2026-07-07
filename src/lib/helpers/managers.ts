@@ -42,6 +42,40 @@ command.on("error", (err) => {
   console.log("Error in Suwayomi: ", err);
 });
 
+const searchCache: Record<
+  string,
+  {
+    expiresAt: Date;
+    data: FetchSourceMangaResult;
+  }
+> = {};
+
+const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 1h, or 4 * 60 * 60 * 1000 for 4h
+
+const setSearchCache = (
+  input: FetchSourceMangaInput,
+  data: FetchSourceMangaResult,
+) => {
+  searchCache[JSON.stringify(input)] = {
+    expiresAt: new Date(Date.now() + CACHE_TTL_MS),
+    data,
+  };
+};
+
+const getSearchCache = (
+  input: FetchSourceMangaInput,
+): FetchSourceMangaResult | undefined => {
+  const key = JSON.stringify(input);
+  const item = searchCache[key];
+  if (item) {
+    if (item.expiresAt.getTime() > Date.now()) {
+      return item.data;
+    } else {
+      delete searchCache[key];
+    }
+  }
+};
+
 export const suwaManager = {
   async startSuwayomi() {
     this.isConnected().then(async (spawned) => {
@@ -226,7 +260,6 @@ export const suwaManager = {
         return data.updateExtension.extension;
       })
       .catch((e) => {
-        console.log(e);
         throw e;
       });
   },
@@ -282,20 +315,24 @@ export const suwaManager = {
     gqlQuery<{ sources: { nodes: Source[] } }, Record<string, never>>(
       getSourcesQuery,
       {},
-    ).then(async (data) => {
-      suwayomi.rawSources = data.sources.nodes;
-      await delay(10);
-      if (
-        Object.values(allowedSourceLanguages.value).filter((s) => s).length ===
-        0
-      ) {
-        const data: Record<string, boolean> = {};
-        for (const lang of suwayomi.availableSourceLangs) {
-          data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
+    )
+      .then(async (data) => {
+        suwayomi.rawSources = data.sources.nodes;
+        await delay(10);
+        if (
+          Object.values(allowedSourceLanguages.value).filter((s) => s)
+            .length === 0
+        ) {
+          const data: Record<string, boolean> = {};
+          for (const lang of suwayomi.availableSourceLangs) {
+            data[lang] = ["all", "en", "pt-br", "es"].includes(lang);
+          }
+          allowedSourceLanguages.value = data;
         }
-        allowedSourceLanguages.value = data;
-      }
-    });
+      })
+      .then((e) => {
+        console.log(e);
+      });
   },
   async getSourceSettings(sourceId: string): Promise<SourceSettings> {
     return gqlQuery<{ source: SourceSettings }, { id: string }>(
@@ -322,11 +359,15 @@ export const suwaManager = {
   async fetchSourceManga(
     input: FetchSourceMangaInput,
   ): Promise<FetchSourceMangaResult> {
-    return gqlMutation<
+    const cached = getSearchCache(input);
+    if (cached) return cached;
+    const data = await gqlMutation<
       { fetchSourceManga: FetchSourceMangaResult },
       { input: FetchSourceMangaInput }
     >(fetchSourceMangaMutation, { input }).then(
       (data) => data.fetchSourceManga,
     );
+    setSearchCache(input, data);
+    return data;
   },
 };

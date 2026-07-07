@@ -53,6 +53,7 @@ export const openTag = new OpenState();
 export const blockKeyboard = new OpenState();
 
 export const searchInput = new TextState({ value: "" });
+export const searchPage = new ValueState<number>({ value: 1 });
 
 export const openedExtension = new OpenedObject<{
   extension?: Extension;

@@ -19,6 +19,7 @@ export function getSuwayomiClient() {
       url,
       exchanges: [cacheExchange, fetchExchange],
       fetch,
+      preferGetMethod: false,
     });
   }
   return cachedClient;

@@ -53,7 +53,7 @@
     {
       name: "Search",
       path: "/search",
-      icon: "lucide:search",
+      icon: "lucide:compass",
     },
     {
       name: "Panels",

@@ -1,15 +1,29 @@
 import { gql } from "@urql/core";
 
 export const getExtensionRepos = gql`
-  query GetExtensionRepos {
+  query {
     settings {
       extensionRepos
     }
   }
 `;
 
+// query extensionStores {
+// 	extensionStores {
+// 		nodes {
+// 			signingKey
+// 			name
+// 			isLegacy
+// 			indexUrl
+// 			contactWebsite
+// 			contactDiscord
+// 			badgeLabel
+// 		}
+// 	}
+// }
+
 export const getSources = gql`
-  query GetSourcesList {
+  query getSources {
     sources {
       nodes {
         id

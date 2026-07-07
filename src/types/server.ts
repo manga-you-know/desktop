@@ -206,7 +206,7 @@ export type MangaStatus =
   | "ON_HIATUS"
   | "UNKNOWN";
 
-export type Manga = {
+export type MangaFetch = {
   id: number;
   title: string;
   thumbnailUrl: string | null;
@@ -248,5 +248,5 @@ export type FetchSourceMangaInput = {
 
 export type FetchSourceMangaResult = {
   hasNextPage: boolean;
-  mangas: Manga[];
+  mangas: MangaFetch[];
 };
