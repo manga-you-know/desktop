@@ -26,7 +26,7 @@ CREATE TABLE `chapters` (
 	`manga_id` integer NOT NULL,
 	`source_id` integer NOT NULL,
 	`chapter_id` text NOT NULL,
-	`sort_index` integer NOT NULL,
+	`sort_index` integer,
 	`chapter_number` text,
 	`chapter_title` text,
 	`language` text DEFAULT '-',
@@ -36,6 +36,7 @@ CREATE TABLE `chapters` (
 	`is_hidden` integer DEFAULT false,
 	`read_at` integer,
 	`commentary` text,
+	`scam` text,
 	`rating` real,
 	`update_at` integer NOT NULL,
 	`config` text DEFAULT '{}',
@@ -154,7 +155,7 @@ CREATE INDEX `idx_series_is_hidden` ON `series` (`is_hidden`);--> statement-brea
 CREATE TABLE `series_mangas` (
 	`serie_id` integer NOT NULL,
 	`manga_id` integer NOT NULL,
-	`sort_index` integer NOT NULL,
+	`sort_index` integer,
 	PRIMARY KEY(`serie_id`, `manga_id`),
 	FOREIGN KEY (`serie_id`) REFERENCES `series`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`manga_id`) REFERENCES `mangas`(`id`) ON UPDATE no action ON DELETE cascade
@@ -164,11 +165,13 @@ CREATE INDEX `idx_series_mangas_manga_id` ON `series_mangas` (`manga_id`);--> st
 CREATE INDEX `idx_series_sort_index` ON `series_mangas` (`sort_index`);--> statement-breakpoint
 CREATE TABLE `sources` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`manga_id` integer,
+	`manga_id` integer NOT NULL,
 	`name` text NOT NULL,
 	`manga_source_id` text NOT NULL,
 	`source_id` text NOT NULL,
 	`extension_id` text NOT NULL,
+	`language` text NOT NULL,
+	`source_name` text NOT NULL,
 	`iconUrl` text,
 	`real_url` text NOT NULL,
 	`cover_url` text NOT NULL,
@@ -176,6 +179,7 @@ CREATE TABLE `sources` (
 	`last_fetched` integer,
 	`status` text,
 	`enabled` integer DEFAULT true,
+	`sort_index` integer,
 	FOREIGN KEY (`manga_id`) REFERENCES `mangas`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint

@@ -209,9 +209,16 @@ export const searchType = new StoredState<FetchSourceMangaType>({
   defaultValue: "POPULAR",
   store: "cache",
 });
+
 export const sourceGroupMode = new StoredState<"single" | "group" | "global">({
   key: "search_mode",
   defaultValue: "single",
+  store: "cache",
+});
+
+export const hideOnLibrary = new StoredState<boolean>({
+  key: "hide_on_library",
+  defaultValue: false,
   store: "cache",
 });
 

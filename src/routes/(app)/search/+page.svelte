@@ -23,6 +23,8 @@
     openedExtension,
     openedSearchFilters,
     searchPage,
+    hideOnLibrary,
+    dbHelper,
   } from "@/states";
   import type {
     FetchSourceMangaResult,
@@ -127,6 +129,9 @@
   };
 
   const handleInput = () => {
+    if (searchType.value !== "SEARCH") {
+      searchType.value = "SEARCH";
+    }
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
@@ -138,8 +143,12 @@
   };
 
   let filteredManga = $derived(
-    fetchedMangaData?.mangas.filter((m) =>
-      m.title.toLowerCase().includes(resultFilter.toLowerCase()),
+    fetchedMangaData?.mangas.filter(
+      (m) =>
+        m.title.toLowerCase().includes(resultFilter.toLowerCase()) &&
+        (hideOnLibrary.value
+          ? dbHelper.sourcesByIdMangaSource[m.id + m.sourceId] === undefined
+          : true),
     ) ?? [],
   );
 
@@ -172,9 +181,14 @@
       placeholder="Query in source{sourceGroupMode.value !== 'single'
         ? 's'
         : ''}..."
-      disabled={searchType.value !== "SEARCH"}
       oninput={handleInput}
       bind:value={searchInput.value}
+      ondelete={() => {
+        if (searchType.value !== "SEARCH") {
+          searchType.value = "SEARCH";
+        }
+        search();
+      }}
     />
     <Button variant="outline">
       <Icon icon="lucide:sliders-horizontal" />
@@ -279,7 +293,7 @@
           searchType.value = "SEARCH";
         }}
       >
-        <Icon icon="lucide:text-search" />Search
+        <Icon icon="lucide:search" />Search
       </Button>
     </div>
     <Popover.Root bind:open={openSelectSource}>
@@ -539,6 +553,51 @@
         placeholder="Filter results..."
         bind:value={resultFilter}
       />
+      <Button
+        class="items-center"
+        variant="ghost"
+        onclick={async (e) => {
+          animate(e.currentTarget, {
+            filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
+            duration: 600,
+            easing: "easeOutQuad",
+          });
+          if (!hideOnLibrary.value) {
+            // animate("#div-mangas", {
+            //   filter: ["blur(0px)", "blur(2px)", "blur(0px)"],
+            //   // scale: [1, 0.99, 1],
+            //   duration: 600,
+            //   easing: "easeOutQuad",
+            // });
+            await animate(".fetch-card", {
+              opacity: [1, 0.5, 0],
+              maxWidth: ["320px", "0px"],
+              marginBottom: 0,
+              paddingRight: 0,
+              paddingLeft: 0,
+              translateX: -60,
+              duration: 500,
+              marginRight: "-4px",
+              easing: "easeInQuad",
+            });
+          } else {
+            animate("#div-mangas", {
+              filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
+              scale: [1, 0.994, 1],
+              duration: 600,
+              easing: "easeOutQuad",
+            });
+          }
+          hideOnLibrary.value = !hideOnLibrary.value;
+        }}
+      >
+        <!-- <Icon icon={hideOnLibrary.value ? "lucide:book-x" : "lucide:book-text"} -->
+        <!-- /> -->
+        <Checkbox class="pointer-events-none" checked={!hideOnLibrary.value} />
+        On library
+        <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
+      </Button>
+
       <div
         class="bg-primary flex items-center justify-center gap-2 rounded-xl p-0.5"
       >
@@ -568,9 +627,9 @@
       </div>
     </div>
     <div class="mt-12 flex justify-center p-2">
-      <div class="flex w-full flex-wrap gap-0.5">
+      <div class="flex w-full flex-wrap gap-0.5" id="div-mangas">
         {#each filteredManga as manga (manga.id)}
-          <MangaFetchCard {manga} />
+          <MangaFetchCard {manga} suwaSource={selectedSource} />
         {/each}
       </div>
     </div>

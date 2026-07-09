@@ -32,8 +32,11 @@ import {
   TextState,
   ValueState,
 } from "./classes.svelte";
-import type { SourceBrowse } from "@/types/server";
-import { getBasePath } from "@/lib/utils";
+import type { MangaFetch, SourceBrowse } from "@/types/server";
+import { getBasePath, slugify } from "@/lib/utils";
+import type { Manga, Source as SourceDB } from "@/lib/types/db";
+import { chapters, db, mangas, sources } from "@/lib/db";
+import { eq } from "drizzle-orm";
 // import { favorites } from "@/lib/db";
 
 export const openAdd = new OpenState();
@@ -170,6 +173,94 @@ class Suwayomi {
 }
 
 export const suwayomi = new Suwayomi();
+
+class DBHelper {
+  rawMangas = $state<Manga[]>([]);
+  rawSources = $state<SourceDB[]>([]);
+  mangasBy = $derived(
+    Object.fromEntries(this.rawMangas.map((m) => [[m.type], m])),
+  );
+  sourcesByIdMangaSource = $derived(
+    Object.fromEntries(
+      this.rawSources.map((s) => [s.mangaSourceId + s.sourceId, s]),
+    ),
+  );
+
+  async refreshMangas() {
+    this.rawMangas = await db.select().from(mangas).all();
+  }
+
+  async refreshSources() {
+    this.rawSources = await db.select().from(sources).all();
+  }
+
+  async addSource(
+    mangaFetch: MangaFetch,
+    suwaSource: Source,
+    mangaId?: number,
+  ) {
+    // adds a source, if there is a mangaId, it adds to that manga
+    // if not, it creates a manga with the given info
+    if (mangaId === undefined) {
+      const manga = await db
+        .insert(mangas)
+        .values({
+          name: mangaFetch.title,
+          slugName: slugify(mangaFetch.title),
+          currentCover: mangaFetch.thumbnailUrl ?? "",
+          covers: mangaFetch.thumbnailUrl ? [mangaFetch.thumbnailUrl] : [],
+          description: mangaFetch.description,
+          author: mangaFetch.author,
+          artist: mangaFetch.artist,
+          genre: mangaFetch.genre,
+        })
+        .returning();
+      if (manga.length === 0) return;
+      mangaId = manga[0].id;
+    }
+    const source = await db
+      .insert(sources)
+      .values({
+        name: mangaFetch.title,
+        mangaId: mangaId,
+        sourceId: suwaSource.id,
+        sourceName: suwaSource.name,
+        mangaSourceId: mangaFetch.id.toString(),
+        extensionId: suwaSource.extension.pkgName,
+        language: suwaSource.lang,
+        coverUrl: mangaFetch.thumbnailUrl ?? "",
+        coverUrlLastFetched: new Date(
+          mangaFetch.thumbnailUrlLastFetched * 1000,
+        ),
+        iconUrl: suwaSource.iconUrl,
+        realUrl: mangaFetch.realUrl ?? "",
+      })
+      .returning();
+    this.refreshMangas();
+    this.refreshSources();
+    return source;
+  }
+  async deleteSource(source: SourceDB) {
+    await db.delete(sources).where(eq(sources.id, source.id));
+    const mangaSources = await db
+      .select()
+      .from(sources)
+      .where(eq(sources.mangaId, source.mangaId));
+    if (mangaSources.length === 0) {
+      await db.delete(mangas).where(eq(mangas.id, source.mangaId));
+    }
+
+    this.refreshMangas();
+    this.refreshSources();
+  }
+
+  constructor() {
+    this.refreshMangas();
+    this.refreshSources();
+  }
+}
+
+export const dbHelper = new DBHelper();
 
 // export const selectedScan = writable<string>("");
 // export const libraryTag = writable<Mark | undefined>(undefined);

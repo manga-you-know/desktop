@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c25be3cb-d02c-4940-8140-7a34d332a4d9",
+  "id": "f4d1690f-408b-4fc9-80ac-88fe281c2142",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -202,7 +202,7 @@
           "name": "sort_index",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "chapter_number": {
@@ -268,6 +268,13 @@
         },
         "commentary": {
           "name": "commentary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "scam": {
+          "name": "scam",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -1087,7 +1094,7 @@
           "name": "sort_index",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -1161,7 +1168,7 @@
           "name": "manga_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "name": {
@@ -1187,6 +1194,20 @@
         },
         "extension_id": {
           "name": "extension_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "language": {
+          "name": "language",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "source_name": {
+          "name": "source_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -1241,6 +1262,13 @@
           "notNull": false,
           "autoincrement": false,
           "default": true
+        },
+        "sort_index": {
+          "name": "sort_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {

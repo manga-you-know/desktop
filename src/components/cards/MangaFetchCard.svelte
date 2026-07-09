@@ -1,33 +1,36 @@
 <script lang="ts">
   import { Button } from "@/lib/components";
-  import type { MangaFetch } from "@/types/server";
-  import Image from "../common/Image.svelte";
-  import { suwayomiUrl } from "@/states";
+  import type { MangaFetch, Source } from "@/types/server";
+  import { Image } from "@/components";
+  import { dbHelper, hideOnLibrary } from "@/states";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { animate } from "animejs";
 
   type Props = {
     manga: MangaFetch;
+    suwaSource: Source;
   };
-  const { manga }: Props = $props();
-  let isInLibrary = $state(false);
+  const { manga, suwaSource }: Props = $props();
+  let isInLibrary = $derived(
+    dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id] !== undefined,
+  );
 </script>
 
 <button
-  class="border-secondary bg-secondary/50 group/card relative z-0 flex h-80 w-50 cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border p-0.5"
+  class={cn(
+    "border-secondary bg-secondary/50 group/card relative z-0 flex h-80 w-50 cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border p-0.5",
+    isInLibrary && "fetch-card",
+  )}
 >
-  <Image
-    class="h-80 w-50 rounded-lg object-cover"
-    src={suwayomiUrl.value + manga.thumbnailUrl}
-  />
+  <Image class="h-80 w-50 rounded-lg object-cover" src={manga.thumbnailUrl} />
   <div
     class={cn(
       "bg-secondary text-primary absolute top-0 left-0 flex h-9 items-center justify-center rounded-br-xl p-1 transition-all duration-400",
       isInLibrary ? "translate-x-0" : "-translate-x-10",
     )}
   >
-    <Icon class="size-7" icon="lucide:bookmark" />
+    <Icon class="size-5" icon="lucide:bookmark" />
   </div>
   <Button
     class={cn(
@@ -35,11 +38,29 @@
       isInLibrary ? "w-25 translate-x-27" : "w-18 translate-x-19",
     )}
     variant={isInLibrary ? "secondary" : "outline"}
-    onclick={(e) => {
-      isInLibrary = !isInLibrary;
-
+    onclick={async (e) => {
+      if (isInLibrary) {
+        dbHelper.deleteSource(
+          dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id],
+        );
+      } else {
+        if (hideOnLibrary.value && e.currentTarget?.parentElement) {
+          await animate(e.currentTarget.parentElement, {
+            opacity: [1, 0.5, 0],
+            maxWidth: ["320px", "0px"],
+            marginBottom: 0,
+            paddingRight: 0,
+            paddingLeft: 0,
+            translateX: 640,
+            duration: 500,
+            marginRight: "-4px",
+            easing: "easeInQuad",
+          });
+        }
+        dbHelper.addSource(manga, suwaSource);
+      }
       if (e.currentTarget?.parentElement) {
-        animate(e.currentTarget?.parentElement, {
+        animate(e.currentTarget.parentElement, {
           filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
           duration: 600,
           easing: "easeOutQuad",

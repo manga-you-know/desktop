@@ -65,13 +65,17 @@ export const sources = sqliteTable(
   "sources",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    mangaId: integer("manga_id").references(() => mangas.id, {
-      onDelete: "cascade",
-    }),
+    mangaId: integer("manga_id")
+      .notNull()
+      .references(() => mangas.id, {
+        onDelete: "cascade",
+      }),
     name: text("name").notNull(), // local source: "Local"
     mangaSourceId: text("manga_source_id").notNull(), // local source: final path
     sourceId: text("source_id").notNull(), // local source: root path
     extensionId: text("extension_id").notNull(), // local source: "local=" + type of media (cbz, pdf, folder images)
+    language: text("language").notNull(),
+    sourceName: text("source_name").notNull(),
     iconUrl: text("iconUrl"),
     realUrl: text("real_url").notNull(), // local source: path to open (root + final)
     coverUrl: text("cover_url").notNull(),
@@ -83,6 +87,7 @@ export const sources = sqliteTable(
     ),
     status: text("status"),
     enabled: integer("enabled", { mode: "boolean" }).default(true),
+    sortIndex: integer("sort_index"),
   },
   (t) => [
     index("idx_sources_manga_id").on(t.mangaId),
@@ -101,7 +106,7 @@ export const chapters = sqliteTable(
       .notNull()
       .references(() => sources.id, { onDelete: "cascade" }),
     chapterId: text("chapter_id").notNull(), // local source:  final path in source path
-    sortIndex: integer("sort_index").notNull(),
+    sortIndex: integer("sort_index"),
     chapterNumber: text("chapter_number"),
     chapterTitle: text("chapter_title"),
     language: text("language").default("-"),
@@ -111,6 +116,7 @@ export const chapters = sqliteTable(
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     readAt: integer("read_at", { mode: "timestamp" }),
     commentary: text("commentary"),
+    scan: text("scam"),
     rating: real("rating"),
     updatedAt: integer("update_at", { mode: "timestamp" })
       .notNull()
@@ -164,7 +170,7 @@ export const seriesMangas = sqliteTable(
     mangaId: integer("manga_id")
       .notNull()
       .references(() => mangas.id, { onDelete: "cascade" }),
-    sortIndex: integer("sort_index").notNull(),
+    sortIndex: integer("sort_index"),
   },
   (t) => [
     primaryKey({ columns: [t.serieId, t.mangaId] }),
