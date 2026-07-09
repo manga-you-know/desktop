@@ -102,30 +102,59 @@
 
   let changes: FilterChange[] = $state([]);
 
-  let fetchedMangaData = $state<FetchSourceMangaResult | undefined>(undefined);
+  let fetchedMangaData = $state<
+    Record<string, Record<number, FetchSourceMangaResult>>
+  >({});
+  let results = $derived<MangaFetch[]>(
+    Object.values(
+      fetchedMangaData[
+        selectedSourceId.value +
+          searchType.value +
+          (searchType.value === "SEARCH"
+            ? searchInput.value + JSON.stringify(changes)
+            : "")
+      ] ?? {},
+    ).flatMap((fm) => fm.mangas),
+  );
 
-  const search = () => {
+  const search = async (goBeyoundTwo: boolean = false) => {
     if (selectedSourceId.value === undefined) return;
-    suwaManager
-      .fetchSourceManga({
-        source: selectedSourceId.value,
-        type: searchType.value,
-        query: searchInput.value,
-        page: searchPage.value,
-        filters: changes,
-      })
-      .then((r) => {
-        fetchedMangaData = r;
-        if (r.hasNextPage) {
-          suwaManager.fetchSourceManga({
-            source: selectedSourceId.value,
-            type: searchType.value,
-            query: searchInput.value,
-            page: searchPage.value + 1,
-            filters: changes,
-          });
-        }
-      });
+    const key =
+      selectedSourceId.value +
+      searchType.value +
+      (searchType.value === "SEARCH"
+        ? searchInput.value + JSON.stringify(changes)
+        : "");
+    const page = Object.values(fetchedMangaData[key] ?? {}).length + 1;
+    console.log(page, goBeyoundTwo);
+    if (page === 3 && !goBeyoundTwo) return;
+    const data = await suwaManager.fetchSourceManga({
+      source: selectedSourceId.value,
+      type: searchType.value,
+      query: searchInput.value,
+      page: page,
+      filters: changes,
+    });
+    if (page > 1) {
+      fetchedMangaData[key][page] = data;
+    } else {
+      fetchedMangaData[key] = {
+        [page]: data,
+      };
+    }
+    if (data.hasNextPage && page === 1) {
+      search();
+    }
+    // fetchedMangaData = r;
+    // if (r.hasNextPage) {
+    //   suwaManager.fetchSourceManga({
+    //     source: selectedSourceId.value,
+    //     type: searchType.value,
+    //     query: searchInput.value,
+    //     page: searchPage.value + 1,
+    //     filters: changes,
+    //   });
+    // }
   };
 
   const handleInput = () => {
@@ -143,7 +172,7 @@
   };
 
   let filteredManga = $derived(
-    fetchedMangaData?.mangas.filter(
+    results.filter(
       (m) =>
         m.title.toLowerCase().includes(resultFilter.toLowerCase()) &&
         (hideOnLibrary.value
@@ -166,13 +195,13 @@
     }
   };
 
-  searchType.onchange = search;
+  searchType.onchange = () => search();
 </script>
 
 <div class="justify-around-stretch flex w-full flex-col">
   <div class="my-2 flex items-center justify-center gap-2">
     <Badge class="h-10 w-13" variant="outline">
-      <ScrollingValue value={fetchedMangaData?.mangas.length ?? 0} />
+      <ScrollingValue value={results.length} />
     </Badge>
     <Input
       class="hover:bg-secondary/20 w-70 transition-all"
@@ -544,7 +573,7 @@
       <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
         <ScrollingValue value={filteredManga.length} />
         /
-        <ScrollingValue value={fetchedMangaData?.mangas.length ?? 0} />
+        <ScrollingValue value={results.length} />
       </Badge>
       <Input
         class="hover:bg-secondary/20 w-70"
@@ -598,33 +627,33 @@
         <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
       </Button>
 
-      <div
-        class="bg-primary flex items-center justify-center gap-2 rounded-xl p-0.5"
-      >
-        <Button
-          class="hover:bg-secondary/30 h-9 w-3 rounded-lg"
-          disabled={searchPage.value === 1}
-          onclick={() => {
-            searchPage.value = searchPage.value - 1;
-            search();
-          }}
-        >
-          <Icon icon="lucide:chevron-left" />
-        </Button>
-        <Label class="text-background flex w-10 items-center justify-center">
-          <ScrollingValue value={searchPage.value} axis="x" />
-        </Label>
-        <Button
-          class="hover:bg-secondary/30 h-9 w-3 rounded-lg"
-          disabled={!fetchedMangaData?.hasNextPage}
-          onclick={() => {
-            searchPage.value = searchPage.value + 1;
-            search();
-          }}
-        >
-          <Icon icon="lucide:chevron-right" />
-        </Button>
-      </div>
+      <!-- <div -->
+      <!--   class="bg-primary flex items-center justify-center gap-2 rounded-xl p-0.5" -->
+      <!-- > -->
+      <!--   <Button -->
+      <!--     class="hover:bg-secondary/30 h-9 w-3 rounded-lg" -->
+      <!--     disabled={searchPage.value === 1} -->
+      <!--     onclick={() => { -->
+      <!--       searchPage.value = searchPage.value - 1; -->
+      <!--       search(); -->
+      <!--     }} -->
+      <!--   > -->
+      <!--     <Icon icon="lucide:chevron-left" /> -->
+      <!--   </Button> -->
+      <!--   <Label class="text-background flex w-10 items-center justify-center"> -->
+      <!--     <ScrollingValue value={searchPage.value} axis="x" /> -->
+      <!--   </Label> -->
+      <!--   <Button -->
+      <!--     class="hover:bg-secondary/30 h-9 w-3 rounded-lg" -->
+      <!--     disabled={!fetchedMangaData?.hasNextPage} -->
+      <!--     onclick={() => { -->
+      <!--       searchPage.value = searchPage.value + 1; -->
+      <!--       search(); -->
+      <!--     }} -->
+      <!--   > -->
+      <!--     <Icon icon="lucide:chevron-right" /> -->
+      <!--   </Button> -->
+      <!-- </div> -->
     </div>
     <div class="mt-12 flex justify-center p-2">
       <div class="flex w-full flex-wrap gap-0.5" id="div-mangas">
