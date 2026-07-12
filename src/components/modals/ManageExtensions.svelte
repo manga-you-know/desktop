@@ -311,6 +311,7 @@
       await suwaManager.patchExtension(
         extension.pkgName,
         extension.isInstalled ? "uninstall" : "install",
+        false,
       )
     ).isInstalled;
     delete installingExtensions[extension.pkgName];
@@ -326,6 +327,22 @@
       }
       await removeClean(`extension-${extension.pkgName.split(".").at(-1)}`);
       stateExtensionsActivated = {};
+    }
+    for (const source of suwayomi.rawSources) {
+      if (source.extension.pkgName === extension.pkgName)
+        if (isInstalled) {
+          enabledSources.value = {
+            ...enabledSources.value,
+            [source.id]:
+              allowedExtensionLanguages.value[source.lang] ||
+              allowedSourceLanguages.value[source.lang],
+          };
+        } else {
+          enabledSources.value = {
+            ...enabledSources.value,
+            [source.id]: false,
+          };
+        }
     }
     return isInstalled;
   };

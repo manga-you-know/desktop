@@ -22,7 +22,6 @@
     showExtensionsNSourcesNSFW,
     openedExtension,
     openedSearchFilters,
-    searchPage,
     hideOnLibrary,
     dbHelper,
   } from "@/states";
@@ -36,6 +35,7 @@
   import { animate } from "animejs";
   import { onMount } from "svelte";
   import { ScrollingValue } from "svelte-ux";
+  import { fade } from "svelte/transition";
   import { VList } from "virtua/svelte";
 
   let selectSourceFilter = $state("");
@@ -80,25 +80,8 @@
   let openSelectSource = $state(false);
   let sourceBrowse: SourceBrowse | undefined = $state();
 
-  onMount(() => {
-    if (suwayomi.enabledSources.length > 0 && selectedSourceId.value === "") {
-      selectedSourceId.value = suwayomi.enabledSources[0].id ?? "";
-    }
-    if (selectedSource) {
-      suwaManager.getSourceBrowse(selectedSourceId.value).then((sb) => {
-        sourceBrowse = sb;
-      });
-      if (!selectedSource.supportsLatest && searchType.value === "LATEST") {
-        searchType.value = "POPULAR";
-      }
-      search();
-    } else {
-      sourceBrowse = undefined;
-    }
-  });
-
   let debounceTimer: ReturnType<typeof setTimeout>;
-  let resultFilter = $state("");
+  let resultsQuery = $state("");
 
   let changes: FilterChange[] = $state([]);
 
@@ -117,6 +100,7 @@
     ).flatMap((fm) => fm.mangas),
   );
 
+  let isSearching = $state(false);
   const search = async (goBeyoundTwo: boolean = false) => {
     if (selectedSourceId.value === undefined) return;
     const key =
@@ -125,9 +109,11 @@
       (searchType.value === "SEARCH"
         ? searchInput.value + JSON.stringify(changes)
         : "");
-    const page = Object.values(fetchedMangaData[key] ?? {}).length + 1;
-    console.log(page, goBeyoundTwo);
+    const lastData = Object.values(fetchedMangaData[key] ?? {});
+    if (lastData.length > 0 && !lastData.at(-1)?.hasNextPage) return;
+    const page = lastData.length + 1;
     if (page === 3 && !goBeyoundTwo) return;
+    isSearching = true;
     const data = await suwaManager.fetchSourceManga({
       source: selectedSourceId.value,
       type: searchType.value,
@@ -142,19 +128,10 @@
         [page]: data,
       };
     }
+    isSearching = false;
     if (data.hasNextPage && page === 1) {
       search();
     }
-    // fetchedMangaData = r;
-    // if (r.hasNextPage) {
-    //   suwaManager.fetchSourceManga({
-    //     source: selectedSourceId.value,
-    //     type: searchType.value,
-    //     query: searchInput.value,
-    //     page: searchPage.value + 1,
-    //     filters: changes,
-    //   });
-    // }
   };
 
   const handleInput = () => {
@@ -165,21 +142,37 @@
       clearTimeout(debounceTimer);
     }
     debounceTimer = setTimeout(() => {
+      resultsQuery = "";
       search();
-      console.log("fire", searchInput.value);
-      resultFilter = "";
     }, 600);
   };
 
-  let filteredManga = $derived(
+  let scrollContainer: HTMLDivElement = $state(null!);
+  let sentinel: HTMLDivElement = $state(null!);
+  let observerRef: IntersectionObserver | null = null;
+  let divWidth = $state(0);
+  let divOffset = $state(0);
+
+  let filteredManga: MangaFetch[] = $derived(
     results.filter(
       (m) =>
-        m.title.toLowerCase().includes(resultFilter.toLowerCase()) &&
+        m.title.toLowerCase().includes(resultsQuery.toLowerCase()) &&
         (hideOnLibrary.value
           ? dbHelper.sourcesByIdMangaSource[m.id + m.sourceId] === undefined
           : true),
     ) ?? [],
   );
+
+  let itemsPerRow = $derived(Math.floor(divWidth / 210));
+
+  let rowedMangas: MangaFetch[][] = $derived.by(() => {
+    if (!scrollContainer || divWidth < 210) return [filteredManga];
+    return filteredManga.reduce((acc: MangaFetch[][], _, i) => {
+      if (i % itemsPerRow === 0)
+        acc.push(filteredManga.slice(i, i + itemsPerRow));
+      return acc;
+    }, []);
+  });
 
   selectedSourceId.onchange = (s) => {
     if (selectedSource) {
@@ -195,12 +188,50 @@
     }
   };
 
-  searchType.onchange = () => search();
+  searchType.onchange = () => {
+    document.getElementById("div-mangas")?.scroll({ top: 0 });
+    search();
+  };
+
+  onMount(() => {
+    if (suwayomi.enabledSources.length > 0 && selectedSourceId.value === "") {
+      selectedSourceId.value = suwayomi.enabledSources[0].id ?? "";
+    }
+    if (selectedSource) {
+      suwaManager.getSourceBrowse(selectedSourceId.value).then((sb) => {
+        sourceBrowse = sb;
+      });
+      if (!selectedSource.supportsLatest && searchType.value === "LATEST") {
+        searchType.value = "POPULAR";
+      }
+      search();
+    } else {
+      sourceBrowse = undefined;
+    }
+  });
+
+  $effect(() => {
+    if (!sentinel || !scrollContainer) return;
+    observerRef = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && rowedMangas.length > 4) {
+          observerRef?.unobserve(sentinel);
+          search(true).then(() => {
+            observerRef?.observe(sentinel);
+          });
+        }
+      },
+      { root: scrollContainer, rootMargin: "600px 0px" },
+      // change to have distance based on batch
+    );
+    observerRef.observe(sentinel);
+    return () => observerRef?.disconnect();
+  });
 </script>
 
 <div class="justify-around-stretch flex w-full flex-col">
   <div class="my-2 flex items-center justify-center gap-2">
-    <Badge class="h-10 w-13" variant="outline">
+    <Badge class="h-10 w-14" variant="outline">
       <ScrollingValue value={results.length} />
     </Badge>
     <Input
@@ -211,17 +242,27 @@
         ? 's'
         : ''}..."
       oninput={handleInput}
-      bind:value={searchInput.value}
       ondelete={() => {
-        if (searchType.value !== "SEARCH") {
-          searchType.value = "SEARCH";
-        }
-        search();
+        if (searchType.value === "SEARCH") search();
       }}
+      bind:value={searchInput.value}
     />
-    <Button variant="outline">
-      <Icon icon="lucide:sliders-horizontal" />
-    </Button>
+    <Tooltip text="Source filters">
+      <Button
+        class={cn(
+          "w-12 transition-all duration-500",
+          (sourceGroupMode.value !== "single" ||
+            sourceBrowse?.filters.length === 0) &&
+            "-mx-1 w-0 p-0 opacity-0",
+        )}
+        variant="secondary"
+        onclick={() => {
+          openedSearchFilters.open({ sourceBrowse });
+        }}
+      >
+        <Icon icon="lucide:list-filter" />
+      </Button>
+    </Tooltip>
     <Tooltip
       text="Source mode"
       subtext={sourceGroupMode.value === "single"
@@ -265,7 +306,7 @@
       </Button>
     </Tooltip>
     <Tooltip text="Manage extensions & sources">
-      <Button variant="outline" onclick={openExtensions.open}>
+      <Button class="w-12" variant="outline" onclick={openExtensions.open}>
         <Icon icon="lucide:puzzle" />
       </Button>
     </Tooltip>
@@ -290,7 +331,6 @@
         )}
         variant="ghost"
         onclick={() => {
-          searchPage.value = 1;
           searchType.value = "POPULAR";
         }}
       >
@@ -305,7 +345,6 @@
         disabled={!selectedSource?.supportsLatest &&
           sourceGroupMode.value === "single"}
         onclick={() => {
-          searchPage.value = 1;
           searchType.value = "LATEST";
         }}
       >
@@ -318,7 +357,6 @@
         )}
         variant="ghost"
         onclick={() => {
-          searchPage.value = 1;
           searchType.value = "SEARCH";
         }}
       >
@@ -548,29 +586,20 @@
         </div>
       </Popover.Content>
     </Popover.Root>
-    <Tooltip text="Source filters">
-      <Button
-        class="h-12.5 w-14"
-        variant="outline"
-        disabled={searchType.value !== "SEARCH" ||
-          sourceGroupMode.value !== "single" ||
-          sourceBrowse?.filters.length === 0}
-        onclick={() => {
-          openedSearchFilters.open({ sourceBrowse });
-        }}
-      >
-        <Icon icon="lucide:list-filter" />
-      </Button>
-    </Tooltip>
+    <Button class="h-12.5 w-14" variant="outline">
+      <Icon icon="lucide:sliders-horizontal" />
+    </Button>
   </div>
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div
-    class="parent flex w-full flex-col items-center overflow-y-scroll scroll-smooth"
+    class="parent flex h-full w-full flex-col items-center overflow-y-scroll scroll-smooth"
+    bind:this={scrollContainer}
+    bind:clientWidth={divWidth}
   >
     <div
       class="border-background bg-background/30 absolute z-2 mt-0.5 flex items-center justify-center gap-2 rounded-2xl border p-1 backdrop-blur-sm"
     >
-      <Badge class="h-10 w-20 text-sm font-bold" variant="outline">
+      <Badge class="h-10 min-w-20 text-sm font-bold" variant="outline">
         <ScrollingValue value={filteredManga.length} />
         /
         <ScrollingValue value={results.length} />
@@ -580,7 +609,7 @@
         divClass="w-70"
         variant="outline"
         placeholder="Filter results..."
-        bind:value={resultFilter}
+        bind:value={resultsQuery}
       />
       <Button
         class="items-center"
@@ -592,21 +621,15 @@
             easing: "easeOutQuad",
           });
           if (!hideOnLibrary.value) {
-            // animate("#div-mangas", {
-            //   filter: ["blur(0px)", "blur(2px)", "blur(0px)"],
-            //   // scale: [1, 0.99, 1],
-            //   duration: 600,
-            //   easing: "easeOutQuad",
-            // });
+            animate("#div-mangas", {
+              filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
+              duration: 600,
+              easing: "easeOutQuad",
+            });
             await animate(".fetch-card", {
               opacity: [1, 0.5, 0],
-              maxWidth: ["320px", "0px"],
-              marginBottom: 0,
-              paddingRight: 0,
-              paddingLeft: 0,
-              translateX: -60,
+              translateY: -120,
               duration: 500,
-              marginRight: "-4px",
               easing: "easeInQuad",
             });
           } else {
@@ -626,41 +649,79 @@
         On library
         <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
       </Button>
-
-      <!-- <div -->
-      <!--   class="bg-primary flex items-center justify-center gap-2 rounded-xl p-0.5" -->
-      <!-- > -->
-      <!--   <Button -->
-      <!--     class="hover:bg-secondary/30 h-9 w-3 rounded-lg" -->
-      <!--     disabled={searchPage.value === 1} -->
-      <!--     onclick={() => { -->
-      <!--       searchPage.value = searchPage.value - 1; -->
-      <!--       search(); -->
-      <!--     }} -->
-      <!--   > -->
-      <!--     <Icon icon="lucide:chevron-left" /> -->
-      <!--   </Button> -->
-      <!--   <Label class="text-background flex w-10 items-center justify-center"> -->
-      <!--     <ScrollingValue value={searchPage.value} axis="x" /> -->
-      <!--   </Label> -->
-      <!--   <Button -->
-      <!--     class="hover:bg-secondary/30 h-9 w-3 rounded-lg" -->
-      <!--     disabled={!fetchedMangaData?.hasNextPage} -->
-      <!--     onclick={() => { -->
-      <!--       searchPage.value = searchPage.value + 1; -->
-      <!--       search(); -->
-      <!--     }} -->
-      <!--   > -->
-      <!--     <Icon icon="lucide:chevron-right" /> -->
-      <!--   </Button> -->
-      <!-- </div> -->
     </div>
-    <div class="mt-12 flex justify-center p-2">
-      <div class="flex w-full flex-wrap gap-0.5" id="div-mangas">
-        {#each filteredManga as manga (manga.id)}
-          <MangaFetchCard {manga} suwaSource={selectedSource} />
-        {/each}
-      </div>
+    <div class="absolute flex w-full justify-end pt-12 pr-8">
+      <Button
+        class={cn(
+          "z-1 h-12 w-13 opacity-100 backdrop-blur-sm transition-opacity duration-500",
+          divOffset < 400 && "opacity-0",
+        )}
+        variant="outline"
+        onclick={() => {
+          document.getElementById("div-mangas")?.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <Icon class="size-5!" icon="lucide:arrow-up-from-dot" />
+      </Button>
     </div>
+    <VList
+      id="div-mangas"
+      data={rowedMangas}
+      getKey={(_, i) => i}
+      onscroll={(off) => {
+        divOffset = off;
+      }}
+    >
+      {#snippet children(row, index)}
+        {#if index === 0}
+          <div class="mt-12 flex w-full flex-col justify-center p-2"></div>
+        {/if}
+        <div class="mb-0.5 flex w-full justify-center gap-0.5">
+          {#each row as manga (manga.id)}
+            <MangaFetchCard {manga} suwaSource={selectedSource} />
+          {/each}
+          {#if row.length < itemsPerRow}
+            {#each { length: itemsPerRow - row.length }}
+              <div
+                class={cn(
+                  "flex h-80 w-50 items-center justify-center rounded-xl p-0.5 opacity-0 transition-opacity duration-500",
+                  isSearching && "bg-secondary animate-pulse opacity-100",
+                )}
+              >
+                <Icon
+                  class={cn(
+                    "size-10 animate-spin transition-all duration-500",
+                    !isSearching && "hidden",
+                  )}
+                  icon="mingcute:loading-fill"
+                />
+              </div>
+            {/each}
+          {/if}
+        </div>
+        {#if isSearching && index === rowedMangas.length - 1}
+          <div class="mb-0.5 flex w-full justify-center gap-0.5">
+            {#each { length: itemsPerRow }, i (i)}
+              <div
+                class="bg-secondary flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
+                in:fade
+              >
+                <Icon
+                  class="size-10 animate-spin transition-all duration-500"
+                  icon="mingcute:loading-fill"
+                />
+              </div>
+            {/each}
+          </div>
+        {/if}
+        {#if index === rowedMangas.length - 1}
+          <div bind:this={sentinel} class="h-4 w-full"></div>
+        {/if}
+      {/snippet}
+    </VList>
+    <!-- <div class="h-20 w-20 bg-red-500"></div> -->
   </div>
 </div>

@@ -71,12 +71,18 @@
   import { suwaManager } from "@/lib/helpers";
   import { addCollection } from "@iconify/svelte";
   import lucide from "@iconify-json/lucide/icons.json"
+  import lineMd from "@iconify-json/line-md/icons.json"
+  import tabler from "@iconify-json/tabler/icons.json"
+  import mingcute from "@iconify-json/mingcute/icons.json"
 
   let { children } = $props();
   const window = getCurrentWindow();
 
   // add icons to use
   addCollection(lucide)
+  addCollection(lineMd)
+  addCollection(tabler)
+  addCollection(mingcute)
 
   // const interval = setInterval(
   //   async () => {

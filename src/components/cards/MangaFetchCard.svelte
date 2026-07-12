@@ -47,13 +47,8 @@
         if (hideOnLibrary.value && e.currentTarget?.parentElement) {
           await animate(e.currentTarget.parentElement, {
             opacity: [1, 0.5, 0],
-            maxWidth: ["320px", "0px"],
-            marginBottom: 0,
-            paddingRight: 0,
-            paddingLeft: 0,
-            translateX: 640,
+            translateY: -120,
             duration: 500,
-            marginRight: "-4px",
             easing: "easeInQuad",
           });
         }
