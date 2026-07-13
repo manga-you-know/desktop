@@ -47,7 +47,7 @@
         if (hideOnLibrary.value && e.currentTarget?.parentElement) {
           await animate(e.currentTarget.parentElement, {
             opacity: [1, 0.5, 0],
-            translateY: -120,
+            translateX: -40,
             duration: 500,
             easing: "easeInQuad",
           });

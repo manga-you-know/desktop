@@ -51,8 +51,8 @@
       icon: "lucide:book-open-text",
     },
     {
-      name: "Search",
-      path: "/search",
+      name: "Browse",
+      path: "/browse",
       icon: "lucide:compass",
     },
     {
@@ -140,7 +140,7 @@
               "transition-translate absolute duration-300",
               page.url.pathname === "/favorites" && "translate-y-0",
               page.url.pathname === "/library" && "translate-y-14",
-              page.url.pathname === "/search" && "translate-y-28",
+              page.url.pathname === "/browse" && "translate-y-28",
               page.url.pathname === "/panels" && "translate-y-42",
             )}
             variant="secondary"

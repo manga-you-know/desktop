@@ -25,7 +25,7 @@
     enabledSources,
     disableAutoUpdateByExtension,
     autoUpdateExtensions,
-    favoriteSources,
+    pinnedSources,
   } from "@/states";
   import {
     AskSure,
@@ -374,7 +374,7 @@
                               </Button>
                             {/if}
                             <Tooltip
-                              text="{favoriteSources.value[source.id]
+                              text="{pinnedSources.value[source.id]
                                 ? 'Unfavorite'
                                 : 'Favorite'} source {source.displayName}"
                             >
@@ -384,19 +384,19 @@
                                   enabledSources.value[source.id] &&
                                     "max-w-9 px-2 opacity-100",
                                 )}
-                                variant={favoriteSources.value[source.id]
+                                variant={pinnedSources.value[source.id]
                                   ? "default"
                                   : "ghost"}
                                 onclick={(e) => {
                                   e.stopPropagation();
-                                  if (favoriteSources.value[source.id]) {
-                                    favoriteSources.value = {
-                                      ...favoriteSources.value,
+                                  if (pinnedSources.value[source.id]) {
+                                    pinnedSources.value = {
+                                      ...pinnedSources.value,
                                       [source.id]: false,
                                     };
                                   } else {
-                                    favoriteSources.value = {
-                                      ...favoriteSources.value,
+                                    pinnedSources.value = {
+                                      ...pinnedSources.value,
                                       [source.id]: true,
                                     };
                                   }
@@ -405,10 +405,10 @@
                                 <Icon
                                   class={cn(
                                     "transition-transform duration-400",
-                                    favoriteSources.value[source.id] &&
+                                    pinnedSources.value[source.id] &&
                                       "rotate-360",
                                   )}
-                                  icon={favoriteSources.value[source.id]
+                                  icon={pinnedSources.value[source.id]
                                     ? "lucide:star"
                                     : "lucide:star-off"}
                                 />

@@ -16,7 +16,7 @@
     allowedSourceLanguages,
     enabledSources,
     extensionManagerTab,
-    favoriteSources,
+    pinnedSources,
     hiddenExtensions,
     hiddenSources,
     openedExtension,
@@ -311,7 +311,7 @@
       await suwaManager.patchExtension(
         extension.pkgName,
         extension.isInstalled ? "uninstall" : "install",
-        false,
+        true,
       )
     ).isInstalled;
     delete installingExtensions[extension.pkgName];
@@ -419,7 +419,7 @@
           </Button>
         </Tooltip>
         <Button
-          class="flex w-24 justify-between rounded-xl font-bold duration-500"
+          class="flex w-24 justify-center gap-2 rounded-xl font-bold duration-500"
           variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
           disabled={showedGroup === "hidden"}
           onclick={(e) => {
@@ -436,7 +436,9 @@
               ? "lucide:triangle-alert"
               : "lucide:heart"}
           />
-          {showExtensionsNSourcesNSFW.value ? "N" : ""}SFW
+          <span class="w-10">
+            {showExtensionsNSourcesNSFW.value ? "NSFW" : "Safe"}
+          </span>
         </Button>
         <Popover.Root>
           <Popover.Trigger
@@ -893,7 +895,7 @@
                             </Button>
                           {/if}
                           <Tooltip
-                            text="{favoriteSources.value[sRow.source.id]
+                            text="{pinnedSources.value[sRow.source.id]
                               ? 'Unfavorite'
                               : 'Favorite'} source {sRow.source.displayName}"
                           >
@@ -903,19 +905,19 @@
                                 enabledSources.value[sRow.source.id] &&
                                   "max-w-9 px-2 opacity-100",
                               )}
-                              variant={favoriteSources.value[sRow.source.id]
+                              variant={pinnedSources.value[sRow.source.id]
                                 ? "default"
                                 : "ghost"}
                               onclick={(e) => {
                                 e.stopPropagation();
-                                if (favoriteSources.value[sRow.source.id]) {
-                                  favoriteSources.value = {
-                                    ...favoriteSources.value,
+                                if (pinnedSources.value[sRow.source.id]) {
+                                  pinnedSources.value = {
+                                    ...pinnedSources.value,
                                     [sRow.source.id]: false,
                                   };
                                 } else {
-                                  favoriteSources.value = {
-                                    ...favoriteSources.value,
+                                  pinnedSources.value = {
+                                    ...pinnedSources.value,
                                     [sRow.source.id]: true,
                                   };
                                 }
@@ -924,10 +926,10 @@
                               <Icon
                                 class={cn(
                                   "transition-transform duration-400",
-                                  favoriteSources.value[sRow.source.id] &&
+                                  pinnedSources.value[sRow.source.id] &&
                                     "rotate-360",
                                 )}
-                                icon={favoriteSources.value[sRow.source.id]
+                                icon={pinnedSources.value[sRow.source.id]
                                   ? "lucide:star"
                                   : "lucide:star-off"}
                               />

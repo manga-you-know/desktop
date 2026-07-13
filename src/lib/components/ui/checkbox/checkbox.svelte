@@ -28,7 +28,7 @@
 >
   {#snippet children({ checked, indeterminate })}
     <div
-      class="transiton-colors flex size-4 items-center justify-center text-current duration-200"
+      class="flex size-4 items-center justify-center text-current duration-200"
     >
       {#if indeterminate}
         <Minus class="size-3.5" />

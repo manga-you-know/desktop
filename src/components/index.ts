@@ -23,6 +23,7 @@ export { default as PickReaded } from "./select/PickReaded.svelte";
 export { default as Language } from "./select/Language.svelte";
 export { default as Source } from "./select/Source.svelte";
 export { default as Select } from "./select/Select.svelte";
+export { default as SelectSourceOrGroup } from "./select/SelectSourceOrGroup.svelte";
 // Cards
 export { default as SuggestionCard } from "./cards/SuggestionCard.svelte";
 export { default as FavoriteCard } from "./cards/FavoriteCard.svelte";

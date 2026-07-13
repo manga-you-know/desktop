@@ -139,8 +139,8 @@ export const sourceFilterConfig = new StoredState<
   store: "server",
 });
 
-export const favoriteSources = new StoredState<Record<string, boolean>>({
-  key: "favorite_sources",
+export const pinnedSources = new StoredState<Record<string, boolean>>({
+  key: "pinned_sources",
   defaultValue: {},
   store: "server",
 });
@@ -210,7 +210,7 @@ export const searchType = new StoredState<FetchSourceMangaType>({
   store: "cache",
 });
 
-export const sourceGroupMode = new StoredState<"single" | "group" | "global">({
+export const sourceGroupMode = new StoredState<"single" | "group">({
   key: "search_mode",
   defaultValue: "single",
   store: "cache",
@@ -230,7 +230,7 @@ export const selectedSourceId = new StoredState<string>({
 
 export const selectedGroupSource = new StoredState<string>({
   key: "selected_group_source",
-  defaultValue: "Favorites",
+  defaultValue: "Pinned",
   store: "cache",
 });
 

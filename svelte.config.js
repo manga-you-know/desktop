@@ -19,7 +19,7 @@ const config = {
         "/",
         "/favorites",
         "/library",
-        "/search",
+        "/browse",
         "/panels",
         "/reader/0/0",
         "/player/0/0",

@@ -50,7 +50,7 @@ const searchCache: Record<
   }
 > = {};
 
-const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 1h, or 4 * 60 * 60 * 1000 for 4h
+const CACHE_TTL_MS = 0.5 * 60 * 60 * 1000; // 1h, or 4 * 60 * 60 * 1000 for 4h
 
 const setSearchCache = (
   input: FetchSourceMangaInput,
