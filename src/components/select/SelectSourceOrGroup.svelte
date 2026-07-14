@@ -6,6 +6,7 @@
     Input,
     Label,
     Popover,
+    DropdownMenu,
   } from "@/lib/components";
   import { Image, Tooltip } from "@/components";
   import { cn, getLangName, getLangNative } from "@/lib/utils";
@@ -32,6 +33,8 @@
 
   let { open = $bindable(false), selectedSource }: Props = $props();
 
+  let openCreateGroup = $state(false);
+  let createGroupInput = $state("");
   let selectSourceFilter = $state("");
   let disabledLangs: Record<string, boolean> = $state({});
   let groupByLangSources = $derived(
@@ -81,7 +84,7 @@
       ? suwayomi.enabledSources.filter((s) => pinnedSources.value[s.id]).length
       : selectedGroupSource.value.toLowerCase() === "active sources"
         ? suwayomi.enabledSources.length
-        : 0,
+        : groupSources.value[selectedGroupSource.value].length,
   );
 </script>
 
@@ -307,6 +310,17 @@
             </Button>
           {/snippet}
         </VList>
+        {#if filteredSources.length === 0}
+          <div class="flex h-60 flex-col items-center p-4">
+            <Badge class="flex flex-col gap-1 text-base">
+              No source found lil bro.
+              {#if suwayomi.enabledSources.length === 0}
+                <span>You could try enabling one...</span>
+              {/if}
+              <span class="text-xl">╮( ˘ ､ ˘ )╭</span>
+            </Badge>
+          </div>
+        {/if}
       {:else}
         <div
           class="flex h-60 flex-col items-center overflow-x-hidden overflow-y-scroll p-2"
@@ -316,14 +330,14 @@
           </Label>
           <Button
             class={cn(
-              "bg-secondary group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-10 w-70 items-center justify-between gap-2 rounded-xl p-3 pr-1 hover:no-underline!",
+              "group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-10 w-70 items-center justify-between gap-2 rounded-xl p-3 pr-1 hover:no-underline!",
               selectedGroupSource.value.toLowerCase() === "pinned sources" &&
-                "bg-transparent backdrop-blur-xl",
+                "bg-background/80 backdrop-blur-xl",
             )}
             variant={selectedGroupSource.value.toLowerCase() ===
             "pinned sources"
-              ? "outline"
-              : "secondary"}
+              ? "secondary"
+              : "outline"}
             onclick={() => {
               selectedGroupSource.value = "Pinned sources";
               open = false;
@@ -343,14 +357,14 @@
           </Button>
           <Button
             class={cn(
-              "bg-secondary group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-10 w-70 items-center justify-between gap-2 rounded-xl p-3 pr-1 hover:no-underline!",
+              "group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-10 w-70 items-center justify-between gap-2 rounded-xl p-3 pr-1 hover:no-underline!",
               selectedGroupSource.value.toLowerCase() === "active sources" &&
-                "bg-transparent backdrop-blur-xl",
+                "bg-background/80 backdrop-blur-xl",
             )}
             variant={selectedGroupSource.value.toLowerCase() ===
             "active sources"
-              ? "outline"
-              : "secondary"}
+              ? "secondary"
+              : "outline"}
             onclick={() => {
               selectedGroupSource.value = "Active sources";
               open = false;
@@ -364,37 +378,145 @@
               <ScrollingValue value={suwayomi.enabledSources.length} />
             </Badge>
           </Button>
-          <Label
-            class="text-primary/70 mb-1 flex w-full items-center justify-between gap-2 pr-2 text-sm"
-          >
-            Custom groups
-            <Button class="h-8 rounded-lg px-2" variant="outline">
-              <Icon icon="lucide:plus" /> Create
-            </Button>
-          </Label>
-          <Badge
-            class={cn(
-              "flex h-full w-full flex-col items-center justify-start",
-              Object.keys(groupSources.value).length === 0 && "h-19",
-            )}
-            variant="outline"
-          >
-            {#each Object.entries(groupSources.value) as group (group)}{:else}
-              <Label class="mt-4">No source group created</Label>
-              <Label class="text-2xl text-bold">(⌒_⌒;)</Label>
+          <div class="mb-1 flex w-full items-center justify-between pr-2">
+            <Label
+              class="text-primary/70 flex w-full items-center justify-between text-sm"
+            >
+              Custom groups
+            </Label>
+            <Popover.Root bind:open={openCreateGroup}>
+              <Popover.Trigger>
+                <Button class="h-8 rounded-lg px-2" variant="outline">
+                  <Icon icon="lucide:plus" /> Create
+                </Button>
+              </Popover.Trigger>
+              <Popover.Content>
+                <div class="flex gap-1">
+                  <Input
+                    variant="outline"
+                    placeholder="New group name"
+                    bind:value={createGroupInput}
+                    onenter={() => {
+                      if (
+                        createGroupInput.toLowerCase() === "pinned sources" ||
+                        createGroupInput.toLowerCase() === "active sources" ||
+                        !!Object.keys(groupSources.value).find(
+                          (k) =>
+                            k.toLowerCase() === createGroupInput.toLowerCase(),
+                        )
+                      )
+                        return;
+
+                      if (!groupSources.value[createGroupInput]) {
+                        groupSources.value = {
+                          ...groupSources.value,
+                          [createGroupInput]: [],
+                        };
+                        openCreateGroup = false;
+                        createGroupInput = "";
+                      }
+                    }}
+                  />
+                  <Button
+                    class="w-10"
+                    variant="outline"
+                    disabled={createGroupInput.length === 0 ||
+                      createGroupInput.toLowerCase() === "pinned sources" ||
+                      createGroupInput.toLowerCase() === "active sources" ||
+                      !!Object.keys(groupSources.value).find(
+                        (k) =>
+                          k.toLowerCase() === createGroupInput.toLowerCase(),
+                      )}
+                    onclick={() => {
+                      if (!groupSources.value[createGroupInput]) {
+                        groupSources.value = {
+                          ...groupSources.value,
+                          [createGroupInput]: [],
+                        };
+                        openCreateGroup = false;
+                        createGroupInput = "";
+                      }
+                    }}
+                  >
+                    <Icon icon="lucide:plus" />
+                  </Button>
+                </div>
+              </Popover.Content>
+            </Popover.Root>
+          </div>
+          <div class="flex w-full flex-col gap-1 px-2">
+            {#each Object.entries(groupSources.value) as group (group)}
+              {let openDelete = $state(false)}
+              <Button
+                class={cn(
+                  "group/custom w-full justify-between pr-1",
+                  selectedGroupSource.value.toLowerCase() ===
+                    group[0].toLowerCase() &&
+                    "bg-background hover:bg-background/70",
+                )}
+                variant={selectedGroupSource.value.toLowerCase() ===
+                group[0].toLowerCase()
+                  ? "secondary"
+                  : "outline"}
+                onmouseleave={() => {
+                  openDelete = false;
+                }}
+                onclick={() => {
+                  selectedGroupSource.value = group[0];
+                  open = false;
+                }}
+              >
+                {group[0]}
+                <div class="flex items-center gap-1">
+                  <Badge
+                    class={cn(
+                      "group-hover/custom:bg-background/50 h-8 min-w-9 rounded-lg",
+                      selectedGroupSource.value.toLowerCase() ===
+                        group[0].toLowerCase() &&
+                        "group-hover/custom:bg-secondary",
+                    )}
+                    variant="secondary"
+                  >
+                    {group[1].length}
+                  </Badge>
+                  <Button
+                    class={cn(
+                      "hover:bg-background h-8 max-w-8 rounded-lg pr-2 transition-all duration-500",
+                      openDelete && "hover:bg-destructive/80 max-w-none",
+                    )}
+                    variant={openDelete ? "destructive" : "outline"}
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      if (openDelete) {
+                        const { [group[0]]: _, ...rest } = groupSources.value;
+                        groupSources.value = rest;
+                      }
+                      openDelete = true;
+                    }}
+                  >
+                    <Icon icon="lucide:trash" />
+                    <span
+                      class="overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out"
+                      style="max-width: {openDelete ? '120px' : '-0px'}"
+                    >
+                      Are you sure?
+                    </span>
+                  </Button>
+                </div>
+              </Button>
+            {:else}
+              <Badge
+                class={cn(
+                  "flex min-h-19 w-full flex-col items-center justify-start hover:bg-transparent",
+                  Object.keys(groupSources.value).length === 0 && "h-19",
+                )}
+                variant="outline"
+              >
+                <Label class="mt-4">No source group created</Label>
+                <Label class="text-2xl text-bold">(⌒_⌒;)</Label>
+              </Badge>
             {/each}
-          </Badge>
-        </div>
-      {/if}
-      {#if filteredSources.length === 0}
-        <div class="flex h-60 flex-col items-center p-4">
-          <Badge class="flex flex-col gap-1 text-base">
-            No source found lil bro.
-            {#if suwayomi.enabledSources.length === 0}
-              <span>You could try enabling one...</span>
-            {/if}
-            <span class="text-xl">╮( ˘ ､ ˘ )╭</span>
-          </Badge>
+          </div>
         </div>
       {/if}
     </div>

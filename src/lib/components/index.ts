@@ -19,6 +19,7 @@ export * as RadioGroup from "./ui/radio-group";
 export * as Drawer from "./ui/drawer";
 export * as Sheet from "./ui/sheet";
 export * as Menubar from "./ui/menubar";
+export * as DropdownMenu from "./ui/dropdown-menu/";
 //components
 export { Button } from "./ui/enhanced-button";
 export { Label } from "./ui/label";
@@ -33,7 +34,7 @@ export { Progress } from "./ui/progress";
 export { Badge } from "./ui/badge";
 export { Avatar } from "./ui/avatar";
 export { Slider } from "./ui/slider";
-export { ScrollingValue } from "./ui/custom-scrolling-value/"
+export { ScrollingValue } from "./ui/custom-scrolling-value/";
 //common
 export { Toaster } from "./ui/sonner";
 //variants
