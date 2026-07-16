@@ -73,14 +73,18 @@ export class OpenState {
     this.onchange(open);
   }
 
-  open = () => {
+  open = (): boolean => {
+    const wasOpen = this.#active;
     this.#active = true;
     this.onchange(true);
+    return wasOpen;
   };
 
-  close = () => {
+  close = (): boolean => {
+    const wasOpen = this.#active;
     this.#active = false;
     this.onchange(false);
+    return wasOpen;
   };
 }
 
@@ -123,15 +127,20 @@ export class OpenedObject<T> {
     this.onvaluechange?.(v);
   }
 
-  open = (v: T) => {
+  open = (v: T): boolean => {
+    const wasOpen = this.#active;
     this.#value = v;
     this.#active = true;
     this.onopenchange?.(true);
+    this.onvaluechange?.(this.#value);
+    return wasOpen;
   };
 
-  close = () => {
+  close = (): boolean => {
+    const wasOpen = this.#active;
     this.#active = false;
     this.onopenchange?.(false);
     this.onvaluechange?.(this.#value);
+    return wasOpen;
   };
 }

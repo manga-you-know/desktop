@@ -186,6 +186,12 @@
   });
 
   $effect(() => {
+    if (selectedSource && results.length === 0) {
+      search(false);
+    }
+  });
+
+  $effect(() => {
     if (!sentinel || !scrollContainer) return;
     observerRef = new IntersectionObserver(
       (entries) => {
@@ -196,7 +202,7 @@
           });
         }
       },
-      { root: scrollContainer, rootMargin: "600px 0px" },
+      { root: scrollContainer, rootMargin: "300px 0px" },
       // change to have distance based on batch
     );
     observerRef.observe(sentinel);
@@ -426,6 +432,7 @@
       id="div-mangas"
       data={rowedMangas}
       getKey={(_, i) => i}
+      keepMounted={rowedMangas.length > 0 ? [rowedMangas.length - 1] : []}
       onscroll={(off) => {
         divOffset = off;
       }}
@@ -477,10 +484,11 @@
           </div>
         {/if}
         {#if index === rowedMangas.length - 1}
-          <div bind:this={sentinel} class="h-4 w-full"></div>
+
         {/if}
       {/snippet}
     </VList>
+    <!-- <div bind:this={sentinel} class="h-4 w-full"></div> -->
     <!-- <div class="h-20 w-20 bg-red-500"></div> -->
   </div>
 </div>

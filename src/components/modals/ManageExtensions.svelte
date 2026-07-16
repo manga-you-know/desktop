@@ -887,6 +887,7 @@
                                   if (!open) {
                                     openExtensions.open();
                                     openedExtension.value = {};
+                                    openedExtension.onopenchange = () => {};
                                   }
                                 };
                               }}

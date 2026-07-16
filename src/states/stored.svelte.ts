@@ -3,6 +3,7 @@ import { type } from "@tauri-apps/plugin-os";
 import { load, Store } from "@tauri-apps/plugin-store";
 import type { Source, Languages } from "@/types";
 import type { FetchSourceMangaType, FilterChange } from "@/types/server";
+import type { RouteId } from "$app/types";
 
 let settingsStore: Store | null = null;
 let serverStore: Store | null = null;
@@ -190,6 +191,12 @@ export const repoInfo = new StoredState<
 });
 
 // Navigation cache
+
+export const lastPage = new StoredState<RouteId>({
+  key: "last_page",
+  defaultValue: "/browse",
+  store: "cache",
+});
 
 export const extensionManagerTab = new StoredState<"extensions" | "sources">({
   key: "extension_manager_tab",

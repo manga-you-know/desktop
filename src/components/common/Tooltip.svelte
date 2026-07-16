@@ -39,7 +39,7 @@
 >
   <div
     class={cn(
-      "bg-secondary/40 dark:bg-accent/50 flex flex-col rounded-xl border-2 px-2 py-1 backdrop-blur-sm",
+      "bg-secondary/60 dark:bg-accent/50 flex flex-col rounded-xl border-2 px-2 py-1 backdrop-blur-md",
       themeMode.value,
     )}
     slot="title"

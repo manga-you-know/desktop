@@ -198,7 +198,7 @@
             });
         }}
       >
-        Save <Icon icon="lucide:save" />
+        <Icon icon="lucide:save" />Save
       </Button>
     </div>
   </Dialog.Content>

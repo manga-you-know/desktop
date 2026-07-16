@@ -103,6 +103,12 @@ export const panels = new (class {
   }
 })();
 
+class Animate {
+  val = $state<Record<string, boolean>>({});
+}
+
+export const shouldAnimate = new Animate();
+
 class Suwayomi {
   isConnected: boolean = $state(false);
   extensionRepos: string[] = $state([]);
@@ -176,6 +182,7 @@ export const suwayomi = new Suwayomi();
 
 class DBHelper {
   rawMangas = $state<Manga[]>([]);
+  libraryMangas = $state<Manga[]>([]);
   rawSources = $state<SourceDB[]>([]);
   mangasBy = $derived(
     Object.fromEntries(this.rawMangas.map((m) => [[m.type], m])),

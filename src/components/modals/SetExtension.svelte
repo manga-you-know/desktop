@@ -357,17 +357,20 @@
                                 variant="ghost"
                                 onclick={(e) => {
                                   e.stopPropagation();
-                                  openExtensions.close();
+                                  const wasOpen = openExtensions.close();
                                   openedExtension.open({
                                     source: source,
                                     extension: openedExtension.value.extension,
                                   });
-                                  openedExtension.onopenchange = (open) => {
-                                    if (!open) {
-                                      openExtensions.open();
-                                      openedExtension.value = {};
-                                    }
-                                  };
+                                  if (wasOpen) {
+                                    openedExtension.onopenchange = (open) => {
+                                      if (!open) {
+                                        openExtensions.open();
+                                        openedExtension.value = {};
+                                        openedExtension.onopenchange = () => {};
+                                      }
+                                    };
+                                  }
                                 }}
                               >
                                 <Icon icon="lucide:settings" />
@@ -440,16 +443,19 @@
                       <ContextMenu.Item
                         class="flex justify-between"
                         onclick={() => {
-                          openExtensions.close();
+                          const wasOpen = openExtensions.close();
                           openedExtension.open({
                             extension: openedExtension.value.extension,
                           });
-                          openedExtension.onopenchange = (open) => {
-                            if (!open) {
-                              openExtensions.open();
-                              openedExtension.value = {};
-                            }
-                          };
+                          if (wasOpen) {
+                            openedExtension.onopenchange = (open) => {
+                              if (!open) {
+                                openExtensions.open();
+                                openedExtension.value = {};
+                                openedExtension.onopenchange = () => {};
+                              }
+                            };
+                          }
                         }}
                       >
                         <Label>See extension</Label>

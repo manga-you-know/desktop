@@ -165,7 +165,7 @@ export async function loadSettings() {
       store.set(data[key] !== undefined ? data[key] : defaultValue);
     },
   );
-  if (get(lastPage) !== "/home") goto(get(lastPage));
+  // if (get(lastPage) !== "/home") goto(get(lastPage));
   const isDecorated = await window.isDecorated();
   if (get(customTitlebar)) {
     if (isDecorated) window.setDecorations(false);

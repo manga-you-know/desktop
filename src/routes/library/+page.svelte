@@ -117,7 +117,8 @@
           if (showedFilter === 1) showedFilter = 0;
           else showedFilter++;
         }}
-        >...
+      >
+        ...
       </Button>
     </div>
     <div class="smh:h-14 h-0 w-full"></div>
@@ -131,10 +132,13 @@
             searchTerm.set($libraryQuery);
             openSearch.set(true);
           }}
-          >{#if $libraryQuery.length > 0}
-            Nothing was found. You can try finding "<span class="text-gray-200">
+        >
+          {#if $libraryQuery.length > 0}
+            Nothing was found. You can try finding "
+            <span class="text-gray-200">
               {$libraryQuery}
-            </span>" in
+            </span>
+            " in
           {:else}
             Nothing saved, try searching something at
           {/if}

@@ -150,9 +150,9 @@
             There's no favorite. You can click on the star in the chapters <br
             />
             modal to achieve that. Or you can find something at
-            <span class="absolute mt-5 ml-84 cursor-pointer hover:underline"
-              >Search</span
-            >
+            <span class="absolute mt-5 ml-84 cursor-pointer hover:underline">
+              Search
+            </span>
           {:else}
             Looks like you've been reading a lot... all done!
           {/if}

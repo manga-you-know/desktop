@@ -11,7 +11,8 @@
     manga: MangaFetch;
     suwaSource: Source;
   };
-  const { manga, suwaSource }: Props = $props();
+  let { manga, suwaSource }: Props = $props();
+
   let isInLibrary = $derived(
     dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id] !== undefined,
   );

@@ -98,7 +98,7 @@
     >
       <Button
         class={cn(
-          "group/select h-12.5 w-55 justify-start overflow-hidden",
+          "group/select h-12.5 w-55 justify-start relative",
           sourceGroupMode.value === "single" ? "px-2" : "pr-2",
         )}
         variant="outline"
@@ -110,6 +110,30 @@
             <span class="truncate font-bold">
               {selectedSource.displayName}
             </span>
+            <Tooltip text="Source config" delay={800}>
+              <Button
+                class={cn(
+                  "size-8 transition-all duration-500 absolute -top-2 -right-1 backdrop-blur-sm rounded-xl hover:bg-secondary/20 hover:border-background opacity-0 translate-x-4",
+                  selectedSource?.isConfigurable &&
+                    "group-hover/select:translate-x-0 group-hover/select:opacity-100",
+                  openedExtension.active ? "rotate-180" : "rotate-0",
+                )}
+                variant="outline"
+                onclick={(e) => {
+                  e.stopPropagation();
+                  openedExtension.open({
+                    source: selectedSource,
+                    extension:
+                      suwayomi.extensionsByPkgName[
+                        selectedSource.extension.pkgName
+                      ],
+                  });
+                  open = false;
+                }}
+              >
+                <Icon icon="lucide:settings" />
+              </Button>
+            </Tooltip>
           {:else}
             No sources...
           {/if}

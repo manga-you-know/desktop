@@ -6,10 +6,11 @@
 
   const window = getCurrentWindow();
   onMount(() => {
-    if (window.label === "main") {
-      goto($lastPage);
+    console.log("is this stupid ass code running?");
+    goto("browse");
+    /* if (window.label === "main") {
     } else {
       goto("/notificator");
-    }
+    } */
   });
 </script>
