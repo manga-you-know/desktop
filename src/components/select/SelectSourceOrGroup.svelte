@@ -7,10 +7,12 @@
     Label,
     Popover,
     DropdownMenu,
+    ContextMenu,
   } from "@/lib/components";
   import { Image, Tooltip } from "@/components";
   import { cn, getLangName, getLangNative } from "@/lib/utils";
   import {
+    enabledSources,
     groupSources,
     openedExtension,
     pinnedSources,
@@ -25,6 +27,7 @@
   import { animate } from "animejs";
   import { VList } from "virtua/svelte";
   import type { Source } from "@/types";
+  import { delay } from "@/utils";
 
   type Props = {
     open: boolean;
@@ -95,32 +98,173 @@
       subtext={sourceGroupMode.value === "single"
         ? (selectedSource.displayName ?? "None.")
         : selectedGroupSource.value}
+      delay={600}
     >
-      <Button
-        class={cn(
-          "group/select h-12.5 w-55 justify-start relative",
-          sourceGroupMode.value === "single" ? "px-2" : "pr-2",
-        )}
-        variant="outline"
-        id="source-select"
+      <ContextMenu.Root
+        onOpenChange={(v) => {
+          if (v) {
+            open = false;
+          }
+        }}
       >
-        {#if sourceGroupMode.value === "single"}
-          {#if selectedSource}
-            <Image class="size-10" src={selectedSource.iconUrl} />
-            <span class="truncate font-bold">
-              {selectedSource.displayName}
-            </span>
-            <Tooltip text="Source config" delay={800}>
-              <Button
-                class={cn(
-                  "size-8 transition-all duration-500 absolute -top-2 -right-1 backdrop-blur-sm rounded-xl hover:bg-secondary/20 hover:border-background opacity-0 translate-x-4",
-                  selectedSource?.isConfigurable &&
-                    "group-hover/select:translate-x-0 group-hover/select:opacity-100",
-                  openedExtension.active ? "rotate-180" : "rotate-0",
-                )}
-                variant="outline"
-                onclick={(e) => {
-                  e.stopPropagation();
+        <ContextMenu.Trigger
+          disabled={sourceGroupMode.value === "group" || !selectedSource}
+        >
+          <Button
+            class={cn(
+              "group/select h-12.5 w-55 justify-start relative",
+              sourceGroupMode.value === "single" ? "px-2" : "pr-2",
+            )}
+            variant="outline"
+            id="source-select"
+          >
+            {#if sourceGroupMode.value === "single"}
+              {#if selectedSource}
+                <Image class="size-10" src={selectedSource.iconUrl} />
+                <span class="truncate font-bold">
+                  {selectedSource.displayName}
+                </span>
+                <Tooltip text="Source config" delay={800}>
+                  <Button
+                    class={cn(
+                      "size-8 transition-all duration-500 absolute -top-2 -right-1 backdrop-blur-sm rounded-xl hover:bg-secondary/20 hover:border-background opacity-0 translate-x-4",
+                      selectedSource?.isConfigurable &&
+                        "group-hover/select:translate-x-0 group-hover/select:opacity-100",
+                    )}
+                    variant="outline"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openedExtension.open({
+                        source: selectedSource,
+                        extension:
+                          suwayomi.extensionsByPkgName[
+                            selectedSource.extension.pkgName
+                          ],
+                      });
+                      open = false;
+                    }}
+                  >
+                    <Icon
+                      class={cn(
+                        "transition-all duration-500",
+                        openedExtension.active ? "rotate-180" : "rotate-0",
+                      )}
+                      icon="lucide:settings"
+                    />
+                  </Button>
+                </Tooltip>
+              {:else}
+                No sources...
+              {/if}
+            {:else}
+              <div
+                class="flex w-full items-center justify-center gap-2 font-bold"
+              >
+                {#if selectedGroupSource.value.toLowerCase() === "pinned sources"}
+                  <Icon icon="lucide:pin" />
+                  <Label class="cursor-pointer font-bold">Pinned sources</Label>
+                {:else if selectedGroupSource.value.toLowerCase() === "active sources"}
+                  <Icon icon="lucide:globe" />
+                  <Label class="cursor-pointer font-bold">Active sources</Label>
+                {:else}
+                  <Label class="cursor-pointer truncate text-ellipsis">
+                    {selectedGroupSource.value}
+                  </Label>
+                {/if}
+              </div>
+              <Badge
+                class="group-hover/select:bg-background/40 h-8 min-w-8 rounded-lg"
+                variant="secondary"
+              >
+                <ScrollingValue value={countGroup} />
+              </Badge>
+            {/if}
+          </Button>
+        </ContextMenu.Trigger>
+        <ContextMenu.Content>
+          {#if sourceGroupMode.value === "single"}
+            {#if selectedSource}
+              <ContextMenu.Item
+                onclick={() => {
+                  if (pinnedSources.value[selectedSource.id]) {
+                    pinnedSources.value = {
+                      ...pinnedSources.value,
+                      [selectedSource.id]: false,
+                    };
+                  } else {
+                    pinnedSources.value = {
+                      ...pinnedSources.value,
+                      [selectedSource.id]: true,
+                    };
+                  }
+                }}
+              >
+                <Icon
+                  icon={pinnedSources.value[selectedSource.id]
+                    ? "lucide:pin-off"
+                    : "lucide:pin"}
+                />
+                {pinnedSources.value[selectedSource.id] ? "Unpin" : "Pin"} source
+              </ContextMenu.Item>
+              <ContextMenu.Sub>
+                <ContextMenu.SubTrigger
+                  disabled={Object.keys(groupSources.value).length === 0}
+                >
+                  <Icon icon="lucide:blocks" />Add group
+                </ContextMenu.SubTrigger>
+                <ContextMenu.SubContent class="max-h-40 overflow-y-scroll">
+                  {#each Object.entries(groupSources.value) as group (group[0])}
+                    <ContextMenu.Item
+                      class="justify-between"
+                      onclick={() => {
+                        if (group[1].includes(selectedSourceId.value)) {
+                          const groupItems = group[1].filter(
+                            (s) => s !== selectedSource.id,
+                          );
+                          groupSources.value = {
+                            ...groupSources.value,
+                            [group[0]]: groupItems,
+                          };
+                        } else {
+                          const groupItems = [...group[1], selectedSource.id];
+                          groupSources.value = {
+                            ...groupSources.value,
+                            [group[0]]: groupItems,
+                          };
+                        }
+                      }}
+                    >
+                      {group[0]}
+                      <Icon
+                        class={cn(
+                          group[1].includes(selectedSource.id)
+                            ? "opacity-100"
+                            : "opacity-0",
+                        )}
+                        icon="lucide:check"
+                      />
+                    </ContextMenu.Item>
+                  {/each}
+                </ContextMenu.SubContent>
+              </ContextMenu.Sub>
+              <ContextMenu.Separator />
+              <ContextMenu.Item
+                onclick={() => {
+                  openedExtension.open({
+                    extension:
+                      suwayomi.extensionsByPkgName[
+                        selectedSource.extension.pkgName
+                      ],
+                  });
+                  open = false;
+                }}
+              >
+                <Icon icon="lucide:info" />
+                See extension
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                disabled={!selectedSource?.isConfigurable}
+                onclick={() => {
                   openedExtension.open({
                     source: selectedSource,
                     extension:
@@ -132,33 +276,35 @@
                 }}
               >
                 <Icon icon="lucide:settings" />
-              </Button>
-            </Tooltip>
-          {:else}
-            No sources...
-          {/if}
-        {:else}
-          <div class="flex w-full items-center justify-center gap-2 font-bold">
-            {#if selectedGroupSource.value.toLowerCase() === "pinned sources"}
-              <Icon icon="lucide:pin" />
-              <Label class="cursor-pointer font-bold">Pinned sources</Label>
-            {:else if selectedGroupSource.value.toLowerCase() === "active sources"}
-              <Icon icon="lucide:globe" />
-              <Label class="cursor-pointer font-bold">Active sources</Label>
-            {:else}
-              <Label class="cursor-pointer truncate text-ellipsis">
-                {selectedGroupSource.value}
-              </Label>
+                Configure
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                class="data-highlighted:bg-destructive/60"
+                onclick={() => {
+                  if (enabledSources.value[selectedSource.id]) {
+                    enabledSources.value = {
+                      ...enabledSources.value,
+                      [selectedSource.id]: false,
+                    };
+                    if (selectedSourceId.value === selectedSource.id) {
+                      selectedSourceId.value = "";
+                    }
+                  } else {
+                    enabledSources.value = {
+                      ...enabledSources.value,
+                      [selectedSource.id]: true,
+                    };
+                  }
+                }}
+              >
+                <Icon icon="lucide:x" />
+                Disable source
+              </ContextMenu.Item>
             {/if}
-          </div>
-          <Badge
-            class="group-hover/select:bg-background/40 h-8 min-w-8 rounded-lg"
-            variant="secondary"
-          >
-            <ScrollingValue value={countGroup} />
-          </Badge>
-        {/if}
-      </Button>
+            <!-- {:else} -->
+          {/if}
+        </ContextMenu.Content>
+      </ContextMenu.Root>
     </Tooltip>
   </Popover.Trigger>
   <Popover.Content class="w-80 p-1">
@@ -257,81 +403,211 @@
           bufferSize={400}
         >
           {#snippet children(source, _)}
-            <Button
-              class={cn(
-                "bg-background group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
-                selectedSourceId.value === source.id &&
-                  "bg-transparent backdrop-blur-xl",
-              )}
-              onclick={() => {
-                selectedSourceId.value = source.id;
-                animate("#source-select", {
-                  filter: ["blur(4px)", "blur(0px)"],
-                  duration: 700,
-                  easing: "easeOutQuad",
+            {let wasOpen = $state(false)}
+            <ContextMenu.Root
+              onOpenChange={(v) => {
+                delay(500).then(() => {
+                  wasOpen = v;
                 });
-                open = false;
-                selectSourceFilter = "";
               }}
-              variant={selectedSourceId.value === source.id
-                ? "outline"
-                : "secondary"}
             >
-              <div class="pointer-events-none flex items-center gap-2">
-                <Image class="size-10" src={source.iconUrl} />
-                <div class="flex flex-col items-start justify-center gap-0">
-                  <Label
-                    class={cn(
-                      "max-w-44 cursor-pointer truncate text-lg/6 group-hover/extension:underline!",
-                    )}
-                  >
-                    {source.displayName}
-                  </Label>
-                  <div class="flex w-18 justify-between">
-                    <span class="text-red-500">
-                      {source.isNsfw ? "+18" : ""}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center">
+              <ContextMenu.Trigger>
                 <Button
-                  class="pointer-events-auto h-8 w-7 rounded-lg"
-                  variant="ghost"
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    open = false;
-                    openedExtension.open({
-                      source: source,
-                      extension:
-                        suwayomi.extensionsByPkgName[source.extension.pkgName],
+                  class={cn(
+                    "bg-background group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
+                    selectedSourceId.value === source.id &&
+                      "bg-transparent backdrop-blur-xl",
+                  )}
+                  onclick={() => {
+                    selectedSourceId.value = source.id;
+                    animate("#source-select", {
+                      filter: ["blur(4px)", "blur(0px)"],
+                      duration: 700,
+                      easing: "easeOutQuad",
                     });
+                    open = false;
+                    selectSourceFilter = "";
+                  }}
+                  variant={selectedSourceId.value === source.id
+                    ? "outline"
+                    : "secondary"}
+                >
+                  <div class="pointer-events-none flex items-center gap-2">
+                    <Image class="size-10" src={source.iconUrl} />
+                    <div class="flex flex-col items-start justify-center gap-0">
+                      <Label
+                        class={cn(
+                          "max-w-44 cursor-pointer truncate text-lg/6 group-hover/extension:underline!",
+                        )}
+                      >
+                        {source.displayName}
+                      </Label>
+                      <div class="flex w-18 justify-between">
+                        <span class="text-red-500">
+                          {source.isNsfw ? "+18" : ""}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center">
+                    <Button
+                      class="pointer-events-auto h-8 w-7 rounded-lg"
+                      variant="ghost"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        if (wasOpen) return;
+                        const event = new MouseEvent("contextmenu", {
+                          bubbles: true,
+                          clientX: e.clientX,
+                          clientY: e.clientY,
+                        });
+                        e.currentTarget.parentElement?.dispatchEvent(event);
+                      }}
+                    >
+                      <Icon icon="lucide:ellipsis-vertical" />
+                    </Button>
+                  </div>
+                  <Button
+                    class={cn(
+                      "absolute top-2 right-10 size-7 rounded-lg opacity-0 transition-opacity duration-500 group-hover/extension:opacity-100",
+                      pinnedSources.value[source.id] && "opacity-100",
+                    )}
+                    variant="ghost"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      pinnedSources.value = {
+                        ...pinnedSources.value,
+                        [source.id]: !pinnedSources.value[source.id],
+                      };
+                    }}
+                  >
+                    <Icon
+                      icon={pinnedSources.value[source.id]
+                        ? "lucide:pin"
+                        : "lucide:pin-off"}
+                    />
+                  </Button>
+                </Button>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  onclick={() => {
+                    if (pinnedSources.value[source.id]) {
+                      pinnedSources.value = {
+                        ...pinnedSources.value,
+                        [source.id]: false,
+                      };
+                    } else {
+                      pinnedSources.value = {
+                        ...pinnedSources.value,
+                        [source.id]: true,
+                      };
+                    }
                   }}
                 >
-                  <Icon icon="lucide:ellipsis-vertical" />
-                </Button>
-              </div>
-              <Button
-                class={cn(
-                  "absolute top-2 right-10 size-7 rounded-lg opacity-0 transition-opacity duration-500 group-hover/extension:opacity-100",
-                  pinnedSources.value[source.id] && "opacity-100",
-                )}
-                variant="ghost"
-                onclick={(e) => {
-                  e.stopPropagation();
-                  pinnedSources.value = {
-                    ...pinnedSources.value,
-                    [source.id]: !pinnedSources.value[source.id],
-                  };
-                }}
-              >
-                <Icon
-                  icon={pinnedSources.value[source.id]
-                    ? "lucide:pin"
-                    : "lucide:pin-off"}
-                />
-              </Button>
-            </Button>
+                  <Icon
+                    icon={pinnedSources.value[source.id]
+                      ? "lucide:pin-off"
+                      : "lucide:pin"}
+                  />
+                  {pinnedSources.value[source.id] ? "Unpin" : "Pin"} source
+                </ContextMenu.Item>
+                <ContextMenu.Sub>
+                  <ContextMenu.SubTrigger
+                    disabled={Object.keys(groupSources.value).length === 0}
+                  >
+                    <Icon icon="lucide:blocks" />Add group
+                  </ContextMenu.SubTrigger>
+                  <ContextMenu.SubContent class="max-h-40 overflow-y-scroll">
+                    {#each Object.entries(groupSources.value) as group (group[0])}
+                      <ContextMenu.Item
+                        class="justify-between"
+                        onclick={() => {
+                          if (group[1].includes(source.id)) {
+                            const groupItems = group[1].filter(
+                              (s) => s !== source.id,
+                            );
+                            groupSources.value = {
+                              ...groupSources.value,
+                              [group[0]]: groupItems,
+                            };
+                          } else {
+                            const groupItems = [...group[1], source.id];
+                            groupSources.value = {
+                              ...groupSources.value,
+                              [group[0]]: groupItems,
+                            };
+                          }
+                        }}
+                      >
+                        {group[0]}
+                        <Icon
+                          class={cn(
+                            group[1].includes(source.id)
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                          icon="lucide:check"
+                        />
+                      </ContextMenu.Item>
+                    {/each}
+                  </ContextMenu.SubContent>
+                </ContextMenu.Sub>
+                <ContextMenu.Separator />
+                <ContextMenu.Item
+                  onclick={() => {
+                    openedExtension.open({
+                      extension:
+                        suwayomi.extensionsByPkgName[
+                          selectedSource.extension.pkgName
+                        ],
+                    });
+                    open = false;
+                  }}
+                >
+                  <Icon icon="lucide:info" />
+                  See extension
+                </ContextMenu.Item>
+                <ContextMenu.Item
+                  disabled={!source.isConfigurable}
+                  onclick={() => {
+                    openedExtension.open({
+                      source: selectedSource,
+                      extension:
+                        suwayomi.extensionsByPkgName[
+                          selectedSource.extension.pkgName
+                        ],
+                    });
+                    open = false;
+                  }}
+                >
+                  <Icon icon="lucide:settings" />
+                  Configure
+                </ContextMenu.Item>
+                <ContextMenu.Item
+                  class="data-highlighted:bg-destructive/60"
+                  onclick={() => {
+                    if (enabledSources.value[source.id]) {
+                      enabledSources.value = {
+                        ...enabledSources.value,
+                        [source.id]: false,
+                      };
+                      if (selectedSourceId.value === source.id) {
+                        selectedSourceId.value = "";
+                      }
+                    } else {
+                      enabledSources.value = {
+                        ...enabledSources.value,
+                        [source.id]: true,
+                      };
+                    }
+                  }}
+                >
+                  <Icon icon="lucide:x" />
+                  Disable source
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
           {/snippet}
         </VList>
         {#if filteredSources.length === 0}

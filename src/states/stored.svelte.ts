@@ -204,6 +204,14 @@ export const extensionManagerTab = new StoredState<"extensions" | "sources">({
   store: "cache",
 });
 
+export const extensionManagerGroup = new StoredState<
+  "all" | "installed" | "noninstalled" | "hidden"
+>({
+  key: "extension_manager_group",
+  defaultValue: "all",
+  store: "cache",
+});
+
 export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
   key: "show_extensions_sources_nsfw",
   defaultValue: false,

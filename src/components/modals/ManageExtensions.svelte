@@ -8,6 +8,7 @@
     Input,
     Label,
     Popover,
+    Checkbox,
   } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
   import {
@@ -25,6 +26,8 @@
     showExtensionsNSourcesNSFW,
     suwayomi,
     suwayomiUrl,
+    selectedSourceId,
+    extensionManagerGroup,
   } from "@/states";
   import { Image, Tooltip } from "@/components";
   import { delay } from "@/utils";
@@ -48,29 +51,27 @@
   import { animate } from "animejs";
   import { readFile } from "@tauri-apps/plugin-fs";
   import { ScrollingValue } from "svelte-ux";
+  import { goto } from "$app/navigation";
 
   let query = $state("");
   let queryLangs = $state("");
-  let showedGroup = $state<"all" | "installed" | "noninstalled" | "hidden">(
-    "all",
-  );
-
   let installingExtensions: Record<string, boolean> = $state({});
 
   let filteredSources = $derived(
-    showedGroup === "hidden"
+    extensionManagerGroup.value === "hidden"
       ? suwayomi.hiddenSources.filter(
           (s) =>
             s.displayName.toLowerCase().includes(query.toLowerCase()) ||
             s.name.toLowerCase().includes(query.toLowerCase()),
         )
-      : showedGroup === "noninstalled" || showedGroup === "all"
+      : extensionManagerGroup.value === "noninstalled" ||
+          extensionManagerGroup.value === "all"
         ? suwayomi.sources.filter(
             (s) =>
               (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-              (showedGroup === "all"
+              (extensionManagerGroup.value === "all"
                 ? true
                 : !enabledSources.value[s.id.toString()]) &&
               allowedSourceLanguages.value[s.lang],
@@ -130,17 +131,20 @@
   );
 
   let filteredExtensions = $derived(
-    showedGroup === "hidden"
+    extensionManagerGroup.value === "hidden"
       ? suwayomi.hiddenExtensions.filter((e) =>
           e.name.toLowerCase().includes(query.toLowerCase()),
         )
-      : showedGroup === "noninstalled" || showedGroup === "all"
+      : extensionManagerGroup.value === "noninstalled" ||
+          extensionManagerGroup.value === "all"
         ? suwayomi.extensions
             .filter(
               (e) =>
                 (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
                 e.name.toLowerCase().includes(query.toLowerCase()) &&
-                (showedGroup === "all" ? true : !e.isInstalled) &&
+                (extensionManagerGroup.value === "all"
+                  ? true
+                  : !e.isInstalled) &&
                 allowedExtensionLanguages.value[e.lang],
             )
             .sort((a, b) => {
@@ -277,11 +281,14 @@
   };
 
   const toggleSourceActive = async (sourceId: string) => {
-    if (showedGroup !== "all") {
+    if (extensionManagerGroup.value !== "all") {
       if (enabledSources.value[sourceId]) {
         stateSourcesActivated = {
           [sourceId]: false,
         };
+        if (selectedSourceId.value === sourceId) {
+          selectedSourceId.value = "";
+        }
       } else {
         stateSourcesActivated = {
           [sourceId]: true,
@@ -295,6 +302,9 @@
         ...enabledSources.value,
         [sourceId]: false,
       };
+      if (selectedSourceId.value === sourceId) {
+        selectedSourceId.value = "";
+      }
     } else {
       enabledSources.value = {
         ...enabledSources.value,
@@ -315,7 +325,7 @@
       )
     ).isInstalled;
     delete installingExtensions[extension.pkgName];
-    if (showedGroup !== "all") {
+    if (extensionManagerGroup.value !== "all") {
       if (extension.isInstalled) {
         stateExtensionsActivated = {
           [extension.pkgName]: false,
@@ -346,8 +356,6 @@
     }
     return isInstalled;
   };
-
-  $inspect(suwayomi.rawSources);
 </script>
 
 <Dialog.Root bind:open={openExtensions.active}>
@@ -421,7 +429,7 @@
         <Button
           class="flex w-24 justify-center gap-2 rounded-xl font-bold duration-500"
           variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
-          disabled={showedGroup === "hidden"}
+          disabled={extensionManagerGroup.value === "hidden"}
           onclick={(e) => {
             showExtensionsNSourcesNSFW.toggle();
             animate(e.currentTarget, {
@@ -442,12 +450,16 @@
         </Button>
         <Popover.Root>
           <Popover.Trigger
-            disabled={["installed", "hidden"].includes(showedGroup)}
+            disabled={["installed", "hidden"].includes(
+              extensionManagerGroup.value,
+            )}
           >
             <Button
               class="rounded-xl"
               variant="secondary"
-              disabled={["installed", "hidden"].includes(showedGroup)}
+              disabled={["installed", "hidden"].includes(
+                extensionManagerGroup.value,
+              )}
             >
               <Icon icon="lucide:link" />
               Repositories
@@ -544,7 +556,9 @@
         </Popover.Root>
         <Popover.Root>
           <Popover.Trigger
-            disabled={["installed", "hidden"].includes(showedGroup)}
+            disabled={["installed", "hidden"].includes(
+              extensionManagerGroup.value,
+            )}
           >
             <Tooltip
               text="{allowedLanguages.length} allowed language{allowedLanguages.length >
@@ -552,7 +566,10 @@
                 ? 's'
                 : ''}"
             >
-              <Button class="rounded-xl" disabled={showedGroup === "installed"}>
+              <Button
+                class="rounded-xl"
+                disabled={extensionManagerGroup.value === "installed"}
+              >
                 <Icon icon="lucide:languages" />
                 Languages
               </Button>
@@ -617,7 +634,7 @@
               {#each filteredLangs as lang (lang)}
                 <div class="w-full">
                   <Button
-                    class="w-full cursor-pointer items-center gap-1 px-2"
+                    class="w-full cursor-pointer items-center"
                     variant="outline"
                     onclick={(e) => {
                       e.stopPropagation();
@@ -634,7 +651,7 @@
                       }
                     }}
                   >
-                    <Switch
+                    <Checkbox
                       checked={extensionManagerTab.value === "sources"
                         ? allowedSourceLanguages.value[lang]
                         : allowedExtensionLanguages.value[lang]}
@@ -690,12 +707,12 @@
         <Button
           class={cn(
             "w-full rounded-r-none rounded-b-none",
-            showedGroup === "installed" &&
+            extensionManagerGroup.value === "installed" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
           variant="outline"
           onclick={() => {
-            showedGroup = "installed";
+            extensionManagerGroup.value = "installed";
           }}
         >
           {extensionManagerTab.value === "sources" ? "Enabled" : "Installed"}
@@ -710,12 +727,12 @@
         <Button
           class={cn(
             "w-full rounded-none",
-            showedGroup === "noninstalled" &&
+            extensionManagerGroup.value === "noninstalled" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
           variant="outline"
           onclick={() => {
-            showedGroup = "noninstalled";
+            extensionManagerGroup.value = "noninstalled";
           }}
         >
           {extensionManagerTab.value === "sources"
@@ -732,12 +749,12 @@
         <Button
           class={cn(
             "w-full rounded-none",
-            showedGroup === "all" &&
+            extensionManagerGroup.value === "all" &&
               "border-b-transparent bg-transparent hover:bg-transparent",
           )}
           variant="outline"
           onclick={() => {
-            showedGroup = "all";
+            extensionManagerGroup.value = "all";
           }}
         >
           All
@@ -753,12 +770,12 @@
           <Button
             class={cn(
               "w-12 rounded-l-none rounded-b-none",
-              showedGroup === "hidden" &&
+              extensionManagerGroup.value === "hidden" &&
                 "border-b-transparent bg-transparent hover:bg-transparent",
             )}
             variant="outline"
             onclick={() => {
-              showedGroup = "hidden";
+              extensionManagerGroup.value = "hidden";
             }}
           >
             <Icon icon="lucide:eye-off" />
@@ -798,28 +815,22 @@
                         variant="link"
                         id="source-{sRow.source.id}"
                         onclick={() => {
+                          if (!enabledSources.value[sRow.source.id]) {
+                            enabledSources.value = {
+                              ...enabledSources.value,
+                              [sRow.source.id]: true,
+                            };
+                          }
+                          selectedSourceId.value = sRow.source.id;
+                          goto("/browse");
+                          openExtensions.onchange = () => {};
                           openExtensions.close();
-                          openedExtension.open({
-                            extension:
-                              suwayomi.extensionsByPkgName[
-                                sRow.source.extension.pkgName
-                              ],
-                          });
-                          openedExtension.onopenchange = (open) => {
-                            if (!open) {
-                              openExtensions.open();
-                              openedExtension.value = {};
-                            }
-                          };
                         }}
                       >
                         <div
                           class="pointer-events-none flex items-center gap-2"
                         >
-                          <Image
-                            class="size-10"
-                            src={suwayomiUrl.value + sRow.source.iconUrl}
-                          />
+                          <Image class="size-10" src={sRow.source.iconUrl} />
                           <div
                             class="gap-0.1 flex flex-col items-start justify-center"
                           >
@@ -869,73 +880,63 @@
                               </Button>
                             </Tooltip>
                           {/if}
-                          {#if sRow.source.isConfigurable && enabledSources.value[sRow.source.id]}
-                            <Button
-                              class="h-8 w-9 rounded-lg"
-                              variant="ghost"
-                              onclick={(e) => {
-                                e.stopPropagation();
-                                openExtensions.close();
-                                openedExtension.open({
-                                  source: sRow.source,
-                                  extension:
-                                    suwayomi.extensionsByPkgName[
-                                      sRow.source.extension.pkgName
-                                    ],
-                                });
-                                openedExtension.onopenchange = (open) => {
-                                  if (!open) {
-                                    openExtensions.open();
-                                    openedExtension.value = {};
-                                    openedExtension.onopenchange = () => {};
-                                  }
-                                };
-                              }}
-                            >
-                              <Icon icon="lucide:settings" />
-                            </Button>
-                          {/if}
-                          <Tooltip
-                            text="{pinnedSources.value[sRow.source.id]
-                              ? 'Unfavorite'
-                              : 'Favorite'} source {sRow.source.displayName}"
-                          >
-                            <Button
-                              class={cn(
-                                "h-8 w-9 max-w-0 rounded-4xl px-0 opacity-0 transition-all duration-500",
-                                enabledSources.value[sRow.source.id] &&
-                                  "max-w-9 px-2 opacity-100",
-                              )}
-                              variant={pinnedSources.value[sRow.source.id]
-                                ? "default"
-                                : "ghost"}
-                              onclick={(e) => {
-                                e.stopPropagation();
-                                if (pinnedSources.value[sRow.source.id]) {
-                                  pinnedSources.value = {
-                                    ...pinnedSources.value,
-                                    [sRow.source.id]: false,
-                                  };
-                                } else {
-                                  pinnedSources.value = {
-                                    ...pinnedSources.value,
-                                    [sRow.source.id]: true,
-                                  };
+                          <Button
+                            class={cn(
+                              "h-8 w-9 max-w-0 rounded-lg px-0 opacity-0 transition-all duration-500",
+                              enabledSources.value[sRow.source.id] &&
+                                sRow.source.isConfigurable &&
+                                "max-w-9 px-2 opacity-100",
+                            )}
+                            variant="ghost"
+                            onclick={(e) => {
+                              e.stopPropagation();
+                              openExtensions.close();
+                              openedExtension.open({
+                                source: sRow.source,
+                                extension:
+                                  suwayomi.extensionsByPkgName[
+                                    sRow.source.extension.pkgName
+                                  ],
+                              });
+                              openedExtension.onopenchange = (open) => {
+                                if (!open) {
+                                  openExtensions.open();
+                                  openedExtension.value = {};
+                                  openedExtension.onopenchange = () => {};
                                 }
-                              }}
-                            >
-                              <Icon
-                                class={cn(
-                                  "transition-transform duration-400",
-                                  pinnedSources.value[sRow.source.id] &&
-                                    "rotate-360",
-                                )}
-                                icon={pinnedSources.value[sRow.source.id]
-                                  ? "lucide:star"
-                                  : "lucide:star-off"}
-                              />
-                            </Button>
-                          </Tooltip>
+                              };
+                            }}
+                          >
+                            <Icon icon="lucide:settings" />
+                          </Button>
+                          <Button
+                            class={cn(
+                              "h-8 w-9 max-w-0 rounded-lg px-0 opacity-0 transition-all duration-500",
+                              enabledSources.value[sRow.source.id] &&
+                                "max-w-9 px-2 opacity-100",
+                            )}
+                            variant="ghost"
+                            onclick={(e) => {
+                              e.stopPropagation();
+                              if (pinnedSources.value[sRow.source.id]) {
+                                pinnedSources.value = {
+                                  ...pinnedSources.value,
+                                  [sRow.source.id]: false,
+                                };
+                              } else {
+                                pinnedSources.value = {
+                                  ...pinnedSources.value,
+                                  [sRow.source.id]: true,
+                                };
+                              }
+                            }}
+                          >
+                            <Icon
+                              icon={pinnedSources.value[sRow.source.id]
+                                ? "lucide:pin"
+                                : "lucide:pin-off"}
+                            />
+                          </Button>
                           <Switch
                             checked={sRow.source.id in stateSourcesActivated
                               ? stateSourcesActivated[sRow.source.id]
@@ -1158,7 +1159,7 @@
                             ]}
                             onclick={async (e) => {
                               e.stopPropagation();
-                              if (showedGroup !== "hidden") {
+                              if (extensionManagerGroup.value !== "hidden") {
                                 eRow.extension.isInstalled =
                                   await toggleExtensionInstalled(
                                     eRow.extension,
@@ -1171,7 +1172,7 @@
                               }
                             }}
                           >
-                            {showedGroup !== "hidden"
+                            {extensionManagerGroup.value !== "hidden"
                               ? eRow.extension.pkgName in
                                 stateExtensionsActivated
                                 ? stateExtensionsActivated[
@@ -1291,13 +1292,13 @@
             {query !== ""
               ? "Nothing found... 67"
               : "You don't seem to have any " +
-                (showedGroup === "all"
+                (extensionManagerGroup.value === "all"
                   ? ""
-                  : showedGroup === "installed"
+                  : extensionManagerGroup.value === "installed"
                     ? extensionManagerTab.value === "sources"
                       ? "enabled"
                       : "installed"
-                    : showedGroup === "noninstalled"
+                    : extensionManagerGroup.value === "noninstalled"
                       ? extensionManagerTab.value === "sources"
                         ? "disabled"
                         : "not installed"

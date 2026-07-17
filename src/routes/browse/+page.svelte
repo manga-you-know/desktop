@@ -432,7 +432,6 @@
       id="div-mangas"
       data={rowedMangas}
       getKey={(_, i) => i}
-      keepMounted={rowedMangas.length > 0 ? [rowedMangas.length - 1] : []}
       onscroll={(off) => {
         divOffset = off;
       }}
@@ -454,10 +453,7 @@
                     in:fade
                   >
                     <Icon
-                      class={cn(
-                        "size-10 animate-spin transition-all duration-500",
-                        // !isSearching && "hidden",
-                      )}
+                      class={cn("size-10 animate-spin")}
                       icon="mingcute:loading-fill"
                     />
                   </div>
@@ -476,19 +472,18 @@
                 in:fade
               >
                 <Icon
-                  class="size-10 animate-spin transition-all duration-500"
+                  class="size-10 animate-spin"
                   icon="mingcute:loading-fill"
                 />
               </div>
             {/each}
           </div>
         {/if}
-        {#if index === rowedMangas.length - 1}
-
+        {#if rowedMangas.length < 6 ? index === rowedMangas.length - 1 : index === rowedMangas.length - 5}
+          <div bind:this={sentinel} class="h-0 w-full"></div>
         {/if}
       {/snippet}
     </VList>
-    <!-- <div bind:this={sentinel} class="h-4 w-full"></div> -->
     <!-- <div class="h-20 w-20 bg-red-500"></div> -->
   </div>
 </div>

@@ -26,6 +26,7 @@
     disableAutoUpdateByExtension,
     autoUpdateExtensions,
     pinnedSources,
+    selectedSourceId,
   } from "@/states";
   import {
     AskSure,
@@ -38,6 +39,7 @@
   import type { Extension, Source, Preference, SourceSettings } from "@/types";
   import { flip } from "svelte/animate";
   import { ScrollingValue } from "svelte-ux";
+  import { goto } from "$app/navigation";
 
   let isInstalling = $state(false);
   let selectedPreference: Preference | undefined = $state(undefined);
@@ -324,17 +326,17 @@
                           class="bg-background group/extension hover:bg-secondary/40 m-0.5 flex h-10 w-105 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!"
                           variant="link"
                           onclick={() => {
-                            if (enabledSources.value[source.id]) {
-                              enabledSources.value = {
-                                ...enabledSources.value,
-                                [source.id]: false,
-                              };
-                            } else {
+                            if (!enabledSources.value[source.id]) {
                               enabledSources.value = {
                                 ...enabledSources.value,
                                 [source.id]: true,
                               };
                             }
+                            selectedSourceId.value = source.id;
+                            goto("/browse");
+                            openExtensions.onchange = () => {};
+                            openedExtension.onopenchange = () => {};
+                            openedExtension.close();
                           }}
                         >
                           <div
@@ -351,72 +353,63 @@
                             </div>
                           </div>
                           <div class="flex items-center gap-1">
-                            {#if source.isConfigurable && enabledSources.value[source.id.toString()]}
-                              <Button
-                                class="h-8 w-9 rounded-lg"
-                                variant="ghost"
-                                onclick={(e) => {
-                                  e.stopPropagation();
-                                  const wasOpen = openExtensions.close();
-                                  openedExtension.open({
-                                    source: source,
-                                    extension: openedExtension.value.extension,
-                                  });
-                                  if (wasOpen) {
-                                    openedExtension.onopenchange = (open) => {
-                                      if (!open) {
-                                        openExtensions.open();
-                                        openedExtension.value = {};
-                                        openedExtension.onopenchange = () => {};
-                                      }
-                                    };
-                                  }
-                                }}
-                              >
-                                <Icon icon="lucide:settings" />
-                              </Button>
-                            {/if}
-                            <Tooltip
-                              text="{pinnedSources.value[source.id]
-                                ? 'Unfavorite'
-                                : 'Favorite'} source {source.displayName}"
+                            <Button
+                              class={cn(
+                                "h-8 w-9 max-w-0 rounded-lg px-0 opacity-0 transition-all duration-500",
+                                enabledSources.value[source.id] &&
+                                  source.isConfigurable &&
+                                  "max-w-9 px-2 opacity-100",
+                              )}
+                              variant="ghost"
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                const wasOpen = openExtensions.close();
+                                openedExtension.open({
+                                  source: source,
+                                  extension: openedExtension.value.extension,
+                                });
+                                if (wasOpen) {
+                                  openedExtension.onopenchange = (open) => {
+                                    if (!open) {
+                                      openExtensions.open();
+                                      openedExtension.value = {};
+                                      openedExtension.onopenchange = () => {};
+                                    }
+                                  };
+                                }
+                              }}
                             >
-                              <Button
-                                class={cn(
-                                  "h-8 w-9 max-w-0 rounded-4xl px-0 opacity-0 transition-all duration-500",
-                                  enabledSources.value[source.id] &&
-                                    "max-w-9 px-2 opacity-100",
-                                )}
-                                variant={pinnedSources.value[source.id]
-                                  ? "default"
-                                  : "ghost"}
-                                onclick={(e) => {
-                                  e.stopPropagation();
-                                  if (pinnedSources.value[source.id]) {
-                                    pinnedSources.value = {
-                                      ...pinnedSources.value,
-                                      [source.id]: false,
-                                    };
-                                  } else {
-                                    pinnedSources.value = {
-                                      ...pinnedSources.value,
-                                      [source.id]: true,
-                                    };
-                                  }
-                                }}
-                              >
-                                <Icon
-                                  class={cn(
-                                    "transition-transform duration-400",
-                                    pinnedSources.value[source.id] &&
-                                      "rotate-360",
-                                  )}
-                                  icon={pinnedSources.value[source.id]
-                                    ? "lucide:star"
-                                    : "lucide:star-off"}
-                                />
-                              </Button>
-                            </Tooltip>
+                              <Icon icon="lucide:settings" />
+                            </Button>
+
+                            <Button
+                              class={cn(
+                                "h-8 w-9 max-w-0 rounded-lg px-0 opacity-0 transition-all duration-500",
+                                enabledSources.value[source.id] &&
+                                  "max-w-9 px-2 opacity-100",
+                              )}
+                              variant="ghost"
+                              onclick={(e) => {
+                                e.stopPropagation();
+                                if (pinnedSources.value[source.id]) {
+                                  pinnedSources.value = {
+                                    ...pinnedSources.value,
+                                    [source.id]: false,
+                                  };
+                                } else {
+                                  pinnedSources.value = {
+                                    ...pinnedSources.value,
+                                    [source.id]: true,
+                                  };
+                                }
+                              }}
+                            >
+                              <Icon
+                                icon={pinnedSources.value[source.id]
+                                  ? "lucide:pin"
+                                  : "lucide:pin-off"}
+                              />
+                            </Button>
                             <Switch
                               checked={enabledSources.value[source.id]}
                               onclick={async (e) => {
