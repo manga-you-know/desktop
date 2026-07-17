@@ -58,6 +58,50 @@ Just install it as you should
 yay -S manga-you-know-desktop-bin
 ```
 
+### "App is not authorized" / "damaged" on macOS
+
+The macOS build is **not signed with an Apple Developer certificate** (that
+requires a paid Apple Developer account, which this project doesn't have yet).
+Because of that, Gatekeeper will refuse to open it on first launch, showing
+something like *"MangaYouKnow can't be opened because Apple cannot check it for
+malicious software"* or *"the app is damaged"*.
+
+This is expected — it's not a virus, it's just an unsigned app. To run it:
+
+1. Try to open the app once (double-click). macOS blocks it.
+2. Go to **System Settings → Privacy & Security**.
+3. Scroll to the **Security** section — you'll see a message about
+   *"MangaYouKnow was blocked"*. Click **Open Anyway**.
+4. Confirm with **Open** in the dialog (you may need to enter your password).
+
+You only need to do this once. If the app is reported as *"damaged"*, remove
+the quarantine flag from a terminal:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/MangaYouKnow.app"
+```
+
+### Missing `liblzma` on macOS
+
+If the app still crashes right after launching with an error like:
+
+```
+dyld: Library not loaded: /opt/homebrew/opt/xz/lib/liblzma.5.dylib
+```
+
+the app depends on the `liblzma` library, which isn't bundled yet. You need
+[Homebrew](https://brew.sh) and the `xz` package installed:
+
+```bash
+# install Homebrew if you don't have it
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# install the required library
+brew install xz
+```
+
+Make sure you also downloaded the right build for your Mac: **aarch64** for
+Apple Silicon (M1/M2/M3/...) or **x86_64** for Intel Macs.
 
 ## About 
 

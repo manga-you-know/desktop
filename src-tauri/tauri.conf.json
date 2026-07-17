@@ -61,7 +61,8 @@
       "tsp": false
     },
     "macOS": {
-      "signingIdentity": "-"
+      "signingIdentity": "-",
+      "entitlements": "entitlements.plist"
     },
     "icon": [
       "icons/32x32.png",
