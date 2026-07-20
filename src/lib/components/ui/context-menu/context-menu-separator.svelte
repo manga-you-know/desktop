@@ -11,6 +11,6 @@
 
 <ContextMenuPrimitive.Separator
   bind:ref
-  class={cn("bg-sidebar -mx-1 my-1 h-px", className)}
+  class={cn("bg-secondary -mx-1 my-1 h-px", className)}
   {...restProps}
 />

@@ -686,7 +686,7 @@
           class="w-full"
           divClass="w-full"
           variant="outline"
-          placeholder="Search for {extensionManagerTab.value}..."
+          placeholder="Filter for {extensionManagerTab.value}..."
           bind:value={query}
         />
         <Badge class="w-27 text-sm font-bold" variant="secondary">

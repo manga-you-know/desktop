@@ -279,7 +279,7 @@
                 Configure
               </ContextMenu.Item>
               <ContextMenu.Item
-                class="data-highlighted:bg-destructive/60"
+                class="data-highlighted:text-red-500 text-red-400"
                 onclick={() => {
                   if (enabledSources.value[selectedSource.id]) {
                     enabledSources.value = {
@@ -297,7 +297,7 @@
                   }
                 }}
               >
-                <Icon icon="lucide:x" />
+                <Icon icon="lucide:toggle-left" />
                 Disable source
               </ContextMenu.Item>
             {/if}
@@ -558,9 +558,7 @@
                   onclick={() => {
                     openedExtension.open({
                       extension:
-                        suwayomi.extensionsByPkgName[
-                          selectedSource.extension.pkgName
-                        ],
+                        suwayomi.extensionsByPkgName[source.extension.pkgName],
                     });
                     open = false;
                   }}
@@ -572,11 +570,9 @@
                   disabled={!source.isConfigurable}
                   onclick={() => {
                     openedExtension.open({
-                      source: selectedSource,
+                      source: source,
                       extension:
-                        suwayomi.extensionsByPkgName[
-                          selectedSource.extension.pkgName
-                        ],
+                        suwayomi.extensionsByPkgName[source.extension.pkgName],
                     });
                     open = false;
                   }}
@@ -585,7 +581,7 @@
                   Configure
                 </ContextMenu.Item>
                 <ContextMenu.Item
-                  class="data-highlighted:bg-destructive/60"
+                  class="data-highlighted:text-red-500 text-red-400"
                   onclick={() => {
                     if (enabledSources.value[source.id]) {
                       enabledSources.value = {
@@ -603,7 +599,7 @@
                     }
                   }}
                 >
-                  <Icon icon="lucide:x" />
+                  <Icon icon="lucide:toggle-left" />
                   Disable source
                 </ContextMenu.Item>
               </ContextMenu.Content>
