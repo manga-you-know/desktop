@@ -81,7 +81,8 @@
   let results = $derived<MangaFetch[]>(pages.flatMap((fm) => fm.mangas) ?? []);
 
   const search = async (goBeyoundTwo: boolean = false) => {
-    if (selectedSourceId.value === undefined) return;
+    if (selectedSourceId.value === undefined || selectedSourceId.value === "")
+      return;
     const key = currentKey;
     const lastData = Object.values(fetchedMangaData[key] ?? {});
     if (lastData.length > 0 && !lastPage?.hasNextPage && !lastPage?.error)
@@ -452,7 +453,7 @@
     </div>
     <VList
       class={cn(
-        "flex w-full items-center justify-center",
+        "flex w-full items-center justify-center scroll-smooth",
         rowedMangas.length === 0 && "h-0!",
       )}
       id="div-mangas"
@@ -560,16 +561,16 @@
         </div>
         <div class="flex justify-center gap-2">
           <Button
-            class="w-32"
+            class="w-24"
             variant="secondary"
             onclick={() => {
               writeText(lastPage?.message ?? "");
             }}
           >
             <Icon icon="lucide:copy" />
-            Copy error
+            Copy
           </Button>
-          <Button class="w-32" onclick={() => search(true)}>
+          <Button class="w-24" onclick={() => search(true)}>
             <Icon icon="lucide:rotate-cw" />
             Retry
           </Button>

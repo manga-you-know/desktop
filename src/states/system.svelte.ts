@@ -193,6 +193,11 @@ class DBHelper {
     ),
   );
 
+  async refresh() {
+    this.refreshMangas();
+    this.refreshSources();
+  }
+
   async refreshMangas() {
     this.rawMangas = await db.select().from(mangas).all();
   }
@@ -206,8 +211,10 @@ class DBHelper {
     suwaSource: Source,
     mangaId?: number,
   ) {
-    // adds a source, if there is a mangaId, it adds to that manga
-    // if not, it creates a manga with the given info
+    mangaFetch = await suwaManager.getMangaScreen(mangaFetch.id);
+    if (!mangaFetch.initialized) {
+      mangaFetch = await suwaManager.fetchManga(mangaFetch.id);
+    }
     if (mangaId === undefined) {
       const manga = await db
         .insert(mangas)
@@ -235,6 +242,7 @@ class DBHelper {
         mangaSourceId: mangaFetch.id.toString(),
         extensionId: suwaSource.extension.pkgName,
         language: suwaSource.lang,
+        status: mangaFetch.status,
         coverUrl: mangaFetch.thumbnailUrl ?? "",
         coverUrlLastFetched: new Date(
           mangaFetch.thumbnailUrlLastFetched * 1000,
@@ -243,8 +251,6 @@ class DBHelper {
         realUrl: mangaFetch.realUrl ?? "",
       })
       .returning();
-    this.refreshMangas();
-    this.refreshSources();
     return source;
   }
   async deleteSource(source: SourceDB) {
@@ -256,14 +262,11 @@ class DBHelper {
     if (mangaSources.length === 0) {
       await db.delete(mangas).where(eq(mangas.id, source.mangaId));
     }
-
-    this.refreshMangas();
-    this.refreshSources();
+    this.refresh();
   }
 
   constructor() {
-    this.refreshMangas();
-    this.refreshSources();
+    this.refresh();
   }
 }
 

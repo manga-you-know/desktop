@@ -116,6 +116,9 @@
             class={cn(
               "group/select h-12.5 w-55 justify-start relative",
               sourceGroupMode.value === "single" ? "px-2" : "pr-2",
+              !selectedSource &&
+                sourceGroupMode.value === "single" &&
+                "text-primary/70 pl-4",
             )}
             variant="outline"
             id="source-select"
@@ -156,7 +159,9 @@
                   </Button>
                 </Tooltip>
               {:else}
-                No sources...
+                {suwayomi.enabledSources.length === 0
+                  ? "No enabled sources."
+                  : "Select a source..."}
               {/if}
             {:else}
               <div

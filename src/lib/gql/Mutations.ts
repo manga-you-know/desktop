@@ -146,3 +146,89 @@ export const fetchSourceManga = gql`
     }
   }
 `;
+
+export const fetchMangaMutation = gql`
+  fragment MANGA_BASE_FIELDS on MangaType {
+    id
+    title
+    thumbnailUrl
+    thumbnailUrlLastFetched
+    inLibrary
+    initialized
+    sourceId
+  }
+
+  fragment MANGA_CHAPTER_NODE_FIELDS on MangaType {
+    firstUnreadChapter {
+      id
+      sourceOrder
+      isRead
+      mangaId
+      chapterNumber
+      name
+      scanlator
+    }
+    lastReadChapter {
+      id
+      sourceOrder
+      lastReadAt
+    }
+    latestReadChapter {
+      id
+      sourceOrder
+      lastReadAt
+    }
+    latestFetchedChapter {
+      id
+      fetchedAt
+    }
+    latestUploadedChapter {
+      id
+      uploadDate
+    }
+    highestNumberedChapter {
+      id
+      chapterNumber
+    }
+  }
+
+  fragment MANGA_META_FIELDS on MangaMetaType {
+    mangaId
+    key
+    value
+  }
+
+  fragment SOURCE_BASE_FIELDS on SourceType {
+    id
+    name
+    displayName
+    lang
+    iconUrl
+  }
+
+  fragment MANGA_FETCH_FIELDS on MangaType {
+    ...MANGA_BASE_FIELDS
+    ...MANGA_CHAPTER_NODE_FIELDS
+    genre
+    lastFetchedAt
+    status
+    artist
+    author
+    description
+    realUrl
+    meta {
+      ...MANGA_META_FIELDS
+    }
+    source {
+      ...SOURCE_BASE_FIELDS
+    }
+  }
+
+  mutation FETCH_MANGA($id: Int!) {
+    fetchManga(input: { id: $id }) {
+      manga {
+        ...MANGA_FETCH_FIELDS
+      }
+    }
+  }
+`;

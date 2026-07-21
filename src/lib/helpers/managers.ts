@@ -20,17 +20,20 @@ import type {
   Source,
   SourceBrowse,
   SourceSettings,
+  MangaScreen,
   UpdateSourcePreferencesInput,
 } from "@/types/server";
 import { gqlMutation, gqlQuery } from "@/lib/gql/client";
 import {
   getExtensionRepos,
+  getMangaScreenQuery,
   getSourceBrowse as getSourceBrowseQuery,
   getSourceSettings as getSourceSettingsQuery,
   getSources as getSourcesQuery,
 } from "@/lib/gql/Queries";
 import {
   fetchExtensions as fetchExtensionsMutation,
+  fetchMangaMutation,
   fetchSourceManga as fetchSourceMangaMutation,
   setExtensionRepos,
   updateExtension as updateExtensionMutation,
@@ -374,5 +377,18 @@ export const suwaManager = {
     );
     setSearchCache(input, data);
     return data;
+  },
+  async getMangaScreen(id: number): Promise<MangaScreen> {
+    return gqlQuery<{ manga: MangaScreen }, { id: number }>(
+      getMangaScreenQuery,
+      { id },
+    ).then((data) => data.manga);
+  },
+
+  async fetchManga(id: number): Promise<MangaScreen> {
+    return gqlMutation<{ fetchManga: { manga: MangaScreen } }, { id: number }>(
+      fetchMangaMutation,
+      { id },
+    ).then((data) => data.fetchManga.manga);
   },
 };

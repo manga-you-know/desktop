@@ -193,11 +193,6 @@ export type SourceBrowse = {
   filters: SourceFilter[];
 };
 
-export type MangaMeta = {
-  mangaId: number;
-  key: string;
-  value: string;
-};
 
 export type MangaStatus =
   | "ONGOING"
@@ -252,3 +247,73 @@ export type FetchSourceMangaResult = {
   hasNextPage: boolean;
   mangas: MangaFetch[];
 };
+
+export type MangaMeta {
+  mangaId: number;
+  key: string;
+  value: string;
+}
+
+export interface SourceBase {
+  id: string;
+  name: string;
+  displayName: string;
+  lang: string;
+  iconUrl: string;
+}
+
+export interface ChapterRef {
+  id: number;
+  sourceOrder?: number;
+  isRead?: boolean;
+  mangaId?: number;
+  chapterNumber?: number;
+  name?: string;
+  scanlator?: string | null;
+  lastReadAt?: string;
+  fetchedAt?: string;
+  uploadDate?: string;
+}
+
+export interface TrackRecord {
+  id: number;
+  trackerId: number;
+}
+
+
+export interface MangaScreen {
+  id: number;
+  title: string;
+  thumbnailUrl: string | null;
+  thumbnailUrlLastFetched: number;
+  inLibrary: boolean;
+  initialized: boolean;
+  sourceId: string;
+  unreadCount: number;
+  downloadCount: number;
+  bookmarkCount: number;
+  hasDuplicateChapters: boolean;
+  chapters: {
+    totalCount: number;
+  };
+  firstUnreadChapter: ChapterRef | null;
+  lastReadChapter: ChapterRef | null;
+  latestReadChapter: ChapterRef | null;
+  latestFetchedChapter: ChapterRef | null;
+  latestUploadedChapter: ChapterRef | null;
+  highestNumberedChapter: ChapterRef | null;
+  genre: string[];
+  lastFetchedAt: number;
+  inLibraryAt: number;
+  status: MangaStatus;
+  artist: string | null;
+  author: string | null;
+  description: string | null;
+  realUrl: string | null;
+  meta: MangaMeta[];
+  source: SourceBase;
+  trackRecords: {
+    totalCount: number;
+    nodes: TrackRecord[];
+  };
+}

@@ -41,28 +41,35 @@
     )}
     variant={isInLibrary ? "secondary" : "outline"}
     onclick={async (e) => {
+      const parent = e.currentTarget?.parentElement ?? "";
       if (isInLibrary) {
         dbHelper.deleteSource(
           dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id],
         );
       } else {
-        if (hideOnLibrary.value && e.currentTarget?.parentElement) {
-          await animate(e.currentTarget.parentElement, {
+        animate(parent, {
+          filter: ["blur(2px)", "blur(4px)"],
+          duration: 600,
+          easing: "easeOutQuad",
+        });
+        await dbHelper.addSource(manga, suwaSource);
+        if (hideOnLibrary.value) {
+          await animate(parent, {
             opacity: [1, 0.5, 0],
             translateX: -40,
             duration: 500,
             easing: "easeInQuad",
           });
         }
-        dbHelper.addSource(manga, suwaSource);
       }
-      if (e.currentTarget?.parentElement) {
-        animate(e.currentTarget.parentElement, {
-          filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
-          duration: 600,
-          easing: "easeOutQuad",
-        });
-      }
+      animate(parent, {
+        filter: isInLibrary
+          ? ["blur(2px)", "blur(4px)", "blur(0px)"]
+          : ["blur(4px)", "blur(4px)", "blur(0px)"],
+        duration: 600,
+        easing: "easeOutQuad",
+      });
+      dbHelper.refresh();
     }}
   >
     <Icon icon={isInLibrary ? "lucide:x" : "lucide:plus"} />
