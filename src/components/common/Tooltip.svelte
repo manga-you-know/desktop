@@ -41,6 +41,7 @@
     class={cn(
       "bg-secondary/60 dark:bg-accent/50 flex flex-col rounded-xl border-2 px-2 py-1 backdrop-blur-md",
       themeMode.value,
+      (disabled || text?.length === 0) && "hidden",
     )}
     slot="title"
   >

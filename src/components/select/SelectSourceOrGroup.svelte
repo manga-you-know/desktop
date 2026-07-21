@@ -18,6 +18,7 @@
     pinnedSources,
     selectedGroupSource,
     selectedSourceId,
+    crEvent,
     showExtensionsNSourcesNSFW,
     sourceGroupMode,
     suwayomi,
@@ -28,6 +29,7 @@
   import { VList } from "virtua/svelte";
   import type { Source } from "@/types";
   import { delay } from "@/utils";
+  import { suwaManager } from "@/lib/helpers";
 
   type Props = {
     open: boolean;
@@ -262,6 +264,20 @@
                 <Icon icon="lucide:info" />
                 See extension
               </ContextMenu.Item>
+              {#if selectedSource.extension.hasUpdate}
+                <ContextMenu.Item
+                  class="text-info data-highlighted:text-info/90"
+                  onclick={() => {
+                    suwaManager.patchExtension(
+                      selectedSource.extension.pkgName,
+                      "update",
+                    );
+                  }}
+                >
+                  <Icon icon="lucide:refresh-cw" />
+                  Update extension
+                </ContextMenu.Item>
+              {/if}
               <ContextMenu.Item
                 disabled={!selectedSource?.isConfigurable}
                 onclick={() => {
@@ -279,16 +295,14 @@
                 Configure
               </ContextMenu.Item>
               <ContextMenu.Item
-                class="data-highlighted:text-red-500 text-red-400"
+                class="data-highlighted:text-red-400 text-red-600"
                 onclick={() => {
                   if (enabledSources.value[selectedSource.id]) {
                     enabledSources.value = {
                       ...enabledSources.value,
                       [selectedSource.id]: false,
                     };
-                    if (selectedSourceId.value === selectedSource.id) {
-                      selectedSourceId.value = "";
-                    }
+                    selectedSourceId.value = "";
                   } else {
                     enabledSources.value = {
                       ...enabledSources.value,
@@ -412,82 +426,105 @@
               }}
             >
               <ContextMenu.Trigger>
-                <Button
-                  class={cn(
-                    "bg-background group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
-                    selectedSourceId.value === source.id &&
-                      "bg-transparent backdrop-blur-xl",
-                  )}
-                  onclick={() => {
-                    selectedSourceId.value = source.id;
-                    animate("#source-select", {
-                      filter: ["blur(4px)", "blur(0px)"],
-                      duration: 700,
-                      easing: "easeOutQuad",
-                    });
-                    open = false;
-                    selectSourceFilter = "";
-                  }}
-                  variant={selectedSourceId.value === source.id
-                    ? "outline"
-                    : "secondary"}
+                <Tooltip
+                  text={source.extension.isObsolete
+                    ? "Source is obsolete..."
+                    : source.extension.hasUpdate
+                      ? "Update available!"
+                      : ""}
                 >
-                  <div class="pointer-events-none flex items-center gap-2">
-                    <Image class="size-10" src={source.iconUrl} />
-                    <div class="flex flex-col items-start justify-center gap-0">
-                      <Label
-                        class={cn(
-                          "max-w-44 cursor-pointer truncate text-lg/6 group-hover/extension:underline!",
-                        )}
+                  <Button
+                    class={cn(
+                      "bg-background group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
+                      selectedSourceId.value === source.id &&
+                        "bg-transparent backdrop-blur-xl",
+                      source.extension.hasUpdate && "border-info border",
+                      source.extension.isObsolete &&
+                        "border-destructive border",
+                    )}
+                    onclick={() => {
+                      selectedSourceId.value = source.id;
+                      animate("#source-select", {
+                        filter: ["blur(4px)", "blur(0px)"],
+                        duration: 700,
+                        easing: "easeOutQuad",
+                      });
+                      open = false;
+                      selectSourceFilter = "";
+                    }}
+                    variant={selectedSourceId.value === source.id
+                      ? "outline"
+                      : "secondary"}
+                  >
+                    <div class="pointer-events-none flex items-center gap-2">
+                      <Image class="size-10" src={source.iconUrl} />
+                      <div
+                        class="flex flex-col items-start justify-center gap-0"
                       >
-                        {source.displayName}
-                      </Label>
-                      <div class="flex w-18 justify-between">
-                        <span class="text-red-500">
-                          {source.isNsfw ? "+18" : ""}
-                        </span>
+                        <Label
+                          class={cn(
+                            "max-w-44 cursor-pointer truncate text-lg/6 group-hover/extension:underline!",
+                          )}
+                        >
+                          {source.displayName}
+                        </Label>
+                        <div class="flex w-18 justify-between">
+                          <span class="text-red-500">
+                            {source.isNsfw ? "+18" : ""}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="flex items-center">
+                    <div class="flex items-center">
+                      <Button
+                        class="pointer-events-auto h-8 w-7 rounded-lg"
+                        variant="ghost"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          if (wasOpen) return;
+                          const event = new MouseEvent("contextmenu", {
+                            bubbles: true,
+                            clientX: e.clientX,
+                            clientY: e.clientY,
+                          });
+                          e.currentTarget.parentElement?.dispatchEvent(event);
+                        }}
+                      >
+                        <Icon icon="lucide:ellipsis-vertical" />
+                      </Button>
+                    </div>
                     <Button
-                      class="pointer-events-auto h-8 w-7 rounded-lg"
+                      class={cn(
+                        "absolute top-2 right-10 size-7 rounded-lg opacity-0 transition-opacity duration-500 group-hover/extension:opacity-100",
+                        pinnedSources.value[source.id] && "opacity-100",
+                      )}
                       variant="ghost"
                       onclick={(e) => {
                         e.stopPropagation();
-                        if (wasOpen) return;
-                        const event = new MouseEvent("contextmenu", {
-                          bubbles: true,
-                          clientX: e.clientX,
-                          clientY: e.clientY,
-                        });
-                        e.currentTarget.parentElement?.dispatchEvent(event);
+                        pinnedSources.value = {
+                          ...pinnedSources.value,
+                          [source.id]: !pinnedSources.value[source.id],
+                        };
                       }}
                     >
-                      <Icon icon="lucide:ellipsis-vertical" />
+                      <Icon
+                        icon={pinnedSources.value[source.id]
+                          ? "lucide:pin"
+                          : "lucide:pin-off"}
+                      />
                     </Button>
-                  </div>
-                  <Button
-                    class={cn(
-                      "absolute top-2 right-10 size-7 rounded-lg opacity-0 transition-opacity duration-500 group-hover/extension:opacity-100",
-                      pinnedSources.value[source.id] && "opacity-100",
-                    )}
-                    variant="ghost"
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      pinnedSources.value = {
-                        ...pinnedSources.value,
-                        [source.id]: !pinnedSources.value[source.id],
-                      };
-                    }}
-                  >
-                    <Icon
-                      icon={pinnedSources.value[source.id]
-                        ? "lucide:pin"
-                        : "lucide:pin-off"}
-                    />
+                    {#if crEvent.val["ext-update" + source.extension.pkgName]}
+                      <div
+                        class="absolute w-full h-full flex justify-center items-center backdrop-blur-[1px] rounded-xl"
+                      >
+                        <Icon
+                          class="animate-spin size-5!"
+                          icon="lucide:refresh-cw"
+                        />
+                      </div>
+                    {/if}
                   </Button>
-                </Button>
+                </Tooltip>
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
@@ -566,6 +603,20 @@
                   <Icon icon="lucide:info" />
                   See extension
                 </ContextMenu.Item>
+                {#if source.extension.hasUpdate}
+                  <ContextMenu.Item
+                    class="text-info data-highlighted:text-info/90"
+                    onclick={() => {
+                      suwaManager.patchExtension(
+                        source.extension.pkgName,
+                        "update",
+                      );
+                    }}
+                  >
+                    <Icon icon="lucide:refresh-cw" />
+                    Update extension
+                  </ContextMenu.Item>
+                {/if}
                 <ContextMenu.Item
                   disabled={!source.isConfigurable}
                   onclick={() => {
@@ -581,20 +632,22 @@
                   Configure
                 </ContextMenu.Item>
                 <ContextMenu.Item
-                  class="data-highlighted:text-red-500 text-red-400"
+                  class="data-highlighted:text-red-400 text-red-500"
                   onclick={() => {
-                    if (enabledSources.value[source.id]) {
+                    const sourceId = source.id;
+                    console.log(sourceId);
+                    if (enabledSources.value[sourceId]) {
                       enabledSources.value = {
                         ...enabledSources.value,
-                        [source.id]: false,
+                        [sourceId]: false,
                       };
-                      if (selectedSourceId.value === source.id) {
+                      if (selectedSourceId.value === sourceId) {
                         selectedSourceId.value = "";
                       }
                     } else {
                       enabledSources.value = {
                         ...enabledSources.value,
-                        [source.id]: true,
+                        [sourceId]: true,
                       };
                     }
                   }}

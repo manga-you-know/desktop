@@ -37,7 +37,9 @@
     MangaFetch,
     SourceBrowse,
   } from "@/types/server";
+  import { limitStr } from "@/utils";
   import Icon from "@iconify/svelte";
+  import { writeText } from "@tauri-apps/plugin-clipboard-manager";
   import { animate } from "animejs";
   import { onMount } from "svelte";
   import { ScrollingValue } from "svelte-ux";
@@ -49,59 +51,74 @@
   let openSelectSource = $state(false);
   let wasOpenSourceOpen = false;
   let sourceBrowse: SourceBrowse | undefined = $state();
-
   let debounceTimer: ReturnType<typeof setTimeout>;
   let resultsQuery = $state("");
-
   let changes: FilterChange[] = $state([]);
 
-  let fetchedMangaData = $state<
-    Record<string, Record<number, FetchSourceMangaResult>>
-  >({});
-  let results = $derived<MangaFetch[]>(
-    Object.values(
-      fetchedMangaData[
-        selectedSourceId.value +
-          searchType.value +
-          (searchType.value === "SEARCH"
-            ? searchInput.value + JSON.stringify(changes)
-            : "")
-      ] ?? {},
-    ).flatMap((fm) => fm.mangas),
-  );
+  type State = {
+    loading?: boolean;
+    error?: boolean;
+    message?: string;
+  };
 
-  let isSearching = $state(false);
+  let fetchedMangaData = $state<
+    Record<string, Record<number, FetchSourceMangaResult & State>>
+  >({});
+  let currentKey = $derived(
+    [
+      selectedSourceId.value,
+      searchType.value,
+      searchType.value === "SEARCH"
+        ? searchInput.value + JSON.stringify(changes)
+        : "",
+    ].join("::"),
+  );
+  let pages = $derived(Object.values(fetchedMangaData[currentKey] ?? {}));
+  let lastPage = $derived(pages.at(-1));
+  let searchState = $derived<"idle" | "loading" | "error">(
+    lastPage?.error ? "error" : lastPage?.loading ? "loading" : "idle",
+  );
+  let results = $derived<MangaFetch[]>(pages.flatMap((fm) => fm.mangas) ?? []);
+
   const search = async (goBeyoundTwo: boolean = false) => {
     if (selectedSourceId.value === undefined) return;
-    const key =
-      selectedSourceId.value +
-      searchType.value +
-      (searchType.value === "SEARCH"
-        ? searchInput.value + JSON.stringify(changes)
-        : "");
+    const key = currentKey;
     const lastData = Object.values(fetchedMangaData[key] ?? {});
-    if (lastData.length > 0 && !lastData.at(-1)?.hasNextPage) return;
+    if (lastData.length > 0 && !lastPage?.hasNextPage && !lastPage?.error)
+      return;
     const page = lastData.length + 1;
-    if (page === 3 && !goBeyoundTwo) return;
-    isSearching = true;
-    const data = await suwaManager.fetchSourceManga({
-      source: selectedSourceId.value,
-      type: searchType.value,
-      query: searchInput.value,
-      page: page,
-      filters: changes,
-    });
-    if (page > 1) {
-      fetchedMangaData[key][page] = data;
-    } else {
-      fetchedMangaData[key] = {
-        [page]: data,
-      };
+    if (page === 1) {
+      fetchedMangaData[key] = {};
     }
-    isSearching = false;
-    if (data.hasNextPage && page === 1) {
-      search();
-    }
+    if ((page === 3 && !goBeyoundTwo) || fetchedMangaData[key][page]?.loading)
+      return;
+    fetchedMangaData[key][page] = {
+      mangas: [],
+      loading: true,
+      hasNextPage: false,
+    };
+    await suwaManager
+      .fetchSourceManga({
+        source: selectedSourceId.value,
+        type: searchType.value,
+        query: searchInput.value,
+        page: page,
+        filters: changes,
+      })
+      .then((data) => {
+        fetchedMangaData[key][page] = data;
+        if (data.hasNextPage && page === 1) {
+          search();
+        }
+      })
+      .catch((e) => {
+        fetchedMangaData[key][page] = {
+          mangas: [],
+          hasNextPage: false,
+          error: true,
+          message: e.toString(),
+        };
+      });
   };
 
   const handleInput = () => {
@@ -130,7 +147,7 @@
         (hideOnLibrary.value
           ? dbHelper.sourcesByIdMangaSource[m.id + m.sourceId] === undefined
           : true),
-    ) ?? [],
+    ),
   );
 
   let itemsPerRow = $derived(Math.floor(divWidth / 210));
@@ -180,13 +197,17 @@
     }
   });
   $effect(() => {
-    if (rowedMangas.length < 3 && results.length < 100) {
+    if (
+      rowedMangas.length < 3 &&
+      results.length < 100 &&
+      searchState === "idle"
+    ) {
       search(true);
     }
   });
 
   $effect(() => {
-    if (selectedSource && results.length === 0) {
+    if (selectedSource && results.length === 0 && searchState === "idle") {
       search(false);
     }
   });
@@ -208,6 +229,8 @@
     observerRef.observe(sentinel);
     return () => observerRef?.disconnect();
   });
+
+  // $inspect(searchState, lastPage);
 </script>
 
 <div class="justify-around-stretch flex w-full flex-col">
@@ -352,7 +375,7 @@
   </div>
   <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
   <div
-    class="parent flex h-full w-full flex-col items-center overflow-y-scroll scroll-smooth"
+    class="parent flex h-full w-full flex-col items-center scroll-smooth"
     bind:this={scrollContainer}
     bind:clientWidth={divWidth}
   >
@@ -428,7 +451,10 @@
       </Button>
     </div>
     <VList
-      class="flex w-full items-center justify-center"
+      class={cn(
+        "flex w-full items-center justify-center",
+        rowedMangas.length === 0 && "h-0!",
+      )}
       id="div-mangas"
       data={rowedMangas}
       getKey={(_, i) => i}
@@ -447,7 +473,7 @@
             {/each}
             {#if row.length < itemsPerRow}
               {#each { length: itemsPerRow - row.length }}
-                {#if isSearching}
+                {#if searchState === "loading"}
                   <div
                     class="bg-secondary flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
                     in:fade
@@ -464,7 +490,7 @@
             {/if}
           </div>
         </div>
-        {#if isSearching && index === rowedMangas.length - 1}
+        {#if searchState === "loading" && index === rowedMangas.length - 1}
           <div class="mb-0.5 flex w-full justify-center gap-0.5">
             {#each { length: itemsPerRow }, i (i)}
               <div
@@ -482,8 +508,99 @@
         {#if rowedMangas.length < 6 ? index === rowedMangas.length - 1 : index === rowedMangas.length - 5}
           <div bind:this={sentinel} class="h-0 w-full"></div>
         {/if}
+        <div
+          class={cn(
+            "flex justify-center",
+            searchState === "idle" &&
+              lastPage?.hasNextPage &&
+              index === rowedMangas.length - 1
+              ? "opacity-100 h-fit mt-4 transition-opacity duration-400"
+              : "opacity-0 h-0",
+          )}
+        >
+          <Button onclick={() => search(true)}>
+            <Icon icon="lucide:corner-down-right" />
+            Load more
+          </Button>
+        </div>
       {/snippet}
     </VList>
+    {#if searchState === "error"}
+      <div
+        class="flex flex-col justify-center items-center h-full w-full gap-2"
+      >
+        {let showMore = $state(false)}
+        <Label class="text-5xl font-bold">(×﹏×)</Label>
+        <Label class="text-xl">Unable to load data</Label>
+        <div class="flex justify-center items-center flew-wrap gap-1">
+          <Label class="text-xs text-wrap text-center select-auto z-2">
+            {limitStr(lastPage?.message ?? "", 100)}
+          </Label>
+          {#if (lastPage?.message?.length ?? 0) > 100}
+            <Button
+              class="p-2 h-6 rounded-lg"
+              variant="ghost"
+              onclick={() => {
+                showMore = !showMore;
+              }}
+            >
+              Show {showMore ? "less" : "more"}
+            </Button>
+          {/if}
+        </div>
+        <div
+          class="grid transition-[grid-template-rows] duration-300 ease-out"
+          style:grid-template-rows={showMore ? "1fr" : "0fr"}
+        >
+          <Label
+            class="text-xs text-wrap text-center select-auto z-2 overflow-hidden px-10 text-primary/60"
+          >
+            {lastPage?.message}
+          </Label>
+        </div>
+        <div class="flex justify-center gap-2">
+          <Button
+            class="w-32"
+            variant="secondary"
+            onclick={() => {
+              writeText(lastPage?.message ?? "");
+            }}
+          >
+            <Icon icon="lucide:copy" />
+            Copy error
+          </Button>
+          <Button class="w-32" onclick={() => search(true)}>
+            <Icon icon="lucide:rotate-cw" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    {/if}
+    <div
+      class={cn(
+        "flex justify-center",
+        searchState === "idle" &&
+          rowedMangas.length === 0 &&
+          lastPage?.hasNextPage
+          ? "opacity-100 h-fit mt-16 transition-opacity duration-400 z-2"
+          : "opacity-0 h-0",
+      )}
+    >
+      <Button onclick={() => search(true)}>
+        <Icon icon="lucide:corner-down-right" />
+        Load more
+      </Button>
+    </div>
+    <div class="mb-0.5 flex w-full justify-center gap-0.5">
+      {#each { length: searchState === "loading" && rowedMangas.length === 0 ? itemsPerRow : 0 }, i (i)}
+        <div
+          class="bg-secondary mt-14 flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
+          in:fade
+        >
+          <Icon class="size-10 animate-spin" icon="mingcute:loading-fill" />
+        </div>
+      {/each}
+    </div>
     <!-- <div class="h-20 w-20 bg-red-500"></div> -->
   </div>
 </div>

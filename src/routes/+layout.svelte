@@ -68,7 +68,7 @@
   import {
     colorTheme,
     lastPage,
-    shouldAnimate,
+     crEvent,
     squareBorders,
     themeMode,
   } from "@/states";
@@ -161,9 +161,9 @@
 
   $effect.pre(() => {
     // loadSidecar()
-    shouldAnimate.val["page-change"] = false;
+    crEvent.val["page-change"] = false;
     goto(lastPage.value);
-    shouldAnimate.val["page-change"] = true;
+    crEvent.val["page-change"] = true;
     suwaManager.startSuwayomi();
     // loadDatabase();
     // logNewUser();
@@ -329,11 +329,11 @@
                   )}
                   in:fly={{
                     y: getY(page.route.id, lastPage.value),
-                    duration: shouldAnimate.val["page-change"] ? 300 : 0,
+                    duration: crEvent.val["page-change"] ? 300 : 0,
                   }}
                   out:fly={{
                     y: getY(page.route.id, lastPage.value) * -1,
-                    duration: shouldAnimate.val["page-change"] ? 300 : 0,
+                    duration: crEvent.val["page-change"] ? 300 : 0,
                   }}
                 >
                   {@render children?.()}

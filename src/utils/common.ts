@@ -1,4 +1,3 @@
-
 export function isEmpty(obj: any): boolean {
   return Object.keys(obj).length === 0;
 }
@@ -14,19 +13,22 @@ export function strNotEmpty(str: string | number | undefined): string {
 export const getSlug = (text: string) => {
   return text
     .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-}
-
-
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+};
 
 export function getBool(bool: undefined | null | string | boolean) {
-  if (bool === null || bool === undefined || bool === false || bool === "false") {
+  if (
+    bool === null ||
+    bool === undefined ||
+    bool === false ||
+    bool === "false"
+  ) {
     return false;
   }
 
@@ -45,7 +47,7 @@ export function imageFail(id: string) {
 }
 
 export function limitStr(text: string, max: number = 17): string {
-  return text.length > max ? text.substring(0, max) + "..." : text;
+  return text.length > max ? text.substring(0, max).trim() + "..." : text;
 }
 
 export function delay(ms: number): Promise<void> {
@@ -56,7 +58,7 @@ export async function retry(
   func: () => Promise<any>,
   message?: string,
   times = 3,
-  timeoutMs = 300
+  timeoutMs = 300,
 ): Promise<any> {
   let count = 0;
   while (count < times) {

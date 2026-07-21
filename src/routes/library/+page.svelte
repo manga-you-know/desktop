@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { Pagination, Button, Badge, Input } from "@/lib/components";
   import {
-    LibraryCard,
+    // LibraryCard,
     LibraryOrder,
     LibrarySearch,
     LibrarySource,
@@ -23,6 +23,7 @@
   import { cn } from "@/lib/utils";
   import { IS_MOBILE } from "@/constants";
   // import { get, has, set } from "tauri-plugin-cache-api";
+
   import { delay } from "@/utils";
   import { ScrollingValue } from "svelte-ux";
 
@@ -147,7 +148,7 @@
       </div>
     {/if}
     {#each displayedLibrary as favorite, i (i)}
-      <LibraryCard {favorite} />
+      <!-- <LibraryCard {favorite} /> -->
     {/each}
     <!-- {/key} -->
     {#each Array.from({ length: extraSpaceCards() }, (_, i) => i)}

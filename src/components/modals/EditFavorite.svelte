@@ -21,16 +21,6 @@
   }
 
   let { favorite, open = $bindable(false) }: Props = $props();
-  let name = $state(favorite.name);
-  let link = $state(favorite.link);
-  let cover = $state(favorite.cover);
-  let malId = $state(favorite.malId);
-  let author = $state(favorite.author);
-  let anilistId = $state(favorite.anilistId);
-  let folderName = $state(favorite.folderName);
-  let description = $state(favorite.description);
-  let isUltraFavorite = $state(getBool(favorite.isUltraFavorite));
-
   let isRefreshing = $state(false);
   let isRefreshed = $state(false);
 
@@ -47,65 +37,18 @@
       ],
     });
     if (file) {
-      cover = file;
+      // cover = file;
     }
   }
   const loadUltraFavorite = async () => {
-    isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
+    // isUltraFavorite = await FavoriteDB.isUltraFavorite(favorite.id);
   };
-  async function refreshInfo() {
-    isRefreshing = true;
-    const favLoad = await $downloadManager.getMangaById(
-      favorite.sourceId,
-      favorite.source,
-    );
-    name = favLoad.name;
-    link = favLoad.link;
-    cover = favLoad.cover;
-    malId = favLoad.malId ?? malId;
-    author = favLoad.author ?? author;
-    folderName = favLoad.folderName;
-    description = favLoad.description ?? description;
-    anilistId = favLoad.anilistId ?? anilistId;
+  async function refreshInfo() {}
 
-    favorite.name = name;
-    favorite.link = link;
-    favorite.cover = cover;
-    favorite.malId = malId;
-    favorite.author = author;
-    favorite.anilistId = anilistId;
-    favorite.description = description;
-    favorite.extraName = favLoad.extraName;
-    favorite.author = favLoad.author;
-    isRefreshing = false;
-    isRefreshed = true;
-  }
-
-  async function save() {
-    favorite.name = name;
-    favorite.link = link;
-    favorite.cover = cover;
-    favorite.malId = malId;
-    favorite.author = author;
-    favorite.anilistId = anilistId;
-    favorite.folderName = folderName;
-    favorite.description = description;
-    await FavoriteDB.updateFavorite(favorite);
-    await Promise.all([refreshLibrary(), refreshFavorites()]);
-    open = false;
-  }
+  async function save() {}
 
   $effect(() => {
     loadUltraFavorite();
-    name = favorite.name;
-    link = favorite.link;
-    cover = favorite.cover;
-    malId = favorite.malId;
-    author = favorite.author;
-    anilistId = favorite.anilistId;
-    folderName = favorite.folderName;
-    description = favorite.description;
-    isUltraFavorite = favorite.isUltraFavorite ?? false;
     if (open) {
       setDiscordActivity(`Editing ${favorite.type}:`, favorite.name);
     } else {
@@ -118,7 +61,7 @@
   bind:open
   onOpenChange={(open) => {
     if (!open) {
-      if (isUltraFavorite) loadFavoriteChapters(favorite);
+      // if (isUltraFavorite) loadFavoriteChapters(favorite);
       refreshFavorites();
       refreshLibrary();
     }
@@ -140,7 +83,7 @@
           required
           variant="secondary"
           onenter={save}
-          bind:value={name}
+          value={favorite.name}
         />
         <div class="inline-flex w-full">
           <Input
@@ -152,7 +95,7 @@
             required
             variant="secondary"
             onenter={save}
-            bind:value={cover}
+            value={favorite.cover}
           />
           <Button
             class="w-10 rounded-l-none"
@@ -171,7 +114,7 @@
         placeholder="Description"
         floatingLabel
         variant="secondary"
-        bind:value={description}
+        value={favorite.description}
       />
       <div class="flex flex-col gap-4">
         <Input
@@ -181,7 +124,7 @@
           required
           variant="secondary"
           onenter={save}
-          bind:value={folderName}
+          value={favorite.folderName}
         />
         <Input
           id="link-{favorite.id}"
@@ -190,7 +133,7 @@
           required
           variant="secondary"
           onenter={save}
-          bind:value={link}
+          value={favorite.link}
         />
       </div>
       <div class="flex flex-col gap-4">
@@ -201,7 +144,7 @@
           floatingLabel
           variant="secondary"
           onenter={save}
-          bind:value={malId}
+          value={favorite.malId}
         />
         <Input
           id="anilistId-{favorite.id}"
@@ -210,7 +153,7 @@
           floatingLabel
           variant="secondary"
           onenter={save}
-          bind:value={anilistId}
+          value={favorite.anilistId}
         />
       </div>
     </div>
@@ -222,29 +165,29 @@
         floatingLabel
         variant="secondary"
         onenter={save}
-        bind:value={author}
+        value={favorite.author}
       />
       <Button
         class="relative ml-[0.6rem] flex h-10 w-28 justify-between"
         variant="outline"
         onclick={async () => {
-          isUltraFavorite = !isUltraFavorite;
-          favorite.isUltraFavorite = isUltraFavorite;
+          // isUltraFavorite = !isUltraFavorite;
+          // favorite.isUltraFavorite = isUltraFavorite;
           await FavoriteDB.toggleUltraFavorite(favorite, false);
         }}
       >
-        {isUltraFavorite ? "Remove" : "Favorite"}
-        <Icon
+        {favorite.isUltraFavorite ? "Remove" : "Favorite"}
+        favorite.<Icon
           class={cn(
             "absolute right-3 size-5! transition-all duration-500",
-            isUltraFavorite && "scale-0 rotate-180 opacity-0",
+            favorite.isUltraFavorite && "scale-0 rotate-180 opacity-0",
           )}
           icon="heroicons:star"
         />
         <Icon
           class={cn(
             "absolute right-3 size-5! transition-all duration-500",
-            !isUltraFavorite && "scale-0 -rotate-180 opacity-0",
+            !favorite.isUltraFavorite && "scale-0 -rotate-180 opacity-0",
           )}
           icon="heroicons:star-solid"
         />
@@ -262,26 +205,7 @@
               : "lucide:refresh-ccw"}
           />
         </Button>
-        <Button
-          effect="ringHover"
-          disabled={name.length === 0 ||
-            link.length === 0 ||
-            cover.length === 0 ||
-            folderName.length === 0 ||
-            !(
-              name !== favorite.name ||
-              link !== favorite.link ||
-              cover !== favorite.cover ||
-              malId !== favorite.malId ||
-              author !== favorite.author ||
-              anilistId !== favorite.anilistId ||
-              folderName !== favorite.folderName ||
-              description !== favorite.description ||
-              isUltraFavorite !== favorite.isUltraFavorite ||
-              isRefreshed
-            )}
-          onclick={save}
-        >
+        <Button effect="ringHover" onclick={save}>
           <Icon icon="lucide:check" />Confirm
         </Button>
       </div>

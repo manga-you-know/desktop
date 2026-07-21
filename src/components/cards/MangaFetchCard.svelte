@@ -6,6 +6,7 @@
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { animate } from "animejs";
+  import { limitStr } from "@/utils";
 
   type Props = {
     manga: MangaFetch;
@@ -74,7 +75,7 @@
     <span
       class="line-clamp-11 text-start text-[13px]/4 font-semibold text-white"
     >
-      {manga.title}
+      {limitStr(manga.title, 65)}
     </span>
   </div>
 </button>

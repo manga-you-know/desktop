@@ -31,6 +31,8 @@ export type Source = {
   extension: {
     pkgName: string;
     repo: string;
+    isObsolete: boolean;
+    hasUpdate: boolean;
   };
 };
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { FavoriteCard } from "@/components";
+  // import { FavoriteCard } from "@/components";
   import { Button, Label, Switch, Badge, Pagination } from "@/lib/components";
   import {
     showOnlyNew,
@@ -160,7 +160,7 @@
       </div>
     {/if}
     {#each displayedFavorites as favorite}
-      <FavoriteCard {favorite} />
+      <!-- <FavoriteCard {favorite} /> -->
     {/each}
     {#each Array.from({ length: extraSpaceCards() }, (_, i) => i) as n (n)}
       <div class="h-[234px] w-[158px] p-1"></div>

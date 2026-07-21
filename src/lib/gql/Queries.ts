@@ -42,6 +42,9 @@ export const getSources = gql`
         extension {
           pkgName
           repo
+          isObsolete
+          hasUpdate
+          contentWarning
         }
       }
     }

@@ -6,6 +6,7 @@ import {
   autoUpdateExtensions,
   disableAutoUpdateByExtension,
   repoInfo,
+  crEvent,
   suwayomiUrl,
 } from "@/states";
 import { suwayomi } from "@/states";
@@ -234,6 +235,9 @@ export const suwaManager = {
     patch: "install" | "uninstall" | "update",
     refreshAfter: boolean = true,
   ): Promise<Extension> {
+    if (crEvent.val["ext-" + patch + pkgName])
+      throw new Error("already doinnggg");
+    crEvent.val["ext-" + patch + pkgName] = true;
     return gqlMutation<
       { updateExtension: { extension: Extension } },
       {
@@ -253,6 +257,7 @@ export const suwaManager = {
       },
     })
       .then((data) => {
+        crEvent.val["ext-update" + pkgName] = false;
         if (refreshAfter) {
           this.getSources();
           this.getExtensions();

@@ -107,7 +107,7 @@ class Animate {
   val = $state<Record<string, boolean>>({});
 }
 
-export const shouldAnimate = new Animate();
+export const crEvent = new Animate();
 
 class Suwayomi {
   isConnected: boolean = $state(false);
