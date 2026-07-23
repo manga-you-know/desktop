@@ -2,16 +2,17 @@
   import { Button } from "@/lib/components";
   import type { MangaFetch, Source } from "@/types/server";
   import { Image } from "@/components";
-  import { dbHelper, hideOnLibrary } from "@/states";
+  import { dbHelper, hideOnLibrary, openedMangas } from "@/states";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { animate } from "animejs";
-  import { limitStr } from "@/utils";
+  import { goto } from "$app/navigation";
 
   type Props = {
     manga: MangaFetch;
     suwaSource: Source;
   };
+
   let { manga, suwaSource }: Props = $props();
 
   let isInLibrary = $derived(
@@ -24,6 +25,11 @@
     "border-secondary bg-secondary/50 group/card relative z-0 flex h-80 w-50 cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border p-0.5",
     isInLibrary && "fetch-card",
   )}
+  onclick={() => {
+    const key = `fetch-${manga.id}${suwaSource.id}`;
+    openedMangas.value[key] = { s: manga };
+    goto(`/manga/${key}?previous=browse`);
+  }}
 >
   <Image class="h-80 w-50 rounded-lg object-cover" src={manga.thumbnailUrl} />
   <div
@@ -41,6 +47,7 @@
     )}
     variant={isInLibrary ? "secondary" : "outline"}
     onclick={async (e) => {
+      e.stopPropagation();
       const parent = e.currentTarget?.parentElement ?? "";
       if (isInLibrary) {
         dbHelper.deleteSource(
@@ -80,9 +87,9 @@
   ></div>
   <div class="absolute right-1 bottom-1 left-1">
     <span
-      class="line-clamp-11 text-start text-[13px]/4 font-semibold text-white"
+      class="line-clamp-3 text-start text-[13px]/4 font-semibold text-white"
     >
-      {limitStr(manga.title, 65)}
+      {manga.title}
     </span>
   </div>
 </button>

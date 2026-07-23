@@ -46,49 +46,6 @@ export const db = drizzle<typeof schema>(
   { schema: schema, logger: true, casing: "snake_case" },
 );
 
-// export const db = drizzle<typeof schema>(
-//   async (sql, params, method) => {
-//     const sqlite = await getDb();
-//     let rows: any = [];
-//     let results = [];
-//     // If the query is a SELECT, use the select method
-//     if (isSelectQuery(sql)) {
-//       rows = await sqlite.select(sql, params).catch((e) => {
-//         console.error("SQL Error:", e);
-//         return [];
-//       });
-//     } else {
-//       // Otherwise, use the execute method
-//       rows = await sqlite.execute(sql, params).catch((e) => {
-//         console.error("SQL Error:", e);
-//         return [];
-//       });
-//       return { rows: [] };
-//     }
-//
-//     rows = rows.map((row: any) => {
-//       return Object.values(row);
-//     });
-//
-//     // If the method is "all", return all rows
-//     results = method === "all" ? rows : rows[0];
-//     // await sqlite.close();
-//     return { rows: results };
-//   },
-//   // Pass the schema to the drizzle instance
-//   { schema: schema, logger: true, casing: "snake_case" },
-// );
-
-/**
- * Checks if the given SQL query is a SELECT query.
- * @param sql The SQL query to check.
- * @returns True if the query is a SELECT query, false otherwise.
- */
-// function isSelectQuery(sql: string): boolean {
-//   const selectRegex = /^\s*SELECT\b/i;
-//   return selectRegex.test(sql);
-// }
-
 function hasReturning(sql: string): boolean {
   return /\bRETURNING\b/i.test(sql);
 }

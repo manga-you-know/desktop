@@ -178,7 +178,7 @@
 
   searchType.onchange = () => {
     document.getElementById("div-mangas")?.scroll({ top: 0 });
-    search();
+    search(false);
   };
 
   onMount(() => {

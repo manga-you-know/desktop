@@ -68,14 +68,14 @@
   import {
     colorTheme,
     lastPage,
-     crEvent,
+    crEvent,
     squareBorders,
     themeMode,
   } from "@/states";
   import { type } from "@tauri-apps/plugin-os";
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
-  import { afterNavigate, goto, onNavigate } from "$app/navigation";
+  import { afterNavigate, beforeNavigate, goto, onNavigate } from "$app/navigation";
   import { suwaManager } from "@/lib/helpers";
   import { addCollection } from "@iconify/svelte";
   import lucide from "@iconify-json/lucide/icons.json";
@@ -256,7 +256,7 @@
       routeFrom in pageIndex
     ) {
       const isDown = getPageIndex(routeTo) - getPageIndex(routeFrom) >= 0;
-      return isDown ? 200 : -200;
+      return isDown ? 250 : -250;
     } else {
       return 0;
     }
@@ -324,16 +324,37 @@
               {#key page.route.id}
                 <div
                   class={cn(
-                    "m-0 flex w-full justify-center overflow-hidden pb-5",
+                    "m-0 flex w-full justify-center absolute pb-6 pr-4 overflow-hidden ",
                     $customTitlebar ? "h-[calc(100vh-2.5rem)]!" : "h-[99vh]!",
                   )}
                   in:fly={{
-                    y: getY(page.route.id, lastPage.value),
-                    duration: crEvent.val["page-change"] ? 300 : 0,
+                    y:
+                      page.route.id?.startsWith("/manga") ||
+                      lastPage.value.startsWith("/manga")
+                        ? 0
+                        : getY(page.route.id, lastPage.value),
+                    x:
+                      page.route.id?.startsWith("/manga") ||
+                      lastPage.value.startsWith("/manga")
+                        ? page.route.id?.startsWith("/manga")
+                          ? 250
+                          : -250
+                        : 0,
+                    duration: crEvent.val["page-change"] ? 400 : 0,
                   }}
                   out:fly={{
-                    y: getY(page.route.id, lastPage.value) * -1,
-                    duration: crEvent.val["page-change"] ? 300 : 0,
+                    y:
+                      page.route.id?.startsWith("/manga") ||
+                      lastPage.value.startsWith("/manga")
+                        ? 0
+                        : getY(page.route.id, lastPage.value) * -1, //inverted because its out idk
+                    x:
+                      lastPage.value.startsWith("/manga")
+                        ? page.route.id?.startsWith("/manga")
+                          ? -250
+                          : 250
+                        : 0,
+                    duration: crEvent.val["page-change"] ? 400 : 0,
                   }}
                 >
                   {@render children?.()}

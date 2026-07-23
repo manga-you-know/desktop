@@ -18,10 +18,10 @@
   class={cn(
     "scrollbar relative flex flex-1 flex-col transition-all duration-400",
     page.url.pathname !== "/random" &&
-      "ssm:peer-data-[variant=inset]:m-2 ssm:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 ssm:peer-data-[variant=inset]:rounded-xl",
+      "peer-data-[variant=inset]:m-2 peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:rounded-xl",
     $customTitlebar
-      ? "ssm:peer-data-[variant=inset]:ml-0 ssm:peer-data-[variant=inset]:mt-px ssm:peer-data-[state=collapsed]:peer-data-[variant=inset]:mt-px"
-      : " ssm:peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))]",
+      ? "peer-data-[variant=inset]:ml-0 peer-data-[variant=inset]:mt-px peer-data-[state=collapsed]:peer-data-[variant=inset]:mt-px"
+      : "peer-data-[variant=inset]:ml-2 peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))]",
     $windowEffects ? "bg-transparent" : "bg-background",
     className,
   )}
