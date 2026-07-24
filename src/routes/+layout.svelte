@@ -71,6 +71,7 @@
     crEvent,
     squareBorders,
     themeMode,
+    openedManga,
   } from "@/states";
   import { type } from "@tauri-apps/plugin-os";
   import { Child, Command } from "@tauri-apps/plugin-shell";
@@ -223,6 +224,9 @@
   afterNavigate(({ to }) => {
     if (to?.route.id) {
       lastPage.value = to.route.id;
+    }
+    if (openedManga.active) {
+      openedManga.close()
     }
   });
 
@@ -378,6 +382,9 @@
 <!-- </style>`} -->
 </svelte:head>
 <style>
+  :root {
+      interpolate-size: allow-keywords; /* 👈 */
+  }
   .filter-effects {
     filter: contrast(var(--contrast)) brightness(var(--brightness))
       saturate(var(--saturation)) sepia(var(--sepia));

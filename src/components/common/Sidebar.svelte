@@ -48,7 +48,7 @@
     {
       name: "Library",
       path: "/library",
-      icon: "lucide:book-open-text",
+      icon: "lucide:book-marked",
     },
     {
       name: "Browse",
@@ -58,7 +58,7 @@
     {
       name: "Panels",
       path: "/panels",
-      icon: "lucide:image",
+      icon: "lucide:images",
     },
     {
       name: "Random",

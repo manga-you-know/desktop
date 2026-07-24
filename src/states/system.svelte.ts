@@ -57,11 +57,18 @@ export const blockKeyboard = new OpenState();
 
 export const searchInput = new TextState({ value: "" });
 export const searchPage = new ValueState<number>({ value: 1 });
+export const currentMangaTab = new ValueState<"edit" | "read" | "images">({
+  value: "read",
+});
 
 export const openedMangas = new ValueState<
   Record<string, { s: MangaFetch } | { db: Manga }>
 >({
   value: {},
+});
+
+export const openedManga = new OpenedObject<string>({
+  value: "",
 });
 
 export const openedExtension = new OpenedObject<{

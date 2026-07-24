@@ -2,7 +2,7 @@
   import { Button } from "@/lib/components";
   import type { MangaFetch, Source } from "@/types/server";
   import { Image } from "@/components";
-  import { dbHelper, hideOnLibrary, openedMangas } from "@/states";
+  import { dbHelper, hideOnLibrary, openedManga, openedMangas } from "@/states";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { animate } from "animejs";
@@ -28,7 +28,7 @@
   onclick={() => {
     const key = `fetch-${manga.id}${suwaSource.id}`;
     openedMangas.value[key] = { s: manga };
-    goto(`/manga/${key}?previous=browse`);
+    openedManga.open(key);
   }}
 >
   <Image class="h-80 w-50 rounded-lg object-cover" src={manga.thumbnailUrl} />

@@ -41,6 +41,9 @@ export type NewSavedImage = typeof savedImages.$inferInsert;
 export type Log = typeof logs.$inferSelect;
 export type NewLog = typeof logs.$inferInsert;
 
+export type SourceNChapters = Source & { chapters: Chapter[] };
+export type MangaNSources = Manga & { sources: SourceNChapters[] };
+
 export type Operators = {
   equal?: string | number | boolean | Date;
   different?: string | number | boolean | Date;
