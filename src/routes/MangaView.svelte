@@ -1,23 +1,15 @@
 <script lang="ts">
-  import { goto, onNavigate } from "$app/navigation";
-  import { page } from "$app/state";
   import { Image } from "@/components";
   import { Button, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
   import { cn } from "@/lib/utils";
   import {
     currentMangaTab,
-    lastPage,
     openedManga,
     openedMangas,
     themeMode,
   } from "@/states";
   import Icon from "@iconify/svelte";
-
-  // let { currentMangaKey.value }: { key: string } = $props();
-
-  // $inspect(page.url);
-  // let count = 0;
 
   openedManga.onvaluechange = () => {
     showDesc = false;
@@ -42,11 +34,13 @@
             name: manga.s.title,
             cover: manga.s.thumbnailUrl,
             description: manga.s.description,
+            realUrl: manga.s.realUrl,
           }
         : {
             name: manga.db.name,
             cover: manga.db.currentCover,
             description: manga.db.description,
+            realUrl: manga,
           }
       : undefined,
   );
@@ -54,12 +48,12 @@
 
 <div
   class={cn(
-    "flex h-full w-full flex-col items-center gap-4 rounded-lg p-3 backdrop-blur-sm",
+    "flex h-full w-full flex-col items-center gap-4 overflow-hidden rounded-lg backdrop-blur-sm",
     themeMode.value === "dark" ? "bg-accent/95" : "bg-accent/70",
   )}
 >
   {#if mangaJ}
-    <div class="flex w-full justify-between">
+    <div class="flex w-full justify-between p-3">
       <div class="flex w-[calc(100%-19rem)] items-center gap-3">
         <Button
           variant="outline"
@@ -129,34 +123,98 @@
       </div>
     </div>
     <!-- <div class="bg-accent h-px w-full rounded-lg"></div> -->
-    <div class="flex w-full gap-3">
-      <div class="flex flex-col gap-2">
-        <Image class="h-110 w-70 rounded-lg object-cover" src={mangaJ.cover} />
-        <div class="relative flex flex-col items-center">
-          <span
-            class={cn(
-              "block w-70 min-w-0 overflow-hidden text-xs text-wrap transition-[max-height] duration-400 select-auto",
-              showDesc ? "max-h-200" : "max-h-12",
-            )}
-          >
-            {mangaJ.description}
-          </span>
+    <div
+      class="flex h-full transition-transform duration-400 ease-in-out"
+      style="width: 300%; transform: translateX({currentMangaTab.value ===
+      'edit'
+        ? '33.3333%'
+        : currentMangaTab.value === 'read'
+          ? '0%'
+          : '-33.3333%'})"
+    >
+      <!-- <div class="flex h-full w-full justify-between gap-3"> -->
+      <div class="flex w-1/3 gap-3">
+        <div class="flex w-full flex-col gap-2"></div>
+        <div class="flex h-full flex-col justify-center">
           <Button
-            class="size-8"
-            variant="ghost"
+            class="w-10 rounded-r-none border-r-0"
+            variant="outline"
             onclick={() => {
-              showDesc = !showDesc;
+              currentMangaTab.value = "read";
             }}
           >
-            <Icon
-              class={cn(
-                "transition-all duration-400",
-                showDesc && "rotate-180",
-              )}
-              icon="lucide:chevron-down"
-            />
+            <Icon icon="lucide:book-open-text" />
           </Button>
         </div>
+      </div>
+      <div class="flex w-1/3 gap-3">
+        <div class="flex h-full flex-col justify-center">
+          <Button
+            class="w-10 rounded-l-none border-l-0"
+            variant="outline"
+            onclick={() => {
+              currentMangaTab.value = "edit";
+            }}
+          >
+            <Icon icon="lucide:pen" />
+          </Button>
+        </div>
+        <div class="flex w-full flex-col gap-2">
+          <Image
+            class="h-110 w-70 rounded-lg object-cover"
+            src={mangaJ.cover}
+          />
+          <div class="relative flex flex-col">
+            <span
+              class={cn(
+                "block w-70 min-w-0 overflow-hidden text-xs text-wrap transition-[max-height] duration-400 select-auto",
+                showDesc ? "max-h-200" : "max-h-12",
+              )}
+            >
+              {mangaJ.description}
+            </span>
+            <Button
+              class="size-8"
+              variant="ghost"
+              onclick={() => {
+                showDesc = !showDesc;
+              }}
+            >
+              <Icon
+                class={cn(
+                  "transition-all duration-400",
+                  showDesc && "rotate-180",
+                )}
+                icon="lucide:chevron-down"
+              />
+            </Button>
+          </div>
+        </div>
+        <div class="flex h-full flex-col justify-center">
+          <Button
+            class="w-10 rounded-r-none border-r-0"
+            variant="outline"
+            onclick={() => {
+              currentMangaTab.value = "images";
+            }}
+          >
+            <Icon icon="lucide:images" />
+          </Button>
+        </div>
+      </div>
+      <div class="flex w-1/3 gap-3">
+        <div class="flex h-full flex-col justify-center">
+          <Button
+            class="w-10 rounded-l-none border-l-0"
+            variant="outline"
+            onclick={() => {
+              currentMangaTab.value = "read";
+            }}
+          >
+            <Icon icon="lucide:book-open-text" />
+          </Button>
+        </div>
+        <div class="flex w-full flex-col gap-2"></div>
       </div>
       <!-- <div class="flex h-full w-full flex-col"></div> -->
     </div>

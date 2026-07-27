@@ -1,21 +1,8 @@
 <script lang="ts">
-  import {
-    Image,
-    MangaFetchCard,
-    SearchFilters,
-    SelectSourceOrGroup,
-    Tooltip,
-  } from "@/components";
-  import {
-    Badge,
-    Button,
-    Checkbox,
-    Input,
-    Label,
-    Popover,
-  } from "@/lib/components";
+  import { MangaFetchCard, SelectSourceOrGroup, Tooltip } from "@/components";
+  import { Badge, Button, Checkbox, Input, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
-  import { cn, getLangName, getLangNative, titleCase } from "@/lib/utils";
+  import { cn, titleCase } from "@/lib/utils";
   import {
     openExtensions,
     searchInput,
@@ -23,10 +10,6 @@
     searchType,
     suwayomi,
     selectedSourceId,
-    suwayomiUrl,
-    selectedGroupSource,
-    showExtensionsNSourcesNSFW,
-    openedExtension,
     openedSearchFilters,
     hideOnLibrary,
     dbHelper,
@@ -49,7 +32,6 @@
   import MangaView from "../MangaView.svelte";
 
   let selectedSource = $derived(suwayomi.sourcesById[selectedSourceId.value]);
-  let openSearchSettings = $state(false);
   let openSelectSource = $state(false);
   let wasOpenSourceOpen = false;
   let sourceBrowse: SourceBrowse | undefined = $state();

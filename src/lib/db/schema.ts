@@ -8,6 +8,7 @@ import {
   index,
 } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
+import type { MangaStatus } from "@/types/server";
 
 export const mangas = sqliteTable(
   "mangas",
@@ -26,7 +27,8 @@ export const mangas = sqliteTable(
     rating: real("rating"),
     author: text("author"),
     artist: text("artist"),
-    readingStatus: text("status"),
+    readingStatus: text("reading_status"),
+    status: text("status").$type<MangaStatus>(),
     anilistId: text("anilist_id"),
     malId: text("mal_id"),
     description: text("description"),
@@ -70,22 +72,39 @@ export const sources = sqliteTable(
       .references(() => mangas.id, {
         onDelete: "cascade",
       }),
-    name: text("name").notNull(), // local source: "Local"
+    sourceName: text("source_name").notNull(), // local source: "Local"
     mangaSourceId: text("manga_source_id").notNull(), // local source: final path
     sourceId: text("source_id").notNull(), // local source: root path
     extensionId: text("extension_id").notNull(), // local source: "local=" + type of media (cbz, pdf, folder images)
-    language: text("language").notNull(),
-    sourceName: text("source_name").notNull(),
     iconUrl: text("iconUrl"),
+    chaptersCount: integer("chapters_count").notNull().default(0),
+    unreadCount: integer("unread_count").notNull().default(0),
+    bookmarkedCount: integer("bookmarked_count").notNull().default(0),
+    favoriteCount: integer("favorite_count").notNull().default(0),
+    hasDuplicateChapters: integer("has_duplicate_chapters", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    name: text("name").notNull(),
+    author: text("author"),
+    artist: text("artist"),
+    description: text("description"),
+    language: text("language").notNull(),
     realUrl: text("real_url").notNull(), // local source: path to open (root + final)
+    status: text("status").$type<MangaStatus>(),
+    genre: text("genre", { mode: "json" })
+      .$type<string[]>()
+      .notNull()
+      .default([]),
     coverUrl: text("cover_url").notNull(),
     coverUrlLastFetched: integer("cover_url_last_fetched", {
       mode: "timestamp",
     }).$defaultFn(() => new Date()),
-    lastFetched: integer("last_fetched", { mode: "timestamp" }).$defaultFn(
-      () => new Date(),
-    ),
-    status: text("status"),
+    chaptersLastFetched: integer("chapters_last_fetched", {
+      mode: "timestamp",
+    }).$defaultFn(() => new Date()),
+    dataLastFetched: integer("data_last_fetched", {
+      mode: "timestamp",
+    }).$defaultFn(() => new Date()),
     enabled: integer("enabled", { mode: "boolean" }).default(true),
     sortIndex: integer("sort_index"),
   },
@@ -99,9 +118,6 @@ export const chapters = sqliteTable(
   "chapters",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    mangaId: integer("manga_id")
-      .notNull()
-      .references(() => mangas.id, { onDelete: "cascade" }),
     sourceId: integer("source_id")
       .notNull()
       .references(() => sources.id, { onDelete: "cascade" }),
@@ -110,6 +126,7 @@ export const chapters = sqliteTable(
     chapterNumber: text("chapter_number"),
     chapterTitle: text("chapter_title"),
     language: text("language").default("-"),
+    isBookmarked: integer("is_bookmarked", { mode: "boolean" }).default(false),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     isRead: integer("is_read", { mode: "boolean" }).default(false),
     isAnonymous: integer("is_anonymous", { mode: "boolean" }).default(false),
@@ -126,8 +143,7 @@ export const chapters = sqliteTable(
       .default({}),
   },
   (t) => [
-    unique().on(t.chapterId, t.sourceId, t.language, t.mangaId),
-    index("idx_chapters_manga_id").on(t.mangaId),
+    unique().on(t.chapterId, t.sourceId, t.language),
     index("idx_chapters_source_id").on(t.sourceId),
     index("idx_chapters_sort_index").on(t.sortIndex),
     index("idx_chapters_is_read").on(t.isRead),
@@ -301,10 +317,6 @@ export const sourcesRelations = relations(sources, ({ one, many }) => ({
 }));
 
 export const chaptersRelations = relations(chapters, ({ one }) => ({
-  manga: one(mangas, {
-    fields: [chapters.mangaId],
-    references: [mangas.id],
-  }),
   source: one(sources, {
     fields: [chapters.sourceId],
     references: [sources.id],

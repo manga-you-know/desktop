@@ -114,7 +114,7 @@
         >
           <Button
             class={cn(
-              "group/select h-12.5 w-55 justify-start relative",
+              "group/select relative h-12.5 w-55 justify-start",
               sourceGroupMode.value === "single" ? "px-2" : "pr-2",
               !selectedSource &&
                 sourceGroupMode.value === "single" &&
@@ -132,7 +132,7 @@
                 <Tooltip text="Source config" delay={800}>
                   <Button
                     class={cn(
-                      "size-8 transition-all duration-500 absolute -top-2 -right-1 backdrop-blur-sm rounded-xl hover:bg-secondary/20 hover:border-background opacity-0 translate-x-4",
+                      "hover:bg-secondary/20 hover:border-background absolute -top-2 -right-1 size-8 translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
                       selectedSource?.isConfigurable &&
                         "group-hover/select:translate-x-0 group-hover/select:opacity-100",
                     )}
@@ -269,20 +269,6 @@
                 <Icon icon="lucide:info" />
                 See extension
               </ContextMenu.Item>
-              {#if selectedSource.extension.hasUpdate}
-                <ContextMenu.Item
-                  class="text-info data-highlighted:text-info/90"
-                  onclick={() => {
-                    suwaManager.patchExtension(
-                      selectedSource.extension.pkgName,
-                      "update",
-                    );
-                  }}
-                >
-                  <Icon icon="lucide:refresh-cw" />
-                  Update extension
-                </ContextMenu.Item>
-              {/if}
               <ContextMenu.Item
                 disabled={!selectedSource?.isConfigurable}
                 onclick={() => {
@@ -299,8 +285,22 @@
                 <Icon icon="lucide:settings" />
                 Configure
               </ContextMenu.Item>
+              {#if selectedSource.extension.hasUpdate}
+                <ContextMenu.Item
+                  class="text-info data-highlighted:text-info/90"
+                  onclick={() => {
+                    suwaManager.patchExtension(
+                      selectedSource.extension.pkgName,
+                      "update",
+                    );
+                  }}
+                >
+                  <Icon icon="lucide:refresh-cw" />
+                  Update extension
+                </ContextMenu.Item>
+              {/if}
               <ContextMenu.Item
-                class="data-highlighted:text-red-400 text-red-600"
+                class="text-red-600 data-highlighted:text-red-400"
                 onclick={() => {
                   if (enabledSources.value[selectedSource.id]) {
                     enabledSources.value = {
@@ -520,10 +520,10 @@
                     </Button>
                     {#if crEvent.val["ext-update" + source.extension.pkgName]}
                       <div
-                        class="absolute w-full h-full flex justify-center items-center backdrop-blur-[1px] rounded-xl"
+                        class="absolute flex h-full w-full items-center justify-center rounded-xl backdrop-blur-[1px]"
                       >
                         <Icon
-                          class="animate-spin size-5!"
+                          class="size-5! animate-spin"
                           icon="lucide:refresh-cw"
                         />
                       </div>
@@ -608,6 +608,20 @@
                   <Icon icon="lucide:info" />
                   See extension
                 </ContextMenu.Item>
+                <ContextMenu.Item
+                  disabled={!source.isConfigurable}
+                  onclick={() => {
+                    openedExtension.open({
+                      source: source,
+                      extension:
+                        suwayomi.extensionsByPkgName[source.extension.pkgName],
+                    });
+                    open = false;
+                  }}
+                >
+                  <Icon icon="lucide:settings" />
+                  Configure
+                </ContextMenu.Item>
                 {#if source.extension.hasUpdate}
                   <ContextMenu.Item
                     class="text-info data-highlighted:text-info/90"
@@ -623,21 +637,7 @@
                   </ContextMenu.Item>
                 {/if}
                 <ContextMenu.Item
-                  disabled={!source.isConfigurable}
-                  onclick={() => {
-                    openedExtension.open({
-                      source: source,
-                      extension:
-                        suwayomi.extensionsByPkgName[source.extension.pkgName],
-                    });
-                    open = false;
-                  }}
-                >
-                  <Icon icon="lucide:settings" />
-                  Configure
-                </ContextMenu.Item>
-                <ContextMenu.Item
-                  class="data-highlighted:text-red-400 text-red-500"
+                  class="text-red-500 data-highlighted:text-red-400"
                   onclick={() => {
                     const sourceId = source.id;
                     console.log(sourceId);
@@ -867,7 +867,7 @@
                 variant="outline"
               >
                 <Label class="mt-4">No source group created</Label>
-                <Label class="text-2xl text-bold">(⌒_⌒;)</Label>
+                <Label class="text-bold text-2xl">(⌒_⌒;)</Label>
               </Badge>
             {/each}
           </div>

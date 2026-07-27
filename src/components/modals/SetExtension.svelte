@@ -142,7 +142,7 @@
     {#if openedExtension.value?.extension}
       <div class="relative mb-2 overflow-hidden">
         <div
-          class="flex transition-transform duration-500 ease-in-out"
+          class="flex transition-transform duration-400 ease-in-out"
           style="width: 200%; transform: translateX({tab === 'extension'
             ? '0%'
             : '-50%'})"
@@ -486,7 +486,7 @@
                   </ContextMenu.Root>
                 </div>
               {:else}
-                <div class="flex flex-col w-full items-center mt-20">
+                <div class="mt-20 flex w-full flex-col items-center">
                   <Label class="text-xl">
                     No sources{!openedExtension.value.extension.isInstalled
                       ? "... You could install it... "

@@ -46,36 +46,31 @@ command.on("error", (err) => {
   console.log("Error in Suwayomi: ", err);
 });
 
-const searchCache: Record<
+let cacheTTL: Record<
   string,
   {
     expiresAt: Date;
-    data: FetchSourceMangaResult;
+    data: any;
   }
 > = {};
 
 const CACHE_TTL_MS = 0.5 * 60 * 60 * 1000; // 1h, or 4 * 60 * 60 * 1000 for 4h
 
-const setSearchCache = (
-  input: FetchSourceMangaInput,
-  data: FetchSourceMangaResult,
-) => {
-  searchCache[JSON.stringify(input)] = {
+const setCache = (input: any, data: any) => {
+  cacheTTL[JSON.stringify(input)] = {
     expiresAt: new Date(Date.now() + CACHE_TTL_MS),
     data,
   };
 };
 
-const getSearchCache = (
-  input: FetchSourceMangaInput,
-): FetchSourceMangaResult | undefined => {
+const getCache = (input: FetchSourceMangaInput): any | undefined => {
   const key = JSON.stringify(input);
-  const item = searchCache[key];
+  const item = cacheTTL[key];
   if (item) {
     if (item.expiresAt.getTime() > Date.now()) {
       return item.data;
     } else {
-      delete searchCache[key];
+      delete cacheTTL[key];
     }
   }
 };
@@ -112,6 +107,13 @@ export const suwaManager = {
         return r.ok;
       })
       .catch(() => false);
+  },
+  async clearCache(key?: string) {
+    if (key) {
+      delete cacheTTL[key];
+    } else {
+      cacheTTL = {};
+    }
   },
   async getRepos() {
     return gqlQuery<
@@ -367,7 +369,7 @@ export const suwaManager = {
   async fetchSourceManga(
     input: FetchSourceMangaInput,
   ): Promise<FetchSourceMangaResult> {
-    const cached = getSearchCache(input);
+    const cached = getCache(input);
     if (cached) return cached;
     const data = await gqlMutation<
       { fetchSourceManga: FetchSourceMangaResult },
@@ -375,7 +377,7 @@ export const suwaManager = {
     >(fetchSourceMangaMutation, { input }).then(
       (data) => data.fetchSourceManga,
     );
-    setSearchCache(input, data);
+    setCache(input, data);
     return data;
   },
   async getMangaScreen(id: number): Promise<MangaScreen> {

@@ -2,7 +2,13 @@
   import { Button } from "@/lib/components";
   import type { MangaFetch, Source } from "@/types/server";
   import { Image } from "@/components";
-  import { dbHelper, hideOnLibrary, openedManga, openedMangas } from "@/states";
+  import {
+    currentMangaTab,
+    dbHelper,
+    hideOnLibrary,
+    openedManga,
+    openedMangas,
+  } from "@/states";
   import Icon from "@iconify/svelte";
   import { cn } from "@/lib/utils";
   import { animate } from "animejs";
@@ -26,6 +32,7 @@
     isInLibrary && "fetch-card",
   )}
   onclick={() => {
+    currentMangaTab.value = "read";
     const key = `fetch-${manga.id}${suwaSource.id}`;
     openedMangas.value[key] = { s: manga };
     openedManga.open(key);
