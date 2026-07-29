@@ -34,14 +34,18 @@ export const getBasePath = (url: string) => {
 };
 
 export const getLangNative = (lang: string) =>
-  lang === "all" || lang === "other"
-    ? titleCase(lang)
-    : (IsoLanguages[lang]?.nativeName ?? lang);
+  lang === "all"
+    ? "Multi"
+    : lang === "other"
+      ? "Other"
+      : (IsoLanguages[lang]?.nativeName ?? lang);
 
 export const getLangName = (lang: string) =>
-  lang === "all" || lang === "other"
-    ? titleCase(lang)
-    : (IsoLanguages[lang]?.name ?? lang);
+  lang === "all"
+    ? "Multi"
+    : lang === "other"
+      ? "Other"
+      : (IsoLanguages[lang]?.name ?? lang);
 
 export const prettifyRepo = (repo: string) =>
   repoInfo.value[getBasePath(repo)]?.name ?? removeOrigin(repo);
@@ -57,3 +61,7 @@ export const slugify = (str: string) => {
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 };
+
+export const fromEpochSeconds = (v: string | number) =>
+  new Date(Number(v) * 1000);
+export const fromEpochMillis = (v: string | number) => new Date(Number(v));

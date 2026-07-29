@@ -14,6 +14,7 @@
     hideOnLibrary,
     dbHelper,
     openedManga,
+    currentMangaTab,
   } from "@/states";
   import type {
     FetchSourceMangaResult,
@@ -135,7 +136,7 @@
     ),
   );
 
-  let itemsPerRow = $derived(Math.floor(divWidth / 210));
+  let itemsPerRow = $derived(Math.floor(divWidth / 250));
 
   let rowedMangas: MangaFetch[][] = $derived.by(() => {
     if (!scrollContainer || divWidth < 210) return [filteredManga];
@@ -226,13 +227,18 @@
         }
       },
       { root: scrollContainer, rootMargin: "300px 0px" },
-      // change to have distance based on batch
     );
     observerRef.observe(sentinel);
     return () => observerRef?.disconnect();
   });
 
   // $inspect(searchState, lastPage);
+
+  openedManga.onopenchange = (v) => {
+    if (!v) {
+      currentMangaTab.value = "read";
+    }
+  };
 </script>
 
 <div class="relative flex h-full w-full">
@@ -453,7 +459,7 @@
         <Button
           class={cn(
             "z-1 h-12 w-13 opacity-100 backdrop-blur-sm transition-opacity duration-500",
-            divOffset < 400 && "opacity-0",
+            divOffset < 400 && "pointer-events-none opacity-0",
           )}
           variant="outline"
           onclick={() => {
@@ -468,7 +474,7 @@
       </div>
       <VList
         class={cn(
-          "flex w-full items-center justify-center scroll-smooth",
+          "scrollbar flex w-full scrollbar-thin items-center justify-center scroll-smooth",
           rowedMangas.length === 0 && "h-0!",
         )}
         id="div-mangas"
@@ -491,7 +497,7 @@
                 {#each { length: itemsPerRow - row.length }}
                   {#if searchState === "loading"}
                     <div
-                      class="bg-secondary flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
+                      class="bg-secondary flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
                       in:fade
                     >
                       <Icon
@@ -500,7 +506,7 @@
                       />
                     </div>
                   {:else}
-                    <div class="h-80 w-50 p-0.5"></div>
+                    <div class="h-95 w-60 p-0.5"></div>
                   {/if}
                 {/each}
               {/if}
@@ -510,7 +516,7 @@
             <div class="mb-0.5 flex w-full justify-center gap-0.5">
               {#each { length: itemsPerRow }, i (i)}
                 <div
-                  class="bg-secondary flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
+                  class="bg-secondary flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
                   in:fade
                 >
                   <Icon
@@ -610,7 +616,7 @@
       <div class="mb-0.5 flex w-full justify-center gap-0.5">
         {#each { length: searchState === "loading" && rowedMangas.length === 0 ? itemsPerRow : 0 }, i (i)}
           <div
-            class="bg-secondary mt-14 flex h-80 w-50 animate-pulse items-center justify-center rounded-xl p-0.5"
+            class="bg-secondary mt-14 flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
             in:fade
           >
             <Icon class="size-10 animate-spin" icon="mingcute:loading-fill" />

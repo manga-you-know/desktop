@@ -216,9 +216,9 @@
 </script>
 
 <AlertDialog.Root bind:open={openSettings.active}>
-  <AlertDialog.Content class="flex flex-col items-center py-3">
+  <AlertDialog.Content class="flex flex-col items-center justify-center py-3">
     <AddRepo bind:open={openAddRepo} />
-    <div class="absolute -left-20">
+    <div class="absolute -left-23">
       <div class="mr-2 flex flex-col gap-[0.apx]">
         <Button class="rounded-t-xl rounded-b-none" variant="info">
           Search
@@ -464,12 +464,9 @@
                   openExtensions.open();
                   openSettings.close();
                   openExtensions.onchange = (open) => {
-                    if (
-                      !open &&
-                      openedExtension.value.extension === undefined
-                    ) {
+                    if (!open && !openedExtension.active) {
                       openSettings.open();
-                      scrollTo("extensions");
+                      scrollTo("extensions", false);
                       openExtensions.onchange = () => {};
                     }
                   };

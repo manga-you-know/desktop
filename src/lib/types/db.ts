@@ -5,9 +5,9 @@ import type {
   series,
   seriesMangas,
   categories,
-  categoryMangas,
+  categoriesMangas,
   groups,
-  savedImages,
+  savedPanels,
   logs,
 } from "../db";
 
@@ -29,14 +29,14 @@ export type NewSeriesManga = typeof seriesMangas.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 
-export type CategoryManga = typeof categoryMangas.$inferSelect;
-export type NewCategoryManga = typeof categoryMangas.$inferInsert;
+export type CategoryManga = typeof categoriesMangas.$inferSelect;
+export type NewCategoryManga = typeof categoriesMangas.$inferInsert;
 
 export type Group = typeof groups.$inferSelect;
 export type NewGroup = typeof groups.$inferInsert;
 
-export type SavedImage = typeof savedImages.$inferSelect;
-export type NewSavedImage = typeof savedImages.$inferInsert;
+export type SavedImage = typeof savedPanels.$inferSelect;
+export type NewSavedImage = typeof savedPanels.$inferInsert;
 
 export type Log = typeof logs.$inferSelect;
 export type NewLog = typeof logs.$inferInsert;

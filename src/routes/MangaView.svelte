@@ -16,9 +16,10 @@
     if ("s" in manga && openedManga.value !== "") {
       suwaManager.getMangaScreen(manga.s.id).then((m) => {
         openedMangas.value[openedManga.value] = { s: m };
+        const key = openedManga.value;
         if (!m.initialized) {
           suwaManager.fetchManga(m.id).then((mf) => {
-            openedMangas.value[openedManga.value] = { s: mf };
+            openedMangas.value[key] = { s: mf };
           });
         }
       });
@@ -31,13 +32,13 @@
     manga
       ? "s" in manga
         ? {
-            name: manga.s.title,
+            title: manga.s.title,
             cover: manga.s.thumbnailUrl,
             description: manga.s.description,
             realUrl: manga.s.realUrl,
           }
         : {
-            name: manga.db.name,
+            title: manga.db.title,
             cover: manga.db.currentCover,
             description: manga.db.description,
             realUrl: manga,
@@ -63,7 +64,7 @@
         >
           <Icon class="size-5!" icon="lucide:arrow-left" />
         </Button>
-        <Label class="truncate pr-5 text-2xl text-nowrap">{mangaJ.name}</Label>
+        <Label class="truncate pr-5 text-2xl text-nowrap">{mangaJ.title}</Label>
       </div>
       <div class="flex w-76 justify-end">
         <div

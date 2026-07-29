@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f4d1690f-408b-4fc9-80ac-88fe281c2142",
+  "id": "84d22bd5-9da0-4cb6-b08c-23c183f26356",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -50,8 +50,15 @@
           "autoincrement": false,
           "default": false
         },
-        "config": {
-          "name": "config",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -177,16 +184,16 @@
           "notNull": true,
           "autoincrement": true
         },
-        "manga_id": {
-          "name": "manga_id",
+        "source_id": {
+          "name": "source_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "source_id": {
-          "name": "source_id",
-          "type": "integer",
+        "manga_source_id": {
+          "name": "manga_source_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -224,8 +231,22 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "scanlator": {
+          "name": "scanlator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_bookmarked": {
+          "name": "is_bookmarked",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false,
-          "default": "'-'"
+          "default": false
         },
         "is_favorite": {
           "name": "is_favorite",
@@ -273,18 +294,18 @@
           "notNull": false,
           "autoincrement": false
         },
-        "scam": {
-          "name": "scam",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "rating": {
           "name": "rating",
           "type": "real",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "update_at": {
@@ -294,8 +315,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "config": {
-          "name": "config",
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -304,13 +325,6 @@
         }
       },
       "indexes": {
-        "idx_chapters_manga_id": {
-          "name": "idx_chapters_manga_id",
-          "columns": [
-            "manga_id"
-          ],
-          "isUnique": false
-        },
         "idx_chapters_source_id": {
           "name": "idx_chapters_source_id",
           "columns": [
@@ -360,31 +374,17 @@
           ],
           "isUnique": false
         },
-        "chapters_chapter_id_source_id_language_manga_id_unique": {
-          "name": "chapters_chapter_id_source_id_language_manga_id_unique",
+        "chapters_chapter_id_source_id_language_unique": {
+          "name": "chapters_chapter_id_source_id_language_unique",
           "columns": [
             "chapter_id",
             "source_id",
-            "language",
-            "manga_id"
+            "language"
           ],
           "isUnique": true
         }
       },
       "foreignKeys": {
-        "chapters_manga_id_mangas_id_fk": {
-          "name": "chapters_manga_id_mangas_id_fk",
-          "tableFrom": "chapters",
-          "tableTo": "mangas",
-          "columnsFrom": [
-            "manga_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
         "chapters_source_id_sources_id_fk": {
           "name": "chapters_source_id_sources_id_fk",
           "tableFrom": "chapters",
@@ -465,8 +465,15 @@
           "autoincrement": false,
           "default": "'[]'"
         },
-        "config": {
-          "name": "config",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -547,8 +554,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "config": {
-          "name": "config",
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -602,15 +609,15 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
+        "title": {
+          "name": "title",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "slug_name": {
-          "name": "slug_name",
+        "slug_title": {
+          "name": "slug_title",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -698,6 +705,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "reading_status": {
+          "name": "reading_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "status": {
           "name": "status",
           "type": "text",
@@ -726,22 +740,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "update_at": {
-          "name": "update_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "other_names": {
-          "name": "other_names",
+        "other_titles": {
+          "name": "other_titles",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -756,8 +756,22 @@
           "autoincrement": false,
           "default": "'[]'"
         },
-        "config": {
-          "name": "config",
+        "update_at": {
+          "name": "update_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -766,10 +780,10 @@
         }
       },
       "indexes": {
-        "idx_mangas_slug_name": {
-          "name": "idx_mangas_slug_name",
+        "idx_mangas_slug_titles": {
+          "name": "idx_mangas_slug_titles",
           "columns": [
-            "slug_name"
+            "slug_title"
           ],
           "isUnique": false
         },
@@ -811,7 +825,7 @@
         "idx_mangas_status": {
           "name": "idx_mangas_status",
           "columns": [
-            "status"
+            "reading_status"
           ],
           "isUnique": false
         },
@@ -842,8 +856,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "saved_images": {
-      "name": "saved_images",
+    "saved_panels": {
+      "name": "saved_panels",
       "columns": {
         "id": {
           "name": "id",
@@ -880,6 +894,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "page": {
+          "name": "page",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "manga_title": {
           "name": "manga_title",
           "type": "text",
@@ -901,6 +922,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "is_cropped": {
+          "name": "is_cropped",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
         "is_favorite": {
           "name": "is_favorite",
           "type": "integer",
@@ -917,8 +946,15 @@
           "autoincrement": false,
           "default": false
         },
-        "config": {
-          "name": "config",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -927,22 +963,22 @@
         }
       },
       "indexes": {
-        "idx_saved_images_manga_id": {
-          "name": "idx_saved_images_manga_id",
+        "idx_saved_panels_manga_id": {
+          "name": "idx_saved_panels_manga_id",
           "columns": [
             "manga_id"
           ],
           "isUnique": false
         },
-        "idx_saved_images_is_favorite": {
-          "name": "idx_saved_images_is_favorite",
+        "idx_saved_panels_is_favorite": {
+          "name": "idx_saved_panels_is_favorite",
           "columns": [
             "is_favorite"
           ],
           "isUnique": false
         },
-        "idx_saved_images_is_hidden": {
-          "name": "idx_saved_images_is_hidden",
+        "idx_saved_panels_is_hidden": {
+          "name": "idx_saved_panels_is_hidden",
           "columns": [
             "is_hidden"
           ],
@@ -950,9 +986,9 @@
         }
       },
       "foreignKeys": {
-        "saved_images_manga_id_mangas_id_fk": {
-          "name": "saved_images_manga_id_mangas_id_fk",
-          "tableFrom": "saved_images",
+        "saved_panels_manga_id_mangas_id_fk": {
+          "name": "saved_panels_manga_id_mangas_id_fk",
+          "tableFrom": "saved_panels",
           "tableTo": "mangas",
           "columnsFrom": [
             "manga_id"
@@ -1006,6 +1042,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "rating": {
+          "name": "rating",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "author": {
           "name": "author",
           "type": "text",
@@ -1016,13 +1059,6 @@
         "artist": {
           "name": "artist",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "rating": {
-          "name": "rating",
-          "type": "real",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1043,8 +1079,15 @@
           "autoincrement": false,
           "default": false
         },
-        "config": {
-          "name": "config",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -1171,8 +1214,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "name": {
-          "name": "name",
+        "source_name": {
+          "name": "source_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -1199,25 +1242,86 @@
           "notNull": true,
           "autoincrement": false
         },
-        "language": {
-          "name": "language",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "source_name": {
-          "name": "source_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "iconUrl": {
           "name": "iconUrl",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "chapters_count": {
+          "name": "chapters_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "unread_count": {
+          "name": "unread_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "bookmarked_count": {
+          "name": "bookmarked_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "favorite_count": {
+          "name": "favorite_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "has_duplicate_chapters": {
+          "name": "has_duplicate_chapters",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "artist": {
+          "name": "artist",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "language": {
+          "name": "language",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "real_url": {
@@ -1226,6 +1330,21 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "genre": {
+          "name": "genre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
         },
         "cover_url": {
           "name": "cover_url",
@@ -1241,18 +1360,25 @@
           "notNull": false,
           "autoincrement": false
         },
-        "last_fetched": {
-          "name": "last_fetched",
+        "chapters_last_fetched": {
+          "name": "chapters_last_fetched",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "status": {
-          "name": "status",
-          "type": "text",
+        "data_last_fetched": {
+          "name": "data_last_fetched",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "enabled": {
@@ -1269,6 +1395,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "meta": {
+          "name": "meta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'{}'"
         }
       },
       "indexes": {

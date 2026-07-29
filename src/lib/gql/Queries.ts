@@ -358,3 +358,67 @@ export const getMangaScreenQuery = gql`
     }
   }
 `;
+
+export const getChaptersMangaQuery = gql`
+  fragment CHAPTER_BASE_FIELDS on ChapterType {
+    id
+    name
+    mangaId
+    scanlator
+    realUrl
+    sourceOrder
+    chapterNumber
+  }
+
+  fragment CHAPTER_STATE_FIELDS on ChapterType {
+    id
+    isRead
+    isDownloaded
+    isBookmarked
+  }
+
+  fragment CHAPTER_LIST_FIELDS on ChapterType {
+    ...CHAPTER_BASE_FIELDS
+    ...CHAPTER_STATE_FIELDS
+    fetchedAt
+    uploadDate
+    lastReadAt
+  }
+
+  fragment PAGE_INFO on PageInfo {
+    endCursor
+    hasNextPage
+    hasPreviousPage
+    startCursor
+  }
+
+  query GET_CHAPTERS_MANGA(
+    $after: Cursor
+    $before: Cursor
+    $condition: ChapterConditionInput
+    $filter: ChapterFilterInput
+    $first: Int
+    $last: Int
+    $offset: Int
+    $order: [ChapterOrderInput!]
+  ) {
+    chapters(
+      after: $after
+      before: $before
+      condition: $condition
+      filter: $filter
+      first: $first
+      last: $last
+      offset: $offset
+      order: $order
+    ) {
+      nodes {
+        ...CHAPTER_LIST_FIELDS
+      }
+      pageInfo {
+        ...PAGE_INFO
+      }
+      totalCount
+    }
+  }
+`;

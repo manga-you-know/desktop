@@ -665,7 +665,7 @@
                   </Button>
                 </div>
               {:else}
-                <Badge class="w-full text-sm font-bold flex flex-col">
+                <Badge class="flex w-full flex-col text-sm font-bold">
                   No languages found...
                   <span class="text-xl">┐(‘～` )┌</span>
                 </Badge>
@@ -890,7 +890,6 @@
                             variant="ghost"
                             onclick={(e) => {
                               e.stopPropagation();
-                              openExtensions.close();
                               openedExtension.open({
                                 source: sRow.source,
                                 extension:
@@ -898,6 +897,7 @@
                                     sRow.source.extension.pkgName
                                   ],
                               });
+                              openExtensions.close();
                               openedExtension.onopenchange = (open) => {
                                 if (!open) {
                                   openExtensions.open();
@@ -1077,8 +1077,8 @@
                           .split('.')
                           .at(-1)}"
                         onclick={() => {
-                          openExtensions.close();
                           openedExtension.open({ extension: eRow.extension });
+                          openExtensions.close();
                           openedExtension.onopenchange = (open) => {
                             if (!open) {
                               openExtensions.open();

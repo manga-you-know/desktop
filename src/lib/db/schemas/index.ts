@@ -1,5 +1,0 @@
-export { users } from "./users"
-export { favorites } from "./favorites"
-export { readeds } from "./readeds"
-export { marks } from "./marks"
-export { markFavorites } from "./markFavorites"

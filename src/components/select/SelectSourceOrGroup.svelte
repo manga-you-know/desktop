@@ -101,6 +101,7 @@
         ? (selectedSource.displayName ?? "None.")
         : selectedGroupSource.value}
       delay={600}
+      placement="bottom"
     >
       <ContextMenu.Root
         onOpenChange={(v) => {
@@ -126,15 +127,60 @@
             {#if sourceGroupMode.value === "single"}
               {#if selectedSource}
                 <Image class="size-10" src={selectedSource.iconUrl} />
-                <span class="truncate font-bold">
+                <span class="flex flex-col truncate text-start font-bold">
                   {selectedSource.displayName}
+                  <span class="flex gap-0.75 truncate text-start text-[9px]">
+                    {#if selectedSource.isNsfw}
+                      <span class="text-red-500">+18</span>
+                      •
+                    {/if}
+                    <span class="text-start">
+                      {getLangNative(selectedSource.lang)}
+                    </span>
+                    {#if selectedSource.extension.hasUpdate}
+                      •
+                      <span class="text-info truncate">Update available</span>
+                    {/if}
+                  </span>
                 </span>
+                <Tooltip text="Update source extension" delay={800}>
+                  <Button
+                    class={cn(
+                      "bg-info/40 hover:bg-info/70 hover:border-background border-info pointer-events-none absolute -top-2 -right-1 size-8 translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
+                      selectedSource.extension.hasUpdate &&
+                        "pointer-events-auto group-hover/select:translate-x-0 group-hover/select:opacity-100",
+                      selectedSource.isConfigurable &&
+                        selectedSource?.extension.hasUpdate &&
+                        "group-hover/select:-translate-x-9",
+                    )}
+                    variant="outline"
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openedExtension.open({
+                        source: selectedSource,
+                        extension:
+                          suwayomi.extensionsByPkgName[
+                            selectedSource.extension.pkgName
+                          ],
+                      });
+                      open = false;
+                    }}
+                  >
+                    <Icon
+                      class={cn(
+                        "transition-all duration-500",
+                        openedExtension.active ? "rotate-180" : "rotate-0",
+                      )}
+                      icon="lucide:refresh-cw"
+                    />
+                  </Button>
+                </Tooltip>
                 <Tooltip text="Source config" delay={800}>
                   <Button
                     class={cn(
-                      "hover:bg-secondary/20 hover:border-background absolute -top-2 -right-1 size-8 translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
-                      selectedSource?.isConfigurable &&
-                        "group-hover/select:translate-x-0 group-hover/select:opacity-100",
+                      "hover:bg-secondary/20 hover:border-background pointer-events-none absolute -top-2 -right-1 size-8 translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
+                      selectedSource.isConfigurable &&
+                        "pointer-events-auto group-hover/select:translate-x-0 group-hover/select:opacity-100",
                     )}
                     variant="outline"
                     onclick={(e) => {
@@ -836,7 +882,7 @@
                   <Button
                     class={cn(
                       "hover:bg-background h-8 max-w-8 rounded-lg pr-2 transition-all duration-500",
-                      openDelete && "hover:bg-destructive/80 max-w-none",
+                      openDelete && "hover:bg-destructive/80 max-w-none border",
                     )}
                     variant={openDelete ? "destructive" : "outline"}
                     onclick={(e) => {

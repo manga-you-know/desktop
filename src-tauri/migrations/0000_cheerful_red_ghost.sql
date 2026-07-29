@@ -5,7 +5,8 @@ CREATE TABLE `categories` (
 	`icon_url` text,
 	`sort_index` integer,
 	`is_pinned` integer DEFAULT false,
-	`config` text DEFAULT '{}'
+	`created_at` integer NOT NULL,
+	`meta` text DEFAULT '{}'
 );
 --> statement-breakpoint
 CREATE TABLE `category_mangas` (
@@ -23,28 +24,28 @@ CREATE UNIQUE INDEX `category_mangas_category_id_manga_id_unique` ON `category_m
 CREATE UNIQUE INDEX `category_mangas_category_id_serie_id_unique` ON `category_mangas` (`category_id`,`serie_id`);--> statement-breakpoint
 CREATE TABLE `chapters` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`manga_id` integer NOT NULL,
 	`source_id` integer NOT NULL,
+	`manga_source_id` text NOT NULL,
 	`chapter_id` text NOT NULL,
 	`sort_index` integer,
 	`chapter_number` text,
 	`chapter_title` text,
-	`language` text DEFAULT '-',
+	`language` text,
+	`scanlator` text,
+	`is_bookmarked` integer DEFAULT false,
 	`is_favorite` integer DEFAULT false,
 	`is_read` integer DEFAULT false,
 	`is_anonymous` integer DEFAULT false,
 	`is_hidden` integer DEFAULT false,
 	`read_at` integer,
 	`commentary` text,
-	`scam` text,
 	`rating` real,
+	`created_at` integer NOT NULL,
 	`update_at` integer NOT NULL,
-	`config` text DEFAULT '{}',
-	FOREIGN KEY (`manga_id`) REFERENCES `mangas`(`id`) ON UPDATE no action ON DELETE cascade,
+	`meta` text DEFAULT '{}',
 	FOREIGN KEY (`source_id`) REFERENCES `sources`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `idx_chapters_manga_id` ON `chapters` (`manga_id`);--> statement-breakpoint
 CREATE INDEX `idx_chapters_source_id` ON `chapters` (`source_id`);--> statement-breakpoint
 CREATE INDEX `idx_chapters_sort_index` ON `chapters` (`sort_index`);--> statement-breakpoint
 CREATE INDEX `idx_chapters_is_read` ON `chapters` (`is_read`);--> statement-breakpoint
@@ -52,7 +53,7 @@ CREATE INDEX `idx_chapters_is_favorite` ON `chapters` (`is_favorite`);--> statem
 CREATE INDEX `idx_chapters_is_anonymous` ON `chapters` (`is_anonymous`);--> statement-breakpoint
 CREATE INDEX `idx_chapters_is_hidden` ON `chapters` (`is_hidden`);--> statement-breakpoint
 CREATE INDEX `idx_chapters_read_at` ON `chapters` (`read_at`);--> statement-breakpoint
-CREATE UNIQUE INDEX `chapters_chapter_id_source_id_language_manga_id_unique` ON `chapters` (`chapter_id`,`source_id`,`language`,`manga_id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `chapters_chapter_id_source_id_language_unique` ON `chapters` (`chapter_id`,`source_id`,`language`);--> statement-breakpoint
 CREATE TABLE `groups` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -62,7 +63,8 @@ CREATE TABLE `groups` (
 	`is_pinned` integer DEFAULT false,
 	`filters` text DEFAULT '[]',
 	`orders` text DEFAULT '[]',
-	`config` text DEFAULT '{}'
+	`created_at` integer NOT NULL,
+	`meta` text DEFAULT '{}'
 );
 --> statement-breakpoint
 CREATE TABLE `logs` (
@@ -75,7 +77,7 @@ CREATE TABLE `logs` (
 	`should_notify` integer DEFAULT false,
 	`notified_at` integer,
 	`logged_at` integer,
-	`config` text DEFAULT '{}'
+	`meta` text DEFAULT '{}'
 );
 --> statement-breakpoint
 CREATE INDEX `idx_logs_kind` ON `logs` (`kind`);--> statement-breakpoint
@@ -84,8 +86,8 @@ CREATE INDEX `idx_logs_should_notify` ON `logs` (`should_notify`);--> statement-
 CREATE UNIQUE INDEX `logs_kind_event_id_unique` ON `logs` (`kind`,`event_id`);--> statement-breakpoint
 CREATE TABLE `mangas` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`name` text NOT NULL,
-	`slug_name` text,
+	`title` text NOT NULL,
+	`slug_title` text,
 	`current_cover` text NOT NULL,
 	`covers` text DEFAULT '[]',
 	`is_favorite` integer DEFAULT false,
@@ -97,57 +99,62 @@ CREATE TABLE `mangas` (
 	`rating` real,
 	`author` text,
 	`artist` text,
+	`reading_status` text,
 	`status` text,
 	`anilist_id` text,
 	`mal_id` text,
 	`description` text,
+	`other_titles` text DEFAULT '[]',
+	`genre` text DEFAULT '[]' NOT NULL,
 	`update_at` integer,
 	`created_at` integer NOT NULL,
-	`other_names` text DEFAULT '[]',
-	`genre` text DEFAULT '[]' NOT NULL,
-	`config` text DEFAULT '{}'
+	`meta` text DEFAULT '{}'
 );
 --> statement-breakpoint
-CREATE INDEX `idx_mangas_slug_name` ON `mangas` (`slug_name`);--> statement-breakpoint
+CREATE INDEX `idx_mangas_slug_titles` ON `mangas` (`slug_title`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_is_favorite` ON `mangas` (`is_favorite`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_is_hidden` ON `mangas` (`is_hidden`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_is_anonymous` ON `mangas` (`is_anonymous`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_created_at` ON `mangas` (`created_at`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_updated_at` ON `mangas` (`update_at`);--> statement-breakpoint
-CREATE INDEX `idx_mangas_status` ON `mangas` (`status`);--> statement-breakpoint
+CREATE INDEX `idx_mangas_status` ON `mangas` (`reading_status`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_rating` ON `mangas` (`rating`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_anilist_id` ON `mangas` (`anilist_id`);--> statement-breakpoint
 CREATE INDEX `idx_mangas_mal_id` ON `mangas` (`mal_id`);--> statement-breakpoint
-CREATE TABLE `saved_images` (
+CREATE TABLE `saved_panels` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`manga_id` integer,
 	`path` text NOT NULL,
 	`title` text,
 	`note` text,
+	`page` text,
 	`manga_title` text,
 	`chapter_title` text,
 	`chapter_number` text,
+	`is_cropped` integer DEFAULT false,
 	`is_favorite` integer DEFAULT false,
 	`is_hidden` integer DEFAULT false,
-	`config` text DEFAULT '{}',
+	`created_at` integer NOT NULL,
+	`meta` text DEFAULT '{}',
 	FOREIGN KEY (`manga_id`) REFERENCES `mangas`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `idx_saved_images_manga_id` ON `saved_images` (`manga_id`);--> statement-breakpoint
-CREATE INDEX `idx_saved_images_is_favorite` ON `saved_images` (`is_favorite`);--> statement-breakpoint
-CREATE INDEX `idx_saved_images_is_hidden` ON `saved_images` (`is_hidden`);--> statement-breakpoint
+CREATE INDEX `idx_saved_panels_manga_id` ON `saved_panels` (`manga_id`);--> statement-breakpoint
+CREATE INDEX `idx_saved_panels_is_favorite` ON `saved_panels` (`is_favorite`);--> statement-breakpoint
+CREATE INDEX `idx_saved_panels_is_hidden` ON `saved_panels` (`is_hidden`);--> statement-breakpoint
 CREATE TABLE `series` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`cover_url` text,
 	`description` text,
 	`commentary` text,
+	`rating` real,
 	`author` text,
 	`artist` text,
-	`rating` real,
 	`is_favorite` integer DEFAULT false,
 	`is_hidden` integer DEFAULT false,
-	`config` text DEFAULT '{}'
+	`created_at` integer NOT NULL,
+	`meta` text DEFAULT '{}'
 );
 --> statement-breakpoint
 CREATE INDEX `idx_series_is_favorite` ON `series` (`is_favorite`);--> statement-breakpoint
@@ -166,20 +173,32 @@ CREATE INDEX `idx_series_sort_index` ON `series_mangas` (`sort_index`);--> state
 CREATE TABLE `sources` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`manga_id` integer NOT NULL,
-	`name` text NOT NULL,
+	`source_name` text NOT NULL,
 	`manga_source_id` text NOT NULL,
 	`source_id` text NOT NULL,
 	`extension_id` text NOT NULL,
-	`language` text NOT NULL,
-	`source_name` text NOT NULL,
 	`iconUrl` text,
+	`chapters_count` integer DEFAULT 0 NOT NULL,
+	`unread_count` integer DEFAULT 0 NOT NULL,
+	`bookmarked_count` integer DEFAULT 0 NOT NULL,
+	`favorite_count` integer DEFAULT 0 NOT NULL,
+	`has_duplicate_chapters` integer DEFAULT false NOT NULL,
+	`title` text NOT NULL,
+	`author` text,
+	`artist` text,
+	`description` text,
+	`language` text NOT NULL,
 	`real_url` text NOT NULL,
+	`status` text,
+	`genre` text DEFAULT '[]' NOT NULL,
 	`cover_url` text NOT NULL,
 	`cover_url_last_fetched` integer,
-	`last_fetched` integer,
-	`status` text,
+	`chapters_last_fetched` integer,
+	`data_last_fetched` integer,
+	`created_at` integer NOT NULL,
 	`enabled` integer DEFAULT true,
 	`sort_index` integer,
+	`meta` text DEFAULT '{}',
 	FOREIGN KEY (`manga_id`) REFERENCES `mangas`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint

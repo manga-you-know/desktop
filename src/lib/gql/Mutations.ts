@@ -232,3 +232,181 @@ export const fetchMangaMutation = gql`
     }
   }
 `;
+
+export const refreshMangaMutation = gql`
+  fragment MANGA_BASE_FIELDS on MangaType {
+    id
+    title
+    thumbnailUrl
+    thumbnailUrlLastFetched
+    inLibrary
+    initialized
+    sourceId
+  }
+
+  fragment MANGA_CHAPTER_STAT_FIELDS on MangaType {
+    id
+    unreadCount
+    downloadCount
+    bookmarkCount
+    hasDuplicateChapters
+    chapters {
+      totalCount
+    }
+  }
+
+  fragment MANGA_CHAPTER_NODE_FIELDS on MangaType {
+    firstUnreadChapter {
+      id
+      sourceOrder
+      isRead
+      mangaId
+      chapterNumber
+      name
+      scanlator
+    }
+    lastReadChapter {
+      id
+      sourceOrder
+      lastReadAt
+    }
+    latestReadChapter {
+      id
+      sourceOrder
+      lastReadAt
+    }
+    latestFetchedChapter {
+      id
+      fetchedAt
+    }
+    latestUploadedChapter {
+      id
+      uploadDate
+    }
+    highestNumberedChapter {
+      id
+      chapterNumber
+    }
+  }
+
+  fragment MANGA_META_FIELDS on MangaMetaType {
+    mangaId
+    key
+    value
+  }
+
+  fragment SOURCE_BASE_FIELDS on SourceType {
+    id
+    name
+    displayName
+    lang
+    iconUrl
+  }
+
+  fragment MANGA_LIBRARY_FIELDS on MangaType {
+    ...MANGA_BASE_FIELDS
+    ...MANGA_CHAPTER_STAT_FIELDS
+    ...MANGA_CHAPTER_NODE_FIELDS
+    genre
+    lastFetchedAt
+    inLibraryAt
+    status
+    artist
+    author
+    description
+    meta {
+      ...MANGA_META_FIELDS
+    }
+    source {
+      ...SOURCE_BASE_FIELDS
+    }
+    trackRecords {
+      totalCount
+      nodes {
+        id
+        trackerId
+      }
+    }
+  }
+
+  fragment MANGA_MIGRATION_FIELDS on MangaType {
+    ...MANGA_BASE_FIELDS
+    ...MANGA_CHAPTER_NODE_FIELDS
+    artist
+    author
+    source {
+      id
+      name
+      displayName
+    }
+  }
+
+  fragment MANGA_SCREEN_FIELDS on MangaType {
+    ...MANGA_LIBRARY_FIELDS
+    ...MANGA_CHAPTER_NODE_FIELDS
+    ...MANGA_MIGRATION_FIELDS
+    artist
+    author
+    description
+    status
+    realUrl
+    meta {
+      ...MANGA_META_FIELDS
+    }
+    sourceId
+    source {
+      id
+      name
+      displayName
+    }
+    trackRecords {
+      totalCount
+      nodes {
+        id
+        trackerId
+      }
+    }
+  }
+
+  fragment CHAPTER_BASE_FIELDS on ChapterType {
+    id
+    name
+    mangaId
+    scanlator
+    realUrl
+    sourceOrder
+    chapterNumber
+  }
+
+  fragment CHAPTER_STATE_FIELDS on ChapterType {
+    id
+    isRead
+    isDownloaded
+    isBookmarked
+  }
+
+  fragment CHAPTER_LIST_FIELDS on ChapterType {
+    ...CHAPTER_BASE_FIELDS
+    ...CHAPTER_STATE_FIELDS
+    fetchedAt
+    uploadDate
+    lastReadAt
+  }
+
+  mutation REFRESH_MANGA(
+    $id: Int!
+    $fetchManga: Boolean!
+    $fetchChapters: Boolean!
+  ) {
+    fetchMangaAndChapters(
+      input: { id: $id, fetchManga: $fetchManga, fetchChapters: $fetchChapters }
+    ) {
+      manga @include(if: $fetchManga) {
+        ...MANGA_SCREEN_FIELDS
+      }
+      chapters @include(if: $fetchChapters) {
+        ...CHAPTER_LIST_FIELDS
+      }
+    }
+  }
+`;

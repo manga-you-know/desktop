@@ -14,10 +14,10 @@ export const mangas = sqliteTable(
   "mangas",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    name: text("name").notNull(),
-    slugName: text("slug_name"),
+    title: text("title").notNull(),
+    slugTitle: text("slug_title"),
     currentCover: text("current_cover").notNull(),
-    covers: text("covers").$type<string[]>().default([]),
+    covers: text("covers", { mode: "json" }).$type<string[]>().default([]),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     isAnonymous: integer("is_anonymous", { mode: "boolean" }).default(false),
@@ -32,25 +32,25 @@ export const mangas = sqliteTable(
     anilistId: text("anilist_id"),
     malId: text("mal_id"),
     description: text("description"),
-    updatedAt: integer("update_at", { mode: "timestamp" }).$defaultFn(
-      () => new Date(),
-    ),
-    createdAt: integer("created_at", { mode: "timestamp" })
-      .notNull()
-      .$defaultFn(() => new Date()),
-    otherNames: text("other_names", { mode: "json" })
+    otherTitles: text("other_titles", { mode: "json" })
       .$type<string[]>()
       .default([]),
     genre: text("genre", { mode: "json" })
       .$type<string[]>()
       .notNull()
       .default([]),
-    config: text("config", { mode: "json" })
+    updatedAt: integer("update_at", { mode: "timestamp" }).$defaultFn(
+      () => new Date(),
+    ),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
   },
   (t) => [
-    index("idx_mangas_slug_name").on(t.slugName),
+    index("idx_mangas_slug_titles").on(t.slugTitle),
     index("idx_mangas_is_favorite").on(t.isFavorite),
     index("idx_mangas_is_hidden").on(t.isHidden),
     index("idx_mangas_is_anonymous").on(t.isAnonymous),
@@ -67,11 +67,6 @@ export const sources = sqliteTable(
   "sources",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    mangaId: integer("manga_id")
-      .notNull()
-      .references(() => mangas.id, {
-        onDelete: "cascade",
-      }),
     sourceName: text("source_name").notNull(), // local source: "Local"
     mangaSourceId: text("manga_source_id").notNull(), // local source: final path
     sourceId: text("source_id").notNull(), // local source: root path
@@ -81,14 +76,15 @@ export const sources = sqliteTable(
     unreadCount: integer("unread_count").notNull().default(0),
     bookmarkedCount: integer("bookmarked_count").notNull().default(0),
     favoriteCount: integer("favorite_count").notNull().default(0),
+    downloadCount: integer("download_count").notNull().default(0),
     hasDuplicateChapters: integer("has_duplicate_chapters", { mode: "boolean" })
       .notNull()
       .default(false),
-    name: text("name").notNull(),
+    title: text("title").notNull(),
+    language: text("language").notNull(),
+    description: text("description"),
     author: text("author"),
     artist: text("artist"),
-    description: text("description"),
-    language: text("language").notNull(),
     realUrl: text("real_url").notNull(), // local source: path to open (root + final)
     status: text("status").$type<MangaStatus>(),
     genre: text("genre", { mode: "json" })
@@ -101,16 +97,46 @@ export const sources = sqliteTable(
     }).$defaultFn(() => new Date()),
     chaptersLastFetched: integer("chapters_last_fetched", {
       mode: "timestamp",
-    }).$defaultFn(() => new Date()),
+    }),
     dataLastFetched: integer("data_last_fetched", {
       mode: "timestamp",
     }).$defaultFn(() => new Date()),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
     enabled: integer("enabled", { mode: "boolean" }).default(true),
-    sortIndex: integer("sort_index"),
+    meta: text("meta", { mode: "json" })
+      .$type<Record<string, any>>()
+      .default({}),
   },
   (t) => [
-    index("idx_sources_manga_id").on(t.mangaId),
     index("idx_sources_enabled").on(t.enabled),
+    unique().on(t.sourceId, t.mangaSourceId),
+    index("idx_sources_manga_source_id").on(t.mangaSourceId),
+  ],
+);
+
+export const mangasSources = sqliteTable(
+  "mangas_sources",
+  {
+    mangaId: integer("manga_id")
+      .notNull()
+      .references(() => mangas.id, { onDelete: "cascade" }),
+    sourceId: integer("source_id")
+      .notNull()
+      .references(() => sources.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    sortIndex: integer("sort_index"),
+    meta: text("meta", { mode: "json" })
+      .$type<Record<string, any>>()
+      .default({}),
+  },
+  (t) => [
+    unique().on(t.mangaId, t.sourceId),
+    index("idx_mangas_sources_manga_id").on(t.mangaId),
+    index("idx_mangas_sources_source_id").on(t.sourceId),
   ],
 );
 
@@ -121,29 +147,35 @@ export const chapters = sqliteTable(
     sourceId: integer("source_id")
       .notNull()
       .references(() => sources.id, { onDelete: "cascade" }),
+    mangaSourceId: text("manga_source_id").notNull(),
     chapterId: text("chapter_id").notNull(), // local source:  final path in source path
-    sortIndex: integer("sort_index"),
     chapterNumber: text("chapter_number"),
     chapterTitle: text("chapter_title"),
-    language: text("language").default("-"),
+    language: text("language"),
+    scanlator: text("scanlator"),
+    realUrl: text("real_url"),
     isBookmarked: integer("is_bookmarked", { mode: "boolean" }).default(false),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
+    isDownloaded: integer("is_downloaded", { mode: "boolean" }).default(false),
     isRead: integer("is_read", { mode: "boolean" }).default(false),
     isAnonymous: integer("is_anonymous", { mode: "boolean" }).default(false),
+    sourceOrder: integer("source_order").notNull().default(0),
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     readAt: integer("read_at", { mode: "timestamp" }),
     commentary: text("commentary"),
-    scan: text("scam"),
     rating: real("rating"),
-    updatedAt: integer("update_at", { mode: "timestamp" })
+    sortIndex: integer("sort_index"),
+    fetchedAt: integer("fetched_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
-    config: text("config", { mode: "json" })
+    uploadAt: integer("upload_at", { mode: "timestamp" }).notNull(),
+    meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
   },
   (t) => [
     unique().on(t.chapterId, t.sourceId, t.language),
+    index("idx_chapters_manga_source_id").on(t.mangaSourceId),
     index("idx_chapters_source_id").on(t.sourceId),
     index("idx_chapters_sort_index").on(t.sortIndex),
     index("idx_chapters_is_read").on(t.isRead),
@@ -160,14 +192,25 @@ export const series = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
     coverUrl: text("cover_url"),
+    bannerUrl: text("banner_url"),
     description: text("description"),
     commentary: text("commentary"),
+    rating: real("rating"),
     author: text("author"),
     artist: text("artist"),
-    rating: real("rating"),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
-    config: text("config", { mode: "json" })
+    genre: text("genre", { mode: "json" })
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("update_at", { mode: "timestamp" }).$defaultFn(
+      () => new Date(),
+    ),
+    meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
   },
@@ -186,7 +229,13 @@ export const seriesMangas = sqliteTable(
     mangaId: integer("manga_id")
       .notNull()
       .references(() => mangas.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
     sortIndex: integer("sort_index"),
+    meta: text("meta", { mode: "json" })
+      .$type<Record<string, any>>()
+      .default({}),
   },
   (t) => [
     primaryKey({ columns: [t.serieId, t.mangaId] }),
@@ -202,29 +251,31 @@ export const categories = sqliteTable("categories", {
   iconUrl: text("icon_url"),
   sortIndex: integer("sort_index"),
   isPinned: integer("is_pinned", { mode: "boolean" }).default(false),
-  config: text("config", { mode: "json" })
-    .$type<Record<string, any>>()
-    .default({}),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  meta: text("meta", { mode: "json" }).$type<Record<string, any>>().default({}),
 });
 
-export const categoryMangas = sqliteTable(
-  "category_mangas",
+export const categoriesMangas = sqliteTable(
+  "categories_mangas",
   {
     categoryId: integer("category_id")
       .notNull()
       .references(() => categories.id, { onDelete: "cascade" }),
-    mangaId: integer("manga_id").references(() => mangas.id, {
-      onDelete: "cascade",
-    }),
-    serieId: integer("serie_id").references(() => series.id, {
-      onDelete: "cascade",
-    }),
+    mangaId: integer("manga_id")
+      .notNull()
+      .references(() => mangas.id, {
+        onDelete: "cascade",
+      }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    sortIndex: integer("sort_index"),
   },
   (t) => [
     unique().on(t.categoryId, t.mangaId),
-    unique().on(t.categoryId, t.serieId),
-    index("idx_category_mangas_manga_id").on(t.mangaId),
-    index("idx_category_mangas_serie_id").on(t.serieId),
+    index("idx_categories_mangas_manga_id").on(t.mangaId),
   ],
 );
 
@@ -241,13 +292,14 @@ export const groups = sqliteTable("groups", {
   ordersBy: text("orders", { mode: "json" })
     .$type<Record<string, string>[]>()
     .default([]),
-  config: text("config", { mode: "json" })
-    .$type<Record<string, any>>()
-    .default({}),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  meta: text("meta", { mode: "json" }).$type<Record<string, any>>().default({}),
 });
 
-export const savedImages = sqliteTable(
-  "saved_images",
+export const savedPanels = sqliteTable(
+  "saved_panels",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     mangaId: integer("manga_id").references(() => mangas.id, {
@@ -256,31 +308,40 @@ export const savedImages = sqliteTable(
     path: text("path").notNull(),
     title: text("title"),
     note: text("note"),
+    page: text("page"),
     mangaTitle: text("manga_title"),
     chapterTitle: text("chapter_title"),
     chapterNumber: text("chapter_number"),
+    isCropped: integer("is_cropped", { mode: "boolean" }).default(false),
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
-    config: text("config", { mode: "json" })
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
   },
   (t) => [
-    index("idx_saved_images_manga_id").on(t.mangaId),
-    index("idx_saved_images_is_favorite").on(t.isFavorite),
-    index("idx_saved_images_is_hidden").on(t.isHidden),
+    index("idx_saved_panels_manga_id").on(t.mangaId),
+    index("idx_saved_panels_is_favorite").on(t.isFavorite),
+    index("idx_saved_panels_is_hidden").on(t.isHidden),
   ],
 );
+
+type LogLevel = "LOW" | "NORMAL" | "HIGH" | "WARNING" | "ERROR";
+type LogKind = "NEW_CHAPTERS" | "FETCH_ERROR";
 
 export const logs = sqliteTable(
   "logs",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    kind: text("kind").notNull(),
+    kind: text("kind").$type<LogKind>().notNull(),
     eventId: text("event_id")
       .notNull()
       .$defaultFn(() => Date.now().toString()),
     title: text("title").notNull(),
+    level: text("level").$type<LogLevel>().notNull().default("NORMAL"),
     description: text("description").notNull(),
     note: text("note"),
     shouldNotify: integer("should_notify", { mode: "boolean" }).default(false),
@@ -288,7 +349,7 @@ export const logs = sqliteTable(
     loggedAt: integer("logged_at", { mode: "timestamp" }).$defaultFn(
       () => new Date(),
     ),
-    config: text("config", { mode: "json" })
+    meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
   },
@@ -301,19 +362,26 @@ export const logs = sqliteTable(
 );
 
 export const mangasRelations = relations(mangas, ({ many }) => ({
-  sources: many(sources),
-  chapters: many(chapters),
+  sourceLinks: many(mangasSources),
   seriesLinks: many(seriesMangas),
-  categoryLinks: many(categoryMangas),
-  savedImages: many(savedImages),
+  categoryLinks: many(categoriesMangas),
+  savedPanels: many(savedPanels),
 }));
 
-export const sourcesRelations = relations(sources, ({ one, many }) => ({
+export const sourcesRelations = relations(sources, ({ many }) => ({
+  mangaLinks: many(mangasSources),
+  chapters: many(chapters),
+}));
+
+export const mangasSourcesRelations = relations(mangasSources, ({ one }) => ({
   manga: one(mangas, {
-    fields: [sources.mangaId],
+    fields: [mangasSources.mangaId],
     references: [mangas.id],
   }),
-  chapters: many(chapters),
+  source: one(sources, {
+    fields: [mangasSources.sourceId],
+    references: [sources.id],
+  }),
 }));
 
 export const chaptersRelations = relations(chapters, ({ one }) => ({
@@ -328,7 +396,7 @@ export const seriesRelations = relations(series, ({ many }) => ({
 }));
 
 export const seriesMangasRelations = relations(seriesMangas, ({ one }) => ({
-  series: one(series, {
+  serie: one(series, {
     fields: [seriesMangas.serieId],
     references: [series.id],
   }),
@@ -339,27 +407,26 @@ export const seriesMangasRelations = relations(seriesMangas, ({ one }) => ({
 }));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
-  mangaLinks: many(categoryMangas),
+  mangaLinks: many(categoriesMangas),
 }));
 
-export const categoryMangasRelations = relations(categoryMangas, ({ one }) => ({
-  category: one(categories, {
-    fields: [categoryMangas.categoryId],
-    references: [categories.id],
+export const categoryMangasRelations = relations(
+  categoriesMangas,
+  ({ one }) => ({
+    category: one(categories, {
+      fields: [categoriesMangas.categoryId],
+      references: [categories.id],
+    }),
+    manga: one(mangas, {
+      fields: [categoriesMangas.mangaId],
+      references: [mangas.id],
+    }),
   }),
-  manga: one(mangas, {
-    fields: [categoryMangas.mangaId],
-    references: [mangas.id],
-  }),
-  series: one(series, {
-    fields: [categoryMangas.serieId],
-    references: [series.id],
-  }),
-}));
+);
 
-export const savedImagesRelations = relations(savedImages, ({ one }) => ({
+export const savedPanelsRelations = relations(savedPanels, ({ one }) => ({
   manga: one(mangas, {
-    fields: [savedImages.mangaId],
+    fields: [savedPanels.mangaId],
     references: [mangas.id],
   }),
 }));

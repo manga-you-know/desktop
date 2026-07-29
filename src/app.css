@@ -93,21 +93,17 @@
 @layer base {
   * {
     scrollbar-width: thin;
+    scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
   }
-
-  /* Scrollbar colors */
-  scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
 
   ::-webkit-scrollbar {
     border-radius: 1rem;
     background: var(--color-scroll-track);
   }
-
   ::-webkit-scrollbar-thumb {
     border-radius: 1rem;
     background: var(--color-scroll-thumb);
   }
-
   ::-webkit-scrollbar-track {
     border-radius: 1rem;
     background: var(--color-scroll-track);

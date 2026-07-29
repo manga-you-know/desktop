@@ -193,7 +193,6 @@ export type SourceBrowse = {
   filters: SourceFilter[];
 };
 
-
 export type MangaStatus =
   | "ONGOING"
   | "COMPLETED"
@@ -248,11 +247,11 @@ export type FetchSourceMangaResult = {
   mangas: MangaFetch[];
 };
 
-export type MangaMeta {
+export type MangaMeta = {
   mangaId: number;
   key: string;
   value: string;
-}
+};
 
 export interface SourceBase {
   id: string;
@@ -279,7 +278,6 @@ export interface TrackRecord {
   id: number;
   trackerId: number;
 }
-
 
 export interface MangaScreen {
   id: number;
@@ -316,4 +314,80 @@ export interface MangaScreen {
     totalCount: number;
     nodes: TrackRecord[];
   };
+}
+
+export type SourceOrderByType = "ASC" | "DESC";
+
+export interface ChapterOrderInput {
+  by: "SOURCE_ORDER" | "CHAPTER_NUMBER" | "UPLOAD_DATE" | "FETCHED_AT" | "NAME";
+  byType: SourceOrderByType;
+}
+
+export interface ChapterConditionInput {
+  mangaId?: number;
+  id?: number;
+  isRead?: boolean;
+  isDownloaded?: boolean;
+  isBookmarked?: boolean;
+}
+
+export interface ChapterFilterInput {
+  name?: { likeInsensitive?: string };
+  scanlator?: { likeInsensitive?: string };
+}
+
+export interface ChapterListItem {
+  // CHAPTER_BASE_FIELDS
+  id: number;
+  name: string;
+  mangaId: number;
+  scanlator: string | null;
+  realUrl: string | null;
+  sourceOrder: number;
+  chapterNumber: number;
+
+  // CHAPTER_STATE_FIELDS
+  isRead: boolean;
+  isDownloaded: boolean;
+  isBookmarked: boolean;
+
+  // CHAPTER_LIST_FIELDS extras
+  fetchedAt: string;
+  uploadDate: string;
+  lastReadAt: string;
+}
+
+export interface PageInfo {
+  endCursor: string | null;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string | null;
+}
+
+export interface ChapterList {
+  nodes: ChapterListItem[];
+  pageInfo: PageInfo;
+  totalCount: number;
+}
+
+export interface GetChaptersMangaVariables {
+  after?: string;
+  before?: string;
+  condition?: ChapterConditionInput;
+  filter?: ChapterFilterInput;
+  first?: number;
+  last?: number;
+  offset?: number;
+  order?: ChapterOrderInput[];
+}
+
+export interface RefreshMangaVariables {
+  id: number;
+  fetchManga: boolean;
+  fetchChapters: boolean;
+}
+
+export interface RefreshMangaResult {
+  manga: MangaScreen | null;
+  chapters: ChapterListItem[] | null;
 }

@@ -22,9 +22,15 @@ import type {
   SourceSettings,
   MangaScreen,
   UpdateSourcePreferencesInput,
+  ChapterOrderInput,
+  ChapterList,
+  GetChaptersMangaVariables,
+  RefreshMangaResult,
+  RefreshMangaVariables,
 } from "@/types/server";
 import { gqlMutation, gqlQuery } from "@/lib/gql/client";
 import {
+  getChaptersMangaQuery,
   getExtensionRepos,
   getMangaScreenQuery,
   getSourceBrowse as getSourceBrowseQuery,
@@ -35,6 +41,7 @@ import {
   fetchExtensions as fetchExtensionsMutation,
   fetchMangaMutation,
   fetchSourceManga as fetchSourceMangaMutation,
+  refreshMangaMutation,
   setExtensionRepos,
   updateExtension as updateExtensionMutation,
   updateSourcePreference as updateSourcePreferenceMutation,
@@ -392,5 +399,29 @@ export const suwaManager = {
       fetchMangaMutation,
       { id },
     ).then((data) => data.fetchManga.manga);
+  },
+
+  async refreshManga(
+    id: number,
+    options: { fetchManga?: boolean; fetchChapters?: boolean } = {},
+  ): Promise<RefreshMangaResult> {
+    const { fetchManga = true, fetchChapters = true } = options;
+
+    return gqlMutation<
+      { fetchMangaAndChapters: RefreshMangaResult },
+      RefreshMangaVariables
+    >(refreshMangaMutation, { id, fetchManga, fetchChapters }).then(
+      (data) => data.fetchMangaAndChapters,
+    );
+  },
+
+  async getChaptersManga(
+    mangaId: number,
+    order: ChapterOrderInput[] = [{ by: "SOURCE_ORDER", byType: "DESC" }],
+  ): Promise<ChapterList> {
+    return gqlQuery<{ chapters: ChapterList }, GetChaptersMangaVariables>(
+      getChaptersMangaQuery,
+      { condition: { mangaId }, order },
+    ).then((data) => data.chapters);
   },
 };
