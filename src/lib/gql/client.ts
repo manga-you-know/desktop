@@ -28,8 +28,13 @@ export function getSuwayomiClient() {
 export async function gqlQuery<Data, Variables extends AnyVariables>(
   query: DocumentInput<Data, Variables>,
   variables: Variables,
+  options?: { skipCache?: boolean },
 ): Promise<Data> {
-  const result = await getSuwayomiClient().query(query, variables).toPromise();
+  const result = await getSuwayomiClient()
+    .query(query, variables, {
+      requestPolicy: options?.skipCache ? "network-only" : "cache-first",
+    })
+    .toPromise();
 
   if (result.error) throw result.error;
   if (!result.data) throw new Error("Suwayomi returned no GraphQL data");

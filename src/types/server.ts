@@ -33,6 +33,8 @@ export type Source = {
     repo: string;
     isObsolete: boolean;
     hasUpdate: boolean;
+    versionCode: string;
+    versionName: string;
   };
 };
 

@@ -168,7 +168,9 @@ export const chapters = sqliteTable(
     fetchedAt: integer("fetched_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
-    uploadAt: integer("upload_at", { mode: "timestamp" }).notNull(),
+    uploadDate: integer("uploadDate", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date(0)),
     meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
@@ -303,6 +305,9 @@ export const savedPanels = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     mangaId: integer("manga_id").references(() => mangas.id, {
+      onDelete: "set null",
+    }),
+    sourceId: integer("source_id").references(() => sources.id, {
       onDelete: "set null",
     }),
     path: text("path").notNull(),

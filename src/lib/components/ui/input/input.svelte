@@ -16,7 +16,7 @@
         destructive:
           "border border-destructive bg-destructive text-destructive-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-destructive",
         outline:
-          "border border-secondary bg-background/30 hover:bg-secondary text-primary placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary",
+          "border border-secondary bg-background/30 hover:bg-secondary/20 text-primary placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary",
         secondary:
           "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary hover:bg-secondary/80",
         ghost:

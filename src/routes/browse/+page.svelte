@@ -401,13 +401,11 @@
       <div
         class="border-background bg-background/30 absolute z-2 mt-0.5 flex items-center justify-center gap-2 rounded-2xl border p-1 backdrop-blur-sm"
       >
-        <Badge class="h-10 min-w-20 text-sm font-bold" variant="outline">
+        <Badge class="h-10 min-w-14 text-sm font-bold" variant="outline">
           <ScrollingValue value={filteredManga.length} />
-          /
-          <ScrollingValue value={results.length} />
         </Badge>
         <Input
-          class="hover:bg-secondary/20 w-70"
+          class="w-70"
           divClass="w-70"
           variant="outline"
           placeholder="Filter results..."

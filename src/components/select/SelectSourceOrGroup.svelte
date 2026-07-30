@@ -22,6 +22,7 @@
     showExtensionsNSourcesNSFW,
     sourceGroupMode,
     suwayomi,
+    compactSourceSelector,
   } from "@/states";
   import Icon from "@iconify/svelte";
   import { ScrollingValue } from "svelte-ux";
@@ -98,7 +99,9 @@
     <Tooltip
       text="Select source {sourceGroupMode.value !== 'single' ? 'group' : ''}"
       subtext={sourceGroupMode.value === "single"
-        ? (selectedSource.displayName ?? "None.")
+        ? selectedSource.displayName
+          ? `${selectedSource.displayName} • ${selectedSource.extension.versionName}${selectedSource.extension.hasUpdate ? " • Update available" : ""}`
+          : "None"
         : selectedGroupSource.value}
       delay={600}
       placement="bottom"
@@ -129,20 +132,30 @@
                 <Image class="size-10" src={selectedSource.iconUrl} />
                 <span class="flex flex-col truncate text-start font-bold">
                   {selectedSource.displayName}
-                  <span class="flex gap-0.75 truncate text-start text-[9px]">
-                    {#if selectedSource.isNsfw}
-                      <span class="text-red-500">+18</span>
-                      •
-                    {/if}
-                    <span class="text-start">
-                      {getLangNative(selectedSource.lang)}
+                  {#if !compactSourceSelector.value}
+                    <span
+                      class="flex items-center gap-0.75 truncate text-start text-[9px]"
+                    >
+                      <span class="text-start">
+                        {getLangNative(selectedSource.lang)}
+                      </span>
+                      <span class="text-start">
+                        ·
+                        {selectedSource.extension.versionName}
+                      </span>
+                      {#if selectedSource.isNsfw}
+                        ·
+                        <span class="text-red-500">18+</span>
+                      {/if}
                     </span>
-                    {#if selectedSource.extension.hasUpdate}
-                      •
-                      <span class="text-info truncate">Update available</span>
-                    {/if}
-                  </span>
+                  {/if}
                 </span>
+                {#if selectedSource.extension.hasUpdate}
+                  <Icon
+                    class="text-info bg-secondary/80 absolute top-0.5 left-0.5 size-5! rounded-lg p-0.5 transition-opacity duration-500 group-hover/select:opacity-0"
+                    icon="lucide:refresh-cw"
+                  />
+                {/if}
                 <Tooltip text="Update source extension" delay={800}>
                   <Button
                     class={cn(
@@ -152,24 +165,25 @@
                       selectedSource.isConfigurable &&
                         selectedSource?.extension.hasUpdate &&
                         "group-hover/select:-translate-x-9",
+                      crEvent.val[
+                        `ext-update-${selectedSource.extension.pkgName}`
+                      ] && "-translate-x-9",
                     )}
                     variant="outline"
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      openedExtension.open({
-                        source: selectedSource,
-                        extension:
-                          suwayomi.extensionsByPkgName[
-                            selectedSource.extension.pkgName
-                          ],
-                      });
-                      open = false;
+                    onclick={() => {
+                      suwaManager.patchExtension(
+                        selectedSource.extension.pkgName,
+                        "update",
+                      );
                     }}
                   >
                     <Icon
                       class={cn(
-                        "transition-all duration-500",
-                        openedExtension.active ? "rotate-180" : "rotate-0",
+                        "rotate-0 transition-all duration-500 group-hover/select:-rotate-180",
+                        crEvent.val[
+                          `ext-update-${selectedSource.extension.pkgName}`
+                        ] && "animate-spin",
+                        // openedExtension.active ? "rotate-180" : "rotate-0",
                       )}
                       icon="lucide:refresh-cw"
                     />
@@ -196,10 +210,7 @@
                     }}
                   >
                     <Icon
-                      class={cn(
-                        "transition-all duration-500",
-                        openedExtension.active ? "rotate-180" : "rotate-0",
-                      )}
+                      class="rotate-0 transition-all duration-500 group-hover/select:-rotate-180"
                       icon="lucide:settings"
                     />
                   </Button>
@@ -365,6 +376,20 @@
                 <Icon icon="lucide:toggle-left" />
                 Disable source
               </ContextMenu.Item>
+              <ContextMenu.Item
+                class="relative"
+                onclick={() => compactSourceSelector.toggle()}
+              >
+                <Icon icon="lucide:square-dashed-text" />
+                Compact look
+                <Icon
+                  class={cn(
+                    "absolute right-4 transition-opacity",
+                    compactSourceSelector.value ? "opacity-100" : "opacity-0",
+                  )}
+                  icon="lucide:check"
+                />
+              </ContextMenu.Item>
             {/if}
             <!-- {:else} -->
           {/if}
@@ -514,15 +539,25 @@
                       >
                         <Label
                           class={cn(
-                            "max-w-44 cursor-pointer truncate text-lg/6 group-hover/extension:underline!",
+                            "max-w-44 cursor-pointer truncate text-lg/6",
                           )}
                         >
                           {source.displayName}
                         </Label>
-                        <div class="flex w-18 justify-between">
-                          <span class="text-red-500">
-                            {source.isNsfw ? "+18" : ""}
+                        <div
+                          class="flex max-w-52 gap-1 truncate text-[11px] font-semibold"
+                        >
+                          <span>
+                            {getLangNative(source.lang)}
                           </span>
+                          ·
+                          <span>
+                            {source.extension.versionName}
+                          </span>
+                          {#if source.isNsfw}
+                            ·
+                            <span class="font-bold text-red-500">18+</span>
+                          {/if}
                         </div>
                       </div>
                     </div>

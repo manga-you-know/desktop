@@ -815,13 +815,13 @@
                         variant="link"
                         id="source-{sRow.source.id}"
                         onclick={() => {
+                          selectedSourceId.value = sRow.source.id;
                           if (!enabledSources.value[sRow.source.id]) {
                             enabledSources.value = {
                               ...enabledSources.value,
                               [sRow.source.id]: true,
                             };
                           }
-                          selectedSourceId.value = sRow.source.id;
                           goto("/browse");
                           openExtensions.onchange = () => {};
                           openExtensions.close();
@@ -839,10 +839,14 @@
                             >
                               {sRow.source.displayName}
                             </Label>
-                            <div class="flex w-18 justify-between">
-                              <span class="text-red-500">
-                                {sRow.source.isNsfw ? "+18" : ""}
+                            <div class="flex gap-1 text-xs">
+                              <span>
+                                {sRow.source.extension.versionName}
                               </span>
+                              {#if sRow.source.isNsfw}
+                                •
+                                <span class="text-red-500">18+</span>
+                              {/if}
                             </div>
                           </div>
                         </div>
@@ -1102,13 +1106,14 @@
                             >
                               {eRow.extension.name}
                             </Label>
-                            <div class="flex w-18 justify-between">
-                              <span class="text-gray-500">
+                            <div class="flex gap-1 text-xs">
+                              <span>
                                 {eRow.extension.versionName}
                               </span>
-                              <span class="text-red-500">
-                                {eRow.extension.isNsfw ? "+18" : ""}
-                              </span>
+                              {#if eRow.extension.isNsfw}
+                                •
+                                <span class="text-red-500">18+</span>
+                              {/if}
                             </div>
                           </div>
                         </div>

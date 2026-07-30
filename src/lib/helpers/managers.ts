@@ -247,9 +247,9 @@ export const suwaManager = {
     patch: "install" | "uninstall" | "update",
     refreshAfter: boolean = true,
   ): Promise<Extension> {
-    if (crEvent.val["ext-" + patch + pkgName])
+    if (crEvent.val[`ext-${patch}-${pkgName}`])
       throw new Error("already doinnggg");
-    crEvent.val["ext-" + patch + pkgName] = true;
+    crEvent.val[`ext-${patch}-${pkgName}`] = true;
     return gqlMutation<
       { updateExtension: { extension: Extension } },
       {
@@ -269,7 +269,7 @@ export const suwaManager = {
       },
     })
       .then((data) => {
-        crEvent.val["ext-update" + pkgName] = false;
+        crEvent.val[`ext-${patch}-${pkgName}`] = false;
         if (refreshAfter) {
           this.getSources();
           this.getExtensions();
@@ -417,11 +417,13 @@ export const suwaManager = {
 
   async getChaptersManga(
     mangaId: number,
+    skipCache: boolean = false,
     order: ChapterOrderInput[] = [{ by: "SOURCE_ORDER", byType: "DESC" }],
   ): Promise<ChapterList> {
     return gqlQuery<{ chapters: ChapterList }, GetChaptersMangaVariables>(
       getChaptersMangaQuery,
       { condition: { mangaId }, order },
+      { skipCache },
     ).then((data) => data.chapters);
   },
 };

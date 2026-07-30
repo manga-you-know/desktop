@@ -44,6 +44,8 @@ export const getSources = gql`
           repo
           isObsolete
           hasUpdate
+          versionCode
+          versionName
           contentWarning
         }
       }

@@ -158,11 +158,14 @@
                 <span>
                   {openedExtension.value.extension.name}
                 </span>
-                <span class="flex gap-3 text-base">
-                  {openedExtension.value.extension.versionName}
-                  <span class="text-red-500">
-                    {openedExtension.value.extension.isNsfw ? "+18" : ""}
+                <span class="flex gap-2 text-base">
+                  <span>
+                    {openedExtension.value.extension.versionName}
                   </span>
+                  {#if openedExtension.value.extension.isNsfw}
+                    •
+                    <span class="text-red-500">18+</span>
+                  {/if}
                 </span>
               </div>
             </Dialog.Title>

@@ -330,6 +330,11 @@ export const colorTheme = new StoredState<{
     destructive: "",
   },
 });
+export const compactSourceSelector = new StoredState<boolean>({
+  key: "compact_source_selector",
+  defaultValue: false,
+  alternatives: [true, false],
+});
 
 export const sidebarStyle = new StoredState<
   "collapsed" | "expanded" | "expand-on-hover"

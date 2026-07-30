@@ -9,20 +9,46 @@
     openedMangas,
     themeMode,
   } from "@/states";
+  import type { ChapterListItem } from "@/types/server";
   import Icon from "@iconify/svelte";
+  import { VList } from "virtua/svelte";
+
+  let chaptersCache: Record<string, ChapterListItem[]> = $state({});
 
   openedManga.onvaluechange = () => {
     showDesc = false;
     if ("s" in manga && openedManga.value !== "") {
+      const key = openedManga.value;
       suwaManager.getMangaScreen(manga.s.id).then((m) => {
         openedMangas.value[openedManga.value] = { s: m };
-        const key = openedManga.value;
         if (!m.initialized) {
           suwaManager.fetchManga(m.id).then((mf) => {
             openedMangas.value[key] = { s: mf };
           });
         }
       });
+      if (!chaptersCache[key] || chaptersCache[key].length === 0) {
+        const mangaId = manga.s.id;
+        suwaManager.getChaptersManga(mangaId).then((r) => {
+          if (r.totalCount === 0) {
+            suwaManager
+              .refreshManga(mangaId, {
+                fetchManga: false,
+                fetchChapters: true,
+              })
+              .then((r2) => {
+                if (r2.chapters?.length) {
+                  suwaManager.getChaptersManga(mangaId, true).then((r3) => {
+                    console.log(r3);
+                    chaptersCache[key] = r3.nodes;
+                  });
+                }
+              });
+          } else {
+            chaptersCache[key] = r.nodes;
+          }
+        });
+      }
     }
   };
 
@@ -45,6 +71,8 @@
           }
       : undefined,
   );
+
+  let currentChapters = $derived(chaptersCache[openedManga.value] ?? []);
 </script>
 
 <div
@@ -190,6 +218,42 @@
               />
             </Button>
           </div>
+        </div>
+        <div class="flex h-full w-full flex-col">
+          <div class="flex w-full items-center gap-2">
+            <Button>{currentChapters.length}</Button>
+            <Button>Idk</Button>
+          </div>
+          <VList data={currentChapters}>
+            {#snippet children(chapter, _)}
+              <Button
+                class="h-16 w-full flex-col items-start justify-start gap-1"
+                variant="outline"
+                onclick={() => {
+                  console.log(chapter);
+                }}
+              >
+                <span class="text-sm">
+                  {chapter.name}
+                  <!-- .replace(`Chapter ${chapter.chapterNumber} - `, "")
+                    .replace(`Chapter ${chapter.chapterNumber}`, "")} -->
+                </span>
+                <span class="flex text-xs">
+                  <!-- {#if chapter.name !== `Chapter ${chapter.chapterNumber}`} -->
+                  <!-- {/if} -->
+                  {chapter.chapterNumber}
+                  {#if chapter.scanlator && chapter.scanlator !== "Unknown"}
+                    •
+                    {chapter.scanlator}
+                  {/if}
+                  {#if chapter.uploadDate !== "0"}
+                    •
+                    {new Date(Number(chapter.uploadDate)).toLocaleDateString()}
+                  {/if}
+                </span>
+              </Button>
+            {/snippet}
+          </VList>
         </div>
         <div class="flex h-full flex-col justify-center">
           <Button
