@@ -98,6 +98,7 @@ export const sources = sqliteTable(
     chaptersLastFetched: integer("chapters_last_fetched", {
       mode: "timestamp",
     }),
+    lastFetchedChapterNumber: text("last_fetched_chapter_number"),
     dataLastFetched: integer("data_last_fetched", {
       mode: "timestamp",
     }).$defaultFn(() => new Date()),
@@ -308,6 +309,9 @@ export const savedPanels = sqliteTable(
       onDelete: "set null",
     }),
     sourceId: integer("source_id").references(() => sources.id, {
+      onDelete: "set null",
+    }),
+    chapterId: integer("chapter_id").references(() => chapters.id, {
       onDelete: "set null",
     }),
     path: text("path").notNull(),

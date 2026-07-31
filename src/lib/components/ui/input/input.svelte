@@ -8,7 +8,7 @@
   import Icon from "@iconify/svelte";
 
   export const inputVariants = tv({
-    base: "flex h-10 text-sm font-medium rounded-xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none text-primary-foreground peer",
+    base: "flex h-10 text-sm font-medium rounded-xl px-3 py-1 shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none text-primary-foreground peer",
     variants: {
       variant: {
         default:

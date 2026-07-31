@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Image } from "@/components";
-  import { Button, Label } from "@/lib/components";
+  import { Badge, Button, Input, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
   import { cn } from "@/lib/utils";
   import {
@@ -11,6 +11,7 @@
   } from "@/states";
   import type { ChapterListItem } from "@/types/server";
   import Icon from "@iconify/svelte";
+  import { ScrollingValue } from "svelte-ux";
   import { VList } from "virtua/svelte";
 
   let chaptersCache: Record<string, ChapterListItem[]> = $state({});
@@ -73,6 +74,12 @@
   );
 
   let currentChapters = $derived(chaptersCache[openedManga.value] ?? []);
+  let chaptersFilter = $state("");
+  let filteredChapters = $derived(
+    currentChapters.filter((c) =>
+      c.name.toLowerCase().includes(chaptersFilter),
+    ),
+  );
 </script>
 
 <div
@@ -176,7 +183,7 @@
           </Button>
         </div>
       </div>
-      <div class="flex w-1/3 gap-3">
+      <div class="flex w-1/3 gap-3 pb-4">
         <div class="flex h-full flex-col justify-center">
           <Button
             class="w-10 rounded-l-none border-l-0"
@@ -219,12 +226,42 @@
             </Button>
           </div>
         </div>
-        <div class="flex h-full w-full flex-col">
-          <div class="flex w-full items-center gap-2">
-            <Button>{currentChapters.length}</Button>
-            <Button>Idk</Button>
+        <div
+          class="bg-background/70 flex h-full w-full flex-col gap-2 rounded-xl p-2"
+        >
+          <div
+            class="bg-secondary/40 flex w-full flex-col items-center gap-2 rounded-lg p-2 lg:flex-row"
+          >
+            <div class="flex w-full gap-2">
+              <Badge class="h-10 min-w-18" variant="outline">
+                <ScrollingValue value={filteredChapters.length} />
+                /
+                <ScrollingValue value={currentChapters.length} />
+              </Badge>
+              <Input
+                variant="outline"
+                placeholder="Filter chapters..."
+                bind:value={chaptersFilter}
+                autofocus
+              />
+            </div>
+            <div class="flex w-full gap-2">
+              <Button
+                variant="outline"
+                onclick={() => {
+                  // suwaManager.refreshManga()
+                  if ("s" in manga) {
+                    suwaManager.getChaptersManga(manga.s.id).then((data) => {
+                      chaptersCache[openedManga.value] = data.nodes;
+                    });
+                  }
+                }}
+              >
+                <Icon icon="lucide:refresh-cw" />
+              </Button>
+            </div>
           </div>
-          <VList data={currentChapters}>
+          <VList data={filteredChapters}>
             {#snippet children(chapter, _)}
               <Button
                 class="h-16 w-full flex-col items-start justify-start gap-1"
