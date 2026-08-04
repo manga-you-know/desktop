@@ -89,7 +89,7 @@
   let { children } = $props();
   const window = getCurrentWindow();
 
-  // add icons to use
+  // preload installed icons
   addCollection(lucide);
   addCollection(lineMd);
   addCollection(tabler);

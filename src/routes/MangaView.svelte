@@ -1,13 +1,15 @@
 <script lang="ts">
   import { Image } from "@/components";
+  import Tooltip from "@/components/common/Tooltip.svelte";
   import { Badge, Button, Input, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
-  import { cn } from "@/lib/utils";
+  import { cn, fromEpochMillis, fromEpochSeconds, timeAgo } from "@/lib/utils";
   import {
     currentMangaTab,
     openedManga,
     openedMangas,
     themeMode,
+    timeH,
   } from "@/states";
   import type { ChapterListItem } from "@/types/server";
   import Icon from "@iconify/svelte";
@@ -80,6 +82,13 @@
       c.name.toLowerCase().includes(chaptersFilter),
     ),
   );
+  let groupedChapters = $derived(
+    Object.entries(Object.groupBy(filteredChapters, (c) => c.chapterNumber)),
+  );
+
+  let lastFetchedAt = $derived(
+    fromEpochSeconds(currentChapters.at(0)?.fetchedAt),
+  );
 </script>
 
 <div
@@ -92,12 +101,11 @@
     <div class="flex w-full justify-between p-3">
       <div class="flex w-[calc(100%-19rem)] items-center gap-3">
         <Button
-          variant="outline"
-          onclick={() => {
-            openedManga.close();
-          }}
+          class="h-10 w-13"
+          variant="ghost"
+          onclick={() => openedManga.close()}
         >
-          <Icon class="size-5!" icon="lucide:arrow-left" />
+          <Icon class="size-5!" icon="lucide:chevron-left" />
         </Button>
         <Label class="truncate pr-5 text-2xl text-nowrap">{mangaJ.title}</Label>
       </div>
@@ -121,6 +129,7 @@
                 : "hover:bg-secondary/40 hover:text-primary/80",
             )}
             variant="ghost"
+            disabled={!("db" in mangaJ)}
             onclick={() => {
               currentMangaTab.value = "edit";
             }}
@@ -149,6 +158,7 @@
                 : "hover:bg-secondary/40 hover:text-primary/80",
             )}
             variant="ghost"
+            disabled={!("db" in mangaJ)}
             onclick={() => {
               currentMangaTab.value = "images";
             }}
@@ -173,7 +183,7 @@
         <div class="flex w-full flex-col gap-2"></div>
         <div class="flex h-full flex-col justify-center">
           <Button
-            class="w-10 rounded-r-none border-r-0"
+            class="h-13 w-10 rounded-r-none border-r-0"
             variant="outline"
             onclick={() => {
               currentMangaTab.value = "read";
@@ -186,8 +196,9 @@
       <div class="flex w-1/3 gap-3 pb-4">
         <div class="flex h-full flex-col justify-center">
           <Button
-            class="w-10 rounded-l-none border-l-0"
+            class="h-13 w-10 rounded-l-none border-l-0"
             variant="outline"
+            disabled={!("db" in mangaJ)}
             onclick={() => {
               currentMangaTab.value = "edit";
             }}
@@ -230,34 +241,58 @@
           class="bg-background/70 flex h-full w-full flex-col gap-2 rounded-xl p-2"
         >
           <div
-            class="bg-secondary/40 flex w-full flex-col items-center gap-2 rounded-lg p-2 lg:flex-row"
+            class="bg-secondary/40 flex w-full flex-col gap-1.5 rounded-lg p-1"
           >
-            <div class="flex w-full gap-2">
-              <Badge class="h-10 min-w-18" variant="outline">
-                <ScrollingValue value={filteredChapters.length} />
-                /
-                <ScrollingValue value={currentChapters.length} />
-              </Badge>
-              <Input
-                variant="outline"
-                placeholder="Filter chapters..."
-                bind:value={chaptersFilter}
-                autofocus
-              />
+            <div class="flex flex-col items-center gap-1.5 lg:flex-row">
+              <div class="flex w-full gap-1.5">
+                <Badge class="h-10 min-w-18 rounded-lg" variant="outline">
+                  <ScrollingValue value={filteredChapters.length} />
+                  /
+                  <ScrollingValue value={currentChapters.length} />
+                </Badge>
+                <Input
+                  class="rounded-lg"
+                  variant="outline"
+                  placeholder="Filter chapters..."
+                  bind:value={chaptersFilter}
+                  autofocus
+                />
+              </div>
+              <div class="flex w-full gap-2"></div>
             </div>
-            <div class="flex w-full gap-2">
-              <Button
-                variant="outline"
-                onclick={() => {
-                  // suwaManager.refreshManga()
-                  if ("s" in manga) {
-                    suwaManager.getChaptersManga(manga.s.id).then((data) => {
-                      chaptersCache[openedManga.value] = data.nodes;
-                    });
-                  }
-                }}
-              >
-                <Icon icon="lucide:refresh-cw" />
+            <!-- <div class="bg-primary/80 h-1 w-full rounded-2xl"></div> -->
+            <div class="flex items-center gap-1.5">
+              <Tooltip text={lastFetchedAt.toLocaleString()}>
+                <Button
+                  class="rounded-lg"
+                  variant="secondary"
+                  onclick={() => {
+                    // suwaManager.refreshManga()
+                    if ("s" in manga) {
+                      suwaManager
+                        .getChaptersManga(manga.s.id, true)
+                        .then((data) => {
+                          chaptersCache[openedManga.value] = data.nodes;
+                        });
+                    }
+                  }}
+                >
+                  <Icon icon="lucide:refresh-cw" />
+                  Fetched at:
+                  <span class="font-bold">
+                    {#key timeH.minutes}
+                      {timeAgo(lastFetchedAt)}
+                    {/key}
+                  </span>
+                </Button>
+              </Tooltip>
+              <!-- <Badge class="h-10" variant="outline">
+                  <Label>
+                  </Label>
+                </Badge> -->
+              <Button class="w-full rounded-lg" variant="outline">
+                <Icon icon="lucide:play" />
+                Chapter {currentChapters.at(0)?.chapterNumber}
               </Button>
             </div>
           </div>
@@ -276,17 +311,11 @@
                     .replace(`Chapter ${chapter.chapterNumber}`, "")} -->
                 </span>
                 <span class="flex text-xs">
-                  <!-- {#if chapter.name !== `Chapter ${chapter.chapterNumber}`} -->
-                  <!-- {/if} -->
-                  {chapter.chapterNumber}
                   {#if chapter.scanlator && chapter.scanlator !== "Unknown"}
-                    •
                     {chapter.scanlator}
-                  {/if}
-                  {#if chapter.uploadDate !== "0"}
                     •
-                    {new Date(Number(chapter.uploadDate)).toLocaleDateString()}
                   {/if}
+                  {fromEpochMillis(chapter.uploadDate).toLocaleDateString()}
                 </span>
               </Button>
             {/snippet}
@@ -294,8 +323,9 @@
         </div>
         <div class="flex h-full flex-col justify-center">
           <Button
-            class="w-10 rounded-r-none border-r-0"
+            class="h-13 w-10 rounded-r-none border-r-0"
             variant="outline"
+            disabled={!("db" in mangaJ)}
             onclick={() => {
               currentMangaTab.value = "images";
             }}
@@ -307,7 +337,7 @@
       <div class="flex w-1/3 gap-3">
         <div class="flex h-full flex-col justify-center">
           <Button
-            class="w-10 rounded-l-none border-l-0"
+            class="h-13 w-10 rounded-l-none border-l-0"
             variant="outline"
             onclick={() => {
               currentMangaTab.value = "read";
@@ -326,12 +356,7 @@
       <Label class="text-xl">Unable to load manga</Label>
       <div class="flew-wrap flex items-center justify-center gap-1"></div>
       <div class="flex justify-center gap-2">
-        <Button
-          class="w-30"
-          onclick={() => {
-            openedManga.close();
-          }}
-        >
+        <Button class="w-30" onclick={() => openedManga.close()}>
           <Icon icon="lucide:arrow-big-left" />
           Go back
         </Button>

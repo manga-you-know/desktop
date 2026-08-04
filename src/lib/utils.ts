@@ -62,6 +62,30 @@ export const slugify = (str: string) => {
     .replace(/^-+|-+$/g, "");
 };
 
-export const fromEpochSeconds = (v: string | number) =>
+export const fromEpochSeconds = (v: string | number | undefined) =>
   new Date(Number(v) * 1000);
-export const fromEpochMillis = (v: string | number) => new Date(Number(v));
+export const fromEpochMillis = (v: string | number | undefined) =>
+  new Date(Number(v));
+
+export const timeAgo = (date: Date): string => {
+  if (isNaN(date.getTime())) return "—";
+  const diffMs = Date.now() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+
+  if (diffSec < 60) return "just now";
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays}d ago`;
+
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) return `${diffMonths}mo ago`;
+
+  const diffYears = Math.floor(diffDays / 365);
+  return `${diffYears}y ago`;
+};

@@ -164,6 +164,9 @@
   $effect(() => {
     if (selectedSource) {
       untrack(() => {
+        document
+          .getElementById("div-mangas")
+          ?.scroll({ top: 0, behavior: "instant" });
         if (!selectedSource.supportsLatest && searchType.value === "LATEST") {
           searchType.value = "POPULAR";
         }
@@ -178,7 +181,9 @@
   });
 
   searchType.onchange = () => {
-    document.getElementById("div-mangas")?.scroll({ top: 0 });
+    document
+      .getElementById("div-mangas")
+      ?.scroll({ top: 0, behavior: "instant" });
     search(false);
   };
 

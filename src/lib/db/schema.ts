@@ -189,6 +189,11 @@ export const chapters = sqliteTable(
   ],
 );
 
+/* export const chapterChapter = sqliteTable("chapter_chapter", {
+  chapterOriginId: integer("chapter_origin_id"),
+  duplicateOf
+}) */
+
 export const series = sqliteTable(
   "series",
   {

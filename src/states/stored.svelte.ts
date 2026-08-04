@@ -27,7 +27,12 @@ const getBefore = async (
   defaultValue: any,
   store: keyof typeof stores,
 ) => {
-  if (stores[store] === null) stores[store] = await load(store + ".json");
+  if (stores[store] === null) {
+    stores[store] = await load(store + ".json");
+    /* stores[store].onChange((key, value) => {
+  
+}) */
+  }
   if (defaultData === null && store === "settings") {
     if (loadingPromise === null) {
       loadingPromise = stores[store].entries().then((entries) => {
@@ -57,7 +62,7 @@ class StoredState<T> {
   #defaultValue: T;
   #alternatives: T[];
   onchange: (_: T) => void;
-  #store: keyof typeof stores;
+  store: keyof typeof stores;
 
   constructor(config: {
     key: string;
@@ -71,8 +76,8 @@ class StoredState<T> {
     this.#defaultValue = config.defaultValue;
     this.#alternatives = config.alternatives ?? [];
     this.onchange = config.onchange ?? (() => { });
-    this.#store = config.store ?? "settings";
-    getBefore(this.#key, this.#defaultValue, this.#store).then((value: T) => {
+    this.store = config.store ?? "settings";
+    getBefore(this.#key, this.#defaultValue, this.store).then((value: T) => {
       this.#value = value;
     });
   }
@@ -83,7 +88,7 @@ class StoredState<T> {
 
   set value(v) {
     this.#value = v;
-    writeValue(this.#key, this.#value, this.#store);
+    writeValue(this.#key, this.#value, this.store);
     this.onchange(this.#value);
   }
 
@@ -92,7 +97,7 @@ class StoredState<T> {
   };
 
   save = () => {
-    writeValue(this.#key, this.#value, this.#store);
+    writeValue(this.#key, this.#value, this.store);
     this.onchange(this.#value);
   };
 

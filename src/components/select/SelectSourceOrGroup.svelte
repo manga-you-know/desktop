@@ -485,7 +485,7 @@
         </div>
         <VList
           class={cn(
-            "scrollbar w-full",
+            "scrollbar w-full scroll-smooth",
             filteredSources.length > 0 ? "h-60!" : "h-0",
           )}
           data={filteredSources}
@@ -511,7 +511,7 @@
                 >
                   <Button
                     class={cn(
-                      "bg-background group/extension hover:bg-secondary/40 text-primary relative m-0.5 flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
+                      "bg-background group/extension hover:bg-secondary/40 text-primary relative m-[1.7px] flex h-12 w-74 items-center justify-between gap-2 rounded-xl p-2 hover:no-underline!",
                       selectedSourceId.value === source.id &&
                         "bg-transparent backdrop-blur-xl",
                       source.extension.hasUpdate && "border-info border",

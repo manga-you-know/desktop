@@ -298,6 +298,21 @@ class DBHelper {
 
 export const dbHelper = new DBHelper();
 
+class TimeH {
+  date = $state(new Date());
+  hours = $derived(this.date.getHours());
+  minutes = $derived(this.date.getMinutes());
+  seconds = $derived(this.date.getSeconds());
+  // milliseconds = $derived(this.date.getMilliseconds());
+  constructor() {
+    setInterval(() => {
+      this.date = new Date();
+    }, 1000);
+  }
+}
+
+export const timeH = new TimeH();
+
 // export const selectedScan = writable<string>("");
 // export const libraryTag = writable<Mark | undefined>(undefined);
 // export const libraryOrder = writable<string>("id");
