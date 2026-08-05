@@ -44,6 +44,7 @@ export const updateExtension = gql`
         iconUrl
         repo
         isNsfw
+        contentWarning
         isInstalled
         isObsolete
         hasUpdate

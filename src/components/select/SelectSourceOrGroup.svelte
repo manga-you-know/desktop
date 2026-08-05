@@ -143,9 +143,13 @@
                         ·
                         {selectedSource.extension.versionName}
                       </span>
-                      {#if selectedSource.isNsfw}
+                      {#if selectedSource.contentWarning !== "SAFE"}
                         ·
-                        <span class="text-red-500">18+</span>
+                        {#if selectedSource.contentWarning === "MIXED"}
+                          <span class="text-purple-600">MIXED</span>
+                        {:else}
+                          <span class="text-destructive">NSFW</span>
+                        {/if}
                       {/if}
                     </span>
                   {/if}
@@ -159,15 +163,12 @@
                 <Tooltip text="Update source extension" delay={800}>
                   <Button
                     class={cn(
-                      "bg-info/40 hover:bg-info/70 hover:border-background border-info pointer-events-none absolute -top-2 -right-1 size-8 translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
+                      "bg-info/40 hover:bg-info/70 hover:border-background border-info pointer-events-none absolute -top-2 -left-1 size-8 -translate-x-4 rounded-xl opacity-0 backdrop-blur-sm transition-all duration-500",
                       selectedSource.extension.hasUpdate &&
                         "pointer-events-auto group-hover/select:translate-x-0 group-hover/select:opacity-100",
-                      selectedSource.isConfigurable &&
-                        selectedSource?.extension.hasUpdate &&
-                        "group-hover/select:-translate-x-9",
                       crEvent.val[
                         `ext-update-${selectedSource.extension.pkgName}`
-                      ] && "-translate-x-9",
+                      ] && "translate-x-0 opacity-100",
                     )}
                     variant="outline"
                     onclick={() => {
@@ -179,7 +180,7 @@
                   >
                     <Icon
                       class={cn(
-                        "rotate-0 transition-all duration-500 group-hover/select:-rotate-180",
+                        "rotate-0 transition-all duration-500 group-hover/select:rotate-180",
                         crEvent.val[
                           `ext-update-${selectedSource.extension.pkgName}`
                         ] && "animate-spin",

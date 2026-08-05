@@ -27,7 +27,7 @@
 
 <button
   class={cn(
-    "border-secondary bg-secondary/50 group/card relative z-0 flex h-95 w-60 cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border p-0.5",
+    "border-secondary bg-secondary/50 group/card relative z-0 flex h-95 w-64 cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border p-0.5",
     isInLibrary && "fetch-card",
   )}
   onclick={() => {
@@ -37,7 +37,7 @@
     openedManga.open(key);
   }}
 >
-  <Image class="h-95 w-60 rounded-lg object-cover" src={manga.thumbnailUrl} />
+  <Image class="h-95 w-64 rounded-lg object-cover" src={manga.thumbnailUrl} />
   <div
     class={cn(
       "bg-secondary text-primary absolute top-0 left-0 flex h-9 items-center justify-center rounded-br-xl p-1 transition-all duration-400",

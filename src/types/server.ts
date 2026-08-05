@@ -1,3 +1,5 @@
+export type ContentWarning = "SAFE" | "MIXED" | "NSFW";
+
 export type Extension = {
   pkgName: string;
   name: string;
@@ -7,6 +9,7 @@ export type Extension = {
   iconUrl: string;
   repo: string;
   isNsfw: boolean;
+  contentWarning: ContentWarning;
   isInstalled: boolean;
   isObsolete: boolean;
   hasUpdate: boolean;
@@ -25,6 +28,7 @@ export type Source = {
   lang: string;
   iconUrl: string;
   isNsfw: boolean;
+  contentWarning: ContentWarning;
   isConfigurable: boolean;
   supportsLatest: boolean;
   meta: SourceMeta[];

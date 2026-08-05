@@ -136,10 +136,10 @@
     ),
   );
 
-  let itemsPerRow = $derived(Math.floor(divWidth / 250));
+  let itemsPerRow = $derived(Math.floor(divWidth / 266));
 
   let rowedMangas: MangaFetch[][] = $derived.by(() => {
-    if (!scrollContainer || divWidth < 210) return [filteredManga];
+    if (!scrollContainer || divWidth < 226) return [filteredManga];
     return filteredManga.reduce((acc: MangaFetch[][], _, i) => {
       if (i % itemsPerRow === 0)
         acc.push(filteredManga.slice(i, i + itemsPerRow));
@@ -247,16 +247,6 @@
 </script>
 
 <div class="relative flex h-full w-full">
-  <div
-    class={cn(
-      "absolute z-5 h-full w-full transition-all duration-500 ease-in-out",
-      openedManga.active
-        ? "translate-x-0 opacity-100"
-        : "pointer-events-none translate-x-80 opacity-0",
-    )}
-  >
-    <MangaView />
-  </div>
   <div class="justify-around-stretch absolute flex h-full w-full flex-col">
     <div class="my-2 flex items-center justify-center gap-2">
       <Badge class="h-10 w-14" variant="outline">
@@ -500,7 +490,7 @@
                 {#each { length: itemsPerRow - row.length }}
                   {#if searchState === "loading"}
                     <div
-                      class="bg-secondary flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
+                      class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
                       in:fade
                     >
                       <Icon
@@ -509,7 +499,7 @@
                       />
                     </div>
                   {:else}
-                    <div class="h-95 w-60 p-0.5"></div>
+                    <div class="h-95 w-64 p-0.5"></div>
                   {/if}
                 {/each}
               {/if}
@@ -519,7 +509,7 @@
             <div class="mb-0.5 flex w-full justify-center gap-0.5">
               {#each { length: itemsPerRow }, i (i)}
                 <div
-                  class="bg-secondary flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
+                  class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
                   in:fade
                 >
                   <Icon
@@ -619,7 +609,7 @@
       <div class="mb-0.5 flex w-full justify-center gap-0.5">
         {#each { length: searchState === "loading" && rowedMangas.length === 0 ? itemsPerRow : 0 }, i (i)}
           <div
-            class="bg-secondary mt-14 flex h-95 w-60 animate-pulse items-center justify-center rounded-xl p-0.5"
+            class="bg-secondary mt-14 flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
             in:fade
           >
             <Icon class="size-10 animate-spin" icon="mingcute:loading-fill" />

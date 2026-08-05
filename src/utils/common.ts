@@ -3,7 +3,9 @@ export function isEmpty(obj: any): boolean {
 }
 
 export function titleCase(str: string | undefined): string {
-  return str === undefined ? "" : str.charAt(0).toUpperCase() + str.slice(1);
+  return str === undefined
+    ? ""
+    : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 export function strNotEmpty(str: string | number | undefined): string {

@@ -76,7 +76,12 @@
   import { type } from "@tauri-apps/plugin-os";
   import { Child, Command } from "@tauri-apps/plugin-shell";
   import { delay } from "@/utils";
-  import { afterNavigate, beforeNavigate, goto, onNavigate } from "$app/navigation";
+  import {
+    afterNavigate,
+    beforeNavigate,
+    goto,
+    onNavigate,
+  } from "$app/navigation";
   import { suwaManager } from "@/lib/helpers";
   import { addCollection } from "@iconify/svelte";
   import lucide from "@iconify-json/lucide/icons.json";
@@ -85,6 +90,7 @@
   import mingcute from "@iconify-json/mingcute/icons.json";
   import { fly } from "svelte/transition";
   import type { RouteId } from "$app/types";
+  import MangaView from "./MangaView.svelte";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -226,7 +232,7 @@
       lastPage.value = to.route.id;
     }
     if (openedManga.active) {
-      openedManga.close()
+      openedManga.close();
     }
   });
 
@@ -270,7 +276,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet" />
 
-<div class={cn("relative text-primary border-background", themeMode.value)}>
+<div class={cn("text-primary border-background relative", themeMode.value)}>
   <Toaster
     theme={themeMode.value}
     toastOptions={{ classes: { toast: "rounded-2xl" } }}
@@ -289,7 +295,7 @@
   <SearchFilters />
   <div
     class={cn(
-      "fixed z-999 pointer-events-none w-screen h-screen transition-colors duration-300",
+      "pointer-events-none fixed z-999 h-screen w-screen transition-colors duration-300",
       $useFilter &&
         (!$filterReader || page.route.id?.startsWith("/reader")) &&
         $filter,
@@ -297,7 +303,7 @@
   ></div>
   <div
     class={cn(
-      "flex flex-col overflow-hidden transition-colors duration-300 group/webkit",
+      "group/webkit flex flex-col overflow-hidden transition-colors duration-300",
       !$windowEffects && "bg-background",
       page.route.id?.startsWith("/reader") && "dark:bg-black",
     )}
@@ -305,7 +311,7 @@
     <!-- group-data-[retro=active]/theme:bg-red-500 -->
     <div
       class={cn(
-        "w-screen h-screen filter-effects",
+        "filter-effects h-screen w-screen",
         $blackWhiteMode && "grayscale!",
       )}
       style="--contrast: {$contrast}; --brightness: {$brightness}; --saturation: {$saturation}; --sepia: {$sepia};"
@@ -325,39 +331,28 @@
           >
             <Sidebar variant="inset" />
             <SidebarProv.Inset class={cn("p-2")}>
+              <div
+                class={cn(
+                  "absolute z-5 h-full w-full pr-4 pb-4 transition-all duration-500 ease-in-out",
+                  openedManga.active
+                    ? "translate-x-0 opacity-100"
+                    : "pointer-events-none translate-x-80 opacity-0",
+                )}
+              >
+                <MangaView />
+              </div>
               {#key page.route.id}
                 <div
                   class={cn(
-                    "m-0 flex w-full justify-center absolute pb-6 pr-4 overflow-hidden ",
+                    "absolute m-0 flex w-full justify-center overflow-hidden pr-4 pb-6 ",
                     $customTitlebar ? "h-[calc(100vh-2.5rem)]!" : "h-[99vh]!",
                   )}
                   in:fly={{
-                    y:
-                      page.route.id?.startsWith("/manga") ||
-                      lastPage.value.startsWith("/manga")
-                        ? 0
-                        : getY(page.route.id, lastPage.value),
-                    x:
-                      page.route.id?.startsWith("/manga") ||
-                      lastPage.value.startsWith("/manga")
-                        ? page.route.id?.startsWith("/manga")
-                          ? 250
-                          : -250
-                        : 0,
+                    y: getY(page.route.id, lastPage.value),
                     duration: crEvent.val["page-change"] ? 400 : 0,
                   }}
                   out:fly={{
-                    y:
-                      page.route.id?.startsWith("/manga") ||
-                      lastPage.value.startsWith("/manga")
-                        ? 0
-                        : getY(page.route.id, lastPage.value) * -1, //inverted because its out idk
-                    x:
-                      lastPage.value.startsWith("/manga")
-                        ? page.route.id?.startsWith("/manga")
-                          ? -250
-                          : 250
-                        : 0,
+                    y: getY(page.route.id, lastPage.value) * -1, //inverted because its out idk
                     duration: crEvent.val["page-change"] ? 400 : 0,
                   }}
                 >
@@ -383,7 +378,7 @@
 </svelte:head>
 <style>
   :root {
-      interpolate-size: allow-keywords; /* 👈 */
+    interpolate-size: allow-keywords; /* 👈 */
   }
   .filter-effects {
     filter: contrast(var(--contrast)) brightness(var(--brightness))

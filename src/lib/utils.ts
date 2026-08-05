@@ -19,7 +19,9 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & {
 };
 
 export function titleCase(str: string | undefined): string {
-  return str === undefined ? "" : str.charAt(0).toUpperCase() + str.slice(1);
+  return str === undefined
+    ? ""
+    : str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 export const removeOrigin = (url: string) => {

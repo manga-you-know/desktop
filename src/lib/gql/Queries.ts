@@ -34,6 +34,7 @@ export const getSources = gql`
         isNsfw
         isConfigurable
         supportsLatest
+        contentWarning
         meta {
           sourceId
           key

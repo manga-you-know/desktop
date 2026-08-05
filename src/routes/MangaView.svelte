@@ -3,11 +3,18 @@
   import Tooltip from "@/components/common/Tooltip.svelte";
   import { Badge, Button, Input, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
-  import { cn, fromEpochMillis, fromEpochSeconds, timeAgo } from "@/lib/utils";
+  import {
+    cn,
+    fromEpochMillis,
+    fromEpochSeconds,
+    timeAgo,
+    titleCase,
+  } from "@/lib/utils";
   import {
     currentMangaTab,
     openedManga,
     openedMangas,
+    suwayomi,
     themeMode,
     timeH,
   } from "@/states";
@@ -15,11 +22,13 @@
   import Icon from "@iconify/svelte";
   import { ScrollingValue } from "svelte-ux";
   import { VList } from "virtua/svelte";
+  import { marked } from "marked";
+  import DOMPurify from "dompurify";
+  import { copyText } from "@/functions";
 
   let chaptersCache: Record<string, ChapterListItem[]> = $state({});
 
   openedManga.onvaluechange = () => {
-    showDesc = false;
     if ("s" in manga && openedManga.value !== "") {
       const key = openedManga.value;
       suwaManager.getMangaScreen(manga.s.id).then((m) => {
@@ -65,12 +74,22 @@
             cover: manga.s.thumbnailUrl,
             description: manga.s.description,
             realUrl: manga.s.realUrl,
+            genre: manga.s.genre,
+            author: manga.s.author,
+            artist: manga.s.artist,
+            sourceId: manga.s.sourceId,
+            status: manga.s.status,
           }
         : {
             title: manga.db.title,
             cover: manga.db.currentCover,
             description: manga.db.description,
             realUrl: manga,
+            genre: manga.db.genre,
+            author: manga.db.author,
+            artist: manga.db.artist,
+            sourceId: "",
+            status: "",
           }
       : undefined,
   );
@@ -89,6 +108,22 @@
   let lastFetchedAt = $derived(
     fromEpochSeconds(currentChapters.at(0)?.fetchedAt),
   );
+
+  let mdDesc = $derived(
+    mangaJ?.description
+      ? DOMPurify.sanitize(marked.parse(mangaJ.description, { async: false }))
+      : "",
+  );
+
+  let sources = $derived(
+    mangaJ !== undefined
+      ? "s" in manga
+        ? [suwayomi.sourcesById[mangaJ.sourceId]]
+        : []
+      : [],
+  );
+
+  // $inspect(sources);
 </script>
 
 <div
@@ -170,7 +205,7 @@
     </div>
     <!-- <div class="bg-accent h-px w-full rounded-lg"></div> -->
     <div
-      class="flex h-full transition-transform duration-400 ease-in-out"
+      class="flex h-full max-h-[calc(100%-90px)] transition-transform duration-400 ease-in-out"
       style="width: 300%; transform: translateX({currentMangaTab.value ===
       'edit'
         ? '33.3333%'
@@ -206,22 +241,159 @@
             <Icon icon="lucide:pen" />
           </Button>
         </div>
-        <div class="flex w-full flex-col gap-2">
-          <Image
-            class="h-110 w-70 rounded-lg object-cover"
-            src={mangaJ.cover}
-          />
-          <div class="relative flex flex-col">
+        <div
+          class="scrollbar flex h-full w-6/11 flex-col gap-2 overflow-x-hidden overflow-y-auto"
+        >
+          <div class="flex w-full gap-2">
+            <Image
+              class="h-110 w-70 shrink-0 rounded-lg object-cover"
+              src={mangaJ.cover}
+            />
+            <div
+              class="flex w-[calc(100%-18rem)] flex-col items-center gap-1 *:justify-between *:rounded-lg *:text-sm *:font-semibold"
+            >
+              <Badge
+                class="group w-full gap-1"
+                variant="outline"
+                onclick={() => {
+                  copyText(mangaJ.title, "Title");
+                }}
+              >
+                <div class="text-wrap">
+                  <span class="text-gray-400">Title ~</span>
+                  {mangaJ.title}
+                </div>
+                <div>
+                  <Icon
+                    class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                    icon="lucide:copy"
+                  />
+                </div>
+              </Badge>
+              {#if mangaJ.author}
+                <Badge
+                  class="group w-full gap-2"
+                  variant="outline"
+                  onclick={() => {
+                    copyText(mangaJ.author ?? "", "author");
+                  }}
+                >
+                  <div class="text-wrap">
+                    <span class="text-gray-400">Author ~</span>
+                    {mangaJ.author}
+                  </div>
+                  <div>
+                    <Icon
+                      class="size-4! shrink-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                      icon="lucide:copy"
+                    />
+                  </div>
+                </Badge>
+              {/if}
+              {#if mangaJ.artist}
+                <Badge
+                  class="group w-full gap-2"
+                  variant="outline"
+                  onclick={() => {
+                    copyText(mangaJ.artist ?? "", "artist");
+                  }}
+                >
+                  <div class="text-wrap">
+                    <span class="text-gray-400">Artist ~</span>
+                    {mangaJ.artist}
+                  </div>
+                  <div>
+                    <Icon
+                      class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                      icon="lucide:copy"
+                    />
+                  </div>
+                </Badge>
+              {/if}
+              {#if mangaJ.status}
+                <Badge
+                  class="group w-full gap-2"
+                  variant="outline"
+                  onclick={() => {
+                    copyText(mangaJ.status ?? "", "status");
+                  }}
+                >
+                  <div class="text-wrap">
+                    <span class="text-gray-400">Status ~</span>
+                    {titleCase(mangaJ.status)}
+                  </div>
+                  <div>
+                    <Icon
+                      class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                      icon="lucide:copy"
+                    />
+                  </div>
+                </Badge>
+              {/if}
+              <div class="mt-2 flex w-full items-center">
+                <span class="text-md">Source{"db" in manga ? "s" : ""}</span>
+                <div class="flex gap-2">
+                  <Button
+                    class="h-8 w-10 overflow-hidden rounded-lg"
+                    variant="ghost"
+                    disabled={"s" in manga}
+                  >
+                    <Icon class="size-4!" icon="lucide:plus" />
+                  </Button>
+                </div>
+              </div>
+              {#each sources as source (source.id)}
+                <Button
+                  class="group relative flex w-full overflow-hidden rounded-lg pr-2 pl-1"
+                  variant="ghost"
+                >
+                  <div class="flex w-full items-center gap-1">
+                    <Image
+                      class="size-10 shrink-0 object-cover"
+                      src={source.iconUrl}
+                    />
+                    <span class="truncate">
+                      {source.displayName}
+                    </span>
+                  </div>
+                  <Button
+                    class="absolute top-1 right-1 h-8 w-7 rounded-lg px-2 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100"
+                    variant="ghost"
+                  >
+                    <Icon icon="lucide:ellipsis-vertical" />
+                  </Button>
+                </Button>
+              {/each}
+              <!-- <Icon icon="lucide:square-arrow-out-up-right" /> -->
+            </div>
+          </div>
+          <div class="flex w-full flex-col items-center">
+            <div class="flex w-full gap-1">
+              <Button variant="outline">
+                <Icon icon="lucide:bookmark-off" />
+                Add as entry
+              </Button>
+              <Button variant="secondary">
+                <Icon icon="lucide:squares-subtract" />
+                Add as source
+              </Button>
+              <Button variant="ghost">
+                <Icon icon="lucide:ellipsis-vertical" />
+              </Button>
+            </div>
             <span
               class={cn(
-                "block w-70 min-w-0 overflow-hidden text-xs text-wrap transition-[max-height] duration-400 select-auto",
+                "mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm text-wrap transition-[max-height] duration-400 select-auto",
                 showDesc ? "max-h-200" : "max-h-12",
               )}
             >
-              {mangaJ.description}
+              {@html mdDesc}
             </span>
             <Button
-              class="size-8"
+              class={cn(
+                "mb-2 h-6 rounded-lg backdrop-blur-sm transition-all duration-400",
+                showDesc ? "" : "-mt-3",
+              )}
               variant="ghost"
               onclick={() => {
                 showDesc = !showDesc;
@@ -235,10 +407,23 @@
                 icon="lucide:chevron-down"
               />
             </Button>
+            <div class="flex w-full flex-wrap gap-0.5">
+              {#each mangaJ.genre as genre (genre)}
+                <Badge
+                  class="text-sm"
+                  variant="outline"
+                  onclick={() => {
+                    copyText(genre, "genre");
+                  }}
+                >
+                  {genre}
+                </Badge>
+              {/each}
+            </div>
           </div>
         </div>
         <div
-          class="bg-background/70 flex h-full w-full flex-col gap-2 rounded-xl p-2"
+          class="bg-background/70 flex h-full w-5/11 flex-col gap-2 rounded-xl p-2"
         >
           <div
             class="bg-secondary/40 flex w-full flex-col gap-1.5 rounded-lg p-1"
@@ -292,11 +477,11 @@
                 </Badge> -->
               <Button class="w-full rounded-lg" variant="outline">
                 <Icon icon="lucide:play" />
-                Chapter {currentChapters.at(0)?.chapterNumber}
+                Chapter {currentChapters.at(-1)?.chapterNumber}
               </Button>
             </div>
           </div>
-          <VList data={filteredChapters}>
+          <VList class="scrollbar" data={filteredChapters}>
             {#snippet children(chapter, _)}
               <Button
                 class="h-16 w-full flex-col items-start justify-start gap-1"
@@ -305,13 +490,15 @@
                   console.log(chapter);
                 }}
               >
-                <span class="text-sm">
+                <span class="text-sm font-semibold">
                   {chapter.name}
                   <!-- .replace(`Chapter ${chapter.chapterNumber} - `, "")
                     .replace(`Chapter ${chapter.chapterNumber}`, "")} -->
                 </span>
                 <span class="flex text-xs">
-                  {#if chapter.scanlator && chapter.scanlator !== "Unknown"}
+                  {#if chapter.scanlator && chapter.scanlator !== "Unknown" && chapter.scanlator
+                      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+                      .trim() != ""}
                     {chapter.scanlator}
                     •
                   {/if}
