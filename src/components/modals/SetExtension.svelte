@@ -162,9 +162,13 @@
                   <span>
                     {openedExtension.value.extension.versionName}
                   </span>
-                  {#if openedExtension.value.extension.isNsfw}
-                    •
-                    <span class="text-red-500">18+</span>
+                  {#if openedExtension.value.extension.contentWarning !== "SAFE"}
+                    ·
+                    {#if openedExtension.value.extension.contentWarning === "MIXED"}
+                      <span class="text-purple-600">MIXED</span>
+                    {:else}
+                      <span class="text-destructive">NSFW</span>
+                    {/if}
                   {/if}
                 </span>
               </div>

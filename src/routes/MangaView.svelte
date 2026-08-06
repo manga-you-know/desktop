@@ -250,7 +250,7 @@
               src={mangaJ.cover}
             />
             <div
-              class="flex w-[calc(100%-18rem)] flex-col items-center gap-1 *:justify-between *:rounded-lg *:text-sm *:font-semibold"
+              class="flex max-h-110 w-[calc(100%-18rem)] flex-col items-center gap-1 *:justify-between *:rounded-lg *:text-sm *:font-semibold"
             >
               <Badge
                 class="group w-full gap-1"
@@ -331,10 +331,17 @@
                 </Badge>
               {/if}
               <div class="mt-2 flex w-full items-center">
-                <span class="text-md">Source{"db" in manga ? "s" : ""}</span>
-                <div class="flex gap-2">
+                <span class="text-base">Source{"db" in manga ? "s" : ""}</span>
+                <div class="flex gap-1">
                   <Button
-                    class="h-8 w-10 overflow-hidden rounded-lg"
+                    class="size-8 overflow-hidden rounded-lg"
+                    variant="ghost"
+                    disabled={"s" in manga}
+                  >
+                    <Icon class="size-4!" icon="lucide:arrow-down-up" />
+                  </Button>
+                  <Button
+                    class="size-8 overflow-hidden rounded-lg"
                     variant="ghost"
                     disabled={"s" in manga}
                   >
@@ -383,8 +390,8 @@
             </div>
             <span
               class={cn(
-                "mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm text-wrap transition-[max-height] duration-400 select-auto",
-                showDesc ? "max-h-200" : "max-h-12",
+                "mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm text-wrap whitespace-pre-wrap transition-[max-height] duration-400 select-auto",
+                showDesc ? "max-h-200" : "max-h-16",
               )}
             >
               {@html mdDesc}
@@ -463,7 +470,7 @@
                   }}
                 >
                   <Icon icon="lucide:refresh-cw" />
-                  Fetched at:
+                  Fetched:
                   <span class="font-bold">
                     {#key timeH.minutes}
                       {timeAgo(lastFetchedAt)}

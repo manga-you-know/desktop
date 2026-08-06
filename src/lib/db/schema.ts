@@ -21,6 +21,9 @@ export const mangas = sqliteTable(
     isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     isAnonymous: integer("is_anonymous", { mode: "boolean" }).default(false),
+    autoUpdate: integer("auto_update", { mode: "boolean" }).default(false),
+    notifyUpdate: integer("notify_update", { mode: "boolean" }).default(false),
+    originSource: text("origin_source").default(""), // suwaSourceId + mangaTitle
     type: text("type").default("manga"),
     notes: text("notes"),
     commentary: text("commentary"),
@@ -106,6 +109,7 @@ export const sources = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
     enabled: integer("enabled", { mode: "boolean" }).default(true),
+    isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     meta: text("meta", { mode: "json" })
       .$type<Record<string, any>>()
       .default({}),
@@ -198,7 +202,7 @@ export const series = sqliteTable(
   "series",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    name: text("name").notNull(),
+    title: text("title").notNull(),
     coverUrl: text("cover_url"),
     bannerUrl: text("banner_url"),
     description: text("description"),

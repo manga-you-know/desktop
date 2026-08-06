@@ -19,7 +19,7 @@
     selectedGroupSource,
     selectedSourceId,
     crEvent,
-    showExtensionsNSourcesNSFW,
+    showExtensionsSourcesContentWarning,
     sourceGroupMode,
     suwayomi,
     compactSourceSelector,
@@ -75,7 +75,11 @@
               .toLowerCase()
               .includes(selectSourceFilter.toLowerCase())) &&
           (selectedSourceId.value === s.id ? true : !disabledLangs[s.lang]) &&
-          (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
+          (showExtensionsSourcesContentWarning.value === "NSFW"
+            ? true
+            : showExtensionsSourcesContentWarning.value === "MIXED"
+              ? s.contentWarning !== "NSFW"
+              : s.contentWarning === "SAFE"),
       )
       .sort((a, b) => {
         const aPinned = !!pinnedSources.value[a.id];
@@ -250,7 +254,8 @@
           {#if sourceGroupMode.value === "single"}
             {#if selectedSource}
               <ContextMenu.Item
-                onclick={() => {
+                onclick={(e) => {
+                  e.preventDefault();
                   if (pinnedSources.value[selectedSource.id]) {
                     pinnedSources.value = {
                       ...pinnedSources.value,
@@ -281,7 +286,8 @@
                   {#each Object.entries(groupSources.value) as group (group[0])}
                     <ContextMenu.Item
                       class="justify-between"
-                      onclick={() => {
+                      onclick={(e) => {
+                        e.preventDefault();
                         if (group[1].includes(selectedSourceId.value)) {
                           const groupItems = group[1].filter(
                             (s) => s !== selectedSource.id,
@@ -379,7 +385,10 @@
               </ContextMenu.Item>
               <ContextMenu.Item
                 class="relative"
-                onclick={() => compactSourceSelector.toggle()}
+                onclick={(e) => {
+                  e.preventDefault();
+                  compactSourceSelector.toggle();
+                }}
               >
                 <Icon icon="lucide:square-dashed-text" />
                 Compact look
@@ -413,28 +422,31 @@
             bind:value={selectSourceFilter}
           />
           <Tooltip
-            text="{showExtensionsNSourcesNSFW.value
-              ? 'Disable'
-              : 'Enable'} NSFW"
+            text="Alternate NSFW level"
+            subtext={showExtensionsSourcesContentWarning.value}
           >
             <Button
               class="flex h-9 justify-between rounded-xl font-bold duration-500"
-              variant={showExtensionsNSourcesNSFW.value
-                ? "destructive"
-                : "info"}
+              variant={showExtensionsSourcesContentWarning.value === "SAFE"
+                ? "info"
+                : showExtensionsSourcesContentWarning.value === "MIXED"
+                  ? "mixed"
+                  : "destructive"}
               onclick={(e) => {
-                showExtensionsNSourcesNSFW.toggle();
                 animate(e.currentTarget, {
                   filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
                   duration: 500,
                   easing: "easeOutQuad",
                 });
+                showExtensionsSourcesContentWarning.cycle();
               }}
             >
               <Icon
-                icon={showExtensionsNSourcesNSFW.value
-                  ? "lucide:triangle-alert"
-                  : "lucide:heart"}
+                icon={showExtensionsSourcesContentWarning.value === "SAFE"
+                  ? "lucide:heart"
+                  : showExtensionsSourcesContentWarning.value === "MIXED"
+                    ? "lucide:split"
+                    : "lucide:triangle-alert"}
               />
             </Button>
           </Tooltip>
@@ -555,9 +567,13 @@
                           <span>
                             {source.extension.versionName}
                           </span>
-                          {#if source.isNsfw}
+                          {#if source.contentWarning !== "SAFE"}
                             ·
-                            <span class="font-bold text-red-500">18+</span>
+                            {#if source.contentWarning === "MIXED"}
+                              <span class="text-purple-600">MIXED</span>
+                            {:else}
+                              <span class="text-destructive">NSFW</span>
+                            {/if}
                           {/if}
                         </div>
                       </div>
@@ -615,7 +631,8 @@
               </ContextMenu.Trigger>
               <ContextMenu.Content>
                 <ContextMenu.Item
-                  onclick={() => {
+                  onclick={(e) => {
+                    e.preventDefault();
                     if (pinnedSources.value[source.id]) {
                       pinnedSources.value = {
                         ...pinnedSources.value,
@@ -646,7 +663,8 @@
                     {#each Object.entries(groupSources.value) as group (group[0])}
                       <ContextMenu.Item
                         class="justify-between"
-                        onclick={() => {
+                        onclick={(e) => {
+                          e.preventDefault();
                           if (group[1].includes(source.id)) {
                             const groupItems = group[1].filter(
                               (s) => s !== source.id,
@@ -667,6 +685,7 @@
                         {group[0]}
                         <Icon
                           class={cn(
+                            "transition-opacity duration-300",
                             group[1].includes(source.id)
                               ? "opacity-100"
                               : "opacity-0",
@@ -719,10 +738,9 @@
                   </ContextMenu.Item>
                 {/if}
                 <ContextMenu.Item
-                  class="text-red-500 data-highlighted:text-red-400"
+                  class="text-red-600 data-highlighted:text-red-400"
                   onclick={() => {
                     const sourceId = source.id;
-                    console.log(sourceId);
                     if (enabledSources.value[sourceId]) {
                       enabledSources.value = {
                         ...enabledSources.value,

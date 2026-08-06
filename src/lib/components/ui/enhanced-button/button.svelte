@@ -9,9 +9,11 @@
       variants: {
         variant: {
           default: "bg-primary text-background hover:bg-primary/80",
-          info: "bg-info text-white hover:bg-info/60",
+          info: "bg-info text-white hover:bg-info/80",
           destructive:
-            "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            "bg-destructive text-destructive-foreground hover:bg-destructive/80",
+          mixed:
+            "bg-purple-600 text-destructive-foreground hover:bg-purple-600/80",
           outline:
             "border border-secondary bg-background/30 hover:bg-secondary text-primary",
           secondary: "bg-secondary text-primary hover:bg-secondary/80",

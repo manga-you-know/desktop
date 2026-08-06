@@ -23,7 +23,7 @@
     openedExtension,
     openExtensions,
     repoInfo,
-    showExtensionsNSourcesNSFW,
+    showExtensionsSourcesContentWarning,
     suwayomi,
     suwayomiUrl,
     selectedSourceId,
@@ -68,7 +68,11 @@
           extensionManagerGroup.value === "all"
         ? suwayomi.sources.filter(
             (s) =>
-              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
+              (showExtensionsSourcesContentWarning.value === "NSFW"
+                ? true
+                : showExtensionsSourcesContentWarning.value === "MIXED"
+                  ? s.contentWarning !== "NSFW"
+                  : s.contentWarning === "SAFE") &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
               (extensionManagerGroup.value === "all"
@@ -78,10 +82,14 @@
           )
         : suwayomi.enabledSources.filter(
             (s) =>
-              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw) &&
+              (showExtensionsSourcesContentWarning.value === "NSFW"
+                ? true
+                : showExtensionsSourcesContentWarning.value === "MIXED"
+                  ? s.contentWarning !== "NSFW"
+                  : s.contentWarning === "SAFE") &&
               (s.name.toLowerCase().includes(query.toLowerCase()) ||
                 s.displayName.toLowerCase().includes(query.toLowerCase())) &&
-              (showExtensionsNSourcesNSFW.value ? true : !s.isNsfw),
+              (showExtensionsSourcesContentWarning.value ? true : !s.isNsfw),
             // && allowedSourceLanguages.value[s.lang],
           ),
   );
@@ -140,7 +148,11 @@
         ? suwayomi.extensions
             .filter(
               (e) =>
-                (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
+                (showExtensionsSourcesContentWarning.value === "NSFW"
+                  ? true
+                  : showExtensionsSourcesContentWarning.value === "MIXED"
+                    ? e.contentWarning !== "NSFW"
+                    : e.contentWarning === "SAFE") &&
                 e.name.toLowerCase().includes(query.toLowerCase()) &&
                 (extensionManagerGroup.value === "all"
                   ? true
@@ -157,7 +169,11 @@
         : suwayomi.installedExtensions
             .filter(
               (e) =>
-                (showExtensionsNSourcesNSFW.value ? true : !e.isNsfw) &&
+                (showExtensionsSourcesContentWarning.value === "NSFW"
+                  ? true
+                  : showExtensionsSourcesContentWarning.value === "MIXED"
+                    ? e.contentWarning !== "NSFW"
+                    : e.contentWarning === "SAFE") &&
                 e.name.toLowerCase().includes(query.toLowerCase()),
               // && allowedExtensionLanguages.value[e.lang],
             )
@@ -426,28 +442,36 @@
             Add
           </Button>
         </Tooltip>
-        <Button
-          class="flex w-24 justify-center gap-2 rounded-xl font-bold duration-500"
-          variant={showExtensionsNSourcesNSFW.value ? "destructive" : "info"}
-          disabled={extensionManagerGroup.value === "hidden"}
-          onclick={(e) => {
-            showExtensionsNSourcesNSFW.toggle();
-            animate(e.currentTarget, {
-              filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
-              duration: 500,
-              easing: "easeOutQuad",
-            });
-          }}
-        >
-          <Icon
-            icon={showExtensionsNSourcesNSFW.value
-              ? "lucide:triangle-alert"
-              : "lucide:heart"}
-          />
-          <span class="w-10">
-            {showExtensionsNSourcesNSFW.value ? "NSFW" : "Safe"}
-          </span>
-        </Button>
+        <Tooltip text="Alternate NSFW level">
+          <Button
+            class="flex w-24 justify-center gap-2 rounded-xl font-bold duration-500"
+            variant={showExtensionsSourcesContentWarning.value === "SAFE"
+              ? "info"
+              : showExtensionsSourcesContentWarning.value === "MIXED"
+                ? "mixed"
+                : "destructive"}
+            disabled={extensionManagerGroup.value === "hidden"}
+            onclick={(e) => {
+              animate(e.currentTarget, {
+                filter: ["blur(0px)", "blur(3px)", "blur(0px)"],
+                duration: 500,
+                easing: "easeOutQuad",
+              });
+              showExtensionsSourcesContentWarning.cycle();
+            }}
+          >
+            <Icon
+              icon={showExtensionsSourcesContentWarning.value === "SAFE"
+                ? "lucide:heart"
+                : showExtensionsSourcesContentWarning.value === "MIXED"
+                  ? "lucide:split"
+                  : "lucide:triangle-alert"}
+            />
+            <span class="w-10">
+              {showExtensionsSourcesContentWarning.value}
+            </span>
+          </Button>
+        </Tooltip>
         <Popover.Root>
           <Popover.Trigger
             disabled={["installed", "hidden"].includes(
@@ -843,9 +867,13 @@
                               <span>
                                 {sRow.source.extension.versionName}
                               </span>
-                              {#if sRow.source.isNsfw}
-                                •
-                                <span class="text-red-500">18+</span>
+                              {#if sRow.source.contentWarning !== "SAFE"}
+                                ·
+                                {#if sRow.source.contentWarning === "MIXED"}
+                                  <span class="text-purple-600">MIXED</span>
+                                {:else}
+                                  <span class="text-destructive">NSFW</span>
+                                {/if}
                               {/if}
                             </div>
                           </div>
@@ -1110,9 +1138,13 @@
                               <span>
                                 {eRow.extension.versionName}
                               </span>
-                              {#if eRow.extension.isNsfw}
-                                •
-                                <span class="text-red-500">18+</span>
+                              {#if eRow.extension.contentWarning !== "SAFE"}
+                                ·
+                                {#if eRow.extension.contentWarning === "MIXED"}
+                                  <span class="text-purple-600">MIXED</span>
+                                {:else}
+                                  <span class="text-destructive">NSFW</span>
+                                {/if}
                               {/if}
                             </div>
                           </div>

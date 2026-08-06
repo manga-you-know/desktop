@@ -2,7 +2,11 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { type } from "@tauri-apps/plugin-os";
 import { load, Store } from "@tauri-apps/plugin-store";
 import type { Source, Languages } from "@/types";
-import type { FetchSourceMangaType, FilterChange } from "@/types/server";
+import type {
+  ContentWarning,
+  FetchSourceMangaType,
+  FilterChange,
+} from "@/types/server";
 import type { RouteId } from "$app/types";
 
 let settingsStore: Store | null = null;
@@ -217,12 +221,13 @@ export const extensionManagerGroup = new StoredState<
   store: "cache",
 });
 
-export const showExtensionsNSourcesNSFW = new StoredState<boolean>({
-  key: "show_extensions_sources_nsfw",
-  defaultValue: false,
-  alternatives: [true, false],
-  store: "cache",
-});
+export const showExtensionsSourcesContentWarning =
+  new StoredState<ContentWarning>({
+    key: "show_extensions_sources_content_warning",
+    defaultValue: "SAFE",
+    alternatives: ["SAFE", "MIXED", "NSFW"],
+    store: "cache",
+  });
 
 export const searchType = new StoredState<FetchSourceMangaType>({
   key: "search_type",
