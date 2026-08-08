@@ -168,6 +168,7 @@ export const chapters = sqliteTable(
     isHidden: integer("is_hidden", { mode: "boolean" }).default(false),
     readAt: integer("read_at", { mode: "timestamp" }),
     commentary: text("commentary"),
+    pageCount: integer("page_cout"),
     rating: real("rating"),
     sortIndex: integer("sort_index"),
     fetchedAt: integer("fetched_at", { mode: "timestamp" })

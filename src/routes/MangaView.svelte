@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Image } from "@/components";
   import Tooltip from "@/components/common/Tooltip.svelte";
-  import { Badge, Button, Input, Label } from "@/lib/components";
+  import { Badge, Button, ContextMenu, Input, Label } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
   import {
     cn,
@@ -11,6 +11,7 @@
     titleCase,
   } from "@/lib/utils";
   import {
+    crEvent,
     currentMangaTab,
     openedManga,
     openedMangas,
@@ -25,6 +26,10 @@
   import { marked } from "marked";
   import DOMPurify from "dompurify";
   import { copyText } from "@/functions";
+  import { fly, slide } from "svelte/transition";
+  import { quartIn, quintIn } from "svelte/easing";
+  import { delay } from "@/utils";
+  import { openUrl } from "@tauri-apps/plugin-opener";
 
   let chaptersCache: Record<string, ChapterListItem[]> = $state({});
 
@@ -34,8 +39,12 @@
       suwaManager.getMangaScreen(manga.s.id).then((m) => {
         openedMangas.value[openedManga.value] = { s: m };
         if (!m.initialized) {
+          crEvent.val[key] = true;
           suwaManager.fetchManga(m.id).then((mf) => {
             openedMangas.value[key] = { s: mf };
+            delay(1000).then(() => {
+              crEvent.val[key] = false;
+            });
           });
         }
       });
@@ -84,12 +93,12 @@
             title: manga.db.title,
             cover: manga.db.currentCover,
             description: manga.db.description,
-            realUrl: manga,
+            realUrl: "",
             genre: manga.db.genre,
             author: manga.db.author,
             artist: manga.db.artist,
             sourceId: "",
-            status: "",
+            status: "UNKNOWN",
           }
       : undefined,
   );
@@ -111,7 +120,9 @@
 
   let mdDesc = $derived(
     mangaJ?.description
-      ? DOMPurify.sanitize(marked.parse(mangaJ.description, { async: false }))
+      ? DOMPurify.sanitize(
+          marked.parse(mangaJ.description, { async: false, breaks: false }),
+        )
       : "",
   );
 
@@ -246,21 +257,20 @@
         >
           <div class="flex w-full gap-2">
             <Image
-              class="h-110 w-70 shrink-0 rounded-lg object-cover"
+              class="h-105 w-70 shrink-0 rounded-lg object-cover"
               src={mangaJ.cover}
             />
             <div
-              class="flex max-h-110 w-[calc(100%-18rem)] flex-col items-center gap-1 *:justify-between *:rounded-lg *:text-sm *:font-semibold"
+              class="flex max-h-105 w-[calc(100%-18rem)] flex-col items-center *:justify-between *:rounded-lg *:text-sm *:font-semibold"
             >
               <Badge
-                class="group w-full gap-1"
-                variant="outline"
+                class="group mb-0.5 w-full gap-1"
+                variant="background"
                 onclick={() => {
                   copyText(mangaJ.title, "Title");
                 }}
               >
-                <div class="text-wrap">
-                  <span class="text-gray-400">Title ~</span>
+                <div class="text-base text-wrap">
                   {mangaJ.title}
                 </div>
                 <div>
@@ -271,64 +281,88 @@
                 </div>
               </Badge>
               {#if mangaJ.author}
-                <Badge
-                  class="group w-full gap-2"
-                  variant="outline"
-                  onclick={() => {
-                    copyText(mangaJ.author ?? "", "author");
+                <div
+                  class="mt-0.5 w-full"
+                  in:slide={{
+                    duration: crEvent.val[openedManga.value] ? 500 : 0,
+                    easing: quintIn,
                   }}
                 >
-                  <div class="text-wrap">
-                    <span class="text-gray-400">Author ~</span>
-                    {mangaJ.author}
-                  </div>
-                  <div>
-                    <Icon
-                      class="size-4! shrink-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100"
-                      icon="lucide:copy"
-                    />
-                  </div>
-                </Badge>
+                  <Badge
+                    class="group w-full justify-between gap-2 rounded-lg text-sm font-semibold"
+                    variant="outline"
+                    onclick={() => {
+                      copyText(mangaJ.author ?? "", "author");
+                    }}
+                  >
+                    <div class="text-wrap">
+                      <span class="text-gray-400">Author</span>
+                      {mangaJ.author}
+                    </div>
+                    <div>
+                      <Icon
+                        class="size-4! shrink-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                        icon="lucide:copy"
+                      />
+                    </div>
+                  </Badge>
+                </div>
               {/if}
               {#if mangaJ.artist}
-                <Badge
-                  class="group w-full gap-2"
-                  variant="outline"
-                  onclick={() => {
-                    copyText(mangaJ.artist ?? "", "artist");
+                <div
+                  class="mt-0.5 w-full"
+                  in:slide={{
+                    duration: crEvent.val[openedManga.value] ? 500 : 0,
+                    easing: quintIn,
                   }}
                 >
-                  <div class="text-wrap">
-                    <span class="text-gray-400">Artist ~</span>
-                    {mangaJ.artist}
-                  </div>
-                  <div>
-                    <Icon
-                      class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
-                      icon="lucide:copy"
-                    />
-                  </div>
-                </Badge>
+                  <Badge
+                    class="group w-full justify-between gap-2 rounded-lg text-sm font-semibold"
+                    variant="outline"
+                    onclick={() => {
+                      copyText(mangaJ.artist ?? "", "artist");
+                    }}
+                  >
+                    <div class="text-wrap">
+                      <span class="text-gray-400">Artist</span>
+                      {mangaJ.artist}
+                    </div>
+                    <div>
+                      <Icon
+                        class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                        icon="lucide:copy"
+                      />
+                    </div>
+                  </Badge>
+                </div>
               {/if}
-              {#if mangaJ.status}
-                <Badge
-                  class="group w-full gap-2"
-                  variant="outline"
-                  onclick={() => {
-                    copyText(mangaJ.status ?? "", "status");
+              {#if mangaJ.status && mangaJ.status !== "UNKNOWN"}
+                <div
+                  class="mt-0.5 w-full"
+                  in:slide={{
+                    duration: crEvent.val[openedManga.value] ? 500 : 0,
+                    easing: quintIn,
                   }}
                 >
-                  <div class="text-wrap">
-                    <span class="text-gray-400">Status ~</span>
-                    {titleCase(mangaJ.status)}
-                  </div>
-                  <div>
-                    <Icon
-                      class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
-                      icon="lucide:copy"
-                    />
-                  </div>
-                </Badge>
+                  <Badge
+                    class="group w-full justify-between gap-2 rounded-lg text-sm font-semibold"
+                    variant="outline"
+                    onclick={() => {
+                      copyText(mangaJ.status ?? "", "status");
+                    }}
+                  >
+                    <div class="flex">
+                      <span class="mr-2 text-gray-400">Status</span>
+                      {titleCase(mangaJ.status)}
+                    </div>
+                    <div>
+                      <Icon
+                        class="size-4! opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                        icon="lucide:copy"
+                      />
+                    </div>
+                  </Badge>
+                </div>
               {/if}
               <div class="mt-2 flex w-full items-center">
                 <span class="text-base">Source{"db" in manga ? "s" : ""}</span>
@@ -349,27 +383,64 @@
                   </Button>
                 </div>
               </div>
-              {#each sources as source (source.id)}
-                <Button
-                  class="group relative flex w-full overflow-hidden rounded-lg pr-2 pl-1"
-                  variant="ghost"
+              {#each sources as source, i (i)}
+                {let wasOpen = $state(false)}
+                <ContextMenu.Root
+                  onOpenChange={(v) => {
+                    delay(300).then(() => {
+                      wasOpen = v;
+                    });
+                  }}
                 >
-                  <div class="flex w-full items-center gap-1">
-                    <Image
-                      class="size-10 shrink-0 object-cover"
-                      src={source.iconUrl}
-                    />
-                    <span class="truncate">
-                      {source.displayName}
-                    </span>
-                  </div>
-                  <Button
-                    class="absolute top-1 right-1 h-8 w-7 rounded-lg px-2 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100"
-                    variant="ghost"
-                  >
-                    <Icon icon="lucide:ellipsis-vertical" />
-                  </Button>
-                </Button>
+                  <ContextMenu.Trigger class="w-full">
+                    <Button
+                      class="group relative flex w-full overflow-hidden rounded-lg pr-2 pl-1"
+                      variant="ghost"
+                    >
+                      <div class="flex w-full items-center gap-1">
+                        <Image
+                          class="size-10 shrink-0 object-cover"
+                          src={source.iconUrl}
+                        />
+                        <span class="truncate">
+                          {source.displayName}
+                        </span>
+                      </div>
+                      <Button
+                        class="absolute top-1 right-1 h-8 w-7 rounded-lg px-2 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100"
+                        variant="ghost"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          if (wasOpen) return;
+                          const event = new MouseEvent("contextmenu", {
+                            bubbles: true,
+                            clientX: e.clientX,
+                            clientY: e.clientY,
+                          });
+                          e.currentTarget.parentElement?.dispatchEvent(event);
+                        }}
+                      >
+                        <Icon icon="lucide:ellipsis-vertical" />
+                      </Button>
+                    </Button>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item>
+                      <Icon icon="lucide:search" />
+                      Search with source
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      onclick={() => {
+                        openUrl(mangaJ.realUrl ?? "");
+                      }}
+                    >
+                      <Icon icon="lucide:external-link" />Open in browser
+                    </ContextMenu.Item>
+                    <ContextMenu.Item>
+                      <Icon icon="lucide:info" />See extension
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
               {/each}
               <!-- <Icon icon="lucide:square-arrow-out-up-right" /> -->
             </div>
@@ -388,45 +459,72 @@
                 <Icon icon="lucide:ellipsis-vertical" />
               </Button>
             </div>
-            <span
-              class={cn(
-                "mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm text-wrap whitespace-pre-wrap transition-[max-height] duration-400 select-auto",
-                showDesc ? "max-h-200" : "max-h-16",
-              )}
-            >
-              {@html mdDesc}
-            </span>
-            <Button
-              class={cn(
-                "mb-2 h-6 rounded-lg backdrop-blur-sm transition-all duration-400",
-                showDesc ? "" : "-mt-3",
-              )}
-              variant="ghost"
-              onclick={() => {
-                showDesc = !showDesc;
-              }}
-            >
-              <Icon
-                class={cn(
-                  "transition-all duration-400",
-                  showDesc && "rotate-180",
-                )}
-                icon="lucide:chevron-down"
-              />
-            </Button>
-            <div class="flex w-full flex-wrap gap-0.5">
-              {#each mangaJ.genre as genre (genre)}
-                <Badge
-                  class="text-sm"
-                  variant="outline"
+            {#if mdDesc.length > 0}
+              <div
+                class="flex w-full flex-col items-center"
+                in:slide={{
+                  duration: crEvent.val[openedManga.value] ? 500 : 0,
+                  easing: quintIn,
+                }}
+              >
+                <div
+                  class={cn(
+                    "manga-desc prose prose-invert text-primary mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm transition-[max-height] duration-400 select-auto",
+                    showDesc ? "max-h-600" : "max-h-16",
+                  )}
+                >
+                  {@html mdDesc}
+                </div>
+                <Button
+                  class={cn(
+                    "mb-2 h-6 rounded-lg backdrop-blur-sm transition-all duration-400",
+                    showDesc ? "" : "-mt-3",
+                  )}
+                  variant="ghost"
                   onclick={() => {
-                    copyText(genre, "genre");
+                    showDesc = !showDesc;
                   }}
                 >
-                  {genre}
-                </Badge>
-              {/each}
-            </div>
+                  <Icon
+                    class={cn(
+                      "transition-all duration-400",
+                      showDesc && "rotate-180",
+                    )}
+                    icon="lucide:chevron-down"
+                  />
+                </Button>
+              </div>
+            {/if}
+            {#if mangaJ.genre}
+              <div
+                class="flex w-full flex-wrap"
+                in:slide={{
+                  duration: crEvent.val[openedManga.value] ? 500 : 0,
+                  easing: quintIn,
+                }}
+              >
+                {#each mangaJ.genre as genre, i (i)}
+                  <div
+                    class="mt-0.5 ml-0.5"
+                    in:slide={{
+                      duration: crEvent.val[openedManga.value] ? 500 : 0,
+                      easing: quintIn,
+                      axis: "x",
+                    }}
+                  >
+                    <Badge
+                      class="text-sm"
+                      variant="outline"
+                      onclick={() => {
+                        copyText(genre, "genre");
+                      }}
+                    >
+                      {genre}
+                    </Badge>
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         </div>
         <div
@@ -558,3 +656,13 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .manga-desc :global(ul) {
+    list-style-type: disc !important;
+  }
+  .manga-desc :global(ul li) {
+    list-style-type: disc !important;
+    display: list-item !important;
+  }
+</style>

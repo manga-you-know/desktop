@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 /* @plugin "tailwind-scrollbar"; */
 
@@ -177,6 +178,8 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 210 40% 98%;
+    --mixed: 271.5 81.3% 55.9%;
+    --mixed-foreground: 210 40% 98%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
@@ -209,6 +212,8 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+    --mixed: 271.5 81.3% 55.9%;
+    --mixed-foreground: 210 40% 98%;
     --ring: 212.7 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
