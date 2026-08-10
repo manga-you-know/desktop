@@ -118,13 +118,35 @@
     fromEpochSeconds(currentChapters.at(0)?.fetchedAt),
   );
 
+  const renderer = new marked.Renderer();
+  renderer.link = ({ href, title, text }) => {
+    const titleAttr = title ? ` title="${title}"` : "";
+    return `<button type="button" class="px-2 py-0.5 transition-all duration-400 hover:bg-background/60 mr-1 border border-background rounded-lg cursor-pointer" data-type="copy" data-url="${href}">Copy</button> <button type="button" class="manga-link underline cursor-pointer text-blue-500 hover:text-blue-400" data-type="open" data-url="${href}"${titleAttr}>${text}</button>`;
+  };
+
   let mdDesc = $derived(
     mangaJ?.description
       ? DOMPurify.sanitize(
-          marked.parse(mangaJ.description, { async: false, breaks: false }),
+          marked.parse(mangaJ.description, {
+            async: false,
+            breaks: false,
+            renderer,
+          }),
+          { ADD_TAGS: ["button"], ADD_ATTR: ["data-url", "type"] },
         )
       : "",
   );
+
+  function handleDescClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    const btn = target.closest<HTMLButtonElement>("button[data-url]");
+    if (!btn) return;
+    if (btn.dataset.type === "open") {
+      openUrl(btn.dataset.url!);
+    } else {
+      copyText(btn.dataset.url!, "URL");
+    }
+  }
 
   let sources = $derived(
     mangaJ !== undefined
@@ -296,7 +318,7 @@
                     }}
                   >
                     <div class="text-wrap">
-                      <span class="text-gray-400">Author</span>
+                      <span class="mr-1 text-gray-400">Author</span>
                       {mangaJ.author}
                     </div>
                     <div>
@@ -324,7 +346,7 @@
                     }}
                   >
                     <div class="text-wrap">
-                      <span class="text-gray-400">Artist</span>
+                      <span class="mr-1 text-gray-400">Artist</span>
                       {mangaJ.artist}
                     </div>
                     <div>
@@ -352,7 +374,7 @@
                     }}
                   >
                     <div class="flex">
-                      <span class="mr-2 text-gray-400">Status</span>
+                      <span class="mr-1 text-gray-400">Status</span>
                       {titleCase(mangaJ.status)}
                     </div>
                     <div>
@@ -365,7 +387,9 @@
                 </div>
               {/if}
               <div class="mt-2 flex w-full items-center">
-                <span class="text-base">Source{"db" in manga ? "s" : ""}</span>
+                <span class="text-base transition-none!">
+                  Source{"db" in manga ? "s" : ""}
+                </span>
                 <div class="flex gap-1">
                   <Button
                     class="size-8 overflow-hidden rounded-lg"
@@ -425,16 +449,17 @@
                     </Button>
                   </ContextMenu.Trigger>
                   <ContextMenu.Content>
-                    <ContextMenu.Item>
-                      <Icon icon="lucide:search" />
-                      Search with source
-                    </ContextMenu.Item>
                     <ContextMenu.Item
                       onclick={() => {
                         openUrl(mangaJ.realUrl ?? "");
                       }}
                     >
                       <Icon icon="lucide:external-link" />Open in browser
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item>
+                      <Icon icon="lucide:search" />
+                      Search with source
                     </ContextMenu.Item>
                     <ContextMenu.Item>
                       <Icon icon="lucide:info" />See extension
@@ -446,19 +471,58 @@
             </div>
           </div>
           <div class="flex w-full flex-col items-center">
-            <div class="flex w-full gap-1">
-              <Button variant="outline">
-                <Icon icon="lucide:bookmark-off" />
-                Add as entry
-              </Button>
-              <Button variant="secondary">
-                <Icon icon="lucide:squares-subtract" />
-                Add as source
-              </Button>
-              <Button variant="ghost">
-                <Icon icon="lucide:ellipsis-vertical" />
-              </Button>
-            </div>
+            {let wasOpen = $state(false)}
+            <ContextMenu.Root
+              onOpenChange={(v) => {
+                delay(300).then(() => {
+                  wasOpen = v;
+                });
+              }}
+            >
+              <ContextMenu.Trigger class="flex w-full gap-1">
+                <Button variant="outline">
+                  <Icon icon="lucide:bookmark-off" />
+                  Add as entry
+                </Button>
+                <Button variant="secondary">
+                  <Icon icon="lucide:squares-subtract" />
+                  Add as source
+                </Button>
+                <Button
+                  variant="ghost"
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    if (wasOpen) return;
+                    const event = new MouseEvent("contextmenu", {
+                      bubbles: true,
+                      clientX: e.clientX,
+                      clientY: e.clientY,
+                    });
+                    e.currentTarget.parentElement?.dispatchEvent(event);
+                  }}
+                >
+                  <Icon icon="lucide:ellipsis-vertical" />
+                </Button>
+              </ContextMenu.Trigger>
+              <ContextMenu.Content>
+                <ContextMenu.Item
+                  onclick={() => {
+                    if ("s" in manga) {
+                      const key = openedManga.value;
+                      crEvent.val[key] = true;
+                      suwaManager.fetchManga(manga.s.id).then((mf) => {
+                        openedMangas.value[key] = { s: mf };
+                        delay(1000).then(() => {
+                          crEvent.val[key] = false;
+                        });
+                      });
+                    }
+                  }}
+                >
+                  <Icon icon="lucide:refresh-cw" /> Refresh data
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Root>
             {#if mdDesc.length > 0}
               <div
                 class="flex w-full flex-col items-center"
@@ -467,11 +531,14 @@
                   easing: quintIn,
                 }}
               >
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <div
                   class={cn(
                     "manga-desc prose prose-invert text-primary mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm transition-[max-height] duration-400 select-auto",
                     showDesc ? "max-h-600" : "max-h-16",
                   )}
+                  onclick={handleDescClick}
                 >
                   {@html mdDesc}
                 </div>
