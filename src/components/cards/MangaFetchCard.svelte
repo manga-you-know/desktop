@@ -21,7 +21,7 @@
   let { manga, suwaSource }: Props = $props();
 
   let isInLibrary = $derived(
-    dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id] !== undefined,
+    dbHelper.sourcesBySourceIdTitle[suwaSource.id + manga.title] !== undefined,
   );
 </script>
 
@@ -57,7 +57,7 @@
       const parent = e.currentTarget?.parentElement ?? "";
       if (isInLibrary) {
         dbHelper.deleteSource(
-          dbHelper.sourcesByIdMangaSource[manga.id + suwaSource.id],
+          dbHelper.sourcesBySourceIdTitle[manga.id + suwaSource.id],
         );
       } else {
         animate(parent, {

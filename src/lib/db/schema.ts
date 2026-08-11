@@ -23,7 +23,7 @@ export const mangas = sqliteTable(
     isAnonymous: integer("is_anonymous", { mode: "boolean" }).default(false),
     autoUpdate: integer("auto_update", { mode: "boolean" }).default(false),
     notifyUpdate: integer("notify_update", { mode: "boolean" }).default(false),
-    originSource: text("origin_source").default(""), // suwaSourceId + mangaTitle
+    sourceOrigin: text("source_origin").default(""), // {suwaSource.id}::{manga.title}
     type: text("type").default("manga"),
     notes: text("notes"),
     commentary: text("commentary"),
@@ -32,8 +32,6 @@ export const mangas = sqliteTable(
     artist: text("artist"),
     readingStatus: text("reading_status"),
     status: text("status").$type<MangaStatus>(),
-    anilistId: text("anilist_id"),
-    malId: text("mal_id"),
     description: text("description"),
     otherTitles: text("other_titles", { mode: "json" })
       .$type<string[]>()
@@ -61,8 +59,6 @@ export const mangas = sqliteTable(
     index("idx_mangas_updated_at").on(t.updatedAt),
     index("idx_mangas_status").on(t.readingStatus),
     index("idx_mangas_rating").on(t.rating),
-    index("idx_mangas_anilist_id").on(t.anilistId),
-    index("idx_mangas_mal_id").on(t.malId),
   ],
 );
 

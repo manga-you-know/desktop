@@ -197,13 +197,11 @@ class DBHelper {
   rawMangas = $state<Manga[]>([]);
   libraryMangas = $state<Manga[]>([]);
   rawSources = $state<SourceDB[]>([]);
-  mangasBy = $derived(
-    Object.fromEntries(this.rawMangas.map((m) => [[m.type], m])),
+  mangasBySourceOrigin = $derived(
+    Object.fromEntries(this.rawMangas.map((m) => [m.sourceOrigin, m])),
   );
-  sourcesByIdMangaSource = $derived(
-    Object.fromEntries(
-      this.rawSources.map((s) => [s.mangaSourceId + s.sourceId, s]),
-    ),
+  sourcesBySourceIdTitle = $derived(
+    Object.fromEntries(this.rawSources.map((s) => [s.sourceId + s.title, s])),
   );
 
   async refresh() {
@@ -241,6 +239,7 @@ class DBHelper {
           artist: mangaFetch.artist,
           genre: mangaFetch.genre,
           status: mangaFetch.status,
+          sourceOrigin: `${suwaSource.id}::${mangaFetch.title}`,
         })
         .returning();
       if (manga.length === 0) return;
@@ -250,10 +249,9 @@ class DBHelper {
       .insert(sources)
       .values({
         title: mangaFetch.title,
-        mangaId: mangaId,
+        mangaSourceId: mangaId.toString(),
         sourceId: suwaSource.id,
         sourceName: suwaSource.name,
-        mangaSourceId: mangaFetch.id.toString(),
         extensionId: suwaSource.extension.pkgName,
         description: mangaFetch.description,
         author: mangaFetch.author,
@@ -271,23 +269,14 @@ class DBHelper {
       .returning();
     return source;
   }
+
   async deleteSource(source: SourceDB) {
-    await db.delete(sources).where(eq(sources.id, source.id));
-    /* const mangas = await db.query.mangas.findMany({
-      with: {
-        seriesLinks: {
-          with: {
-            series: true
-          }
-        }
-      }
-    }) */
-    // mangas[0]
+    /* await db.delete(sources).where(eq(sources.id, source.id));
     const mangaSources = await db.select().from(sources);
-    // .where(eq(sources.mangaId, source.mangaId));
+    .where(eq(sources.mangaId, source.mangaId));
     if (mangaSources.length === 0) {
       // await db.delete(mangas).where(eq(mangas.id, source.mangaId));
-    }
+    } */
     this.refresh();
   }
 

@@ -122,7 +122,7 @@
         >
           <Button
             class={cn(
-              "group/select relative h-12.5 w-55 justify-start",
+              "group/select relative h-12.5! w-55 justify-start",
               sourceGroupMode.value === "single" ? "px-2" : "pr-2",
               !selectedSource &&
                 sourceGroupMode.value === "single" &&

@@ -131,7 +131,7 @@
       (m) =>
         m.title.toLowerCase().includes(resultsQuery.toLowerCase()) &&
         (hideOnLibrary.value
-          ? dbHelper.sourcesByIdMangaSource[m.id + m.sourceId] === undefined
+          ? dbHelper.sourcesBySourceIdTitle[m.sourceId + m.title] === undefined
           : true),
     ),
   );
@@ -246,377 +246,372 @@
   };
 </script>
 
-<div class="relative flex h-full w-full">
-  <div class="justify-around-stretch absolute flex h-full w-full flex-col">
-    <div class="my-2 flex items-center justify-center gap-2">
-      <Badge class="h-10 w-14" variant="outline">
-        <ScrollingValue value={results.length} />
-      </Badge>
-      <Input
-        class="hover:bg-secondary/20 w-70 transition-all"
-        divClass="w-70 transition-all"
-        variant="outline"
-        placeholder="Query in source{sourceGroupMode.value !== 'single'
-          ? 's'
-          : ''}..."
-        oninput={handleInput}
-        ondelete={() => {
-          if (searchType.value === "SEARCH") search();
+<div class="justify-around-stretch flex h-full w-full flex-col">
+  <div class="my-2 flex items-center justify-center gap-2">
+    <Badge class="h-10 w-14" variant="outline">
+      <ScrollingValue value={results.length} />
+    </Badge>
+    <Input
+      class="hover:bg-secondary/20 w-70 transition-all"
+      divClass="w-70 transition-all"
+      variant="outline"
+      placeholder="Query in source{sourceGroupMode.value !== 'single'
+        ? 's'
+        : ''}..."
+      oninput={handleInput}
+      ondelete={() => {
+        if (searchType.value === "SEARCH") search();
+      }}
+      bind:value={searchInput.value}
+    />
+    <Tooltip text="Source filters">
+      <Button
+        class={cn(
+          "w-12 transition-all duration-500",
+          (sourceGroupMode.value !== "single" ||
+            sourceBrowse?.filters.length === 0) &&
+            "-mx-1 w-0 p-0 opacity-0",
+        )}
+        variant="secondary"
+        onclick={() => {
+          searchType.value = "SEARCH";
+          openedSearchFilters.open({ sourceBrowse });
         }}
-        bind:value={searchInput.value}
-      />
-      <Tooltip text="Source filters">
-        <Button
-          class={cn(
-            "w-12 transition-all duration-500",
-            (sourceGroupMode.value !== "single" ||
-              sourceBrowse?.filters.length === 0) &&
-              "-mx-1 w-0 p-0 opacity-0",
-          )}
-          variant="secondary"
-          onclick={() => {
-            searchType.value = "SEARCH";
-            openedSearchFilters.open({ sourceBrowse });
-          }}
-        >
-          <Icon icon="lucide:list-filter" />
-        </Button>
-      </Tooltip>
-      <Tooltip
-        text="Source mode"
-        subtext={sourceGroupMode.value === "single"
-          ? "Single uses a single source to fetch"
-          : "Group uses multiple sources to fetch"}
       >
-        <Button
-          class="w-27 justify-start font-bold"
-          onmousedown={() => {
-            wasOpenSourceOpen = openSelectSource;
-          }}
-          onclick={(e) => {
-            if (wasOpenSourceOpen) {
-              openSelectSource = true;
-            }
-            if (sourceGroupMode.value === "single") {
-              sourceGroupMode.value = "group";
-            } else {
-              sourceGroupMode.value = "single";
-            }
-            animate(e.currentTarget, {
-              filter: ["blur(1px)", "blur(2px)", "blur(0px)"],
-              duration: 500,
-              easing: "easeOutQuad",
-            });
-            animate("#source-select", {
-              filter: ["blur(3px)", "blur(0px)"],
-              duration: 700,
-              easing: "easeOutQuad",
-            });
-          }}
-        >
-          <Icon
-            icon={sourceGroupMode.value === "single"
-              ? "lucide:square-divide"
-              : sourceGroupMode.value === "group"
-                ? "lucide:layers"
-                : "lucide:globe"}
-          />
-          {titleCase(sourceGroupMode.value)}
-        </Button>
-      </Tooltip>
-      <Tooltip text="Manage extensions & sources">
-        <Button class="w-12" variant="outline" onclick={openExtensions.open}>
-          <Icon icon="lucide:puzzle" />
-        </Button>
-      </Tooltip>
-    </div>
-    <div class="mb-2 flex items-center justify-center gap-2">
-      <div
-        class="border-secondary bg-background/30 parent flex justify-start gap-1 rounded-xl border p-1"
+        <Icon icon="lucide:list-filter" />
+      </Button>
+    </Tooltip>
+    <Tooltip
+      text="Source mode"
+      subtext={sourceGroupMode.value === "single"
+        ? "Single uses a single source to fetch"
+        : "Group uses multiple sources to fetch"}
+    >
+      <Button
+        class="w-27 justify-start font-bold"
+        onmousedown={() => {
+          wasOpenSourceOpen = openSelectSource;
+        }}
+        onclick={(e) => {
+          if (wasOpenSourceOpen) {
+            openSelectSource = true;
+          }
+          if (sourceGroupMode.value === "single") {
+            sourceGroupMode.value = "group";
+          } else {
+            sourceGroupMode.value = "single";
+          }
+          animate(e.currentTarget, {
+            filter: ["blur(1px)", "blur(2px)", "blur(0px)"],
+            duration: 500,
+            easing: "easeOutQuad",
+          });
+          animate("#source-select", {
+            filter: ["blur(3px)", "blur(0px)"],
+            duration: 700,
+            easing: "easeOutQuad",
+          });
+        }}
       >
-        <Button
-          class={cn(
-            "pointer-events-none absolute w-30 rounded-lg transition-all duration-200",
-            searchType.value === "POPULAR" && "translate-x-0",
-            searchType.value === "LATEST" && "translate-x-31",
-            searchType.value === "SEARCH" && "translate-x-62",
-          )}
-          variant="secondary"
-        ></Button>
-        <Button
-          class={cn(
-            "hover:bg-secondary/30 z-2 w-30 rounded-lg",
-            searchType.value === "POPULAR" && "hover:text-primary/70",
-          )}
-          variant="ghost"
-          onclick={() => {
-            searchType.value = "POPULAR";
-          }}
-        >
-          <Icon icon="lucide:heart" />Popular
-        </Button>
-        <Button
-          class={cn(
-            "hover:bg-secondary/30 z-2 w-30 rounded-lg",
-            searchType.value === "LATEST" && "hover:text-primary/70",
-          )}
-          variant="ghost"
-          disabled={!selectedSource?.supportsLatest &&
-            sourceGroupMode.value === "single"}
-          onclick={() => {
-            searchType.value = "LATEST";
-          }}
-        >
-          <Icon icon="lucide:badge-info" />Latest
-        </Button>
-        <Button
-          class={cn(
-            "hover:bg-secondary/30 z-2 w-30 rounded-lg",
-            searchType.value === "SEARCH" && "hover:text-primary/70",
-          )}
-          variant="ghost"
-          onclick={() => {
-            searchType.value = "SEARCH";
-          }}
-        >
-          <Icon icon="lucide:search" />Search
-        </Button>
-      </div>
-      <SelectSourceOrGroup bind:open={openSelectSource} {selectedSource} />
-      <Button class="h-12.5 w-14" variant="outline">
-        <Icon icon="lucide:sliders-horizontal" />
+        <Icon
+          icon={sourceGroupMode.value === "single"
+            ? "lucide:square-divide"
+            : sourceGroupMode.value === "group"
+              ? "lucide:layers"
+              : "lucide:globe"}
+        />
+        {titleCase(sourceGroupMode.value)}
+      </Button>
+    </Tooltip>
+    <Tooltip text="Manage extensions & sources">
+      <Button class="w-12" variant="outline" onclick={openExtensions.open}>
+        <Icon icon="lucide:puzzle" />
+      </Button>
+    </Tooltip>
+  </div>
+  <div class="mb-2 flex items-center justify-center gap-2">
+    <div
+      class="border-secondary bg-background/30 parent flex justify-start gap-1 rounded-xl border p-1"
+    >
+      <Button
+        class={cn(
+          "pointer-events-none absolute w-30 rounded-lg transition-all duration-200",
+          searchType.value === "POPULAR" && "translate-x-0",
+          searchType.value === "LATEST" && "translate-x-31",
+          searchType.value === "SEARCH" && "translate-x-62",
+        )}
+        variant="secondary"
+      ></Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
+          searchType.value === "POPULAR" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchType.value = "POPULAR";
+        }}
+      >
+        <Icon icon="lucide:heart" />Popular
+      </Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
+          searchType.value === "LATEST" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        disabled={!selectedSource?.supportsLatest &&
+          sourceGroupMode.value === "single"}
+        onclick={() => {
+          searchType.value = "LATEST";
+        }}
+      >
+        <Icon icon="lucide:badge-info" />Latest
+      </Button>
+      <Button
+        class={cn(
+          "hover:bg-secondary/30 z-2 w-30 rounded-lg",
+          searchType.value === "SEARCH" && "hover:text-primary/70",
+        )}
+        variant="ghost"
+        onclick={() => {
+          searchType.value = "SEARCH";
+        }}
+      >
+        <Icon icon="lucide:search" />Search
       </Button>
     </div>
-    <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
+    <SelectSourceOrGroup bind:open={openSelectSource} {selectedSource} />
+    <Button class="h-12.5 w-14" variant="outline">
+      <Icon icon="lucide:sliders-horizontal" />
+    </Button>
+  </div>
+  <div class="bg-secondary/40 h-1 w-full rounded-2xl"></div>
+  <div
+    class="parent flex h-full w-full flex-col items-center scroll-smooth"
+    bind:this={scrollContainer}
+    bind:clientWidth={divWidth}
+  >
     <div
-      class="parent flex h-full w-full flex-col items-center scroll-smooth"
-      bind:this={scrollContainer}
-      bind:clientWidth={divWidth}
+      class="border-background bg-background/30 absolute z-2 mt-0.5 flex items-center justify-center gap-2 rounded-2xl border p-1 backdrop-blur-sm"
     >
-      <div
-        class="border-background bg-background/30 absolute z-2 mt-0.5 flex items-center justify-center gap-2 rounded-2xl border p-1 backdrop-blur-sm"
-      >
-        <Badge class="h-10 min-w-14 text-sm font-bold" variant="outline">
-          <ScrollingValue value={filteredManga.length} />
-        </Badge>
-        <Input
-          class="w-70"
-          divClass="w-70"
-          variant="outline"
-          placeholder="Filter results..."
-          bind:value={resultsQuery}
-        />
-        <Button
-          class="items-center"
-          variant="ghost"
-          onclick={async (e) => {
-            animate(e.currentTarget, {
-              filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
+      <Badge class="h-10 min-w-14 text-sm font-bold" variant="outline">
+        <ScrollingValue value={filteredManga.length} />
+      </Badge>
+      <Input
+        class="w-70"
+        divClass="w-70"
+        variant="outline"
+        placeholder="Filter results..."
+        bind:value={resultsQuery}
+      />
+      <Button
+        class="items-center"
+        variant="ghost"
+        onclick={async (e) => {
+          animate(e.currentTarget, {
+            filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
+            duration: 800,
+            easing: "easeOutQuad",
+          });
+          if (!hideOnLibrary.value) {
+            animate("#div-mangas", {
+              filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
               duration: 600,
               easing: "easeOutQuad",
             });
-            if (!hideOnLibrary.value) {
-              animate("#div-mangas", {
-                filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
-                duration: 600,
-                easing: "easeOutQuad",
-              });
-              await animate(".fetch-card", {
-                opacity: [1, 0.5, 0],
-                translateX: -40,
-                duration: 500,
-                easing: "easeInQuad",
-              });
-            } else {
-              animate("#div-mangas", {
-                filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
-                scale: [1, 0.994, 1],
-                duration: 600,
-                easing: "easeOutQuad",
-              });
-            }
-            hideOnLibrary.value = !hideOnLibrary.value;
-          }}
-        >
-          <!-- <Icon icon={hideOnLibrary.value ? "lucide:book-x" : "lucide:book-text"} -->
-          <!-- /> -->
-          <Checkbox
-            class="pointer-events-none"
-            checked={!hideOnLibrary.value}
-          />
-          On library
-          <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
-        </Button>
-      </div>
-      <div class="absolute flex w-full justify-end pt-12 pr-8">
-        <Button
-          class={cn(
-            "z-1 h-12 w-13 opacity-100 backdrop-blur-sm transition-opacity duration-500",
-            divOffset < 400 && "pointer-events-none opacity-0",
-          )}
-          variant="outline"
-          onclick={() => {
-            document.getElementById("div-mangas")?.scrollTo({
-              top: 0,
-              behavior: "smooth",
+            await animate(".fetch-card", {
+              opacity: [1, 0.5, 0],
+              translateY: -50,
+              duration: 500,
+              easing: "easeInQuad",
             });
-          }}
-        >
-          <Icon class="size-5!" icon="lucide:arrow-up-from-dot" />
-        </Button>
-      </div>
-      <VList
-        class={cn(
-          "scrollbar flex w-full scrollbar-thin items-center justify-center scroll-smooth",
-          rowedMangas.length === 0 && "h-0!",
-        )}
-        id="div-mangas"
-        data={rowedMangas}
-        getKey={(_, i) => i}
-        onscroll={(off) => {
-          divOffset = off;
+          } else {
+            animate("#div-mangas", {
+              filter: ["blur(4px)", "blur(6px)", "blur(0px)"],
+              scale: [1, 0.994, 1],
+              duration: 600,
+              easing: "easeOutQuad",
+            });
+          }
+          hideOnLibrary.value = !hideOnLibrary.value;
         }}
       >
-        {#snippet children(row, index)}
-          {#if index === 0}
-            <div class="mt-12 flex w-full flex-col justify-center p-2"></div>
-          {/if}
-          <div class="flex w-full justify-center">
-            <div class="mb-0.5 inline-flex gap-0.5">
-              {#each row as manga (manga.id)}
-                <MangaFetchCard {manga} suwaSource={selectedSource} />
+        <!-- <Icon icon={hideOnLibrary.value ? "lucide:book-x" : "lucide:book-text"} -->
+        <!-- /> -->
+        <Checkbox class="pointer-events-none" checked={!hideOnLibrary.value} />
+        On library
+        <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
+      </Button>
+    </div>
+    <div class="absolute flex w-full justify-end pt-12 pr-8">
+      <Button
+        class={cn(
+          "z-1 h-12 w-13 opacity-100 backdrop-blur-sm transition-opacity duration-500",
+          divOffset < 400 && "pointer-events-none opacity-0",
+        )}
+        variant="outline"
+        onclick={() => {
+          document.getElementById("div-mangas")?.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <Icon class="size-5!" icon="lucide:arrow-up-from-dot" />
+      </Button>
+    </div>
+    <VList
+      class={cn(
+        "scrollbar flex w-full scrollbar-thin items-center justify-center scroll-smooth",
+        rowedMangas.length === 0 && "h-0!",
+      )}
+      id="div-mangas"
+      data={rowedMangas}
+      getKey={(_, i) => i}
+      onscroll={(off) => {
+        divOffset = off;
+      }}
+    >
+      {#snippet children(row, index)}
+        {#if index === 0}
+          <div class="mt-12 flex w-full flex-col justify-center p-2"></div>
+        {/if}
+        <div class="flex w-full justify-center">
+          <div class="mb-0.5 inline-flex gap-0.5">
+            {#each row as manga (manga.id)}
+              <MangaFetchCard {manga} suwaSource={selectedSource} />
+            {/each}
+            {#if row.length < itemsPerRow}
+              {#each { length: itemsPerRow - row.length }}
+                {#if searchState === "loading"}
+                  <div
+                    class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+                    in:fade
+                  >
+                    <Icon
+                      class={cn("size-10 animate-spin")}
+                      icon="mingcute:loading-fill"
+                    />
+                  </div>
+                {:else}
+                  <div class="h-95 w-64 p-0.5"></div>
+                {/if}
               {/each}
-              {#if row.length < itemsPerRow}
-                {#each { length: itemsPerRow - row.length }}
-                  {#if searchState === "loading"}
-                    <div
-                      class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
-                      in:fade
-                    >
-                      <Icon
-                        class={cn("size-10 animate-spin")}
-                        icon="mingcute:loading-fill"
-                      />
-                    </div>
-                  {:else}
-                    <div class="h-95 w-64 p-0.5"></div>
-                  {/if}
-                {/each}
-              {/if}
-            </div>
-          </div>
-          {#if searchState === "loading" && index === rowedMangas.length - 1}
-            <div class="mb-0.5 flex w-full justify-center gap-0.5">
-              {#each { length: itemsPerRow }, i (i)}
-                <div
-                  class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
-                  in:fade
-                >
-                  <Icon
-                    class="size-10 animate-spin"
-                    icon="mingcute:loading-fill"
-                  />
-                </div>
-              {/each}
-            </div>
-          {/if}
-          {#if rowedMangas.length < 6 ? index === rowedMangas.length - 1 : index === rowedMangas.length - 5}
-            <div bind:this={sentinel} class="h-0 w-full"></div>
-          {/if}
-          <div
-            class={cn(
-              "flex justify-center",
-              searchState === "idle" &&
-                lastPage?.hasNextPage &&
-                index === rowedMangas.length - 1
-                ? "mt-4 h-fit opacity-100 transition-opacity duration-400"
-                : "h-0 opacity-0",
-            )}
-          >
-            <Button onclick={() => search(true)}>
-              <Icon icon="lucide:corner-down-right" />
-              Load more
-            </Button>
-          </div>
-        {/snippet}
-      </VList>
-      {#if searchState === "error"}
-        <div
-          class="flex h-full w-full flex-col items-center justify-center gap-2"
-        >
-          {let showMore = $state(false)}
-          <Label class="text-5xl font-bold">(×﹏×)</Label>
-          <Label class="text-xl">Unable to load data</Label>
-          <div class="flew-wrap flex items-center justify-center gap-1">
-            <Label class="z-2 text-center text-xs text-wrap select-auto">
-              {limitStr(lastPage?.message ?? "", 100)}
-            </Label>
-            {#if (lastPage?.message?.length ?? 0) > 100}
-              <Button
-                class="h-6 rounded-lg p-2"
-                variant="ghost"
-                onclick={() => {
-                  showMore = !showMore;
-                }}
-              >
-                Show {showMore ? "less" : "more"}
-              </Button>
             {/if}
           </div>
-          <div
-            class="grid transition-[grid-template-rows] duration-300 ease-out"
-            style:grid-template-rows={showMore ? "1fr" : "0fr"}
-          >
-            <Label
-              class="text-primary/60 z-2 overflow-hidden px-10 text-center text-xs text-wrap select-auto"
-            >
-              {lastPage?.message}
-            </Label>
+        </div>
+        {#if searchState === "loading" && index === rowedMangas.length - 1}
+          <div class="mb-0.5 flex w-full justify-center gap-0.5">
+            {#each { length: itemsPerRow }, i (i)}
+              <div
+                class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+                in:fade
+              >
+                <Icon
+                  class="size-10 animate-spin"
+                  icon="mingcute:loading-fill"
+                />
+              </div>
+            {/each}
           </div>
-          <div class="flex justify-center gap-2">
+        {/if}
+        {#if rowedMangas.length < 6 ? index === rowedMangas.length - 1 : index === rowedMangas.length - 5}
+          <div bind:this={sentinel} class="h-0 w-full"></div>
+        {/if}
+        <div
+          class={cn(
+            "flex justify-center",
+            searchState === "idle" &&
+              lastPage?.hasNextPage &&
+              index === rowedMangas.length - 1
+              ? "mt-4 h-fit opacity-100 transition-opacity duration-400"
+              : "h-0 opacity-0",
+          )}
+        >
+          <Button onclick={() => search(true)}>
+            <Icon icon="lucide:corner-down-right" />
+            Load more
+          </Button>
+        </div>
+      {/snippet}
+    </VList>
+    {#if searchState === "error"}
+      <div
+        class="flex h-full w-full flex-col items-center justify-center gap-2"
+      >
+        {let showMore = $state(false)}
+        <Label class="text-5xl font-bold">(×﹏×)</Label>
+        <Label class="text-xl">Unable to load data</Label>
+        <div class="flew-wrap flex items-center justify-center gap-1">
+          <Label class="z-2 text-center text-xs text-wrap select-auto">
+            {limitStr(lastPage?.message ?? "", 100)}
+          </Label>
+          {#if (lastPage?.message?.length ?? 0) > 100}
             <Button
-              class="w-24"
-              variant="secondary"
+              class="h-6 rounded-lg p-2"
+              variant="ghost"
               onclick={() => {
-                writeText(lastPage?.message ?? "");
+                showMore = !showMore;
               }}
             >
-              <Icon icon="lucide:copy" />
-              Copy
+              Show {showMore ? "less" : "more"}
             </Button>
-            <Button class="w-24" onclick={() => search(true)}>
-              <Icon icon="lucide:rotate-cw" />
-              Retry
-            </Button>
-          </div>
+          {/if}
         </div>
-      {/if}
-      <div
-        class={cn(
-          "flex justify-center",
-          searchState === "idle" &&
-            rowedMangas.length === 0 &&
-            lastPage?.hasNextPage
-            ? "z-2 mt-16 h-fit opacity-100 transition-opacity duration-400"
-            : "h-0 opacity-0",
-        )}
-      >
-        <Button onclick={() => search(true)}>
-          <Icon icon="lucide:corner-down-right" />
-          Load more
-        </Button>
-      </div>
-      <div class="mb-0.5 flex w-full justify-center gap-0.5">
-        {#each { length: searchState === "loading" && rowedMangas.length === 0 ? itemsPerRow : 0 }, i (i)}
-          <div
-            class="bg-secondary mt-14 flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
-            in:fade
+        <div
+          class="grid transition-[grid-template-rows] duration-300 ease-out"
+          style:grid-template-rows={showMore ? "1fr" : "0fr"}
+        >
+          <Label
+            class="text-primary/60 z-2 overflow-hidden px-10 text-center text-xs text-wrap select-auto"
           >
-            <Icon class="size-10 animate-spin" icon="mingcute:loading-fill" />
-          </div>
-        {/each}
+            {lastPage?.message}
+          </Label>
+        </div>
+        <div class="flex justify-center gap-2">
+          <Button
+            class="w-24"
+            variant="secondary"
+            onclick={() => {
+              writeText(lastPage?.message ?? "");
+            }}
+          >
+            <Icon icon="lucide:copy" />
+            Copy
+          </Button>
+          <Button class="w-24" onclick={() => search(true)}>
+            <Icon icon="lucide:rotate-cw" />
+            Retry
+          </Button>
+        </div>
       </div>
-      <!-- <div class="h-20 w-20 bg-red-500"></div> -->
+    {/if}
+    <div
+      class={cn(
+        "flex justify-center",
+        searchState === "idle" &&
+          rowedMangas.length === 0 &&
+          lastPage?.hasNextPage
+          ? "z-2 mt-16 h-fit opacity-100 transition-opacity duration-400"
+          : "h-0 opacity-0",
+      )}
+    >
+      <Button onclick={() => search(true)}>
+        <Icon icon="lucide:corner-down-right" />
+        Load more
+      </Button>
     </div>
+    <div class="mb-0.5 flex w-full justify-center gap-0.5">
+      {#each { length: searchState === "loading" && rowedMangas.length === 0 ? itemsPerRow : 0 }, i (i)}
+        <div
+          class="bg-secondary mt-14 flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+          in:fade
+        >
+          <Icon class="size-10 animate-spin" icon="mingcute:loading-fill" />
+        </div>
+      {/each}
+    </div>
+    <!-- <div class="h-20 w-20 bg-red-500"></div> -->
   </div>
 </div>

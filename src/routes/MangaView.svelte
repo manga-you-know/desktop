@@ -416,7 +416,10 @@
                     });
                   }}
                 >
-                  <ContextMenu.Trigger class="w-full">
+                  <ContextMenu.Trigger
+                    class="w-full"
+                    disabled={!openedManga.active}
+                  >
                     <Button
                       class="group relative flex w-full overflow-hidden rounded-lg pr-2 pl-1"
                       variant="ghost"
@@ -479,7 +482,10 @@
                 });
               }}
             >
-              <ContextMenu.Trigger class="flex w-full gap-1">
+              <ContextMenu.Trigger
+                class="flex w-full gap-1"
+                disabled={!openedManga.active}
+              >
                 <Button variant="outline">
                   <Icon icon="lucide:bookmark-off" />
                   Add as entry
@@ -653,10 +659,10 @@
               </Button>
             </div>
           </div>
-          <VList class="scrollbar" data={filteredChapters}>
+          <VList class="scrollbar px-1" data={filteredChapters}>
             {#snippet children(chapter, _)}
               <Button
-                class="h-16 w-full flex-col items-start justify-start gap-1"
+                class="mb-0.5 h-16 w-full flex-col items-start justify-start gap-1"
                 variant="outline"
                 onclick={() => {
                   console.log(chapter);

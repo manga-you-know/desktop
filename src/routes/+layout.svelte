@@ -336,7 +336,7 @@
                   "absolute z-5 h-full w-full pr-4 pb-4 transition-all duration-500 ease-in-out",
                   openedManga.active
                     ? "translate-x-0 opacity-100"
-                    : "pointer-events-none translate-x-80 opacity-0",
+                    : "pointer-events-none **:pointer-events-none translate-x-80 opacity-0",
                 )}
               >
                 <MangaView />
