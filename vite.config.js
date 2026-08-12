@@ -12,6 +12,11 @@ export default defineConfig({
     tailwindcss(),
     sveltekit({
       preprocess: vitePreprocess(),
+      compilerOptions: {
+        experimental: {
+          async: true,
+        },
+      },
       prerender: {
         entries: [
           "/",

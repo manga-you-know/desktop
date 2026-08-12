@@ -34,8 +34,8 @@ import {
 } from "./classes.svelte";
 import type { MangaFetch, SourceBrowse } from "@/types/server";
 import { getBasePath, slugify } from "@/lib/utils";
-import type { Manga, Source as SourceDB } from "@/lib/types/db";
-import { chapters, db, mangas, sources } from "@/lib/db";
+import type { Manga, MangaNSources, Source as SourceDB } from "@/lib/types/db";
+import { chapters, db, mangas, mangasSources, sources } from "@/lib/db";
 import { eq } from "drizzle-orm";
 // import { favorites } from "@/lib/db";
 
@@ -62,7 +62,7 @@ export const currentMangaTab = new ValueState<"edit" | "read" | "images">({
 });
 
 export const openedMangas = new ValueState<
-  Record<string, { s: MangaFetch } | { db: Manga }>
+  Record<string, { s: Source; m: MangaFetch } | { db: MangaNSources }>
 >({
   value: {},
 });
@@ -71,10 +71,17 @@ export const openedManga = new OpenedObject<string>({
   value: "",
 });
 
+export const openedMangaAddSource = new OpenedObject<
+  { s: Source; m: MangaFetch } | { db: SourceDB } | undefined
+>({
+  value: undefined,
+});
+
 export const openedExtension = new OpenedObject<{
   extension?: Extension;
   source?: Source;
 }>({ value: {} });
+
 export const openedSearchFilters = new OpenedObject<{
   sourceBrowse?: SourceBrowse;
 }>({ value: {} });
@@ -194,7 +201,7 @@ class Suwayomi {
 export const suwayomi = new Suwayomi();
 
 class DBHelper {
-  rawMangas = $state<Manga[]>([]);
+  rawMangas = $state<MangaNSources[]>([]);
   libraryMangas = $state<Manga[]>([]);
   rawSources = $state<SourceDB[]>([]);
   mangasBySourceOrigin = $derived(
@@ -210,7 +217,15 @@ class DBHelper {
   }
 
   async refreshMangas() {
-    this.rawMangas = await db.select().from(mangas).all();
+    this.rawMangas = await db.query.mangas.findMany({
+      with: {
+        sourceLinks: {
+          with: {
+            source: true,
+          },
+        },
+      },
+    });
   }
 
   async refreshSources() {
@@ -227,7 +242,7 @@ class DBHelper {
       mangaFetch = await suwaManager.fetchManga(mangaFetch.id);
     }
     if (mangaId === undefined) {
-      const manga = await db
+      const [mangaF] = await db
         .insert(mangas)
         .values({
           title: mangaFetch.title,
@@ -242,8 +257,7 @@ class DBHelper {
           sourceOrigin: `${suwaSource.id}::${mangaFetch.title}`,
         })
         .returning();
-      if (manga.length === 0) return;
-      mangaId = manga[0].id;
+      mangaId = mangaF.id;
     }
     const source = await db
       .insert(sources)
@@ -251,7 +265,9 @@ class DBHelper {
         title: mangaFetch.title,
         mangaSourceId: mangaId.toString(),
         sourceId: suwaSource.id,
-        sourceName: suwaSource.name,
+        sourceName: suwaSource.displayName,
+        extensionName: suwaSource.name,
+        contentWarning: suwaSource.contentWarning,
         extensionId: suwaSource.extension.pkgName,
         description: mangaFetch.description,
         author: mangaFetch.author,
@@ -267,7 +283,21 @@ class DBHelper {
         realUrl: mangaFetch.realUrl ?? "",
       })
       .returning();
-    return source;
+
+    await db.insert(mangasSources).values({
+      mangaId: mangaId,
+      sourceId: source[0].id,
+    });
+    await this.refresh();
+    const manga = await db.query.mangas.findFirst({
+      with: {
+        sourceLinks: {
+          with: { source: true },
+        },
+      },
+      where: eq(mangas.id, mangaId),
+    });
+    return manga;
   }
 
   async deleteSource(source: SourceDB) {

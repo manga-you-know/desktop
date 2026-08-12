@@ -74,8 +74,10 @@ CREATE TABLE `logs` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`kind` text NOT NULL,
 	`event_id` text NOT NULL,
+	`event_origin` text DEFAULT 'MIX' NOT NULL,
 	`title` text NOT NULL,
 	`level` text DEFAULT 'NORMAL' NOT NULL,
+	`is_favorite` integer DEFAULT false,
 	`description` text NOT NULL,
 	`note` text,
 	`should_notify` integer DEFAULT false,
@@ -87,7 +89,6 @@ CREATE TABLE `logs` (
 CREATE INDEX `idx_logs_kind` ON `logs` (`kind`);--> statement-breakpoint
 CREATE INDEX `idx_logs_logged_at` ON `logs` (`logged_at`);--> statement-breakpoint
 CREATE INDEX `idx_logs_should_notify` ON `logs` (`should_notify`);--> statement-breakpoint
-CREATE UNIQUE INDEX `logs_kind_event_id_unique` ON `logs` (`kind`,`event_id`);--> statement-breakpoint
 CREATE TABLE `mangas` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
@@ -198,6 +199,7 @@ CREATE INDEX `idx_series_sort_index` ON `series_mangas` (`sort_index`);--> state
 CREATE TABLE `sources` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`source_name` text NOT NULL,
+	`extension_name` text NOT NULL,
 	`manga_source_id` text NOT NULL,
 	`source_id` text NOT NULL,
 	`extension_id` text NOT NULL,
@@ -208,6 +210,7 @@ CREATE TABLE `sources` (
 	`favorite_count` integer DEFAULT 0 NOT NULL,
 	`download_count` integer DEFAULT 0 NOT NULL,
 	`has_duplicate_chapters` integer DEFAULT false NOT NULL,
+	`content_warning` text NOT NULL,
 	`title` text NOT NULL,
 	`language` text NOT NULL,
 	`description` text,

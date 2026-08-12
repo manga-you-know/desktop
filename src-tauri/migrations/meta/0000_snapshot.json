@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8c3ec38e-6b0b-47d7-bba3-74a08f8cfe9d",
+  "id": "6056b752-7bb6-4c85-992d-3313f159ac01",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -527,6 +527,14 @@
           "notNull": true,
           "autoincrement": false
         },
+        "event_origin": {
+          "name": "event_origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'MIX'"
+        },
         "title": {
           "name": "title",
           "type": "text",
@@ -541,6 +549,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'NORMAL'"
+        },
+        "is_favorite": {
+          "name": "is_favorite",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         },
         "description": {
           "name": "description",
@@ -608,14 +624,6 @@
             "should_notify"
           ],
           "isUnique": false
-        },
-        "logs_kind_event_id_unique": {
-          "name": "logs_kind_event_id_unique",
-          "columns": [
-            "kind",
-            "event_id"
-          ],
-          "isUnique": true
         }
       },
       "foreignKeys": {},
@@ -1407,6 +1415,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "extension_name": {
+          "name": "extension_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "manga_source_id": {
           "name": "manga_source_id",
           "type": "text",
@@ -1482,6 +1497,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "content_warning": {
+          "name": "content_warning",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "title": {
           "name": "title",

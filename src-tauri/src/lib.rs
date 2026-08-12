@@ -10,7 +10,7 @@ pub fn run() {
     let migrations = vec![Migration {
         version: 1,
         description: "add first migration",
-        sql: include_str!("../migrations/0000_even_lord_hawal.sql"),
+        sql: include_str!("../migrations/0000_dazzling_nitro.sql"),
         kind: MigrationKind::Up,
     }];
     #[allow(unused_mut)]

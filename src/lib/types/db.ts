@@ -9,6 +9,7 @@ import type {
   groups,
   savedPanels,
   logs,
+  mangasSources,
 } from "../db";
 
 export type Manga = typeof mangas.$inferSelect;
@@ -41,8 +42,12 @@ export type NewSavedImage = typeof savedPanels.$inferInsert;
 export type Log = typeof logs.$inferSelect;
 export type NewLog = typeof logs.$inferInsert;
 
+export type MangasSources = typeof mangasSources.$inferSelect;
+
 export type SourceNChapters = Source & { chapters: Chapter[] };
-export type MangaNSources = Manga & { sources: SourceNChapters[] };
+export type MangaNSources = Manga & {
+  sourceLinks: (MangasSources & { source: Source })[];
+};
 
 export type Operators = {
   equal?: string | number | boolean | Date;

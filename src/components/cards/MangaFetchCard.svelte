@@ -7,6 +7,7 @@
     dbHelper,
     hideOnLibrary,
     openedManga,
+    openedMangaAddSource,
     openedMangas,
   } from "@/states";
   import Icon from "@iconify/svelte";
@@ -21,7 +22,8 @@
   let { manga, suwaSource }: Props = $props();
 
   let isInLibrary = $derived(
-    dbHelper.sourcesBySourceIdTitle[suwaSource.id + manga.title] !== undefined,
+    dbHelper.mangasBySourceOrigin[`${suwaSource.id}::${manga.title}`] !==
+      undefined,
   );
 </script>
 
@@ -32,8 +34,12 @@
   )}
   onclick={() => {
     currentMangaTab.value = "read";
-    const key = `fetch-${manga.id}${suwaSource.id}`;
-    openedMangas.value[key] = { s: manga };
+    const key = `${suwaSource.id}::${manga.title}`;
+    if (isInLibrary) {
+      openedMangas.value[key] = { db: dbHelper.mangasBySourceOrigin[key] };
+    } else {
+      openedMangas.value[key] = { s: suwaSource, m: manga };
+    }
     openedManga.open(key);
   }}
 >
@@ -46,48 +52,65 @@
   >
     <Icon class="size-5" icon="lucide:bookmark" />
   </div>
-  <Button
+  <div
     class={cn(
-      "absolute top-1 right-1 h-8 gap-1 rounded-lg px-2 backdrop-blur-sm transition-all duration-400 group-hover/card:translate-x-0",
-      isInLibrary ? "w-25 translate-x-27" : "w-18 translate-x-19",
+      "absolute top-1 right-1 flex w-25 translate-x-27 flex-col gap-0.5 transition-all duration-400 group-hover/card:translate-x-0",
+      // isInLibrary ? "w-25 translate-x-27" : "w-18 translate-x-19",
     )}
-    variant={isInLibrary ? "secondary" : "outline"}
-    onclick={async (e) => {
-      e.stopPropagation();
-      const parent = e.currentTarget?.parentElement ?? "";
-      if (isInLibrary) {
-        dbHelper.deleteSource(
-          dbHelper.sourcesBySourceIdTitle[manga.id + suwaSource.id],
-        );
-      } else {
+  >
+    <Button
+      class="h-8 justify-start gap-2 rounded-lg px-2 backdrop-blur-sm"
+      variant="outline"
+      onclick={async (e) => {
+        e.stopPropagation();
+        const parent = e.currentTarget?.parentElement ?? "";
+        if (isInLibrary) {
+          dbHelper.deleteSource(
+            dbHelper.sourcesBySourceIdTitle[manga.id + suwaSource.id],
+          );
+        } else {
+          animate(parent, {
+            filter: ["blur(2px)", "blur(4px)"],
+            duration: 600,
+            easing: "easeOutQuad",
+          });
+          await dbHelper.addSource(manga, suwaSource);
+          if (hideOnLibrary.value) {
+            await animate(parent, {
+              opacity: [1, 0.5, 0],
+              translateX: -40,
+              duration: 500,
+              easing: "easeInQuad",
+            });
+          }
+        }
         animate(parent, {
-          filter: ["blur(2px)", "blur(4px)"],
+          filter: isInLibrary
+            ? ["blur(2px)", "blur(4px)", "blur(0px)"]
+            : ["blur(4px)", "blur(4px)", "blur(0px)"],
           duration: 600,
           easing: "easeOutQuad",
         });
-        await dbHelper.addSource(manga, suwaSource);
-        if (hideOnLibrary.value) {
-          await animate(parent, {
-            opacity: [1, 0.5, 0],
-            translateX: -40,
-            duration: 500,
-            easing: "easeInQuad",
-          });
-        }
-      }
-      animate(parent, {
-        filter: isInLibrary
-          ? ["blur(2px)", "blur(4px)", "blur(0px)"]
-          : ["blur(4px)", "blur(4px)", "blur(0px)"],
-        duration: 600,
-        easing: "easeOutQuad",
-      });
-      dbHelper.refresh();
-    }}
-  >
-    <Icon icon={isInLibrary ? "lucide:x" : "lucide:plus"} />
-    {isInLibrary ? "Remove" : "Add"}
-  </Button>
+        dbHelper.refresh();
+      }}
+    >
+      <Icon icon={isInLibrary ? "lucide:x" : "lucide:plus"} />
+      {isInLibrary ? "Remove" : "Add"}
+    </Button>
+    <Button
+      class="h-8 justify-start gap-2 rounded-lg px-2 backdrop-blur-sm"
+      variant="outline"
+      onclick={(e) => {
+        e.stopPropagation();
+        openedMangaAddSource.open({
+          s: suwaSource,
+          m: manga,
+        });
+      }}
+    >
+      <Icon icon="lucide:squares-unite" />Unite
+    </Button>
+  </div>
   <div
     class="pointer-events-none absolute right-0 bottom-0 left-0 h-24 rounded-b-lg bg-linear-to-t from-black/80 to-transparent"
   ></div>

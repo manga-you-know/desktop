@@ -13,13 +13,14 @@
   import {
     crEvent,
     currentMangaTab,
+    dbHelper,
     openedManga,
     openedMangas,
     suwayomi,
     themeMode,
     timeH,
   } from "@/states";
-  import type { ChapterListItem } from "@/types/server";
+  import type { ChapterListItem, Source } from "@/types/server";
   import Icon from "@iconify/svelte";
   import { ScrollingValue } from "svelte-ux";
   import { VList } from "virtua/svelte";
@@ -30,18 +31,19 @@
   import { quartIn, quintIn } from "svelte/easing";
   import { delay } from "@/utils";
   import { openUrl } from "@tauri-apps/plugin-opener";
+  import type { Source as SourceDB } from "@/lib/types/db";
 
   let chaptersCache: Record<string, ChapterListItem[]> = $state({});
 
   openedManga.onvaluechange = () => {
-    if ("s" in manga && openedManga.value !== "") {
+    if ("m" in manga && openedManga.value !== "") {
       const key = openedManga.value;
-      suwaManager.getMangaScreen(manga.s.id).then((m) => {
-        openedMangas.value[openedManga.value] = { s: m };
+      suwaManager.getMangaScreen(manga.m.id).then((m) => {
+        openedMangas.value[key] = { ...openedMangas.value[key], m: m };
         if (!m.initialized) {
           crEvent.val[key] = true;
           suwaManager.fetchManga(m.id).then((mf) => {
-            openedMangas.value[key] = { s: mf };
+            openedMangas.value[key] = { ...openedMangas.value[key], m: mf };
             delay(1000).then(() => {
               crEvent.val[key] = false;
             });
@@ -49,7 +51,7 @@
         }
       });
       if (!chaptersCache[key] || chaptersCache[key].length === 0) {
-        const mangaId = manga.s.id;
+        const mangaId = manga.m.id;
         suwaManager.getChaptersManga(mangaId).then((r) => {
           if (r.totalCount === 0) {
             suwaManager
@@ -77,17 +79,17 @@
   let manga = $derived(openedMangas.value[openedManga.value]);
   let mangaJ = $derived(
     manga
-      ? "s" in manga
+      ? "m" in manga
         ? {
-            title: manga.s.title,
-            cover: manga.s.thumbnailUrl,
-            description: manga.s.description,
-            realUrl: manga.s.realUrl,
-            genre: manga.s.genre,
-            author: manga.s.author,
-            artist: manga.s.artist,
-            sourceId: manga.s.sourceId,
-            status: manga.s.status,
+            title: manga.m.title,
+            cover: manga.m.thumbnailUrl,
+            description: manga.m.description,
+            realUrl: manga.m.realUrl,
+            genre: manga.m.genre,
+            author: manga.m.author,
+            artist: manga.m.artist,
+            sourceId: manga.m.sourceId,
+            status: manga.m.status,
           }
         : {
             title: manga.db.title,
@@ -98,10 +100,12 @@
             author: manga.db.author,
             artist: manga.db.artist,
             sourceId: "",
-            status: "UNKNOWN",
+            status: manga.db.status,
           }
       : undefined,
   );
+
+  let isDB = $derived("db" in manga);
 
   let currentChapters = $derived(chaptersCache[openedManga.value] ?? []);
   let chaptersFilter = $state("");
@@ -148,15 +152,15 @@
     }
   }
 
-  let sources = $derived(
+  let sources = $derived<{ s: Source } | { ss: SourceDB[] }>(
     mangaJ !== undefined
       ? "s" in manga
-        ? [suwayomi.sourcesById[mangaJ.sourceId]]
-        : []
-      : [],
+        ? { s: suwayomi.sourcesById[mangaJ.sourceId] }
+        : { ss: manga.db.sourceLinks.map((sl) => sl.source) }
+      : { ss: [] },
   );
 
-  // $inspect(sources);
+  $inspect(sources);
 </script>
 
 <div
@@ -407,7 +411,7 @@
                   </Button>
                 </div>
               </div>
-              {#each sources as source, i (i)}
+              {#if "s" in sources}
                 {let wasOpen = $state(false)}
                 <ContextMenu.Root
                   onOpenChange={(v) => {
@@ -417,7 +421,10 @@
                   }}
                 >
                   <ContextMenu.Trigger
-                    class="w-full"
+                    class={cn(
+                      "w-full",
+                      !openedManga.active && "pointer-events-none!",
+                    )}
                     disabled={!openedManga.active}
                   >
                     <Button
@@ -427,10 +434,10 @@
                       <div class="flex w-full items-center gap-1">
                         <Image
                           class="size-10 shrink-0 object-cover"
-                          src={source.iconUrl}
+                          src={sources.s.iconUrl}
                         />
                         <span class="truncate">
-                          {source.displayName}
+                          {sources.s.displayName}
                         </span>
                       </div>
                       <Button
@@ -469,6 +476,72 @@
                     </ContextMenu.Item>
                   </ContextMenu.Content>
                 </ContextMenu.Root>
+              {/if}
+              {#each "ss" in sources ? sources.ss : [] as source, i (i)}
+                {let wasOpen = $state(false)}
+                <ContextMenu.Root
+                  onOpenChange={(v) => {
+                    delay(300).then(() => {
+                      wasOpen = v;
+                    });
+                  }}
+                >
+                  <ContextMenu.Trigger
+                    class={cn(
+                      "w-full",
+                      !openedManga.active && "pointer-events-none!",
+                    )}
+                    disabled={!openedManga.active}
+                  >
+                    <Button
+                      class="group relative flex w-full overflow-hidden rounded-lg pr-2 pl-1"
+                      variant="ghost"
+                    >
+                      <div class="flex w-full items-center gap-1">
+                        <Image
+                          class="size-10 shrink-0 object-cover"
+                          src={source.iconUrl}
+                        />
+                        <span class="truncate">
+                          {source.sourceName}
+                        </span>
+                      </div>
+                      <Button
+                        class="absolute top-1 right-1 h-8 w-7 rounded-lg px-2 opacity-0 backdrop-blur-sm transition-opacity duration-400 group-hover:opacity-100"
+                        variant="ghost"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          if (wasOpen) return;
+                          const event = new MouseEvent("contextmenu", {
+                            bubbles: true,
+                            clientX: e.clientX,
+                            clientY: e.clientY,
+                          });
+                          e.currentTarget.parentElement?.dispatchEvent(event);
+                        }}
+                      >
+                        <Icon icon="lucide:ellipsis-vertical" />
+                      </Button>
+                    </Button>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item
+                      onclick={() => {
+                        openUrl(source.realUrl ?? "");
+                      }}
+                    >
+                      <Icon icon="lucide:external-link" />Open in browser
+                    </ContextMenu.Item>
+                    <ContextMenu.Separator />
+                    <ContextMenu.Item>
+                      <Icon icon="lucide:search" />
+                      Search with source
+                    </ContextMenu.Item>
+                    <ContextMenu.Item>
+                      <Icon icon="lucide:info" />See extension
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
               {/each}
               <!-- <Icon icon="lucide:square-arrow-out-up-right" /> -->
             </div>
@@ -483,17 +556,55 @@
               }}
             >
               <ContextMenu.Trigger
-                class="flex w-full gap-1"
+                class={cn(
+                  "flex w-full gap-1",
+                  !openedManga.active && "pointer-events-none!",
+                )}
                 disabled={!openedManga.active}
               >
-                <Button variant="outline">
-                  <Icon icon="lucide:bookmark-off" />
-                  Add as entry
+                <Button
+                  variant={isDB ? "default" : "outline"}
+                  onclick={async () => {
+                    if ("m" in manga) {
+                      const key = openedManga.value;
+                      const m = manga.m;
+                      const s = manga.s;
+                      crEvent.val[key] = true;
+                      const nManga = await dbHelper.addSource(m, s);
+                      if (nManga === undefined) return;
+                      openedMangas.value[key] = {
+                        db: nManga,
+                      };
+                      delay(1000).then(() => {
+                        crEvent.val[key] = false;
+                      });
+                    }
+                  }}
+                >
+                  <Icon
+                    icon={isDB ? "lucide:bookmark" : "lucide:bookmark-off"}
+                  />
+                  Add entry
                 </Button>
-                <Button variant="secondary">
-                  <Icon icon="lucide:squares-subtract" />
-                  Add as source
-                </Button>
+                {#if !isDB}
+                  <div
+                    in:slide={{
+                      duration: crEvent.val[openedManga.value] ? 500 : 0,
+                      easing: quintIn,
+                      axis: "x",
+                    }}
+                    out:slide={{
+                      duration: crEvent.val[openedManga.value] ? 500 : 0,
+                      easing: quintIn,
+                      axis: "x",
+                    }}
+                  >
+                    <Button variant="secondary">
+                      <Icon icon="lucide:squares-unite" />
+                      Unite
+                    </Button>
+                  </div>
+                {/if}
                 <Button
                   variant="ghost"
                   onclick={(e) => {
@@ -516,8 +627,11 @@
                     if ("s" in manga) {
                       const key = openedManga.value;
                       crEvent.val[key] = true;
-                      suwaManager.fetchManga(manga.s.id).then((mf) => {
-                        openedMangas.value[key] = { s: mf };
+                      suwaManager.fetchManga(manga.m.id).then((mf) => {
+                        openedMangas.value[key] = {
+                          ...openedMangas.value[key],
+                          m: mf,
+                        };
                         delay(1000).then(() => {
                           crEvent.val[key] = false;
                         });

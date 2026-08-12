@@ -94,8 +94,8 @@ export async function setFullscreen(value: boolean) {
   isFullscreen.set(value);
 }
 
-export async function copyText(text: string, textType?: string) {
-  await writeText(text);
+export async function copyText(text?: string, textType?: string) {
+  await writeText(text ?? "");
   toast.success(titleCase(textType ?? "Text") + " copied!");
 }
 

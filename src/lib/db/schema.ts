@@ -8,7 +8,7 @@ import {
   index,
 } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
-import type { MangaStatus } from "@/types/server";
+import type { MangaStatus, ContentWarning } from "@/types/server";
 
 export const mangas = sqliteTable(
   "mangas",
@@ -67,6 +67,7 @@ export const sources = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     sourceName: text("source_name").notNull(), // local source: "Local"
+    extensionName: text("extension_name").notNull(),
     mangaSourceId: text("manga_source_id").notNull(), // local source: final path
     sourceId: text("source_id").notNull(), // local source: root path
     extensionId: text("extension_id").notNull(), // local source: "local=" + type of media (cbz, pdf, folder images)
@@ -79,6 +80,7 @@ export const sources = sqliteTable(
     hasDuplicateChapters: integer("has_duplicate_chapters", { mode: "boolean" })
       .notNull()
       .default(false),
+    contentWarning: text("content_warning").$type<ContentWarning>().notNull(),
     title: text("title").notNull(),
     language: text("language").notNull(),
     description: text("description"),
@@ -355,8 +357,10 @@ export const logs = sqliteTable(
     eventId: text("event_id")
       .notNull()
       .$defaultFn(() => Date.now().toString()),
+    eventOrigin: text("event_origin").notNull().default("MIX"),
     title: text("title").notNull(),
     level: text("level").$type<LogLevel>().notNull().default("NORMAL"),
+    isFavorite: integer("is_favorite", { mode: "boolean" }).default(false),
     description: text("description").notNull(),
     note: text("note"),
     shouldNotify: integer("should_notify", { mode: "boolean" }).default(false),
@@ -369,7 +373,6 @@ export const logs = sqliteTable(
       .default({}),
   },
   (t) => [
-    unique().on(t.kind, t.eventId),
     index("idx_logs_kind").on(t.kind),
     index("idx_logs_logged_at").on(t.loggedAt),
     index("idx_logs_should_notify").on(t.shouldNotify),

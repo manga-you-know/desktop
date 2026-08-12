@@ -91,6 +91,7 @@
   import { fly } from "svelte/transition";
   import type { RouteId } from "$app/types";
   import MangaView from "./MangaView.svelte";
+    import MangaSourceAdd from "./MangaSourceAdd.svelte";
 
   let { children } = $props();
   const window = getCurrentWindow();
@@ -293,6 +294,7 @@
   <ManageExtensions />
   <SetExtension />
   <SearchFilters />
+  <MangaSourceAdd />
   <div
     class={cn(
       "pointer-events-none fixed z-999 h-screen w-screen transition-colors duration-300",

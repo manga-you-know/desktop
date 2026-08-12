@@ -24,13 +24,12 @@
   } from "@/types/server";
   import { limitStr } from "@/utils";
   import Icon from "@iconify/svelte";
-  import { writeText } from "@tauri-apps/plugin-clipboard-manager";
   import { animate } from "animejs";
   import { onMount, untrack } from "svelte";
   import { ScrollingValue } from "svelte-ux";
   import { fade } from "svelte/transition";
   import { VList } from "virtua/svelte";
-  import MangaView from "../MangaView.svelte";
+  import { copyText } from "@/functions";
 
   let selectedSource = $derived(suwayomi.sourcesById[selectedSourceId.value]);
   let openSelectSource = $state(false);
@@ -58,6 +57,7 @@
         : "",
     ].join("::"),
   );
+
   let pages = $derived(Object.values(fetchedMangaData[currentKey] ?? {}));
   let lastPage = $derived(pages.at(-1));
   let searchState = $derived<"idle" | "loading" | "error">(
@@ -66,8 +66,7 @@
   let results = $derived<MangaFetch[]>(pages.flatMap((fm) => fm.mangas) ?? []);
 
   const search = async (goBeyoundTwo: boolean = false) => {
-    if (selectedSourceId.value === undefined || selectedSourceId.value === "")
-      return;
+    if (selectedSourceId.value === undefined || !selectedSource) return;
     const key = currentKey;
     const lastData = Object.values(fetchedMangaData[key] ?? {});
     if (lastData.length > 0 && !lastPage?.hasNextPage && !lastPage?.error)
@@ -536,6 +535,19 @@
         </div>
       {/snippet}
     </VList>
+    {#if searchState === "idle" && !selectedSource}
+      <div
+        class="flex h-full w-full flex-col items-center justify-center gap-2"
+      >
+        <Label class="text-5xl font-bold">(っ ᵔ◡ᵔ)っ</Label>
+        <Label class="flex items-center gap-2 text-xl">
+          Waiting for server to start...<Icon
+            class="size-6 animate-spin"
+            icon="mingcute:loading-fill"
+          />
+        </Label>
+      </div>
+    {/if}
     {#if searchState === "error"}
       <div
         class="flex h-full w-full flex-col items-center justify-center gap-2"
@@ -574,7 +586,7 @@
             class="w-24"
             variant="secondary"
             onclick={() => {
-              writeText(lastPage?.message ?? "");
+              copyText(lastPage?.message, "error");
             }}
           >
             <Icon icon="lucide:copy" />
