@@ -2,40 +2,23 @@
   import { goto, preloadData } from "$app/navigation";
   import { page } from "$app/state";
   import { Badge } from "svelte-ux";
-  import { Tooltip } from "@/components";
-  import {
-    Sidebar,
-    Label,
-    Avatar,
-    Separator,
-    ScrollArea,
-    Button,
-  } from "@/lib/components";
+  import { Sidebar, Label, Separator } from "@/lib/components";
   import {
     openSearch,
     openAdd,
     openTag,
     openDownloads,
     favoritesLoaded,
-    theme,
     openInfo,
     customTitlebar,
-    globalChapters,
-    chaptersCache,
-    downloadManager,
-    preferableLanguage,
-    keepReading,
     sidebarSide,
   } from "@/store";
   import Icon from "@iconify/svelte";
-  import type { Downloading, FavoriteLoaded } from "@/types";
+  import type { FavoriteLoaded } from "@/types";
   import { useSidebar } from "@/lib/components/ui/sidebar";
   import { IS_MOBILE } from "@/constants";
-  import { refreshCache, removeCache, saveSettings } from "@/functions";
+  import { refreshCache } from "@/functions";
   import { cn } from "@/lib/utils";
-  import { toast } from "svelte-sonner";
-  import { ReadedDB } from "@/repositories";
-  import { get } from "svelte/store";
   import { onMount } from "svelte";
   import { openSettings, themeMode } from "@/states";
 
@@ -61,9 +44,9 @@
       icon: "lucide:images",
     },
     {
-      name: "Random",
+      name: "ReadIDK",
       path: "/random",
-      icon: "lucide:book",
+      icon: "lucide:file-spreadsheet",
     },
     // {
     //   name: "Settings",
@@ -214,66 +197,11 @@
   >
     <Sidebar.Group>
       <Sidebar.GroupContent>
-        <Sidebar.Menu class="flex flex-col gap-2">
-          <Sidebar.MenuItem>
-            <Sidebar.MenuButton
-              variant={$openTag ? "secondary" : "default"}
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(false);
-                openTag.set(true);
-                openInfo.set(false);
-                openAdd.set(false);
-                // openSettings.set(false);
-                openDownloads.set(false);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              <Icon class="mr-1 -ml-1.5 size-5!" icon="lucide:tags" />
-              <Label
-                class={cn(
-                  "cursor-pointer transition-all",
-                  $openTag && "text-sidebar!",
-                )}
-              >
-                Tags
-              </Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
-          <Sidebar.MenuItem class="hidden">
-            <Sidebar.MenuButton
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(false);
-                openTag.set(false);
-                // openSettings.set(false);
-                openAdd.set(true);
-                openInfo.set(false);
-                openDownloads.set(false);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              <Icon
-                icon={$openAdd ? "typcn:plus" : "typcn:plus-outline"}
-                class="-ml-0.5 size-7! "
-              />
-              <Label
-                class={cn(
-                  "cursor-pointer transition-all",
-                  $openAdd && "text-sidebar!",
-                )}
-              >
-                Add
-              </Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
-        </Sidebar.Menu>
+        <Sidebar.Menu class="flex flex-col gap-2"></Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  <Sidebar.Group class="group-data-[side=left]:-ml-[1.5px]">
+  <Sidebar.Group class="group-data-[side=left]:ml-[-1.5px]">
     <Sidebar.GroupContent>
       <Sidebar.Menu
         class="flex flex-row-reverse justify-center gap-1 transition-[gap] duration-300 ease-in-out

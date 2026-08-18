@@ -235,12 +235,16 @@ class DBHelper {
   async addSource(
     mangaFetch: MangaFetch,
     suwaSource: Source,
-    mangaId?: number,
+    options: {
+      mangaId?: number;
+      refresh: boolean;
+    } = { refresh: true },
   ) {
     mangaFetch = await suwaManager.getMangaScreen(mangaFetch.id);
     if (!mangaFetch.initialized) {
       mangaFetch = await suwaManager.fetchManga(mangaFetch.id);
     }
+    let mangaId = options?.mangaId;
     if (mangaId === undefined) {
       const [mangaF] = await db
         .insert(mangas)
@@ -288,7 +292,9 @@ class DBHelper {
       mangaId: mangaId,
       sourceId: source[0].id,
     });
-    await this.refresh();
+    if (!!options?.refresh) {
+      await this.refresh();
+    }
     const manga = await db.query.mangas.findFirst({
       with: {
         sourceLinks: {

@@ -407,6 +407,7 @@
       <Button
         class="items-center"
         variant="ghost"
+        tabindex={0}
         onclick={async (e) => {
           animate(e.currentTarget, {
             filter: ["blur(2px)", "blur(4px)", "blur(0px)"],
@@ -438,8 +439,12 @@
       >
         <!-- <Icon icon={hideOnLibrary.value ? "lucide:book-x" : "lucide:book-text"} -->
         <!-- /> -->
-        <Checkbox class="pointer-events-none" checked={!hideOnLibrary.value} />
-        On library
+        <Checkbox
+          class="pointer-events-none"
+          tabindex={-1}
+          checked={!hideOnLibrary.value}
+        />
+        In library
         <!-- {hideOnLibrary.value ? "Show" : "Hide"} -->
       </Button>
     </div>

@@ -171,7 +171,9 @@
     // loadSidecar()
     crEvent.val["page-change"] = false;
     goto(lastPage.value);
-    crEvent.val["page-change"] = true;
+    delay(1000).then(() => {
+        crEvent.val["page-change"] = true;
+    })
     suwaManager.startSuwayomi();
     // loadDatabase();
     // logNewUser();

@@ -114,6 +114,7 @@ export const sources = sqliteTable(
   },
   (t) => [
     index("idx_sources_enabled").on(t.enabled),
+    // index("idx_sources_source_id").on(t.sourceId)
     unique().on(t.sourceId, t.mangaSourceId),
     index("idx_sources_manga_source_id").on(t.mangaSourceId),
   ],

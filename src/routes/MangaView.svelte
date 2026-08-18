@@ -1,7 +1,14 @@
 <script lang="ts">
   import { Image } from "@/components";
   import Tooltip from "@/components/common/Tooltip.svelte";
-  import { Badge, Button, ContextMenu, Input, Label } from "@/lib/components";
+  import {
+    Badge,
+    Button,
+    ContextMenu,
+    Input,
+    Label,
+    Popover,
+  } from "@/lib/components";
   import { suwaManager } from "@/lib/helpers";
   import {
     cn,
@@ -14,8 +21,11 @@
     crEvent,
     currentMangaTab,
     dbHelper,
+    enabledSources,
+    openedExtension,
     openedManga,
     openedMangas,
+    selectedSourceId,
     suwayomi,
     themeMode,
     timeH,
@@ -32,6 +42,7 @@
   import { delay } from "@/utils";
   import { openUrl } from "@tauri-apps/plugin-opener";
   import type { Source as SourceDB } from "@/lib/types/db";
+  import { goto } from "$app/navigation";
 
   let chaptersCache: Record<string, ChapterListItem[]> = $state({});
 
@@ -283,11 +294,11 @@
         >
           <div class="flex w-full gap-2">
             <Image
-              class="h-105 w-70 shrink-0 rounded-lg object-cover"
+              class="xs:h-105 xs:w-70 h-85 w-50 shrink-0 rounded-lg object-cover xl:h-135 xl:w-90"
               src={mangaJ.cover}
             />
             <div
-              class="flex max-h-105 w-[calc(100%-18rem)] flex-col items-center *:justify-between *:rounded-lg *:text-sm *:font-semibold"
+              class="flex max-h-105 w-[calc(100%-18rem)] flex-col items-center *:justify-between *:rounded-lg *:text-sm *:font-semibold xl:max-h-135 xl:w-[calc(100%-23rem)]"
             >
               <Badge
                 class="group mb-0.5 w-full gap-1"
@@ -377,7 +388,7 @@
                       copyText(mangaJ.status ?? "", "status");
                     }}
                   >
-                    <div class="flex">
+                    <div>
                       <span class="mr-1 text-gray-400">Status</span>
                       {titleCase(mangaJ.status)}
                     </div>
@@ -467,18 +478,73 @@
                       <Icon icon="lucide:external-link" />Open in browser
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item>
+                    <ContextMenu.Item
+                      onclick={() => {
+                        selectedSourceId.value = sources.s.id;
+                        if (!enabledSources.value[sources.s.id]) {
+                          enabledSources.value = {
+                            ...enabledSources.value,
+                            [sources.s.id]: true,
+                          };
+                        }
+                        goto("/browse");
+                        openedManga.close();
+                      }}
+                    >
                       <Icon icon="lucide:search" />
                       Search with source
                     </ContextMenu.Item>
-                    <ContextMenu.Item>
-                      <Icon icon="lucide:info" />See extension
+                    <ContextMenu.Item
+                      onclick={() => {
+                        openedExtension.open({
+                          extension:
+                            suwayomi.extensionsByPkgName[
+                              sources.s.extension.pkgName
+                            ],
+                        });
+                      }}
+                    >
+                      <Icon icon="lucide:info" />
+                      See extension
                     </ContextMenu.Item>
+                    <ContextMenu.Item
+                      disabled={!sources.s?.isConfigurable}
+                      onclick={() => {
+                        openedExtension.open({
+                          source: sources.s,
+                          extension:
+                            suwayomi.extensionsByPkgName[
+                              sources.s.extension.pkgName
+                            ],
+                        });
+                      }}
+                    >
+                      <Icon icon="lucide:settings" />
+                      Configure
+                    </ContextMenu.Item>
+
+                    {#if sources.s.extension.hasUpdate}
+                      <ContextMenu.Item
+                        class="text-info data-highlighted:text-info/90"
+                        onclick={() => {
+                          suwaManager.patchExtension(
+                            sources.s.extension.pkgName,
+                            "update",
+                          );
+                        }}
+                      >
+                        <Icon icon="lucide:refresh-cw" />
+                        Update extension
+                      </ContextMenu.Item>
+                    {/if}
                   </ContextMenu.Content>
                 </ContextMenu.Root>
               {/if}
               {#each "ss" in sources ? sources.ss : [] as source, i (i)}
                 {let wasOpen = $state(false)}
+                {let sourceSuwa = $derived(
+                  suwayomi.sourcesById[source.sourceId],
+                )}
                 <ContextMenu.Root
                   onOpenChange={(v) => {
                     delay(300).then(() => {
@@ -533,13 +599,61 @@
                       <Icon icon="lucide:external-link" />Open in browser
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item>
+                    <ContextMenu.Item
+                      onclick={() => {
+                        selectedSourceId.value = source.sourceId;
+                        if (!enabledSources.value[source.sourceId]) {
+                          enabledSources.value = {
+                            ...enabledSources.value,
+                            [source.id]: true,
+                          };
+                        }
+                        goto("/browse");
+                        openedManga.close();
+                      }}
+                    >
                       <Icon icon="lucide:search" />
                       Search with source
                     </ContextMenu.Item>
-                    <ContextMenu.Item>
-                      <Icon icon="lucide:info" />See extension
+                    <ContextMenu.Item
+                      onclick={() => {
+                        openedExtension.open({
+                          extension:
+                            suwayomi.extensionsByPkgName[source.extensionId],
+                        });
+                      }}
+                    >
+                      <Icon icon="lucide:info" />
+                      See extension
                     </ContextMenu.Item>
+                    <ContextMenu.Item
+                      disabled={!sourceSuwa?.isConfigurable}
+                      onclick={() => {
+                        openedExtension.open({
+                          source: sourceSuwa,
+                          extension:
+                            suwayomi.extensionsByPkgName[source.extensionId],
+                        });
+                      }}
+                    >
+                      <Icon icon="lucide:settings" />
+                      Configure
+                    </ContextMenu.Item>
+
+                    {#if sourceSuwa?.extension.hasUpdate}
+                      <ContextMenu.Item
+                        class="text-info data-highlighted:text-info/90"
+                        onclick={() => {
+                          suwaManager.patchExtension(
+                            source.extensionId,
+                            "update",
+                          );
+                        }}
+                      >
+                        <Icon icon="lucide:refresh-cw" />
+                        Update extension
+                      </ContextMenu.Item>
+                    {/if}
                   </ContextMenu.Content>
                 </ContextMenu.Root>
               {/each}
@@ -563,6 +677,7 @@
                 disabled={!openedManga.active}
               >
                 <Button
+                  class="w-36 justify-between"
                   variant={isDB ? "default" : "outline"}
                   onclick={async () => {
                     if ("m" in manga) {
@@ -584,7 +699,9 @@
                   <Icon
                     icon={isDB ? "lucide:bookmark" : "lucide:bookmark-off"}
                   />
-                  Add entry
+                  <span class="w-full">
+                    {isDB ? "In library" : "Add to library"}
+                  </span>
                 </Button>
                 {#if !isDB}
                   <div
@@ -605,7 +722,33 @@
                     </Button>
                   </div>
                 {/if}
+                <Popover.Root>
+                  <Popover.Trigger>
+                    <Button
+                      variant="background"
+                      onclick={() => {
+                        if (
+                          !isDB ||
+                          ("ss" in sources && sources.ss.length >= 1)
+                        ) {
+                          openUrl(
+                            ("s" in sources
+                              ? mangaJ.realUrl
+                              : sources.ss[0].realUrl) ?? "",
+                          );
+                        }
+                      }}
+                    >
+                      <Icon icon="lucide:external-link" />
+                    </Button>
+                  </Popover.Trigger>
+                  <Popover.Content
+                    disabled={!isDB ||
+                      ("ss" in sources && sources.ss.length >= 1)}
+                  ></Popover.Content>
+                </Popover.Root>
                 <Button
+                  class="w-8"
                   variant="ghost"
                   onclick={(e) => {
                     e.stopPropagation();
@@ -655,7 +798,7 @@
                 <!-- svelte-ignore a11y_no_static_element_interactions -->
                 <div
                   class={cn(
-                    "manga-desc prose prose-invert text-primary mt-2 block min-w-0 overflow-hidden px-2 pt-0.5 text-sm transition-[max-height] duration-400 select-auto",
+                    "manga-desc prose prose-invert text-primary mt-2 block w-full max-w-none min-w-0 overflow-hidden px-2 pt-0.5 text-sm transition-[max-height] duration-400 select-auto",
                     showDesc ? "max-h-600" : "max-h-16",
                   )}
                   onclick={handleDescClick}

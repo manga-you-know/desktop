@@ -271,8 +271,8 @@
               >
                 <Icon
                   icon={pinnedSources.value[selectedSource.id]
-                    ? "lucide:pin-off"
-                    : "lucide:pin"}
+                    ? "lucide:pin"
+                    : "lucide:pin-off"}
                 />
                 {pinnedSources.value[selectedSource.id] ? "Unpin" : "Pin"} source
               </ContextMenu.Item>
@@ -648,8 +648,8 @@
                 >
                   <Icon
                     icon={pinnedSources.value[source.id]
-                      ? "lucide:pin-off"
-                      : "lucide:pin"}
+                      ? "lucide:pin"
+                      : "lucide:pin-off"}
                   />
                   {pinnedSources.value[source.id] ? "Unpin" : "Pin"} source
                 </ContextMenu.Item>

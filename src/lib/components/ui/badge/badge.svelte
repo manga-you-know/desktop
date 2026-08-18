@@ -11,6 +11,7 @@
           "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 border-transparent",
         background:
           "bg-background text-primary hover:bg-background/80 border-transparent",
+        accent: "bg-accent text-primary hover:bg-accent/80 border-transparent",
         info: "bg-info text-white hover:bg-info/80 border-transparent",
         destructive:
           "bg-destructive [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/70 border-transparent text-white",

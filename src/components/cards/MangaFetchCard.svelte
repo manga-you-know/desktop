@@ -54,16 +54,16 @@
   </div>
   <div
     class={cn(
-      "absolute top-1 right-1 flex w-25 translate-x-27 flex-col gap-0.5 transition-all duration-400 group-hover/card:translate-x-0",
+      "absolute top-1 right-1 flex w-25 translate-x-27 flex-col items-end gap-0.5 transition-all duration-400 group-hover/card:translate-x-0",
       // isInLibrary ? "w-25 translate-x-27" : "w-18 translate-x-19",
     )}
   >
     <Button
-      class="h-8 justify-start gap-2 rounded-lg px-2 backdrop-blur-sm"
+      class="h-8 w-full justify-between gap-2 rounded-lg pl-2 backdrop-blur-sm"
       variant="outline"
       onclick={async (e) => {
         e.stopPropagation();
-        const parent = e.currentTarget?.parentElement ?? "";
+        const parent = e.currentTarget?.parentElement?.parentElement ?? "";
         if (isInLibrary) {
           dbHelper.deleteSource(
             dbHelper.sourcesBySourceIdTitle[manga.id + suwaSource.id],
@@ -74,7 +74,7 @@
             duration: 600,
             easing: "easeOutQuad",
           });
-          await dbHelper.addSource(manga, suwaSource);
+          await dbHelper.addSource(manga, suwaSource, { refresh: false });
           if (hideOnLibrary.value) {
             await animate(parent, {
               opacity: [1, 0.5, 0],
@@ -95,10 +95,12 @@
       }}
     >
       <Icon icon={isInLibrary ? "lucide:x" : "lucide:plus"} />
-      {isInLibrary ? "Remove" : "Add"}
+      <span class="w-full">
+        {isInLibrary ? "Remove" : "Add"}
+      </span>
     </Button>
     <Button
-      class="h-8 justify-start gap-2 rounded-lg px-2 backdrop-blur-sm"
+      class="h-8 w-8 justify-start gap-2 rounded-lg px-2 backdrop-blur-sm"
       variant="outline"
       onclick={(e) => {
         e.stopPropagation();
@@ -108,7 +110,7 @@
         });
       }}
     >
-      <Icon icon="lucide:squares-unite" />Unite
+      <Icon icon="lucide:squares-unite" />
     </Button>
   </div>
   <div

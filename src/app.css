@@ -89,6 +89,8 @@
   /* Scrollbar colors */
   --color-scroll-thumb: hsla(0, 0%, 13%, 1);
   --color-scroll-track: transparent;
+  --breakpoint-xs: 25rem;
+  --breakpoint-xss: 20rem;
 }
 
 @layer base {

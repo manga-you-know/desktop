@@ -4,7 +4,7 @@
   import type { HTMLButtonAttributes } from "svelte/elements";
 
   export const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none !active:scale-75 cursor-pointer",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none ease-in-out transition-transform active:scale-98 cursor-pointer",
     {
       variants: {
         variant: {
@@ -19,6 +19,10 @@
           secondary: "bg-secondary text-primary hover:bg-secondary/80",
           ghost: "hover:bg-secondary text-primary",
           link: "text-primary underline-offset-4 hover:underline",
+          background:
+            "bg-background text-primary hover:bg-background/80 border-transparent",
+          accent:
+            "bg-accent text-primary hover:bg-accent/80 border-transparent",
           elevated:
             "bg-background shadow-md -translate-y-[3px] shadow-accent transition-all duration-200 border border-border/50 bg-accent text-accent-foreground text-slate-200",
           elevatedHover:
@@ -47,9 +51,9 @@
           hoverUnderline:
             "relative no-underline! after:absolute after:bg-primary after:bottom-2 after:h-px after:w-2/3 after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:ease-in-out after:duration-300",
           elevated:
-            "shadow-lg hover:shadow-none hover:-translate-y-px transition-all duration-200",
+            "shadow-lg hover:shadow-none hover:-translate-y-[3px] transition-all duration-200",
           elevatedHover:
-            "shadow-none hover:shadow-lg hover:-translate-y-px transition-all duration-200",
+            "shadow-none hover:shadow-lg hover:-translate-y-[3px] transition-all duration-200",
         },
         size: {
           default: "h-10 px-4 py-2",
