@@ -1,18 +1,30 @@
 #![allow(unused_imports)]
 use tauri::Manager;
+use tauri_plugin_sql::{Migration, MigrationKind};
 use utils::{hashmap::*, request::*};
 
 mod utils;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    /*   let migrations = vec![Migration {
+        version: 1,
+        description: "add first migration",
+        sql: include_str!("../migrations/0000_dazzling_nitro.sql"),
+        kind: MigrationKind::Up,
+    }]; */
     #[allow(unused_mut)]
-    let mut builder = tauri::Builder::<tauri::Cef>::new()
+    let mut builder = tauri::Builder::<tauri::Wry>::new()
         .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
             get_base64_image
         ])
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                // .add_migrations("sqlite:database.db", migrations)
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
@@ -21,7 +33,6 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build());
     #[cfg(mobile)]
@@ -56,11 +67,8 @@ pub fn run() {
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 Some(vec!["--flag1", "--flag2"]),
             ))
-            .plugin(tauri_plugin_global_shortcut::Builder::new().build());
-        #[cfg(target_os = "windows")]
-        {
-            builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
-        }
+            .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+            .plugin(tauri_plugin_updater::Builder::new().build());
     }
     builder.run(tauri::generate_context!()).unwrap()
 }

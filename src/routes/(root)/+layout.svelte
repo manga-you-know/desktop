@@ -61,6 +61,10 @@
   import { toast } from "svelte-sonner";
   import { page } from "$app/state";
   import { exit } from "@tauri-apps/plugin-process";
+  import { addCollection } from "@iconify/svelte";
+  import lucide from "@iconify-json/lucide/icons.json";
+
+  addCollection(lucide);
 
   let { children } = $props();
   const window = getCurrentWindow();
