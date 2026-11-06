@@ -41,12 +41,6 @@
 
   const items = [
     {
-      name: "Home",
-      path: "/home",
-      iconActive: "heroicons:home-20-solid",
-      icon: "heroicons:home",
-    },
-    {
       name: "Favorites",
       path: "/favorites",
       iconActive: "heroicons:star-solid",
@@ -138,10 +132,9 @@
           <Sidebar.MenuButton
             class={cn(
               "absolute transition-translate duration-300",
-              page.url.pathname === "/home" && "translate-y-0",
-              page.url.pathname === "/favorites" && "translate-y-14",
-              page.url.pathname === "/library" && "translate-y-28",
-              page.url.pathname === "/panels" && "translate-y-[10.5rem]",
+              page.url.pathname === "/favorites" && "translate-y-0",
+              page.url.pathname === "/library" && "translate-y-14",
+              page.url.pathname === "/panels" && "translate-y-28",
             )}
             variant="secondary"
           />
@@ -211,7 +204,7 @@
   </Sidebar.Header>
   <Separator class="bg-secondary w-[95%]" />
   <Sidebar.Content
-    class="-ml-[2px] group-data-[collapsible=icon]:overflow-y-auto scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
+    class="-ml-[2px] scrollbar group-data-[collapsible=icon]:[&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar]:w-2"
   >
     <Sidebar.Group>
       <Sidebar.GroupContent>
@@ -301,157 +294,6 @@
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         </Sidebar.Menu>
-      </Sidebar.GroupContent>
-    </Sidebar.Group>
-    <Sidebar.Group>
-      <Sidebar.GroupContent class="flex flex-col gap-2">
-        {#if $chaptersCache.length > 0 && $keepReading}
-          <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-primary"
-          >
-            <Sidebar.MenuItem
-              class={cn(
-                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
-                favoritesWithChapters.length === 0 && "max-h-88 smh:max-h-96",
-              )}
-            >
-              <ScrollArea class="gap-0">
-                {#each $chaptersCache as cache}
-                  <Tooltip
-                    class="h-7 font-bold items-center flex -ml-1 "
-                    text={`${cache?.currentPage}/${cache?.totalPage} ~ ${cache?.chapter?.number} # ${cache?.favorite.name}`}
-                    placement="right"
-                    delay={200}
-                  >
-                    <Sidebar.MenuButton
-                      class="rounded-md group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline relative group/cache"
-                      onclick={async () => {
-                        if (cache.chapters.length === 0) {
-                          toast.loading("Loading chapters...", {
-                            duration: 700,
-                          });
-                          let chapters = [];
-                          const isMulti = $downloadManager.isMultiLanguage(
-                            cache.favorite.source,
-                          );
-                          if (isMulti) {
-                            const lastReaded = await ReadedDB.getLastReaded(
-                              cache.favorite,
-                            );
-                            if (lastReaded) {
-                              chapters = await $downloadManager.getChapters(
-                                cache.favorite,
-                                lastReaded.language,
-                              );
-                            } else {
-                              chapters = await $downloadManager.getChapters(
-                                cache.favorite,
-                                get(preferableLanguage).id,
-                              );
-                            }
-                            if (chapters.length === 0) {
-                              const languages =
-                                await $downloadManager.getFavoriteLanguages(
-                                  cache.favorite,
-                                );
-                              chapters = await $downloadManager.getChapters(
-                                cache.favorite,
-                                languages[0].id,
-                              );
-                            }
-                          } else {
-                            chapters = await $downloadManager.getChapters(
-                              cache.favorite,
-                            );
-                          }
-                          cache.chapters = chapters;
-                        }
-                        globalChapters.set(cache.chapters);
-                        const chapter = $globalChapters.find(
-                          (c) => c.chapter_id === cache.chapter.chapter_id,
-                        );
-                        goto(
-                          `/reader/${cache.favorite.id}/${$globalChapters.indexOf(
-                            chapter ?? $globalChapters[0],
-                          )}`,
-                        );
-                      }}
-                    >
-                      <Label
-                        class="w-2 mr-3 flex justify-center cursor-pointer"
-                      >
-                        {cache.chapter?.number ?? ""}
-                      </Label>
-                      <Label class="cursor-pointer truncate">
-                        {cache.favorite.name}
-                      </Label>
-                      <Button
-                        class="absolute size-0 m-0 p-0 group-hover/cache:size-5 top-0 -left-2 group-hover/cache:-left-1 group-hover/cache:p-2 rounded-full transition-all duration-300"
-                        variant="outline"
-                        onclick={async (e) => {
-                          e.stopPropagation();
-                          await removeCache(cache.favorite.id.toString());
-                          toast.info("Chapter cache removed!");
-                        }}
-                      >
-                        <Icon
-                          class="group-hover/cache:!size-4"
-                          icon="lucide:x"
-                        />
-                      </Button>
-                    </Sidebar.MenuButton>
-                  </Tooltip>
-                {/each}
-              </ScrollArea>
-            </Sidebar.MenuItem>
-          </Sidebar.Menu>
-        {/if}
-
-        {#if favoritesWithChapters.length > 0}
-          <Sidebar.Menu
-            class="bg-background/30 rounded-xl border border-background"
-          >
-            <Sidebar.MenuItem
-              class={cn(
-                "max-h-56 smh:max-h-40 transition-all overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar-thumb]:bg-transparent rounded-xl",
-                ($chaptersCache.length === 0 || !$keepReading) &&
-                  "max-h-88 smh:max-h-96",
-              )}
-            >
-              <ScrollArea class="gap-0">
-                {#each favoritesWithChapters as fav}
-                  <Tooltip
-                    class="h-7 font-bold items-center flex -ml-1 "
-                    text={fav.self.name}
-                    placement="right"
-                    delay={200}
-                  >
-                    <Sidebar.MenuButton
-                      class="group-data-[collapsible=icon]:!h-4 !h-4 hover:bg-transparent hover:underline"
-                      onclick={() => {
-                        globalChapters.set(fav.chapters);
-                        goto(
-                          `/reader/${fav.self.id}/${$globalChapters.indexOf(
-                            fav.nextChapter ?? fav.chapters[0],
-                          )}`,
-                        );
-                      }}
-                    >
-                      <Label
-                        class="w-2 mr-3 flex justify-center cursor-pointer"
-                      >
-                        {fav?.nextChapter?.number ?? ""}
-                      </Label>
-                      <Label class="cursor-pointer truncate">
-                        {fav.self.name}
-                      </Label>
-                    </Sidebar.MenuButton>
-                  </Tooltip>
-                {/each}
-              </ScrollArea>
-            </Sidebar.MenuItem>
-          </Sidebar.Menu>
-        {/if}
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>

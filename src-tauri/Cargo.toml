@@ -13,60 +13,59 @@ name = "app_lib"
 crate-type = ["staticlib", "cdylib", "lib"]
 
 [profile.release]
-opt-level = 3 
-jlto = true 
+opt-level = 3
+lto = true       
 strip = true
 codegen-units = 1
 
 [build-dependencies.tauri-build]
-version = "2"
+version = "3.0.0-alpha.4"
 features = []
 
 [dependencies.tauri]
-version = "2"
-features = ["macos-private-api", "protocol-asset", "tray-icon", "image-png", "image-ico"]
+version = "3.0.0-alpha.5"
+features = ["protocol-asset", "tray-icon", "image-png", "image-ico"]
 
+[target.'cfg(target_os = "linux")'.dependencies]
+tauri-runtime-cef = { version = "3.0.0-alpha.0", features = ["devtools"] }
+tauri-plugin-dialog = { version = "3.0.0-alpha.0", default-features = false, features = ["xdg-portal"] }
 
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+tauri-runtime-wry = { version = "3.0.0-alpha.0" }
+tauri-plugin-dialog = "3.0.0-alpha.0"
 
 [dependencies]
 serde_json = "1.0"
 base64 = "0.22"
-tauri-plugin-fs = { version = "2", features = [] }
-tauri-plugin-store = { version = "2", features = [] }
-tauri-plugin-dialog = { version = "2", features = [] }
-tauri-plugin-process = { version = "2", features = [] }
-tauri-plugin-shell = { version = "2", features = [] }
-tauri-plugin-os = { version = "2", features = [] }
 lazy_static = "1.5.0"
 once_cell = "1.20.2"
-tauri-plugin-opener = { version = "2", features = [] }
-tauri-plugin-autostart = { version = "2", features = [] }
-tauri-plugin-prevent-default = "5"
-tauri-plugin-cli = { version = "2", features = [] }
-tauri-plugin-global-shortcut = { version = "2", features = [] }
-tauri-plugin-single-instance = { version = "2", features = [] }
-tauri-plugin-window-state = { version = "2", features = [] }
-tauri-plugin-positioner = { version = "2", features = [] }
-tauri-plugin-clipboard-manager = { version = "2", features = [] }
-
-# [target."cfg(any(target_os = \"android\", target_os = \"ios\"))".dependencies]
-# tauri-plugin-app-events = "0.2"
-
-tauri-plugin-updater = { version = "2", features = [] }
+tauri-plugin-fs = "3.0.0-alpha.0"
+tauri-plugin-store = "3.0.0-alpha.0"
+tauri-plugin-process = "3.0.0-alpha.0"
+tauri-plugin-shell = "3.0.0-alpha.0"
+tauri-plugin-os = "3.0.0-alpha.0"
+tauri-plugin-opener = "3.0.0-alpha.0"
+tauri-plugin-autostart = "3.0.0-alpha.0"
+tauri-plugin-cli = "3.0.0-alpha.0"
+tauri-plugin-global-shortcut = "3.0.0-alpha.0"
+tauri-plugin-single-instance = "3.0.0-alpha.0"
+tauri-plugin-window-state = "3.0.0-alpha.0"
+tauri-plugin-positioner = "3.0.0-alpha.0"
+tauri-plugin-clipboard-manager = "3.0.0-alpha.0"
+tauri-plugin-updater = "3.0.0-alpha.0"
+# tauri-plugin-prevent-default = "6"
 
 [dependencies.serde]
 version = "1.0"
 features = ["derive"]
 
 [dependencies.tauri-plugin-sql]
-version = "2"
+version = "3.0.0-alpha.0"
 features = ["sqlite"]
 
 [dependencies.tauri-plugin-notification]
-version = "2"
-features = []
+version = "3.0.0-alpha.0"
 
 [dependencies.tauri-plugin-http]
-version = "2"
+version = "3.0.0-alpha.0"
 features = ["unsafe-headers"]
-

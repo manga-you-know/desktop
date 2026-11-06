@@ -699,7 +699,7 @@
 >
   <Dialog.Content
     class={cn(
-      "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=close]:duration-500",
+      "data-[state=open]:!zoom-in-100 data-[state=closed]:!zoom-out-100 data-[state=open]:slide-in-from-right-full data-[state=closed]:slide-out-to-right-full data-[state=open]:duration-500 data-[state=closed]:duration-500",
       "h-[100vh] max-h-[67rem] max-w-[65rem] py-4 px-6 duration-400",
       $sidebarBehavior === "expand"
         ? $sidebarSide === "left"

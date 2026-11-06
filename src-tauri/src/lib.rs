@@ -7,24 +7,32 @@ mod utils;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    /*   let migrations = vec![Migration {
+    /*   let migrations = vec![migration {
         version: 1,
         description: "add first migration",
         sql: include_str!("../migrations/0000_dazzling_nitro.sql"),
-        kind: MigrationKind::Up,
-    }]; */
+        kind: migrationkind::up,
+    }];
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                // .add_migrations("sqlite:database.db", migrations)
+                .build(),
+        ) */
+    #[cfg(target_os = "linux")]
+    let runtime = tauri_runtime_cef::Cef::default();
+
+    #[cfg(not(target_os = "linux"))]
+    let runtime = tauri_runtime_wry::Wry::default();
+
     #[allow(unused_mut)]
-    let mut builder = tauri::Builder::<tauri::Wry>::new()
+    let mut builder = tauri::Builder::default()
+        .runtime(runtime)
         .invoke_handler(tauri::generate_handler![
             set_data,
             get_data,
             get_base64_image
         ])
-        .plugin(
-            tauri_plugin_sql::Builder::default()
-                // .add_migrations("sqlite:database.db", migrations)
-                .build(),
-        )
+        .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
@@ -35,28 +43,13 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build());
-    #[cfg(mobile)]
-    {
-        // builder = builder.setup(|app| {
-        //     app.handle().plugin(tauri_plugin_app_events::init())?;
-        //     Ok(())
-        // });
-    }
+
     #[cfg(desktop)]
     {
         builder = builder
-            // .setup(|app| {
-            //     let window = app.get_webview_window("main").unwrap();
-            //     let args: Vec<String> = std::env::args().collect();
-            //     if args.contains(&"--flag1".to_string()) {
-            //         window.hide().unwrap();
-            //     }
-            //     Ok(())
-            // })
-            // .plugin(tauri_plugin_drpc::init())
             .plugin(tauri_plugin_cli::init())
             .plugin(tauri_plugin_positioner::init())
-            .plugin(tauri_plugin_prevent_default::debug())
+            // .plugin(tauri_plugin_prevent_default::debug())
             .plugin(tauri_plugin_window_state::Builder::default().build())
             .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
                 let win = app.get_webview_window("main").unwrap();
@@ -70,5 +63,8 @@ pub fn run() {
             .plugin(tauri_plugin_global_shortcut::Builder::new().build())
             .plugin(tauri_plugin_updater::Builder::new().build());
     }
-    builder.run(tauri::generate_context!()).unwrap()
+
+    builder
+        .run(tauri::generate_context!())
+        .expect("error while running MYK")
 }

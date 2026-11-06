@@ -90,6 +90,7 @@
     const isCtrl = e.metaKey || e.ctrlKey;
     const key = e.key.toLowerCase();
     if (key === "f11" || (key === "f" && !isInput())) {
+      e.preventDefault();
       toggleFullscreen();
     }
 
