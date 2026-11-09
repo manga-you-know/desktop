@@ -43,20 +43,22 @@
     {
       name: "Favorites",
       path: "/favorites",
-      iconActive: "heroicons:star-solid",
-      icon: "heroicons:star",
+      icon: "lucide:star",
     },
     {
       name: "Library",
       path: "/library",
-      iconActive: "material-symbols:book-ribbon-rounded",
-      icon: "material-symbols:book-ribbon-outline-rounded",
+      icon: "lucide:book-marked",
+    },
+    {
+      name: "Browse",
+      path: "/browse",
+      icon: "lucide:compass",
     },
     {
       name: "Panels",
       path: "/panels",
-      iconActive: "ion:images",
-      icon: "ion:images-outline",
+      icon: "lucide:images",
     },
     // {
     //   name: "Search",
@@ -134,7 +136,8 @@
               "absolute transition-translate duration-300",
               page.url.pathname === "/favorites" && "translate-y-0",
               page.url.pathname === "/library" && "translate-y-14",
-              page.url.pathname === "/panels" && "translate-y-28",
+              page.url.pathname === "/browse" && "translate-y-28",
+              page.url.pathname === "/panels" && "translate-y-[10.5rem]",
             )}
             variant="secondary"
           />
@@ -158,14 +161,12 @@
                 {#if item.path !== "/favorites" || favoritesWithChapters.length === 0}
                   <Icon
                     class={cn(
-                      "!size-7 -ml-[10px] transition-transform duration-500",
+                      "!size-5 -ml-[5px] transition-transform duration-500",
                       item.path === "/favorites" &&
                         page.url.pathname === item.path &&
                         "rotate-[calc(145deg*2)]",
                     )}
-                    icon={page.url.pathname === item.path
-                      ? item.iconActive
-                      : item.icon}
+                    icon={item.icon}
                   />
                 {:else}
                   <Badge
@@ -179,13 +180,11 @@
                   >
                     <Icon
                       class={cn(
-                        "!size-7 -ml-[10px] transition-transform duration-400",
+                        "!size-5 -ml-[5px] transition-transform duration-400",
                         page.url.pathname === item.path &&
                           "rotate-[calc(145deg*2)]",
                       )}
-                      icon={page.url.pathname === item.path
-                        ? item.iconActive
-                        : item.icon}
+                      icon={item.icon}
                     />
                   </Badge>
                 {/if}
@@ -211,37 +210,6 @@
         <Sidebar.Menu class="flex flex-col gap-2">
           <Sidebar.MenuItem>
             <Sidebar.MenuButton
-              variant={$openSearch ? "secondary" : "default"}
-              onclick={(e) => {
-                e.currentTarget.blur();
-                openSearch.set(true);
-                openTag.set(false);
-                openDownloads.set(false);
-                openSettings.set(false);
-                openAdd.set(false);
-                openInfo.set(false);
-                if (IS_MOBILE) sidebar.toggle();
-              }}
-              tabindex={-1}
-            >
-              <Icon
-                icon={$openSearch
-                  ? "mingcute:search-3-fill"
-                  : "mingcute:search-3-line"}
-                class="!size-7 -ml-[10px]"
-              />
-              <Label
-                class={cn(
-                  "cursor-pointer transition-all",
-                  $openSearch && "!text-sidebar",
-                )}
-              >
-                Search
-              </Label>
-            </Sidebar.MenuButton>
-          </Sidebar.MenuItem>
-          <Sidebar.MenuItem>
-            <Sidebar.MenuButton
               variant={$openTag ? "secondary" : "default"}
               onclick={(e) => {
                 e.currentTarget.blur();
@@ -256,7 +224,7 @@
               tabindex={-1}
             >
               <Icon
-                class="!size-7 -ml-[10px]"
+                class="!size-5 -ml-[4px]"
                 icon={$openTag ? "ion:bookmarks" : "ion:bookmarks-outline"}
               />
               <Label

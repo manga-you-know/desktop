@@ -4,7 +4,7 @@
   import type { HTMLButtonAttributes } from "svelte/elements";
 
   export const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none !active:scale-75",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none !active:scale-75",
     {
       variants: {
         variant: {
@@ -13,7 +13,7 @@
           destructive:
             "bg-destructive text-destructive-foreground hover:bg-destructive/90",
           outline:
-            "border border-secondary bg-background/30 hover:bg-secondary dark:text-slate-200",
+            "border border-secondary bg-background/30 hover:bg-secondary/50 dark:text-slate-200",
           secondary:
             "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:text-slate-200",
           ghost:

@@ -105,21 +105,18 @@
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
-<div class="h-full mr-4 overflow-hidden flex flex-col items-center">
-  <div
-    class="scrollbar w-full h-full flex flex-wrap justify-center items-start place-content-center gap-5 scroll-smooth overflow-y-scroll overflow-x-hidden p-5"
-    bind:this={panelDiv}
-  >
+<div class="flex h-full flex-col overflow-hidden mr-4">
+  <div class="flex justify-center p-2">
     <div
-      class="bg-secondary/60 backdrop-blur-sm flex !max-w-[80svw] rounded-3xl p-2 gap-2 justify-center items-center absolute z-20"
+      class="bg-secondary/60 absolute z-20 flex max-w-[80svw]! items-center justify-center gap-2 rounded-3xl p-2 backdrop-blur-sm"
     >
       <Badge
-        class="h-10 w-12 flex justify-center items-center"
+        class="flex h-10 w-12 items-center justify-center"
         variant="outline"
       >
         <ScrollingValue axis="y" value={count} />
       </Badge>
-      <div class="inline-flex relative items-center">
+      <div class="relative inline-flex items-center">
         <Icon
           class={cn(
             "!size-5 ml-3 !text-primary absolute z-10",
@@ -132,7 +129,6 @@
           }}
         />
         <Input
-          bind:value={searchTerm}
           class="w-52 pl-9"
           labelClass="ml-6"
           variant="outline"
@@ -141,11 +137,12 @@
           autocomplete="off"
           tabindex={-1}
           oninput={search}
+          bind:value={searchTerm}
         />
       </div>
       <Select
         class="max-w-52"
-        classPopup="w-[11rem]"
+        classPopup="w-44"
         bind:selected={selectedTitle}
         items={panelsTitle}
         label="Title"
@@ -171,7 +168,12 @@
         onselect={search}
       />
     </div>
-    <div class="w-full h-32 ssmh:h-0"></div>
+  </div>
+  <div
+    class="scrollbar flex h-full w-full flex-wrap items-start justify-center gap-5 overflow-x-hidden overflow-y-scroll scroll-smooth p-1"
+    bind:this={panelDiv}
+  >
+    <div class="ssmh:h-0 h-14 w-full"></div>
     {#each displayedPanels as panel}
       <FavoritePanel
         path={panel.path}
@@ -186,9 +188,9 @@
       </Badge>
     {/if}
     {#if panelsWithQuery.length > perPage}
-      <div class="w-full h-10"></div>
+      <div class="h-10 w-full"></div>
       <div
-        class="bg-secondary/60 backdrop-blur-sm flex rounded-3xl -mt-[15px] z-20 absolute bottom-6 smh:mt-3 p-2 transition-all"
+        class="bg-secondary/60 smh:mt-3 absolute bottom-6 z-20 -mt-[15px] flex rounded-3xl p-2 backdrop-blur-sm transition-all"
       >
         <Pagination.Root
           {count}
@@ -205,7 +207,7 @@
               {#each pages as page (page.key)}
                 {#if page.type === "ellipsis"}
                   <Pagination.Item tabindex={-1}>
-                    <Pagination.Ellipsis class="dark:text-white" />
+                    <Pagination.Ellipsis class="text-primary" />
                   </Pagination.Item>
                 {:else}
                   <Pagination.Item>

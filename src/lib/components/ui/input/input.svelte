@@ -6,7 +6,7 @@
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
 
   export const inputVariants = tv({
-    base: "flex h-10 text-sm font-medium rounded-2xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
+    base: "flex h-10 text-sm font-medium rounded-xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
     variants: {
       variant: {
         default:
@@ -14,12 +14,12 @@
         destructive:
           "border border-destructive bg-destructive text-destructive-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-destructive",
         outline:
-          "border border-secondary bg-background/30 hover:bg-secondary text-primary placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary",
+          "border border-secondary bg-background/30 hover:bg-secondary/50 text-primary placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary",
         secondary:
           "border border-secondary bg-secondary text-secondary-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-secondary",
         ghost:
           "bg-transparent text-primary hover:bg-accent hover:text-accent-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-accent",
-        link: "bg-transparent text-primary underline-offset-4 hover:underline underline-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
+        link: "bg-transparent text-primary placeholder:text-muted-foreground focus-visible:ring-0 ring-0 shadow-none ",
       },
       borderFocus: {
         true: "focus-visible:outline-none",
@@ -78,7 +78,7 @@
     divClass,
     "relative focus-visible:ring-0 ring-0",
     disabled ? "cursor-default" : "!cursor-text",
-    variant === "link" && value !== "" && "underline decoration-primary",
+    variant === "link" && value !== "" && "decoration-primary",
     variant === "outline" && "bg-transparent",
   )}
   onclick={() => {

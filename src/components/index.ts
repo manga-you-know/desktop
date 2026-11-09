@@ -21,7 +21,7 @@ export { default as LibraryTag } from "./select/LibraryTag.svelte";
 export { default as LibraryOrder } from "./select/LibraryOrder.svelte";
 export { default as PickReaded } from "./select/PickReaded.svelte";
 export { default as Language } from "./select/Language.svelte";
-export { default as Source } from "./select/Source.svelte";
+export { default as SelectSource } from "./select/SelectSource.svelte";
 export { default as Select } from "./select/Select.svelte";
 // Cards
 export { default as SuggestionCard } from "./cards/SuggestionCard.svelte";

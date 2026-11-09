@@ -148,7 +148,7 @@
     refreshPanels();
     loadScreenState();
     refreshFavorites();
-    loadFavoritesChapters();
+    // loadFavoritesChapters();
     if (!IS_MOBILE && $autoSearchUpdates) {
       checkForAppUpdates();
     }
@@ -168,7 +168,7 @@
   });
 
   $effect(() => {
-    if (!page.route?.id?.startsWith("/(root)/reader"))
+    if (!page.route?.id?.startsWith("/reader"))
       window.setProgressBar({
         status: ProgressBarStatus.None,
       });
@@ -185,7 +185,7 @@
 >
   <Toaster
     theme={$theme}
-    toastOptions={{ classes: { toast: "rounded-2xl" } }}
+    toastOptions={{ classes: { toast: "rounded-xl" } }}
     richColors
     duration={2700}
   />
@@ -203,7 +203,7 @@
       class={cn(
         "fixed z-[999] pointer-events-none w-screen h-screen transition-colors duration-300",
         $useFilter &&
-          (!$filterReader || page.route.id?.startsWith("/(root)/reader")) &&
+          (!$filterReader || page.route.id?.startsWith("/reader")) &&
           $filter,
       )}
     ></div>
@@ -211,7 +211,7 @@
       class={cn(
         "flex flex-col overflow-hidden transition-colors duration-300",
         !$windowEffects && "bg-background",
-        page.route.id?.startsWith("/(root)/reader") && "dark:bg-black",
+        page.route.id?.startsWith("/reader") && "dark:bg-black",
       )}
     >
       <div

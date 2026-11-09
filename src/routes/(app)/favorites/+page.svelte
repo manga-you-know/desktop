@@ -102,7 +102,7 @@
 
         <Button
           class="flex h-10 group/show hover:bg-background/40 px-2"
-          variant="outline"
+          variant="secondary"
           onclick={() => {
             showOnlyNew.set(!$showOnlyNew);
           }}
@@ -121,7 +121,7 @@
           </Label>
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           disabled={$isRefreshing}
           onclick={() => loadFavoritesChapters()}
         >

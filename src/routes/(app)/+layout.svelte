@@ -14,12 +14,12 @@
   import { IsMobile } from "@/lib/hooks";
   import { cn } from "@/lib/utils";
 
-  type PageId = "home" | "favorites" | "library" | "panels";
+  type PageId = "favorites" | "library" | "browse" | "panels";
 
   const pageDirection: Record<PageId, number> = {
-    home: 0,
-    favorites: 1,
-    library: 2,
+    favorites: 0,
+    library: 1,
+    browse: 2,
     panels: 3,
   };
 
@@ -28,7 +28,7 @@
   let { children } = $props();
 
   function getPageId(path: string | null): PageId {
-    if (!path) return "home";
+    if (!path) return "favorites";
     return path as PageId;
   }
 
@@ -72,7 +72,7 @@
             )}
             in:fly={{
               y: getTransitionY(
-                getPageId(page.route.id?.replace("/(root)/(app)/", "") ?? ""),
+                getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
                 getPageId($lastPage.replace("/", "")),
                 true,
               ),
@@ -80,7 +80,7 @@
             }}
             out:fly={{
               y: getTransitionY(
-                getPageId(page.route.id?.replace("/(root)/(app)/", "") ?? ""),
+                getPageId(page.route.id?.replace("/(app)/", "") ?? ""),
                 getPageId($lastPage.replace("/", "")),
                 false,
               ),

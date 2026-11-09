@@ -1,4 +1,4 @@
-import type { Source } from "@/types";
+import type { MSource } from "@/types/source";
 
 // export const MANGASOURCES: Source[] = [
 //   "MangaSee",
@@ -10,19 +10,38 @@ import type { Source } from "@/types";
 //   "Taosect",
 // ];
 
-export const MANGASOURCES: Source[] = [
-  // { name: "Comick", language: "Multi", isRecommended: true },
-  { name: "MangaDex", language: "Multi" },
-  { name: "MangaFire", language: "Multi" },
-  { name: "Atsumaru", language: "English", isRecommended: true },
-  { name: "WeebCentral", language: "English", isProblem: true },
-  { name: "MangaPark", language: "English" },
-  { name: "MangaLivre", language: "Português" },
-  { name: "TCB", language: "English", isRecommended: true },
-  { name: "MangaReaderTo", language: "English", isProblem: true },
-  // { name: "MangaPill", language: "English", isProblem: true },
-  { name: "Taosect", language: "Português" },
-  // { name: "MangaSwat", language: "العربية", }
+export const MANGASOURCES: MSource[] = [
+  {
+    name: "MangaDex",
+    language: "multi",
+    languageLabel: "Multi",
+    iconPath: "source_icons/mangadex.png",
+  },
+  {
+    name: "Atsumaru",
+    language: "en",
+    languageLabel: "English",
+    iconPath: "source_icons/atsumaru.png",
+  },
+  {
+    name: "WeebCentral",
+    language: "en",
+    languageLabel: "English",
+    iconPath: "source_icons/weebcentral.png",
+  },
+  {
+    name: "TCB Scans",
+    language: "en",
+    languageLabel: "English",
+    iconPath: "source_icons/tcb_scans.png",
+  },
+  {
+    name: "Tao Sect",
+    language: "pt-br",
+    languageLabel: "Português (Brasil)",
+    iconPath: "source_icons/taosect.png",
+  },
+  // { name: "MangaLivre", language: "Português" },
 ];
 
 export const COMICSOURCES: Source[] = [
@@ -37,7 +56,7 @@ export const READSOURCES_LANGUAGE: { [key: string]: string } = {
   TCB: "English",
   MangaReaderTo: "English",
   // MangaPill: "English",
-  Taosect: "Português",
+  Taosect: "Português (Brasil)",
   MangaLivre: "Português",
   WeebCentral: "English",
   BatcaveBiz: "English",

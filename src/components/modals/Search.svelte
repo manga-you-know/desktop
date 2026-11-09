@@ -7,7 +7,12 @@
     ScrollArea,
     Separator,
   } from "@/lib/components";
-  import { ReadFavorite, Source, WatchFavorite, Image } from "@/components";
+  import {
+    ReadFavorite,
+    SelectSource,
+    WatchFavorite,
+    Image,
+  } from "@/components";
   import {
     openSearch,
     downloadManager,
@@ -162,7 +167,7 @@
             floatingLabel
             oninput={search}
           />
-          <Source />
+          <SelectSource />
         </div>
       </AlertDialog.Header>
       <Separator />

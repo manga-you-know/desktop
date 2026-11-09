@@ -25,7 +25,7 @@
   <ContextMenu.Trigger class={cn("hover:z-10", contextOpen && "z-10")}>
     <Tilt
       class={cn(
-        "hover:scale-[1.2] no-blurry transition duration-500 [perspective:200px]",
+        "hover:scale-[1.1] no-blurry transition duration-500 [perspective:500px]",
         contextOpen && "!scale-[1.2]",
       )}
     >

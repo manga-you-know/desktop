@@ -1,6 +1,6 @@
-export interface Source {
+export type MSource = {
   name: string;
   language: string;
-  isRecommended?: boolean;
-  isProblem?: boolean;
-}
+  languageLabel: string;
+  iconPath: string;
+};

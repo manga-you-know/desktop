@@ -12,8 +12,8 @@
 
 <CommandPrimitive.Root
   class={cn(
-    "bg-background/30 backdrop-blur-sm text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-2xl",
-    className
+    "bg-background/30 backdrop-blur-sm text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-xl",
+    className,
   )}
   bind:value
   bind:ref
