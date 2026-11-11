@@ -530,7 +530,7 @@
               lastPage?.hasNextPage &&
               index === rowedMangas.length - 1
               ? "mt-4 h-fit opacity-100 transition-opacity duration-400"
-              : "h-0 opacity-0",
+              : "h-0 opacity-0 pointer-events-none",
           )}
         >
           <Button onclick={() => search(true)}>
