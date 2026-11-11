@@ -27,19 +27,7 @@ export class TaosectDl implements MangaDl {
     throw new Error("Method not implemented.");
   }
 
-  async getMangaByUrl(url: string): Promise<Favorite> {
-    return {
-      id: 0,
-      name: "",
-      folder_name: "",
-      cover: "",
-      source: "",
-      source_id: "",
-      link: "",
-    };
-  }
-
-  async search(query: string): Promise<Favorite[]> {
+  async search(query: string, page: number = 1) {
     const response = await fetch(`${this.baseUrl}/?s=${query}`, {
       headers: this.headers,
     });
@@ -74,7 +62,10 @@ export class TaosectDl implements MangaDl {
       });
     });
 
-    return mangas;
+    return {
+      mangas,
+      hasNextPage: false,
+    };
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
@@ -94,9 +85,11 @@ export class TaosectDl implements MangaDl {
       const a = $(td).find("a");
       const href = a.attr("href");
       const text = a.text().replace(/\t/g, "");
-      const chpt = text.split(" ")[1] ?? "0"
+      const chpt = text.split(" ")[1] ?? "0";
       const id = href?.split("/")?.slice(-3, -1)?.join("/") ?? "";
-      if (!chapters.find(chp => chp.chapter_id === id || chp.number === chpt)) {
+      if (
+        !chapters.find((chp) => chp.chapter_id === id || chp.number === chpt)
+      ) {
         chapters.push({
           number: chpt,
           title: text,
@@ -115,7 +108,7 @@ export class TaosectDl implements MangaDl {
       `${this.baseUrl}/leitor-online/projeto/${chapterId}`,
       {
         headers: this.headers,
-      }
+      },
     );
 
     if (response.status !== 200) {

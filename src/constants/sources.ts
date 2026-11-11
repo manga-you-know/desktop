@@ -12,30 +12,35 @@ import type { MSource } from "@/types/source";
 
 export const MANGASOURCES: MSource[] = [
   {
+    id: "MangaDex",
     name: "MangaDex",
     language: "multi",
     languageLabel: "Multi",
     iconPath: "source_icons/mangadex.png",
   },
   {
+    id: "Atsumaru",
     name: "Atsumaru",
     language: "en",
     languageLabel: "English",
     iconPath: "source_icons/atsumaru.png",
   },
   {
+    id: "WeebCentral",
     name: "WeebCentral",
     language: "en",
     languageLabel: "English",
     iconPath: "source_icons/weebcentral.png",
   },
   {
+    id: "TCB",
     name: "TCB Scans",
     language: "en",
     languageLabel: "English",
     iconPath: "source_icons/tcb_scans.png",
   },
   {
+    id: "Taosect",
     name: "Tao Sect",
     language: "pt-br",
     languageLabel: "Português (Brasil)",

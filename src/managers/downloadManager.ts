@@ -10,22 +10,22 @@ import {
 import {
   // MangaDl
   MangaDexDl,
-  MangaReaderToDl,
-  // MangaSeeDl,
   TCBScansDl,
-  MangaPillDl,
   TaosectDl,
-  MangaFireDl,
   WeebCentralDl,
-  MangaLivreDl,
-  MangaSwatDl,
-  MangaParkDl,
   AtsumaruDl,
+  // MangaReaderToDl,
+  // MangaSeeDl,
+  // MangaPillDl,
+  // MangaFireDl,
+  // MangaLivreDl,
+  // MangaSwatDl,
+  // MangaParkDl,
   // ComicDl
-  BatcaveBizDl,
+  // BatcaveBizDl,
   // AnimeDl
-  AniplayDl,
-  AnimeOwlDl,
+  // AniplayDl,
+  // AnimeOwlDl,
 } from "@/downloaders";
 import type { AnimeDl, MangaDl } from "@/interfaces";
 import type { Favorite, Chapter, Episode, Language } from "@/types";
@@ -38,8 +38,8 @@ import { join } from "@tauri-apps/api/path";
 
 export class DownloadManager {
   private mangaSources: { [key: string]: MangaDl } = {};
-  private comicSources: { [key: string]: MangaDl } = {};
-  private animeSources: { [key: string]: AnimeDl } = {};
+  /* private comicSources: { [key: string]: MangaDl } = {};
+  private animeSources: { [key: string]: AnimeDl } = {}; */
   private headers = {
     accept: "*/*",
     "accept-language": "en-US,en;q=0.9",
@@ -63,89 +63,49 @@ export class DownloadManager {
       TCB: new TCBScansDl(),
       Taosect: new TaosectDl(),
       MangaDex: new MangaDexDl(),
-      MangaPill: new MangaPillDl(),
-      MangaFire: new MangaFireDl(),
-      MangaReaderTo: new MangaReaderToDl(),
+      // MangaPill: new MangaPillDl(),
+      // MangaFire: new MangaFireDl(),
+      // MangaReaderTo: new MangaReaderToDl(),
       WeebCentral: new WeebCentralDl(),
-      MangaLivre: new MangaLivreDl(),
-      MangaSwat: new MangaSwatDl(),
-      MangaPark: new MangaParkDl(),
+      // MangaLivre: new MangaLivreDl(),
+      // MangaSwat: new MangaSwatDl(),
+      // MangaPark: new MangaParkDl(),
       Atsumaru: new AtsumaruDl(),
     };
-    this.comicSources = {
-      BatcaveBiz: new BatcaveBizDl(),
-    };
-    this.animeSources = {
-      Aniplay: new AniplayDl(),
-      AnimeOwl: new AnimeOwlDl(),
-    };
     this.search = this.search.bind(this);
-    this.getEpisodes = this.getEpisodes.bind(this);
     this._getChapters = this._getChapters.bind(this);
     this.getBase64Image = this.getBase64Image.bind(this);
     this.getBase64Images = this.getBase64Images.bind(this);
     this.getChapterImages = this.getChapterImages.bind(this);
-    this.getEpisodeContent = this.getEpisodeContent.bind(this);
     this.getFavoriteLanguages = this.getFavoriteLanguages.bind(this);
 
     this.search = memoize(this.search, (query, source) => `${query}:${source}`);
     this.getFavoriteLanguages = memoize(this.getFavoriteLanguages);
     this.getChapters = memoizeExpiring(this._getChapters, 600);
-    this.getEpisodes = memoizeExpiring(this.getEpisodes, 600);
     this.getBase64Image = memoize(this.getBase64Image);
     this.getChapterImages = memoize(this.getChapterImages);
-    this.getEpisodeContent = memoize(this.getEpisodeContent);
     this.getBase64Images = memoize(this.getBase64Images);
     this.getMangaById = memoize(this.getMangaById);
-    this.getMangaByUrl = memoize(this.getMangaByUrl);
   }
 
   getMangaSource(source: string): MangaDl {
     return this.mangaSources[source];
   }
 
-  getComicSource(source: string): MangaDl {
-    return this.comicSources[source];
-  }
-
-  getAnimeSource(source: string): AnimeDl {
-    return this.animeSources[source];
-  }
-
   getImageBasedSource(source: string): MangaDl {
-    return this.getMangaSource(source) || this.getComicSource(source);
+    return this.getMangaSource(source);
   }
 
-  getSource(source: string): MangaDl | AnimeDl {
-    return (
-      (this.getMangaSource(source) || this.getComicSource(source)) ??
-      this.getAnimeSource(source)
-    );
+  getSource(source: string): MangaDl {
+    return this.getMangaSource(source);
   }
 
-  getSources(type: "manga" | "comic" | "anime"): MangaDl[] | AnimeDl[] {
-    const sources = {
-      manga: Object.values(this.mangaSources),
-      comic: Object.values(this.comicSources),
-      anime: Object.values(this.animeSources),
-    };
-    return sources[type];
+  getSources(_type: "manga"): MangaDl[] {
+    return Object.values(this.mangaSources);
   }
 
-  getSourcesNames(type: "manga" | "comic" | "anime"): string[] {
-    const sources = {
-      manga: Object.keys(this.mangaSources),
-      comic: Object.keys(this.comicSources),
-      anime: Object.keys(this.animeSources),
-    };
-    return sources[type];
-  }
-
-  getSourceType(source: string): "manga" | "comic" | "anime" {
-    if (source in this.mangaSources) return "manga";
-    if (source in this.comicSources) return "comic";
-    if (source in this.animeSources) return "anime";
-    throw new Error(`Unknown source type: ${source}`);
+  getSourcesNames(_type: "manga"): string[] {
+    return Object.keys(this.mangaSources);
   }
 
   getBaseUrl(source: string): string {
@@ -157,34 +117,35 @@ export class DownloadManager {
     return sourceDl.isMultiLanguage;
   }
 
-  async getMangaByUrl(url: string, source: string): Promise<Favorite> {
-    const sourceDl = this.getMangaSource(source);
-    return await retry(() => sourceDl.getMangaByUrl(url));
-  }
-
   async getMangaById(id: string, source: string): Promise<Favorite> {
     const sourceDl = this.getMangaSource(source);
     return await retry(() => sourceDl.getMangaById(id));
   }
 
-  async search(query: string, source: string, prefetchOthers = false): Promise<Favorite[]> {
+  async search(
+    query: string,
+    source: string,
+    prefetchOthers = false,
+  ): Promise<{
+    mangas: Favorite[];
+    hasNextPage: boolean;
+  }> {
     try {
       const sourceDl = this.getSource(source);
-      const results: Favorite[] = await retry(() => sourceDl.search(query));
-      if (prefetchOthers) this.prefetchSearch(query, source);
-      return results.slice(0, 20);
+      const results = await sourceDl.search(query, 1);
+      // if (prefetchOthers) this.prefetchSearch(query, source);
+      return results;
     } catch (e) {
-      console.log(e)
-      return []
+      console.log(e);
+      return {
+        mangas: [],
+        hasNextPage: false,
+      };
     }
   }
 
-  async prefetchSearch(
-    query: string,
-    sourceToExclude: string,
-  ) {
-    const type = this.getSourceType(sourceToExclude)
-    const sourceNames = this.getSourcesNames(type);
+  async prefetchSearch(query: string, sourceToExclude: string) {
+    const sourceNames = this.getSourcesNames("manga");
     for (let source of sourceNames) {
       if (source === sourceToExclude) continue;
       this.search(query, source);
@@ -195,13 +156,13 @@ export class DownloadManager {
     const sourceDl = this.getImageBasedSource(favorite.source);
     return await retry(
       () => sourceDl.getFavoriteLanguages!(favorite.source_id),
-      "Source not multilanguage"
+      "Source not multilanguage",
     );
   }
 
   private async _getChapters(
     favorite: Favorite,
-    language?: string
+    language?: string,
   ): Promise<Chapter[]> {
     try {
       const sourceDl = this.getImageBasedSource(favorite.source);
@@ -218,29 +179,19 @@ export class DownloadManager {
     this.getChapters.clear();
   }
 
-  async getEpisodes(favorite: Favorite): Promise<Chapter[]> {
-    const sourceDl = this.getAnimeSource(favorite.source);
-    return await retry(() => sourceDl.getEpisodes(favorite.source_id));
-  }
-
   async getChapterImages(chapter: Chapter): Promise<string[]> {
     try {
       const sourceDl = this.getImageBasedSource(chapter.source);
       return await retry(() => sourceDl.getChapterImages(chapter.chapter_id));
     } catch (e) {
-      console.log(e)
-      return []
+      console.log(e);
+      return [];
     }
-  }
-
-  async getEpisodeContent(chapter: Chapter): Promise<Episode> {
-    const sourceDl = this.getAnimeSource(chapter.source);
-    return await retry(() => sourceDl.getEpisodeContent(chapter.chapter_id));
   }
 
   async getImageContent(
     url: string,
-    referer: string
+    referer: string,
   ): Promise<ReadableStream<Uint8Array>> {
     const response = await retry(() =>
       fetch(url, {
@@ -248,7 +199,7 @@ export class DownloadManager {
           ...this.headers,
           Referer: referer,
         },
-      })
+      }),
     );
     if (response.status !== 200 || response.body === null) {
       throw new Error(`Failed to get image content ${url} ${response.status}`);
@@ -269,7 +220,7 @@ export class DownloadManager {
     const img =
       "data:image/png;base64," +
       (await retry(() =>
-        invoke("get_base64_image", { url: url, referer: referer })
+        invoke("get_base64_image", { url: url, referer: referer }),
       ));
     if (await this.isValidBase64Image(img)) return img;
     throw Error("Invalid base64 image.");
@@ -277,12 +228,12 @@ export class DownloadManager {
 
   async getBase64Images(images: string[], referer: string): Promise<string[]> {
     return await Promise.all(
-      images.map((image) => retry(() => this.getBase64Image(image, referer)))
+      images.map((image) => retry(() => this.getBase64Image(image, referer))),
     );
   }
 
   async streamToUint8Array(
-    stream: ReadableStream<Uint8Array>
+    stream: ReadableStream<Uint8Array>,
   ): Promise<Uint8Array> {
     const reader = stream.getReader();
     const chunks: Uint8Array[] = [];
@@ -316,7 +267,7 @@ export class DownloadManager {
       baseDir: BaseDirectory.Document,
       recursive: true,
     });
-    const path = await join("favorite-panels", fileName)
+    const path = await join("favorite-panels", fileName);
     await writeFile(path, bytes, {
       baseDir: BaseDirectory.Document,
     });
@@ -335,7 +286,7 @@ export class DownloadManager {
 
   async joinBase64Images(
     base64Image1: string,
-    base64Image2: string
+    base64Image2: string,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const img1 = new Image();
@@ -420,14 +371,14 @@ export class DownloadManager {
   async downloadChapter(
     chapter: Chapter,
     favorite: Favorite,
-    store: Store = null!
+    store: Store = null!,
   ): Promise<void> {
     if (!store)
       store = await load(`Mangas/${favorite.folder_name}/chapters.json`);
     const images = await this.getChapterImages(chapter);
     const imagesBase64: string[] = await this.getBase64Images(
       images,
-      this.getBaseUrl(chapter.source)
+      this.getBaseUrl(chapter.source),
     );
     let chapterPath = `Mangas/${favorite.folder_name}/${chapter.number}`;
     if (get(downloadPath) === "Mangas/") {
@@ -452,17 +403,16 @@ export class DownloadManager {
         await writeFile(
           `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
           bytes,
-          { baseDir: BaseDirectory.Download }
+          { baseDir: BaseDirectory.Download },
         );
-      }
-      else {
+      } else {
         await writeFile(
           `${chapterPath}/${i.toString().padStart(3, "0")}.png`,
           bytes,
         );
       }
     });
-    chapter.path = chapterPath
+    chapter.path = chapterPath;
     await store.set(chapter.number.toString(), chapter);
   }
 }

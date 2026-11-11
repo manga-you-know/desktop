@@ -4,6 +4,8 @@
   import { type VariantProps, tv } from "tailwind-variants";
   import { cn } from "$lib/utils.js";
   import { readText } from "@tauri-apps/plugin-clipboard-manager";
+  import Button from "../enhanced-button/button.svelte";
+  import Icon from "@iconify/svelte";
 
   export const inputVariants = tv({
     base: "flex h-10 text-sm font-medium rounded-xl px-3 py-1 text-base shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:text-sm autofill:none dark:text-white peer",
@@ -41,10 +43,12 @@
     variant?: InputVariant;
     borderFocus?: InputBorderFocus;
     floatingLabel?: boolean;
+    deleteButton?: boolean;
     rightToCopy?: boolean;
     labelClass?: string;
     divClass?: string;
     onenter?: VoidFunction;
+    ondelete?: VoidFunction;
   };
 </script>
 
@@ -58,9 +62,11 @@
     variant = "default",
     borderFocus = false,
     floatingLabel = false,
+    deleteButton = false,
     rightToCopy = true,
     required = false,
     onenter,
+    ondelete,
     disabled,
     placeholder,
     ...restProps
@@ -123,5 +129,21 @@
       )}
       >{placeholder}
     </label>
+  {/if}
+  {#if deleteButton}
+    <Button
+      class={cn(
+        "pointer-events-none absolute top-1/2 right-1 size-8 -translate-y-1/2 rounded-lg opacity-0 backdrop-blur-sm transition-opacity duration-500 disabled:opacity-0",
+        value !== "" && "pointer-events-auto opacity-100 disabled:opacity-50",
+      )}
+      variant="ghost"
+      onclick={() => {
+        value = "";
+        ondelete?.();
+      }}
+      {disabled}
+    >
+      <Icon icon="lucide:x" />
+    </Button>
   {/if}
 </button>

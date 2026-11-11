@@ -8,30 +8,15 @@ export class MangaDexDl implements MangaDl {
   apiUrl = "https://api.mangadex.org";
   isMultiLanguage = true;
 
-  getMangaById(id: string): Promise<Favorite> {
+  getMangaById(_id: string): Promise<Favorite> {
     throw new Error("Method not implemented.");
   }
 
-  async getMangaByUrl(url: string): Promise<Favorite> {
-    return {
-      id: 0,
-      name: "",
-      folder_name: "",
-      cover: "",
-      source: "",
-      source_id: "",
-      link: "",
-    };
-  }
-
-  async search(query: string, limit = "20"): Promise<Favorite[]> {
+  async search(query: string, page: number) {
     const response = await fetch(
       `${this.apiUrl}/manga?includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&title=${encodeURIComponent(
-        query
-      )}&limit=${limit}`,
-      {
-        method: "GET",
-      }
+        query,
+      )}&limit=20&offset=${page - 1}`,
     );
     if (!response || !response.ok) {
       throw new Error(`Failed to search ${query} ${response.status}`);
@@ -60,21 +45,24 @@ export class MangaDexDl implements MangaDl {
           ? (Object.values(
             manga.attributes.altTitles[
             Math.floor(Math.random() * manga.attributes.altTitles.length)
-            ]
+            ],
           )[0] ?? "")
           : "",
         description: manga.attributes.description.en,
-        cover: `https://mangadex.org/covers/${manga.id}/${idFilename}`,
+        cover: `https://uploads.mangadex.org/covers/${manga.id}/${idFilename}`,
         source: "MangaDex",
       });
     }
-    return listMangas;
+
+    console.log(listMangas);
+    return {
+      mangas: listMangas,
+      hasNextPage: responseJson.total > page * 20 && listMangas.length === 20,
+    };
   }
 
   async getFavoriteLanguages(favoriteId: string): Promise<Language[]> {
-    const response = await fetch(`${this.apiUrl}/manga/${favoriteId}`, {
-      method: "GET",
-    });
+    const response = await fetch(`${this.apiUrl}/manga/${favoriteId}`);
     if (!response || !response.ok) {
       throw new Error(`Failed to get favorite languages ${favoriteId}`);
     }
@@ -86,7 +74,7 @@ export class MangaDexDl implements MangaDl {
           id: language,
           label: LANGUAGE_LABELS[language] ?? language,
         });
-      }
+      },
     );
     return languages;
   }
@@ -109,13 +97,13 @@ export class MangaDexDl implements MangaDl {
   async getChapters(
     mangaId: string,
     language = "en",
-    limit = 500
+    limit = 500,
   ): Promise<Chapter[]> {
     let offset = 0;
     const chaptersList: any[] = [];
     while (true) {
       const response = await fetch(
-        `${this.apiUrl}/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&includes[]=scanlation_group&order[chapter]=desc&includeExternalUrl=0&offset=${offset}`
+        `${this.apiUrl}/manga/${mangaId}/feed?limit=${limit}&translatedLanguage[]=${language}&includes[]=scanlation_group&order[chapter]=desc&includeExternalUrl=0&offset=${offset}`,
       );
       const responseJson = await response.json();
       if (!response || !response.ok || responseJson.data.length === 0) {
@@ -135,25 +123,27 @@ export class MangaDexDl implements MangaDl {
         chapter_id: chapter.id,
         source: "MangaDex",
         language: language,
-        scan: chapter.relationships?.filter((r: any) => r.type === "scanlation_group")[0]?.attributes.name
+        scan: chapter.relationships?.filter(
+          (r: any) => r.type === "scanlation_group",
+        )[0]?.attributes.name,
       };
     });
   }
 
   async getChapterImages(chapterId: string): Promise<string[]> {
     const response = await fetch(
-      `${this.apiUrl}/at-home/server/${chapterId}?forcePort443=false`
+      `${this.apiUrl}/at-home/server/${chapterId}?forcePort443=false`,
     );
 
     if (response.status !== 200) {
       throw new Error(
-        `Failed to get chapter images ${chapterId} ${response.status}`
+        `Failed to get chapter images ${chapterId} ${response.status}`,
       );
     }
 
     const chapter = await response.json();
     const chapterImgs: string[] = chapter.chapter.data.map(
-      (img: string) => `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`
+      (img: string) => `${chapter.baseUrl}/data/${chapter.chapter.hash}/${img}`,
     );
 
     return chapterImgs;

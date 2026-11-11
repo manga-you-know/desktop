@@ -1,6 +1,11 @@
 import { writable, readable, get } from "svelte/store";
 import { DownloadManager } from "@/managers";
-import { ANIMESOURCES, COMICSOURCES, IS_MOBILE, MANGASOURCES } from "@/constants";
+import {
+  ANIMESOURCES,
+  COMICSOURCES,
+  IS_MOBILE,
+  MANGASOURCES,
+} from "@/constants";
 import {
   type Mark,
   type Panel,
@@ -54,13 +59,15 @@ export const openFeedback = writable<boolean>(false);
 export const openAdd = writable<boolean>(false);
 export const openTag = writable<boolean>(false);
 export const customTitlebar = writable<boolean>(true);
-export const openFavoriteChapter = writable<boolean>(false)
+export const openFavoriteChapter = writable<boolean>(false);
 export const isRefreshing = writable<boolean>(false);
 export const isChaptersUniqueNumber = writable<boolean>(false);
 export const isChaptersDescending = writable<boolean>(true);
 export const chapterPagesCounter = writable<boolean>(true);
 export const chapterPercentage = writable<boolean>(true);
-export const chaptersCache = writable<(ReadCache & { chapters: Chapter[]; images: string[] })[]>([]);
+export const chaptersCache = writable<
+  (ReadCache & { chapters: Chapter[]; images: string[] })[]
+>([]);
 export const readerClock = writable<boolean>(false);
 export const showCurrentChapter = writable<boolean>(false);
 export const selectedSource = writable<string>(MANGASOURCES[2].name);
@@ -70,10 +77,14 @@ export const searchTerm = writable<string>("");
 export const extraTitle = writable<string>("");
 export const blockKeyboard = writable<boolean>(false);
 export const sidebarBehavior = writable<"on-hover" | "expand" | "collapse">(
-  "collapse"
+  "collapse",
 );
-export const sidebarSide = writable<"left" | "right">("left")
-export const activatedSources = writable<string[]>([...MANGASOURCES.map(s => s.name), ...COMICSOURCES.map(s => s.name), ...ANIMESOURCES.map(s => s.name)])
+export const sidebarSide = writable<"left" | "right">("left");
+export const activatedSources = writable<string[]>([
+  ...MANGASOURCES.map((s) => s.name),
+  ...COMICSOURCES.map((s) => s.name),
+  ...ANIMESOURCES.map((s) => s.name),
+]);
 export const autoSearchUpdates = writable<boolean>(true);
 export const notifyUpdate = writable<boolean>(true);
 export const notifyFavorites = writable<boolean>(true);
@@ -98,7 +109,7 @@ export const preferableLanguage = writable<Language>({
   label: "English",
 });
 export const autoEnterFullscreen = writable<boolean>(true);
-export const lastPage = writable<string>("/home");
+export const lastPage = writable<string>("/browse");
 export const theme = writable<"dark" | "light" | undefined>("dark");
 export const appLanguage = writable<string>("en");
 export const useMpv = writable<boolean>(false);

@@ -15,10 +15,10 @@ const config = {
     prerender: {
       entries: [
         "/",
-        "/home",
         "/favorites",
         "/library",
         "/panels",
+        "/browse",
         "/notificator",
         "/reader/0/0",
         "/reader/2/1",

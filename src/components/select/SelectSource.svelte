@@ -7,9 +7,9 @@
   import { saveSettings } from "@/functions";
   import { cn } from "@/lib/utils";
   import { onMount } from "svelte";
-  import Image from "../common/Image.svelte";
   import type { MSource } from "@/types/source";
-  const mangaSourceNames = MANGASOURCES.map((source) => source.name);
+
+  const mangaSourceIds = MANGASOURCES.map((source) => source.id);
   const mangaSources: { [languageKey: string]: MSource[] } = {};
   for (const source of MANGASOURCES) {
     if (!mangaSources[source.languageLabel]) {
@@ -19,7 +19,11 @@
   }
 
   const sourceIcon = Object.fromEntries(
-    MANGASOURCES.map((m) => [m.name, m.iconPath]),
+    MANGASOURCES.map((m) => [m.id, m.iconPath]),
+  );
+
+  const sourceName = Object.fromEntries(
+    MANGASOURCES.map((m) => [m.id, m.name]),
   );
 
   let open = $state(false);
@@ -33,9 +37,11 @@
 
   selectedSource.subscribe(saveSettings);
 
+  let { onChange }: { onChange?: VoidFunction } = $props();
+
   onMount(() => {
-    if (!mangaSourceNames.includes($selectedSource)) {
-      $selectedSource = mangaSourceNames[0];
+    if (!mangaSourceIds.includes($selectedSource)) {
+      $selectedSource = mangaSourceIds[0];
     }
   });
 </script>
@@ -53,16 +59,28 @@
           tabindex={-1}
           onwheel={(e) => {
             if (e.deltaY < 0) {
+              selectedSource.set(
+                mangaSourceIds.at(
+                  mangaSourceIds.findIndex((s) => s === $selectedSource) - 1,
+                ) ?? mangaSourceIds[0],
+              );
             } else {
+              selectedSource.set(
+                mangaSourceIds.at(
+                  mangaSourceIds.findIndex((s) => s === $selectedSource) + 1,
+                ) ?? mangaSourceIds[0],
+              );
             }
+            onChange?.();
           }}
           onmouseup={(e) => {
             if (e.button === 1) {
               selectedSource.set(
                 MANGASOURCES.at(
-                  MANGASOURCES.findIndex((s) => s.name === $selectedSource) + 1,
-                )?.name ?? MANGASOURCES[0].name,
+                  MANGASOURCES.findIndex((s) => s.id === $selectedSource) + 1,
+                )?.id ?? MANGASOURCES[0].id,
               );
+              onChange?.();
             }
           }}
         >
@@ -72,7 +90,7 @@
               src={sourceIcon[$selectedSource]}
               alt="{$selectedSource} logo"
             />
-            {$selectedSource || "Select a source..."}
+            {sourceName[$selectedSource] || "Select a source..."}
           </div>
           <ChevronsUpDown class="opacity-50" />
         </Button>
@@ -88,15 +106,16 @@
               {#each mSources as source}
                 <Command.Item
                   class={cn(
-                    "flex justify-between gap-1 font-semibold hover:!bg-slate-400 pr-4 dark:hover:!bg-secondary/50 ",
+                    "flex justify-between gap-1 font-semibold hover:!bg-slate-400 cursor-pointer pr-4 dark:hover:!bg-secondary/50 ",
                     /* source.name === $selectedSource
                       ? "!bg-gray-300 dark:!bg-secondary"
                       : "aria-selected:bg-gray-400 dark:aria-selected:bg-inherit", */
                   )}
                   value={source.name}
                   onSelect={() => {
-                    selectedSource.set(source.name);
+                    selectedSource.set(source.id);
                     open = false;
+                    onChange?.();
                     // closeAndFocusTrigger();
                   }}
                 >
@@ -109,7 +128,10 @@
                     {source.name}
                   </div>
                   <Icon
-                    class={cn(source.name !== $selectedSource && "opacity-0")}
+                    class={cn(
+                      "transition-all duration-400",
+                      source.id !== $selectedSource && "opacity-0",
+                    )}
                     icon="lucide:check"
                   />
                 </Command.Item>

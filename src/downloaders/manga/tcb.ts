@@ -42,18 +42,6 @@ export class TCBScansDl implements MangaDl {
     throw new Error("Method not implemented.");
   }
 
-  async getMangaByUrl(url: string): Promise<Favorite> {
-    return {
-      id: 0,
-      name: "",
-      folder_name: "",
-      cover: "",
-      source: "",
-      source_id: "",
-      link: "",
-    };
-  }
-
   async getMangas(): Promise<Favorite[]> {
     const response = await fetch(`${this.baseUrl}projects`, {
       headers: this.headers,
@@ -82,7 +70,7 @@ export class TCBScansDl implements MangaDl {
     return mangas;
   }
 
-  async search(query: string): Promise<Favorite[]> {
+  async search(query: string, _page: number = 1) {
     const mangas: Favorite[] = await this.getMangas();
     const sortedMangas: Favorite[] = [];
     mangas.forEach((manga) => {
@@ -90,7 +78,7 @@ export class TCBScansDl implements MangaDl {
         sortedMangas.push(manga);
       }
     });
-    return sortedMangas;
+    return { mangas, hasNextPage: false };
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
@@ -123,7 +111,7 @@ export class TCBScansDl implements MangaDl {
     });
     if (response.status !== 200) {
       throw new Error(
-        `Failed to get chapter images ${chapterId} ${response.status}`
+        `Failed to get chapter images ${chapterId} ${response.status}`,
       );
     }
     const text = await response.text();

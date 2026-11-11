@@ -111,7 +111,7 @@
       class="bg-secondary/60 absolute z-20 flex max-w-[80svw]! items-center justify-center gap-2 rounded-3xl p-2 backdrop-blur-sm"
     >
       <Badge
-        class="flex h-10 w-12 items-center justify-center"
+        class="flex h-10 min-w-12 items-center justify-center"
         variant="outline"
       >
         <ScrollingValue axis="y" value={count} />
