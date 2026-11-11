@@ -32,6 +32,7 @@
   let results = $derived<Favorite[]>(pages.flatMap((p) => p.mangas) ?? []);
 
   let scrollContainer: HTMLDivElement = $state(null!);
+  let sentinel: HTMLDivElement = $state(null!);
   let divWidth = $state(0);
   let divOffset = $state(0);
 
@@ -75,9 +76,12 @@
       loading: true,
       hasNextPage: false,
     };
-    await $downloadManager.search(searchQuery, $selectedSource).then((data) => {
-      fetchedMangaData[key][page] = data;
-    });
+    console.log(key, page);
+    await $downloadManager
+      .search(searchQuery, $selectedSource, page)
+      .then((data) => {
+        fetchedMangaData[key][page] = data;
+      });
     /* await suwaManager
       .fetchSourceManga({
         source: selectedSourceId.value,
@@ -176,7 +180,7 @@
         divOffset = off;
       }}
     >
-      {#snippet children(row, _index)}
+      {#snippet children(row, index)}
         <div class="flex w-full justify-center">
           <div class="mb-0.5 inline-flex gap-0.5">
             {#each row as manga, i (i)}
@@ -200,6 +204,39 @@
               {/each}
             {/if}
           </div>
+        </div>
+        {#if searchState === "loading" && index === rowedMangas.length - 1}
+          <div class="mb-0.5 flex w-full justify-center gap-0.5">
+            {#each { length: itemsPerRow }, i (i)}
+              <div
+                class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+                in:fade
+              >
+                <Icon
+                  class="size-10 animate-spin"
+                  icon="mingcute:loading-fill"
+                />
+              </div>
+            {/each}
+          </div>
+        {/if}
+        {#if rowedMangas.length < 6 ? index === rowedMangas.length - 1 : index === rowedMangas.length - 5}
+          <div bind:this={sentinel} class="h-0 w-full"></div>
+        {/if}
+        <div
+          class={cn(
+            "flex justify-center",
+            searchState === "idle" &&
+              lastPage?.hasNextPage &&
+              index === rowedMangas.length - 1
+              ? "mt-4 h-fit opacity-100 transition-opacity duration-400"
+              : "h-0 opacity-0 pointer-events-none",
+          )}
+        >
+          <Button onclick={() => search(true)}>
+            <Icon icon="lucide:corner-down-right" />
+            Load more
+          </Button>
         </div>
       {/snippet}
     </VList>

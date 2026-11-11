@@ -79,7 +79,10 @@ export class DownloadManager {
     this.getChapterImages = this.getChapterImages.bind(this);
     this.getFavoriteLanguages = this.getFavoriteLanguages.bind(this);
 
-    this.search = memoize(this.search, (query, source) => `${query}:${source}`);
+    this.search = memoize(
+      this.search,
+      (query, source, page) => `${query}:${source}:${page}`,
+    );
     this.getFavoriteLanguages = memoize(this.getFavoriteLanguages);
     this.getChapters = memoizeExpiring(this._getChapters, 600);
     this.getBase64Image = memoize(this.getBase64Image);
@@ -125,6 +128,7 @@ export class DownloadManager {
   async search(
     query: string,
     source: string,
+    page: number = 1,
     prefetchOthers = false,
   ): Promise<{
     mangas: Favorite[];
@@ -132,7 +136,7 @@ export class DownloadManager {
   }> {
     try {
       const sourceDl = this.getSource(source);
-      const results = await sourceDl.search(query, 1);
+      const results = await sourceDl.search(query, page);
       // if (prefetchOthers) this.prefetchSearch(query, source);
       return results;
     } catch (e) {

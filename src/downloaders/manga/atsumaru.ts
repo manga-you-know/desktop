@@ -47,8 +47,9 @@ export class AtsumaruDl implements MangaDl {
   }
 
   async search(query: string, page: number) {
+    const BROWSE_LIMIT = 40;
     const response = await fetch(
-      `${this.baseUrl}/collections/manga/documents/search?q=${query.length > 0 ? query : "*"}&limit=24&query_by=title,englishTitle,otherNames,authors&query_by_weights=4,3,2,1&include_fields=id,title,englishTitle,poster,authors,synopsis,status,tags&num_typos=4,3,2,1`,
+      `${this.baseUrl}/collections/manga/documents/search?q=${query.length > 0 ? query : "*"}&limit=${BROWSE_LIMIT}&offset=${(page - 1) * BROWSE_LIMIT}&query_by=title,englishTitle,otherNames,authors&query_by_weights=4,3,2,1&include_fields=id,title,englishTitle,poster,authors,synopsis,status,tags&num_typos=4,3,2,1`,
     );
     if (response.status !== 200) {
       throw new Error(
@@ -85,7 +86,7 @@ export class AtsumaruDl implements MangaDl {
     });
     return {
       mangas: results,
-      hasNextPage: false,
+      hasNextPage: true,
     };
   }
 
