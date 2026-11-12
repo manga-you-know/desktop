@@ -54,7 +54,6 @@ export class MangaDexDl implements MangaDl {
       });
     }
 
-    console.log(listMangas);
     return {
       mangas: listMangas,
       hasNextPage: responseJson.total > page * 20 && listMangas.length === 20,

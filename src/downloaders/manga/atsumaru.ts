@@ -57,6 +57,7 @@ export class AtsumaruDl implements MangaDl {
       );
     }
     const responseJson: {
+      found: number;
       hits: {
         document: {
           id: string;
@@ -86,7 +87,7 @@ export class AtsumaruDl implements MangaDl {
     });
     return {
       mangas: results,
-      hasNextPage: true,
+      hasNextPage: page * BROWSE_LIMIT < responseJson.found,
     };
   }
 

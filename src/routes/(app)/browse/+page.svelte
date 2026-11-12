@@ -31,8 +31,11 @@
   );
   let results = $derived<Favorite[]>(pages.flatMap((p) => p.mangas) ?? []);
 
+  // $inspect(searchState);
+
   let scrollContainer: HTMLDivElement = $state(null!);
   let sentinel: HTMLDivElement = $state(null!);
+  let observerRef: IntersectionObserver | null = null;
   let divWidth = $state(0);
   let divOffset = $state(0);
 
@@ -76,7 +79,6 @@
       loading: true,
       hasNextPage: false,
     };
-    console.log(key, page);
     await $downloadManager
       .search(searchQuery, $selectedSource, page)
       .then((data) => {
@@ -120,6 +122,39 @@
       search();
     }, 400);
   };
+
+  $effect(() => {
+    if (
+      rowedMangas.length < 3 &&
+      results.length < 100 &&
+      searchState === "idle"
+    ) {
+      search(true);
+    }
+  });
+
+  $effect(() => {
+    if (selectedSource && results.length === 0 && searchState === "idle") {
+      search(false);
+    }
+  });
+
+  $effect(() => {
+    if (!sentinel || !scrollContainer) return;
+    observerRef = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && rowedMangas.length > 4) {
+          observerRef?.unobserve(sentinel);
+          search(true).then(() => {
+            observerRef?.observe(sentinel);
+          });
+        }
+      },
+      { root: scrollContainer, rootMargin: "300px 0px" },
+    );
+    observerRef.observe(sentinel);
+    return () => observerRef?.disconnect();
+  });
 
   /* selectedSource.subscribe(() => {
     search();
@@ -190,7 +225,7 @@
               {#each { length: itemsPerRow - row.length }}
                 {#if searchState === "loading"}
                   <div
-                    class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+                    class="bg-secondary flex h-[23.75rem] w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
                     in:fade
                   >
                     <Icon
@@ -199,7 +234,7 @@
                     />
                   </div>
                 {:else}
-                  <div class="h-95 w-64 p-0.5"></div>
+                  <div class="h-[23.75rem] w-64 p-0.5"></div>
                 {/if}
               {/each}
             {/if}
@@ -209,7 +244,7 @@
           <div class="mb-0.5 flex w-full justify-center gap-0.5">
             {#each { length: itemsPerRow }, i (i)}
               <div
-                class="bg-secondary flex h-95 w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
+                class="bg-secondary flex h-[23.75rem] w-64 animate-pulse items-center justify-center rounded-xl p-0.5"
                 in:fade
               >
                 <Icon
